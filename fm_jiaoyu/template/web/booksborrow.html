@@ -1,0 +1,136 @@
+{template 'public/header'}
+{template 'public/comhead'}
+ 
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main" id="whole">
+    <style>
+	input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"]{
+  -moz-appearance: textfield;
+}
+        .form-control-excel {
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">图书借阅与归还</div>
+        <div class="panel-body">
+            <div  class="form-horizontal original" >
+			 <form action="javascript:getdetail()"  method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="booksborrow" />
+				 <input type="hidden" name="op" value="bot" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />	
+				
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">刷卡识别</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="stuCard" id="stuCard" autofocus="autofocus" type="number" >
+                    </div>
+					<div class="col-sm-2 col-lg-2 newRecord" style="width:8%;display:none" >						
+						<a class="btn btn-primary qx_602" onclick="recard();"  ><i class="fa fa-repeat"></i> 重新刷卡</a>
+					</div>	
+	
+									
+				</div>
+			</form>	
+
+            </div>
+			
+        </div>
+    </div>
+	 <div id="detail"></div> 
+   
+</div>
+ 
+<script type="text/javascript">
+function returnbooks(id){
+	$.post("{php echo $this->createWebUrl('booksborrow',array('op'=>'returnbooks','schoolid'=>$schoolid))}", {'id': id }, function(data1) {		
+			alert(data1.msg);
+			getdetail();
+	},'json');
+}
+
+function deletebooks(id){
+if(confirm("确定删除该条借阅信息?")){
+ 　$.post("{php echo $this->createWebUrl('booksborrow',array('op'=>'delete','schoolid'=>$schoolid))}", {'id': id }, function(data1) 	{		
+			alert(data1.msg);
+			getdetail();
+	},'json');
+　　
+}
+	
+}
+
+
+function recard(){
+	$("#stuCard").val("");
+	$("#stuCard").removeAttr("readonly");
+	$("#stuCard").focus();
+	$(".newRecord").hide();
+	$('#detail').html('');
+	$("#StuName").text("");
+ }
+/*$(function(){
+	$('#stuCard').on('input propertychange', function() {
+		getdetail();
+		$(".tijiao").show();
+	});
+});*/
+
+function getdetail(){
+	var text = $("#stuCard").val();
+	$('#detail').html('');
+	 $("#StuName").text(text);
+	if(text != null && text != ''){
+		$(".newRecord").show();
+		
+		$.post("{php echo $this->createWebUrl('booksborrow',array('op'=>'bot','schoolid'=>$schoolid))}", {'stuCard': text }, function(data1) {	
+			console.log(data1);
+			$('#detail').html(data1);
+		});
+	}
+}
+$("#stuCard").blur(function () {  //当输入框失去焦点时执行的方法
+	var text_auto = $('#stuCard').val();	 
+	if(text_auto == null || text_auto == ''){
+			$("#stuCard").focus();   
+	}else{
+		$("#stuCard").attr("readonly","readonly");
+	}
+});
+ 
+
+ 
+
+</script>
+{/if}
+ 
+{template 'public/footer'}

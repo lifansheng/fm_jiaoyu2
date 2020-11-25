@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="no" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <script type="text/javascript" src="{OSSURL}public/mobile/js/hb.js?v=1111"></script>
+    <link href="{OSSURL}public/mobile/css/new_yab.css?v=11111009" rel="stylesheet" />
+    <link href="{OSSURL}public/mobile/css/baby_video.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{MODULE_URL}public/web/font-awesome5/css/all.min.css">
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+    <script type="text/javascript" src="{OSSURL}public/mobile/js/jquery.reveal.js"></script>
+    {php include $this->template('port');}
+    <title>{$school['title']}</title>
+    <style>
+        .TopInfo{width: 100%;height: 100px ;display: flex;align-items: center;background-color: white;}
+        .imgBox{width: 80px;text-align: center;}
+        .imgBox img{height: 60px;width: 60px;border-radius: 50%;}
+        .NameBox{flex:1;line-height: 25px;}
+        .CheckBox{margin-right: 10px;}
+        .CheckBox .CheckBtn{line-height: 30px;padding:5px 10px;border-radius: 5px;background-color: #4d9df1;color:white;font-weight: bold;}
+
+        .LogBox{width: 100%;background-color: white;margin-top: 10px;}
+        .LogCell,.LogTitle{width: 100%;line-height: 35px;display: flex;}
+        .LogTitle{font-weight: bold;border-bottom: 1px solid #e2e2e2;}
+        .LogCell .cell,.LogTitle .cell{flex:1;text-align: center;}
+        .LogCell:nth-of-type(odd){background-color: #fbfbfb;}
+    </style>
+</head>
+<body>
+    <div class="TopInfo">
+        <div class="imgBox">
+            <img src="{php echo tomedia($student['icon'])}">
+        </div>
+        <div class="NameBox">
+            <div>{$student['s_name']} {if $student['sex'] == 1} <i class="fas fa-mars" style="color:#4688ff"></i> {else} <i class="fas fa-venus" style="color:#f70d36"></i>  {/if}</div>
+            <div>{$student['bjname']}</div>
+        </div>
+        <div class="CheckBox">
+            {if $IsTodayCheck != 1}
+            <span class="CheckBtn" onclick="CheckInHome()">点&nbsp;&nbsp;&nbsp;&nbsp;到</span>
+            {else}
+            <span style="color:#448dd8;">今日已点到 </span>
+            {/if}
+        </div>
+    </div>
+    <div class="LogBox">
+        <div class="LogTitle">
+            <div class="cell">日期</div>
+            <div class="cell">点到人</div>
+        </div>
+        <div class="LogCellBox">
+            {loop $CheckList $ci}
+            <div class="LogCell" time="{$ci['id']}">
+                <div class="cell">{php echo date("Y-m-d H:i:s",$ci['createtime'])}</div>
+                <div class="cell">
+                    <span>{$ci['gx']}</span>
+                    {$ci['realname']}
+                </div>
+            </div>
+            {/loop}
+        </div>
+    </div>
+    <script src="{OSSURL}public/mobile/js/scroll_remaster.js?v=1717"></script>
+
+    <script>
+        function CheckInHome(){
+            let IsCheckIn = {$IsTodayCheck};
+            if(IsCheckIn == 1){
+                alert("您今日已点到，请勿重复操作")
+                return
+            }
+            let c = confirm("您的孩子是否已安全到家？");
+            if(c === false){
+                return
+            }
+            let url = "{php echo $this->createMobileUrl('comajax', array('schoolid' => $schoolid,'weid'=>$weid,'sid'=>$student['id'],'userid'=>$it['id'],'op'=>'checkInStu'))}"
+            $.ajax({
+                url: url,
+                type: "post",
+                dataType: "json",
+                success: function (res) {
+                    alert("点到成功")
+                    window.location.reload()
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                    console.log(jqXHR)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                    //DoSomething
+                }
+            });
+        }
+
+        WeixinJSHideAllNonBaseMenuItem();
+        /**微信隐藏工具条**/
+        function WeixinJSHideAllNonBaseMenuItem() {
+            if (typeof wx != "undefined") {
+                wx.ready(function () {
+                    wx.hideAllNonBaseMenuItem();
+                });
+            }
+        }
+        $(function ($) {
+            $("#Changesf").on('click', function () {
+                $('#selectList').show();
+            });
+        });
+
+        function isSelect(userid, schoolid) {
+            location.href = "{php echo $this->createMobileUrl('allcamera')}" + '&userid=' + userid + '&schoolid=' +
+                schoolid;
+            location.href = reload();
+        }
+
+        // $(window).on("scroll", scroll_fun);
+
+        var ScrParam = {
+            "limit": "0",
+            "ajax_switch": true,
+            "ul_box": ".LogCellBox",
+            "li_item": ".LogCell",
+            "param":["ctype","time"],
+            "ajax_url": "{php echo $this->createMobileUrl('checkinhome', array('schoolid' => $schoolid,'op'=>'scroll_more' ), true)}",
+            "page_name": "teacher_notify",
+            "after_ajax": function () {
+            }
+        }
+
+        new Scroll_load(ScrParam).load_init();
+
+  
+
+ 
+    </script>
+</body>
+ {php include $this->template('footer');}
+</html>

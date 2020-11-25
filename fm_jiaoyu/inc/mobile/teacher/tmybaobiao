@@ -1,0 +1,120 @@
+<?php
+/**
+ * 微教育模块
+ *
+ * @author 高贵血迹
+ */
+global $_W, $_GPC;
+$weid = $_W ['uniacid'];
+$openid = $_W['openid'];
+$tid = intval($_GPC['tid']);
+$schoolid = intval($_GPC['schoolid']);
+if(!empty($_GPC['checktid'])){
+    $checktid = $_GPC['checktid'];
+}
+
+//检查是否用户登陆
+$it = pdo_fetch("SELECT * FROM " . GetTableName('user') . " where :schoolid = schoolid And :weid = weid And :openid = openid And :sid = sid", array(':weid' => $weid, ':schoolid' => $schoolid, ':openid' => $openid, ':sid' => 0));
+$school = pdo_fetch("SELECT style3,title,spic,tpic,logo FROM " . GetTableName('index') . " where weid = :weid AND id = :id ", array(':weid' => $weid, ':id' => $schoolid));
+$tid_global = $it['tid'];
+$operation = !empty($_GPC['op']) ? $_GPC['op'] : 'display';
+if($tid){
+    mload()->model('kc');
+    if($operation == 'display'){
+        $item = pdo_fetch("SELECT * FROM " . GetTableName('tcourse') . " WHERE id = :id ", array(':id' => $id));
+        $shetskt = pdo_fetch("SELECT tea_change_stutype FROM " . GetTableName('kc_signset') . " WHERE id = :id ", array(':id' => $item['sign_pl_set']));
+        $alljs =  pdo_fetchall("SELECT sid,sname FROM " . GetTableName('classify') . " where schoolid ='{$schoolid}' And type='addr' ORDER BY ssort DESC ");
+        $allsd =  pdo_fetchall("SELECT sid,sname FROM " . GetTableName('classify') . " where schoolid ='{$schoolid}' And type='timeframe' ORDER BY ssort DESC ");
+        $showTime = TIMESTAMP + $item['signTime']*60;
+        //组合授课老师
+        $t_array = explode(',',$item['tid']);
+        $tname_array = '';
+        $tid_tname = array();
+        $I_Is_This_KcTea = false; //判断当前老师是否是本课的授课老师
+        foreach( $t_array as $key_t => $value_t ){
+            $teacher_all =  pdo_fetch("SELECT id,tname FROM " . GetTableName('teachers') . " WHERE id = :id", array(':id' => $value_t));
+            $tid_tname[$key_t] = $teacher_all;
+            if($tid_global == $value_t){
+                $I_Is_This_KcTea = true;
+            }
+            $tname_array.=$teacher_all['tname']."/";
+        }
+        $tname_array_end = trim($tname_array,"/");
+        if($I_Is_This_KcTea){
+            $nowteacher = pdo_fetch("SELECT tname FROM " . GetTableName('teachers') . " where id ='{$tid_global}' ");
+        }
+        $counmks =array();
+        for($i == 1 ; $i < 101; $i++){
+            $counmks[] = $i;
+        }
+        if($item['kc_type'] == 0){
+            $signset = pdo_fetch("SELECT tea_mobile_pk FROM " . GetTableName('kc_signset') . " WHERE id = :id ", array(':id' => $item['sign_pl_set']));
+            $allks = GetOneKcKsOrder($item['id']);//左侧课时列表
+            $topstuimg =  GetOneKcStuListForName($item['id'],true);//顶部在读学员随机显示
+            $nobodyh5 = '';
+            if(count($topstuimg) < 6){
+                $copynub = 6-count($topstuimg);
+                $html = '<img class="zlheader" src="'.OSSURL.'/public/mobile/img/nobody.png">';
+                $nobodyh5 = str_repeat($html,$copynub);
+            }
+            $allstu = pdo_fetchall("SELECT sid FROM " . GetTableName('coursebuy') . " WHERE kcid = '{$item['id']}' And is_change != 1 ");
+            $allstunub = 0;
+            foreach($allstu as $row){//排除已删除的学生
+                $checkstu = pdo_fetch("SELECT id FROM " . GetTableName('students') . " WHERE schoolid = '{$schoolid}' And id = '{$row['sid']}'");
+                if($checkstu){
+                    $allstunub++;
+                }
+            }
+            $allmyks = pdo_fetchcolumn("SELECT COUNT(id) FROM " . GetTableName('kcbiao') . " WHERE schoolid = '{$schoolid}' And kcid = '{$item['id']}' ");
+            $yskks = pdo_fetchcolumn("SELECT COUNT(distinct ksid ) FROM " . GetTableName('kcsign') . " WHERE schoolid = '{$schoolid}' And kcid = '{$item['id']}' ");
+            $jindu = $yskks/$allmyks*100;
+            if(!empty($_GPC['ksid'])){
+                $checkksid = intval($_GPC['ksid']);
+            }
+        }
+        if($item['kc_type'] == 1){ //在线课程
+            if($item['allow_menu'] == 1){//启用章节
+                $menulist = pdo_fetchall("SELECT * FROM " . GetTableName('kc_menu') . " WHERE schoolid = '{$schoolid}' And kcid = '{$item['id']}' ORDER BY id ASC ");
+                $checkzj = pdo_fetch("SELECT * FROM " . GetTableName('kcbiao') . " WHERE schoolid = '{$schoolid}' And kcid = '{$item['id']}' And menu_id = 0 ");
+                if($checkzj){
+                    array_push($menulist,array('name' => '默认章节'));
+                }
+            }else{
+                $menulist = array(array('name' => '课程排课'));
+                $condition = " ";
+            }
+            $read = 0;
+            $number = 1;
+            $menunub = 0;
+            $nowtime = time();
+            foreach($menulist as $k => $val){
+                if($item['allow_menu'] == 1){//启用章节
+                    $condition = "And menu_id = '{$val['id']}' ";
+                }
+                $menulist[$k]['list'] = pdo_fetchall("SELECT * FROM " . GetTableName('kcbiao') . " WHERE schoolid = '{$schoolid}' And kcid = '{$item['id']}' $condition ORDER BY ssort DESC ");
+                foreach($menulist[$k]['list'] as $key => $row){
+                    $menulist[$k]['list'][$key]['read'] = true;
+                    $signstu = pdo_fetchcolumn("SELECT COUNT(distinct sid ) FROM " . GetTableName('kcsign') . " WHERE schoolid = '{$schoolid}'  And status = 2 And kcid = '{$item['id']}' And ksid = '{$row['id']}' And sid != 0   " );
+                    $menulist[$k]['list'][$key]['ksign'] = $signstu;
+                    $menulist[$k]['list'][$key]['number'] = $number;
+                    $menulist[$k]['list'][$key]['already'] = false; //验证是否直播中
+                    if($row['content_type'] == 1){
+                        $checktime = $row['sk_start'] - $item['txtime']*60;
+                        if($nowtime >= $checktime && $row['sk_end'] > $nowtime){
+                            $menulist[$k]['list'][$key]['already'] = true;
+                        }
+                    }
+                    $number ++;
+                }
+                $menunub++;
+            }
+        }
+        if($item['kc_type'] == 1){
+            include $this->template(''.$school['style3'].'/kc/tmykcinfoonline');
+        }else{
+            include $this->template(''.$school['style3'].'/kc/tmykcinfo_new');
+        }
+    }
+
+
+?>

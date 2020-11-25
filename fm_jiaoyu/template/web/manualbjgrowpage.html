@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 16px;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript">
+	window.sysinfo = {
+		'siteroot': `{$_W['siteroot']}`,
+		'siteurl': `{$_W['siteurl']}`,
+		'attachurl': `{$_W['attachurl']}`,
+		'attachurl_local': `{$_W['attachurl_local']}`,
+		'attachurl_remote': `{$_W['attachurl_remote']}`,
+		'MODULE_URL': '{MODULE_URL}',
+		'cookie' : {'pre': `{$_W['config']['cookie']['pre']}`},
+		'account' : `{php echo json_encode($_W['account'])}`
+	};
+    </script>
+    
+	<script>var require = {urlArgs: 'v={php echo date('YmdH');}' };</script>
+    <script type="text/javascript" src="./resource/js/lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="{MODULE_URL}public/web/js/jqsession.js"></script>
+    <script type="text/javascript" src="{MODULE_URL}public/web/js/jquery.magnific-popup.js"></script>
+    <script type="text/javascript" src="./resource/js/lib/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./resource/js/app/util.js"></script>
+    <script type="text/javascript" src="./resource/js/app/common.min.js"></script>
+    <script type="text/javascript"  src="{MODULE_URL}public/web/js/touch.min.js"></script>
+    <script type="text/javascript" src="./resource/js/require.js"></script>
+    <link href="https://manger.weimeizhan.com/addons/fm_jiaoyu/template/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./resource/css/common.css?v=20175304" rel="stylesheet">
+    <link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+    <script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.flot.js?v=2.1.4"></script>
+    <script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js?v=1"></script>	
+    <title>{$logo['title']}</title>
+    <style>
+        .modal-backdrop.fade.in{ z-index: 1005 !important; }
+        .modal-backdrop.fade.in~.modal-backdrop.fade.in{ z-index: 1015 !important; }
+
+        input,textarea{outline: none;}
+        *{box-sizing: border-box;outline: none;}
+        *:hover,*:focus{outline: none;}
+        ul, li { list-style: none; }
+        select { -webkit-writing-mode: horizontal-tb !important; text-rendering: auto; color: -internal-light-dark-color(black, white); letter-spacing: normal; word-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none; display: inline-block; text-align: start; -webkit-appearance: none;appearance:none; box-sizing: border-box; align-items: center; white-space: pre; -webkit-rtl-ordering: logical; background-color: rgb(248, 248, 248); cursor: default; margin: 0em; font: 400 11px system-ui; border-radius: 5px; border-width: 1px; border-style: solid; border-color: rgb(166, 166, 166); border-image: initial; }
+        .pointdom{cursor: pointer;}
+        body, ul, li, a, p, span, button, input, table { margin: 0; padding: 0; }
+        body, div, span, header, footer, nav, section, aside, article, ul, dl, dt, dd, li, a, p, h1, h2, h3, h4, h5, h6, i, b, textarea, button, input, select, figure, figcaption { padding: 0; margin: 0; list-style: none; font-style: normal; text-decoration: none; border: none; font-family: "Microsoft Yahei", sans-serif; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+        ::-webkit-scrollbar-track { background-color: rgba(245,245,245,0.84); }
+        ::-webkit-scrollbar { width: 6px; background-color: rgba(245,245,245,0.84); }
+        ::-webkit-scrollbar-thumb { background-color: rgba(192,188,188,0.84); }
+        .Main { height: 100%; position: absolute; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; font-size: 16px; }
+        .TopAbsBox { width: 100%; top: 0; left: 0; z-index: 1; height: 50px; flex-shrink: 0; background-color: #41cac0; box-shadow: 2px 2px 9px #ccc; display: flex; -webkit-box-orient: horizontal; -webkit-box-direction: normal; flex-direction: row;position: relative;padding:0 40px}
+        .TopAbsBox>span{display: inline-block;margin-top: 10px;background-color: white;height: 30px;line-height: 30px;padding:0px 20px;border-radius:15px;font-size: 14px;margin-left: 10px;cursor: pointer;font-weight: bold;color:#41cac0}
+
+        .ContentBox { display: flex; height: calc(100% - 50px); }
+        .content-cell-box.left { height: 100%; width: 270px;  display: flex; flex-direction: column; }
+        .content-cell-box.right { height: 100%; width: 270px; }
+        .content-cell-box.side { position: relative; -webkit-box-shadow: 2px 2px 2px #ccc; box-shadow: 2px 2px 2px #ccc; -webkit-box-sizing: border-box; box-sizing: border-box; -ms-flex-negative: 0; flex-shrink: 0; }
+        .left-top-count { width: 100%; height: 50px; background-color: #67e6f787; display: flex; color: #4e4a4a }
+        .left-top-count .TotalCount { line-height: 30px; font-size: 14px; padding: 10px }
+        .TotalCount #AllCount { font-size: 16px; color: #31aebf; font-weight: bold; }
+        .left-top-count .UnitCount { flex: 1; display: flex; justify-content: space-evenly; }
+        .left-top-count .UnitCount>div { font-size: 14px; padding: 5px; text-align: center; }
+        .left-blow-box { flex: 1; width: 100%; overflow-y: auto; }
+        ul .page-unit { width: 100%; height: 300px; z-index: 2; position: relative; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; flex-direction: column; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; }
+        ul .page-unit-fix { z-index: 1; width: 100%; height: 300px; position: absolute; background-color: #dfe6e6; }
+        .page-unit:after{ position: absolute; z-index: 1; content:''; width: 0; height: 100%; left:0; background-color: rgba(136,169,167,0.1); transition:width 0.25s; }
+        .page-unit.act:after{ content:''; height: 0; }
+        .page-unit:hover:after{ width: 100%; transition:width 0.25s; }
+        ul .page-unit .page_pre{ position: relative;height:220px;width: 160px; }
+        .page_pre img, .page_pre .is_ok, .page_pre .is_lock { width: 100%; height: 100%; }
+        .page_pre .is_ok, .page_pre .is_lock { position: absolute; top: 0; left: 0; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; background-color: rgba(0,0,0,0.5); }
+        .page_pre .is_ok img, .page_pre .is_lock img { width: 66px; height: 66px; }
+        .is_ok.onshow,.is_lock.onshow{ display: -webkit-box; display: -ms-flexbox; display: flex; }
+        .page_pre .lock_type { width: 60px; height: 28px; line-height: 28px; text-align: center; font-size: 16px; color: #fff; background-color: #2dbdbd; position: absolute; top: 7px; right: -4px; z-index: 6; border-top-left-radius: 14px; border-bottom-left-radius: 14px; border-top-right-radius: 5px; }
+        .page_pre .add_page { width: 40px; height: 40px; position: absolute; bottom: 0; left: 50%; -webkit-transform: translate(-50%,50%); transform: translate(-50%,50%); cursor: pointer; z-index: 99; }
+        .page_num { font-size: 16px; margin-top: 20px; }
+        .nc_up_down {z-index:3 ;position: absolute; top: 0; width: 16px; right: 10px; height: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; -webkit-box-sizing: border-box; box-sizing: border-box; padding: 30px 0; padding-bottom: 80px; color: #02c492; }
+        .nc_up_down span { font-size: 16px; margin-top: 10px; }
+        .del_page { width: 24px; height: 28px; position: absolute; left: 10px; top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%); cursor: pointer; }
+        li .is_active { background-color: #dde8ff; }
+        .nc_editor-page { position: relative; width: 100%; height: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -ms-flex-align: center; align-items: center; overflow: hidden; }
+        #zoom-div { display: none; position: absolute; top: 0; left: 0; height: 25px; z-index: 168; -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+        .flexBetween { -webkit-box-pack: justify; -ms-flex-pack: justify; -moz-box-pack: justify; box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+        .zoom-big, .zoom-small { width: 50px; height: 100%; font-size: 14px; background-color: rgb(12,177,129); color: #ffffff; }
+        .justify_content { -webkit-box-pack: center; -ms-flex-pack: center; -moz-box-pack: center; box-pack: center; -webkit-justify-content: center; justify-content: center; }
+        .zoom-big { border-top-left-radius: 40px; border-bottom-left-radius: 40px; margin-right: 4px; }
+        .zoom-small { border-top-right-radius: 40px; border-bottom-right-radius: 40px; }
+        #tpl_mask_div { display: none; position: relative; }
+        .up_down_page { position: absolute; right: 0; bottom: 0; -webkit-transform: translateX(150%); transform: translateX(150%); }
+        .flexColumn { -webkit-box-orient: vertical; -moz-box-orient: vertical; -ms-flex-direction: column; -webkit-flex-direction: column; box-orient: vertical; flex-direction: column; }
+        .up_down_page .up_page, .up_down_page .down_page { display: inline-block; width: 30px; height: 28px; cursor: pointer; }
+        .up_down_page .up_page { -webkit-transform: rotateZ(180deg); transform: rotateZ(180deg); }
+        .box { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; }
+        .right_tabs { position: absolute; left: -70px; top: 50px; z-index: 99; }
+        .right_tabs_items{cursor: pointer; width: 70px;height: 50px;background-color: #b4e1f3;box-shadow: -1px 1px 1px #CCB, -1px -1px 1px #ccc;border-radius:5px 0 0 5px;margin-bottom: 10px; border-right:1px solid #ccc ; transition:all 0.25s; }
+        .right_tabs_items.tabs_active{ border-right:1px solid white ; background-color: white; transition:all 0.25s; }
+        .right_tabs_content{ height: 100%; width: 100%;display: none; }
+        .right_tabs_content .content_top{ height: 50px; width: 100%; background-color: #b4e1f3; }
+        .right_tabs_content .content_content{ height: calc(100% - 50px); width: 100%; background-color: white;position: relative;}
+        .img_content_top{ text-align: center; line-height: 50px; }
+        .picture_Tag{ width: 100px; height: 20px; font-size: 12px; /* color: #999; */ line-height: 20px; text-align: center; /* background-color: #01c592; */ border: 1px solid #eee; padding: 0 10px; border-radius: 10px; margin-right: 10px; flex-shrink: 0; -webkit-box-flex-group: 0; cursor: pointer; overflow: hidden; }
+        .select-tabs-img{ width: 80%;outline: none;background-color:rgba(255,255,255,0.66);height: 25px; }
+        .content_content_slide_tabs{ height: 40px;width: 100%;display: flex;line-height: 40px; }
+        .content_content_slide_tabs>span{ padding: 0 10px;font-size: 18px; }
+        .content_slide_tabs_content{flex:1;padding:0 5px;overflow-x: hidden;position: relative;}
+        .content_slide_tabs_content>div{display: flex;height: 100%;line-height: 22px;align-items: center;position: absolute;}
+        .imgRootBox{height:calc(100% - 50px);overflow-y: auto;width: 100%;position: relative;}
+        .imgRootBox .imgbox{width: 100%;padding:10px 15px}
+        .imgRootBox .imgbox>img{width: 108px;height: 108px;margin-bottom: 10px;}
+        .imgRootBox .imgbox>img:nth-of-type(2n-1){margin-right: 10px;}
+        .del_page{z-index: 3;}
+        .imgRootBox .gridBox>div{width: 108px;height: 108px;float: left;margin-bottom: 10px;}
+        .imgRootBox .gridBox>div:nth-of-type(2n-1){margin-right: 10px;}
+        .loading-layer{ display: none;    position: absolute; height: 100%; width: 100%; z-index: 1; }
+        .imgRootBox.inloading>.loading-layer{ display: block !important; }
+        .content_content.inloading>.loading-layer{ display: block !important; }
+        .picture_Tag.pt_active{background-color: #41cac1;color:white;font-weight: bold;}
+        .title-tips{color:rgb(53, 53, 53)}
+        .content-tips{padding: 0 10px;padding-bottom: 20px;color:#505050}
+        .pageBackMask{ position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
+        .editActive{ box-shadow: 0 0 1px 2px #20decf !important; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        input[type="number"]{ -moz-appearance: textfield; }
+        body, div, span, header, footer, nav, section, aside, article, ul, dl, dt, dd, li, a, p, h1, h2, h3, h4, h5, h6, i, b, textarea, button, input, select, figure, figcaption { padding: 0; margin: 0; list-style: none; font-style: normal; text-decoration: none; border: none; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+        .container_score .scoreItem span { margin-left: 5%; }
+        .container_score .scoreItem .scoreItemTxt { border: none; }
+        .container_box[type=circular] { background: url({OSSURL}public/web/images/select_logo.png) no-repeat center; background-size: 40px 40px; }
+        .container_box{ overflow: hidden; }
+        .lock_mask { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 999; background: url({OSSURL}public/web/images/lock.png) no-repeat center center; background-size: 70px 70px; background-color: rgba(0, 0, 0, 0.5); }
+        .img_container_list .is_select { background-color: rgb(2, 196, 146); }
+        .container_score .scoreItem { width: 100%; height: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: horizontal; -webkit-box-direction: normal; -ms-flex-direction: row; flex-direction: row; overflow: hidden; }
+        .container_score .scoreItem img { height: 50%; }
+        .container_score .scoreItem .scoreItem_01 { height: 100%; width: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; }
+        .container_score .scoreItem .scoreItemTxt { text-align: left; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: horizontal; -webkit-box-pack: center; -webkit-box-align: center; -webkit-box-sizing: border-box; -webkit-box-align: center; -ms-flex-align: center; align-items: center;  }
+        #zoom-div { display: none; position: absolute; top: 0; left: 0; height: 25px; z-index: 168; -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+        .jbox-content > div { margin: 10px 10px !important; }
+        .select_tpl { width: 100%; height: 380px; background-color: #fff; padding: 0 10px; }
+        .select_tpl .nav { width: 100%; border-bottom: 1px solid #02c493; }
+        .nav_select { color: #02c493; }
+        .nav .nav_item { font-size: 14px; font-weight: bold; padding-bottom: 10px; padding-right: 50px; cursor: pointer; float: left; }
+        .select_tpl .tpl_ul { width: 100%; height: 330px; overflow: hidden; overflow-y: scroll; margin-top: 30px; }
+        .tpl_ul .tpl_item { display: inline-block; padding-right: 160px; width: 200px; margin-bottom: 30px; }
+        .tpl_item .tpl_img { position: relative; }
+        .tpl_item .tpl_img img { width: 100%; height: 100%; }
+        .tpl_item .tpl_name { width: 100%; font-size: 16px; text-align: center; font-weight: bold; padding: 10px 0; }
+        .tpl_item .item_btns { width: 100%; }
+        .item_btns .preview_tpl { background-color: #02c493; margin-left: 10px; margin-right: 21px; }
+        .item_btns>button { width: 80px; height: 28px; color: #fff; border-radius: 12px; border: none; cursor: pointer; }
+        .item_btns .to_making, .item_btns .ok_select_size { background-color: #ff9f22; }
+        .select_txt{border:1px solid gray}
+        .scoreInputRound{
+            position: relative;
+        }
+        .scoreInputRound.inSelect:after{
+            content: "";
+        position: absolute;
+        height: calc(100% - 4px);
+        width: calc(100% - 4px);
+        left: 2px;
+        top: 2px;
+        background-color: #12bdb2;
+        border-radius: 50%;
+        }
+        .btn_bo{position: absolute; width: 100%; height: 40px; border-radius: 0; background-color: #41cac1; border-color: #40b7af;}
+        .btn_bo:hover,.btn_bo:focus,.btn_bo:active{    background-color: #0eb3a8; border-color: #079289;outline: none;}
+        .modal-content{border:none ;box-shadow: none;}
+        .SendClassAct{ border-bottom: 3px solid #43d243; }
+        .nc_student_ul {
+            overflow: scroll;
+        }
+        .nc_student_ul>li{
+            padding: 15px;
+        }
+        .nc_student_ul .select_student {
+            color: rgb(2,196,146);
+            padding: 15px;
+            background-color: rgb(234,235,239);
+        }
+        .student_item > div:nth-of-type(1) {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            box-sizing: border-box;
+            padding: 0 8px;
+            float: left;
+        }
+    </style>
+    <style>
+        .btn{font-size: 16px;line-height: 26px;padding:7px 25px}
+    </style>
+</head>
+<body style="margin:0;position: static;">
+    <div class="Main">
+        <div class="TopAbsBox" style="display: flex;flex-direction: row-reverse;">
+            <span style="background-color: transparent;border:1px solid white;color:white" onclick="cancelEdit()">退出</span>
+            <span onclick="UseThisDangAn()">发送</span>
+            <span onclick="SaveThisDangAn()" id="IsShowSave">保存</span>
+            <div style="flex:1">
+                <span style=" color: #fff; font-weight: bold; font-size: 18px; line-height: 50px;">{$title}</span>
+            </div>
+        </div>
+
+        <script>
+            function cancelEdit(){
+                window.location.href="{php echo $this->createWebUrl('manual', array('op' => 'display','schoolid' => $schoolid))}"
+            }
+            /*******************************发送**********************************/
+            function UseThisDangAn(){
+                $.post("{php echo $this->createWebUrl('manualbjgrowpage',array('op'=>'Send','schoolid'=>$schoolid, 'weid'=>$weid))}", {bjid:`{$_GPC['bjid']}`,gid:`{$_GPC['id']}`}, function(res) {
+                    alert(res.msg)
+                },'json');
+            }
+            /*******************************发送**********************************/
+            
+            /*******************************保存**********************************/
+            function SaveThisDangAn(){
+                let NotFinish = 0;
+                let page_list = $('.nc_page_ul li').toArray();
+                let filtrate_once = [];
+                
+                page_list.map(function (v,index) {
+                    let id = $(v).data('tagid');
+                    let item ;
+                        PageList.map(x=>{
+                        if(x.tagid === id){
+                            filtrate_once.push(x);
+                            if(!check_page_ok(x) && x.auth === 2){
+                                NotFinish++;
+                            }
+                        }
+                    })
+                })
+                if(NotFinish > 0){
+                    if(!confirm("还剩余两个页面未完成,是否继续保存")){
+                        return
+                    }
+                }
+                $.post("{php echo $this->createWebUrl('manualbjgrowpage',array('op'=>'SavePage','schoolid'=>$schoolid, 'weid'=>$weid, 'gid'=>$_GPC['id']))}", {'PageList': filtrate_once}, function(res) {
+                    alert(res.msg)
+                },'json');
+                IsSave = true
+            }
+            /*******************************保存**********************************/
+        </script>
+
+        <div class="ContentBox">
+            <div class="content-cell-box side left">
+                <div class="left-top-count">
+                    <div class="UnitCount SendClass" style="line-height: 45px;">
+                        <div class="SendClassAct" onclick="IsSend(this,0)">
+                            未发送
+                        </div>
+                        <div onclick="IsSend(this,1)">
+                            已发送
+                        </div>
+                    </div>
+                </div>
+                <div class="left-blow-box">
+                    <ul class="nc_student_ul" style="width: 100%;position: relative;" id="stulist">
+                        {loop $students $key $row}
+                        <li class="student_item {if $_GPC['sid'] == $row['id'] || $key == 0} select_student {/if}" onclick="ChangeStu(this,`{$row['id']}`)">                              
+                            <div style="width:50%">{$row['s_name']}</div>                              
+                            <div class="send_state"><span>{$row['wcnum']}</span>/<span>{$row['allnum']}</span>页</div>                          
+                        </li>
+                        {/loop}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="content-cell-box side left">
+                <div class="left-top-count">
+                    <div class="TotalCount">
+                        共<span id="AllCount">0</span>页
+                    </div>
+                    <div class="UnitCount">
+                        <div>
+                            <div>老师</div>
+                            <div><span id="TeaCount">0</span>页</div>
+                        </div>
+                        <div>
+                            <div>家长</div>
+                            <div><span id="StuCount">0</span>页</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="left-blow-box">
+                    <ul style="width: 100%;position: relative;">
+                        <div class="page-unit-fix" id="floatBK"> </div>
+                        <div class="nc_page_ul">
+                        </div>
+                    </ul>
+                </div>
+            </div>
+            <div class="content-cell-box  middle" style="flex: 1;">
+                <div class="nc_editor-page">
+                    <div id="zoom-div" class="box flexBetween" style="display: none;">
+                        <div class="zoom-big box flexCenter justify_content">
+                            <i style="font-size: 18px;margin-top: 3px;" class="fas fa-plus" ></i>
+                        </div>
+                        <div class="zoom-small box flexCenter justify_content">
+                            <i style="font-size: 18px;margin-top: 3px;" class="fas fa-minus" ></i>
+                        </div>
+                    </div>
+                    <div id="tpl_mask_div" style="width: 750px; height: 530px; transform: scale(1); transform-origin: center center; display: block; position: relative;">
+                        <div class="box flexColumn up_down_page">
+                            <img data-fn_type="up" src="https://school.youanbao.com.cn/yab_printbusiness/images/up_down.png" onclick="Prev()" class="up_page" style="margin-bottom: 20px;" >
+                            <img data-fn_type="down" src="https://school.youanbao.com.cn/yab_printbusiness/images/up_down.png" onclick="Next()" class="down_page" >
+                        </div>
+                        <div>
+                        <div id="loading" style="position: absolute; width: 100%; height: 100%; background-color: white; display: none;z-index: 100;">
+                            <img src="{OSSURL}public/mobile/img/loading/loading-eight-point-blue.gif" style="position: absolute; left: 45%; top: 45%;">
+                        </div>
+                        <div class="tpl_page" id="tpl_page" style="width: 750px; height: 530px; transform: scale(1); transform-origin: center center;" >
+                            <div class="lock_mask" ></div>
+                            <div class="pageBackMask" id="pageBackMask" style="background: url({MODULE_URL}public/web/images/pagemuban1.png) center center / 100% 100% no-repeat;">
+                            </div>
+                            <div class="img_container_list container_list" style="z-index: 14;position: absolute;">
+                            </div>
+                            <div class="title_container_list container_list" style="position:absolute;z-index:16;">
+                            </div>
+                            <div class="score_container_list container_list" style="position:absolute;z-index:16;">
+                            </div>
+                            <div class="video_container_list container_list" style="position:absolute;z-index:16;">
+                            </div>
+                            <div class="txt_container_list container_list" style="position:absolute;z-index:16;">
+                            </div>
+                            <div class="show_container_list container_list" style="position:absolute;z-index:16;">
+                            </div>
+                            <div class="chart_container_list container_list" style="position:absolute;z-index:16;">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content-cell-box side right" style="border-left: 1px solid #ccc; ">
+                <div class="ReloadTabs" style="height: 100%;width: 100%;" >
+                    <div class="right_tabs tabsAction">
+                        <div class="right_tabs_items tabs-item " tab-tag="img"> 照片 </div>
+                        <div class="right_tabs_items tabs-item " tab-tag="video"> 视频 </div>
+                        <div class="right_tabs_items tabs-item" tab-tag="words"> 评语库 </div>
+                        <div class="right_tabs_items tabs-item tabs_active" tab-tag="auth"> 权限 </div>
+                    </div>
+                    <div style="height: 100%;width: 100%;">
+                        <!-- 右侧照片 -->
+                        <div class="tabs_content right_tabs_content" tab-key="img" style="position: relative">
+                            <div class="content_content img_content_content">
+                                <div class="loading-layer" style="position: absolute;" >
+                                    <div  style="position: absolute;width: 100%;height: 100%;background-color: white;" >
+                                        <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                            <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                         </div>
+                                    </div>
+                                </div>
+                                <div class="content_content_slide_tabs" >
+                                    <span ><i class="fa fa-angle-left pointdom click-left"></i></span>
+                                    <div class="content_slide_tabs_content">
+                                        <div id="xctype">
+                                            <span class="picture_Tag" onclick="ChangeImg(this,{$bjid},0,2)">111</span>
+                                        </div>
+                                    </div>
+                                    <span ><i class="fa fa-angle-right pointdom click-right"></i></span>
+                                </div>
+                                <div class="imgRootBox" >
+                                    <div class="loading-layer" style="position: absolute;" >
+                                        <div  style="position: absolute;width: 100%;height: 100%;background-color: white;" >
+                                            <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                                <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                             </div>
+                                        </div>
+                                    </div>
+                                <div class="imgbox gridBox" id="imgbox">
+                                </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn_bo" onclick="show_order()" >上传照片</button>
+                        </div>
+                         <!-- 右侧视频 -->
+                         <div class="tabs_content right_tabs_content" tab-key="video" style="position: relative">
+                            <div class="content_content video_content_content">
+                                <div class="loading-layer" style="position: absolute;" >
+                                    <div  style="position: absolute;width: 100%;height: 100%;background-color: white;" >
+                                        <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                            <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                         </div>
+                                    </div>
+                                </div>
+                                <div class="content_content_slide_tabs" >
+                                    <span ><i class="fa fa-angle-left pointdom click-left"></i></span>
+                                    <div class="content_slide_tabs_content">
+                                        <div id="videotype">
+                                            <span class="picture_Tag" onclick="ChangeVideo(this,{$bjid},0,2)">111</span>
+                                        </div>
+                                    </div>
+                                    <span ><i class="fa fa-angle-right pointdom click-right"></i></span>
+                                </div>
+                                <div class="imgRootBox" >
+                                    <div class="loading-layer" style="position: absolute;" >
+                                        <div  style="position: absolute;width: 100%;height: 100%;background-color: white;" >
+                                            <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                                <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="imgbox gridBox" id="videobox">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary btn_bo" onclick="show_video()">上传视频</button>
+                        </div>
+                        <!-- 右侧评语库 -->
+                        <div class="tabs_content right_tabs_content" tab-key="words" >
+                            <div class="content_top img_content_top">
+                               评语库
+                            </div>
+                            <div class="content_content txt_content_content" >
+                                <div class="loading-layer" style="position: absolute;" >
+                                    <div  style="position: absolute;width: 100%;height: 100%;background-color: white;" >
+                                        <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                            <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                         </div>
+                                    </div>
+                                </div>
+                                <div class="content_content_slide_tabs" >
+                                    <span ><i class="fa fa-angle-left pointdom click-left"></i></span>
+                                    <div class="content_slide_tabs_content">
+                                        <div id="CommentBox">
+                                            <!-- <span class="picture_Tag" onclick="ChangeTxt(1,this)">111</span> -->
+                                        </div>
+                                    </div>
+                                    <span ><i class="fa fa-angle-right pointdom click-right"></i></span>
+                                </div>
+                                <div class="imgRootBox" >
+                                    <div class="loading-layer" style="position: absolute;" >
+                                        <div  style="position: absolute;width: 100%;height: 100%;background-color: white;" >
+                                            <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                                <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="imgbox " id="txtbox">
+                                       <div class="WordItem" >暂无评语</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 右侧权限 -->
+                        <div class="tabs_content right_tabs_content" tab-key="auth"  style="display: block;">
+                            <div class="content_top img_content_top">
+                                设置当前页面权限
+                            </div>
+                            <div class="content_content auth_content_box"  style="padding:10px" >
+                            <div style="width: 100%;height: 40px;line-height: 40px;position: relative;" >
+                                <span style="display: inline-block;width: 50px;text-align: right;padding-right: 5px;">权限</span>
+                                <select   name="" id="PageAuth" onchange="ChangePageAuth(this)"  style="outline: none;width: calc(100% - 100px);background-color: rgb(248, 248, 248);border: 1px solid rgb(226, 226, 226);">
+                                    <option value="2">老师</option>
+                                    <option value="3">家长</option>
+                                </select>
+                            </div>
+                            <div style="width: 100%;padding:20px;font-size: 14px;">
+                                <div class="title-tips">老师 </div>
+                                <div class="content-tips">仅教师端可编辑，每个学生页面效果单独编辑</div>
+                                <div class="title-tips">家长 </div>
+                                <div class="content-tips">仅家长端可编辑，每个学生页面效果单独编辑</div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 上传照片弹窗 -->
+    <div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:1010 !important">
+        <form action="" id="uploadP" method="post" class="form-horizontal form" enctype="multipart/form-data">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="color: black;">
+                        <h4 class="modal-title" id="ModalTitle">上传照片</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">批量上传图片:</label>
+                            <div class="col-sm-9 col-xs-6">
+                                {php echo tpl_form_field_multi_image('photoarr')}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择相册:</label>
+                            <div class="col-sm-6 col-xs-6">
+                                <select style="margin-right:15px;" name="xcdata" id="xcdata" class="form-control">
+                                    <option value="0">请选择相册</option>
+                                    {loop $xc $it}
+                                    <option value="{$it['ctype']}" data-type="{$it['type']}">{$it['sname']}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" id="submit1" onclick="uploadPhotos()">确认上传</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+     <!-- 上传视频弹窗 -->
+     <div class="modal fade" id="Modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:1010 !important">
+        <form action="" id="uploadP" method="post" class="form-horizontal form" enctype="multipart/form-data">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header" style="color: black;">
+                        <h4 class="modal-title" id="ModalTitle">上传视频</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">视频封面图:</label>
+                            <div class="col-sm-9 col-xs-6">
+                                {php echo tpl_form_field_image('videoimg')}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">上传视频:</label>
+                            <div class="col-sm-9 col-xs-6">
+                            {php echo tpl_form_field_video('video')}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择相册:</label>
+                            <div class="col-sm-6 col-xs-6">
+                                <select style="margin-right:15px;" name="videodata" id="videodata" class="form-control">
+                                    <option value="0">请选择相册</option>
+                                    {loop $xc $it}
+                                    <option value="{$it['ctype']}" data-type="{$it['type']}">{$it['sname']}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" id="submit1" onclick="uploadVideo()">确认上传</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+<style>
+    .TipsReDesign{
+        z-index: 9999;
+        position: fixed;
+        width: auto;
+        max-width: 300px;
+        height: auto;
+        color:white;
+        padding:15px;
+        top:50%;
+        text-align: center;
+        left:50%;
+        background-color:rgba(0,0,0,.43);
+        border-radius: 5px;
+        transform:translate(-50%,-50%) scale(0);
+        overflow: hidden;
+        opacity:0;
+
+        transition:  opacity 0.1s 0.025s,
+        transform 0.1s  cubic-bezier(1, -0.17, 1, 0.13);
+    }
+    .TipsReDesign.OnShow{
+        opacity:1;
+        transition: opacity 0.001s cubic-bezier(0.58, 0.08, 1, -0.18),
+                    transform 0.125s cubic-bezier(0.04, 0.84, 0.42, 0.76);
+        transform:translate(-50%,-50%) scale(1);
+    }
+    .TipsReDesign.Re{
+        opacity: 0;
+        transform:translate(-50%,-50%) scale(0.6);
+        transition:  opacity 0.01s 0.025s,
+        transform 0.1s  cubic-bezier(1, -0.17, 1, 0.13);;
+    }
+</style>
+
+    <div class="TipsReDesign">
+        <span>提示文字</span>
+    </div>
+
+</body>
+<script>
+    var tTipsReDesign,tTipsReDesignRe;
+    function TestA(word){
+        if(tTipsReDesign !== undefined){
+            clearTimeout(tTipsReDesign)
+        }
+        if(tTipsReDesignRe !== undefined){
+            clearTimeout(tTipsReDesignRe)
+        }
+        $(".TipsReDesign").addClass("Re")
+        $(".TipsReDesign").find("span").text(word)
+
+        tTipsReDesignRe = setTimeout(function(){
+            $(".TipsReDesign").addClass("OnShow")
+            $(".TipsReDesign").removeClass("Re")
+        },100)
+        tTipsReDesign = setTimeout(function(){
+            $(".TipsReDesign").removeClass("OnShow")
+        },3000)
+    }
+</script>
+
+
+<!-- 预览 -->
+
+<div class="modal fade" style="min-width: 600px!important;" id="Modal11" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"  >
+	<div class="modal-dialog" style="left: 50%; top:50%;transform: translate(-50%,-50%);">
+		<div class="modal-content" style="background-color: transparent;">
+            <div class="modal-body form_paike_boxs" style="padding: 7px;position: relative;" >
+                <div id='ShowVideoHtml' style="text-align: center;"> </div>
+            </div>
+            <a  style="background-color: transparent; color: white; position: absolute; top: -40px; right: -40px;font-size: 20px;" data-dismiss="modal"><i class="fas fa-close"></i></a>
+
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="SelectTime" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important; margin-top: -5%;">
+	<div class="modal-dialog modal-lg" >
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title">选择时间</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal" >
+					<div class="panel panel-default">
+						<div class="panel-body" >
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">时间范围</label>
+                                <div class="col-sm-4">
+                                    {php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', TIMESTAMP - 86399*7), 'end' => date('Y-m-d', TIMESTAMP + 86399*7)));}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</form>
+			</div>
+			<div class="modal-footer" style="background-color:#fff">
+				<button type="button" class="btn btn-primary" onclick="SelectTime()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="Enable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important; margin-top: -5%;">
+	<div class="modal-dialog modal-lg" >
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">启用班级</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal" >
+					<div class="panel">
+						<div class="panel-body" >
+                            <div class="form-group">
+                                <label class="col-xs-12 col-sm-3 col-md-2 control-label">已启用班级</label>
+                                <div class="col-sm-8" id="EnableData">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-12 col-sm-3 col-md-2 control-label">未启用班级</label>
+                                <div class="col-sm-8" id="AbEnableData">
+                            </div>
+                        </div>
+                    </div>
+				</form>
+			</div>
+			<div class="modal-footer" style="background-color:#fff">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="AddEnable()">提交</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<!-- 右侧切换班级-显示相册内容相关操作 -->
+<script>
+    var bjid = `{$bjid}`
+    var studentid = `{$student[0]['id']}`
+    /**********************************  相册相关  *********************************/
+    $("select[name=bjid]").change(function(){ //切换班级选项(相册)
+        bjid = $(this).val();
+        GetBjXc(bjid)
+        GetXcImg(bjid,0,2)
+    })
+
+    function GetBjXc(bjid){ //获取班级相册分类
+        $(".img_content_content").addClass("inloading")
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetBjXc','schoolid'=>$schoolid))}", {'bjid': bjid}, function(res) {
+            let data = res.data
+            let html = ''
+            for(i in data){
+                if(i == 0){
+                    html += `<span class="picture_Tag pt_active" onclick="ChangeImg(this,${data[i].bj_id},'${data[i].ctype}',${data[i].type})">${data[i].sname}</span>`
+                }else{
+                    html += `<span class="picture_Tag " onclick="ChangeImg(this,${data[i].bj_id},'${data[i].ctype}',${data[i].type})">${data[i].sname}</span>`
+                }
+            }
+            $("#xctype").html(html)
+        $(".img_content_content").removeClass("inloading")
+
+        },'json');
+    }
+
+    function ChangeImg(e,bjid,ctype,type){  //班级分类切换
+        $(".picture_Tag").removeClass("pt_active")
+        $(e).addClass("pt_active")
+        GetXcImg(bjid,ctype,type)
+    }
+
+    function GetXcImg(bjid,ctype,type){ //获取分类下的图片
+        $("#imgbox").parent().addClass("inloading")
+        let postdata = {
+            'bjid' : bjid,
+            'ctype': ctype,
+            'type' : type,
+            'is_video' : 0
+        }
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetXcImg','schoolid'=>$schoolid))}", postdata, function(res) {
+            let data = res.data
+            let imghtml = ''
+            for(i in data){
+                imghtml += `<img src="${data[i].img}" dasrc='${data[i].picurl}' draggable="false" >`
+            }
+            $("#imgbox").html(imghtml)
+            $("#imgbox").parent().removeClass("inloading")
+            RightImgListenerAdd()
+        },'json');
+    }
+
+    /**********************************  视频相关  *********************************/
+    $("select[name=videobjid]").change(function(){ //切换班级选项(视频)
+        bjid = $(this).val();
+        GetBjVideo(bjid)
+        GetXcVideo(bjid,0,2)
+    })
+
+    function GetBjVideo(bjid){ //获取视频分类
+        $(".video_content_content").addClass("inloading")
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetBjXc','schoolid'=>$schoolid))}", {'bjid': bjid}, function(res) {
+            let data = res.data
+            let html = ''
+            for(i in data){
+                if(i == 0){
+                    html += `<span class="picture_Tag pt_active" onclick="ChangeVideo(this,${data[i].bj_id},'${data[i].ctype}',${data[i].type})">${data[i].sname}</span>`
+                }else{
+                    html += `<span class="picture_Tag " onclick="ChangeVideo(this,${data[i].bj_id},'${data[i].ctype}',${data[i].type})">${data[i].sname}</span>`
+                }
+            }
+            $("#videotype").html(html)
+            $(".video_content_content").removeClass("inloading")
+        },'json');
+    }
+
+    function ChangeVideo(e,bjid,ctype,type){  //改变视频分类
+        $(".picture_Tag").removeClass("pt_active")
+        $(e).addClass("pt_active")
+        GetXcVideo(bjid,ctype,type)
+    }
+
+    function GetXcVideo(bjid,ctype,type){ //获取分类下的视频
+        $("#videobox").parent().addClass("inloading")
+
+        let postdata = {
+            'bjid' : bjid,
+            'ctype': ctype,
+            'type' : type,
+            'is_video': 1
+        }
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetXcVideo','schoolid'=>$schoolid))}", postdata, function(res) {
+            let data = res.data
+            let videohtml = ''
+            for(i in data){
+                videohtml += `<div style="height:138px"><img  draggable="false" src="${data[i].img}" dasrc='${data[i].picurl}' style="width: 108px; height: 108px"><span style="display: inline-block; text-align: center; width: 100%; color: #fff; background: #67cdf7; font-size: 12px; padding: 2px 10px;cursor: pointer;" onclick="lookVideo('${data[i].video}')"> <i class="fas fa-eye" ></i> 预览</span></div>`
+            }
+            $("#videobox").html(videohtml)
+            $("#videobox").parent().removeClass("inloading")
+
+            RightVideoListenerAdd()
+        },'json');
+    }
+
+
+    /**********************************  评语相关  *********************************/
+    function GetComment(typeid){ //获取评语库分类
+        $(".txt_content_content").addClass("inloading")
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetComment','schoolid'=>$schoolid))}", {'typeid': typeid}, function(res) {
+            let data = res.data
+            let html = ''
+            for(i in data){
+                if(i == 0){
+                    html += `<span class="picture_Tag pt_active" onclick="ChangeTxt(this,${data[i].sid})">${data[i].sname}</span>`
+                }else{
+                    html += `<span class="picture_Tag " onclick="ChangeTxt(this,${data[i].sid})">${data[i].sname}</span>`
+                }
+            }
+            $("#CommentBox").html(html)
+              $(".txt_content_content").removeClass("inloading")
+            GetCommentTxt(data[0]['sid'])
+        },'json');
+    }
+
+    function ChangeTxt(e,sid){  //评语库分类切换
+        $(".picture_Tag").removeClass("pt_active")
+        $(e).addClass("pt_active")
+        GetCommentTxt(sid)
+    }
+
+    function GetCommentTxt(sid){ //获取评语库文本内容
+        $("#txtbox").parent().addClass("inloading")
+        let postdata = {
+            'sid' : sid,
+        }
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetCommentTxt','schoolid'=>$schoolid))}", postdata, function(res) {
+            let data = res.data
+            let txthtml = ''
+            if(data != ''){
+                for(i in data){
+                    txthtml += `<div class="WordItem" style="display: block; font-size: 14px; -webkit-box-sizing: border-box; box-sizing: border-box; padding: 10px; background-color: #f7f7f7; border-radius: 5px; margin-bottom: 10px; word-break: break-all; cursor: pointer;">${data[i].title}</div>`
+                }
+            }else{
+                txthtml +="当前分类下没有评语文本"
+            }
+
+            $("#txtbox").html(txthtml)
+            $("#txtbox").parent().removeClass("inloading")
+            RightTextListenerAdd()
+        },'json');
+    }
+
+</script>
+
+<!-- 整个页面容器渲染相关操作 -->
+<script>
+    var edianji;
+    var PageList = []
+    
+    ChangeStu('',`{$students[0]['id']}`)
+     //通过学生id去获取档案数据
+     function ChangeStu(e,id){
+        $("#loading").show()
+        studentid = id
+        if(e){
+            $('.nc_student_ul').find('.select_student').removeClass('select_student');
+            $(e).addClass('select_student')
+        }
+        $.post("{php echo $this->createWebUrl('manualbjgrowpage',array('op'=>'GetStuPage','schoolid'=>$schoolid))}", {'id': id,'gid':`{$_GPC['id']}`}, function(res) {
+            PageList = res.data
+            renderPageList(PageList)
+            if(res.IsShowSave){
+                $('#IsShowSave').hide()
+                alert('该学生已存档，不能进行再次编辑')
+            }else{
+                $('#IsShowSave').show()
+            }
+            $("#loading").hide()
+        },'json');
+    }
+    
+
+    //模拟当前档案未启用
+    var isEnable = false;
+    //模拟当前档案未保存
+    var IsSave = false;
+    var selectLock = false; //当这个值为true时，禁止选择左侧
+    //auth 1校长 2老师 3家长
+    var current_page_data = null;
+    var dragSrc
+    var ox,oy;
+    var is_input_change = false;
+
+
+    /******************************** 左侧相关 ********************************/
+    function renderPageList(lst_print_pages) { //渲染左侧模板页
+        selectLock = true;
+        if (!lst_print_pages || !lst_print_pages.length) return;
+        var pages_num = lst_print_pages.length;
+        $('#AllCount').text(pages_num);
+        var htmlStr = '', master_num = 0, teacher_num = 0, parent_num = 0, AddHtml = ``;
+
+        lst_print_pages.map(function (item, index) {
+            check_page_ok(item)
+            var is_ok = item.is_ok;
+            var ok_style = '', lock_style = '', lock_type = '', img_style = '', elm3 = '', elm4 = 'innerpage';
+            item.auth == 2 ? teacher_num++ : null;
+            item.auth == 3 ? parent_num++ : null;
+
+            if (is_ok) {
+                ok_style = 'display: -webkit-box;display: -ms-flexbox;display: flex;';
+            } else {
+                ok_style = 'display:none;';
+            }
+            if (item.auth == 3) {
+                lock_style = 'display: -webkit-box;display: -ms-flexbox;display: flex;';
+                lock_type = '家长';
+            } else if (item.auth == 2) {
+                lock_style = 'display: -webkit-box;display: -ms-flexbox;display: flex;background-color: transparent;';
+                lock_type = '老师';
+                img_style = 'display:none;'
+            }
+
+            if (!isEnable) {
+                
+                if (item.IsStart === true) {
+                    elm3 = '';
+                    elm4 = 'TopOrBtm'
+                } else if (item.IsEnd === true) {
+                    elm3 = '';
+                    elm4 = 'TopOrBtm'
+                }
+            }
+            let _title = item.title ? item.title : '&nbsp;';
+            AddHtml += ` <li class="page-unit nc_page_item" data-tagid="${item.tagid}" data-page_type=${elm4}>
+                    ${elm3}
+                    <div class="page_pre">
+                        <img draggable="false" src="${item.smallimg}" >
+                        <div class="is_ok onshow" style="${ok_style}z-index:2">
+                            <img draggable="false" src="https://school.youanbao.com.cn/yab_printbusiness/images/select_size.png">
+                        </div>
+                        <div class="is_lock onshow" style="${lock_style}" >
+                            <img style="${img_style}"  draggable="false" src="https://school.youanbao.com.cn/yab_printbusiness/images/lock.png">
+                            <div class="lock_type">${lock_type}</div>
+                        </div>
+                    </div>
+                    <span class="page_num">${_title}</span>
+                </li>`;
+        })
+        $('.nc_page_ul').html(AddHtml);
+        PageLiListenerAdd();
+        selectLock = false;
+        $('.nc_page_ul').find('li').first().click()
+        $('#CommonCount').text(master_num);
+        $('#TeaCount').text(teacher_num);
+        $('#StuCount').text(parent_num);
+    }
+
+    function PageLiListenerAdd(){//左侧页面列表动态添加监听事件
+        $(".page-unit").off('click')
+        // $(".add_page").off("click")
+        $(".showaddmodal").off("click")
+        $(".nc_up_down .iconfont").off("click")
+        //监听排序箭头按钮
+        $('.nc_up_down .iconfont').on('click', function (e) {
+            e.stopPropagation();
+            var scroll_top = $('.nc_page_ul').scrollTop();
+            var change_type = $(this).data('change_type');
+            var page_item_html = $(this).parents('.nc_page_item').clone(true);
+            if (change_type == 'up' && ($(this).parents('.nc_page_item').prev().data('page_type') == 'innerpage' )) {
+                $(this).parents('.nc_page_item').prev().before(page_item_html).end().remove();
+            } else if (change_type == 'down' && ($(this).parents('.nc_page_item').next().data('page_type') == 'innerpage')) {
+                $(this).parents('.nc_page_item').next().after(page_item_html).end().remove();
+            }
+            $('.nc_page_ul').scrollTop(scroll_top);
+            is_change = true;
+        })
+        //监听li点击事件
+        $(".page-unit").on('click',function() {
+            if(selectLock == true){
+                return
+            }
+            let eventPositionTop =  $(this).position().top //元素相对定位
+            let tagid = Number($(this).data('tagid'))
+            $('#floatBK').animate({top:eventPositionTop},150)
+            $(".page-unit").removeClass("act")
+            $(this).addClass("act")
+            current_page_data = null;
+            PageList.map(x => {
+                if(Number(x.tagid) === tagid){
+                    current_page_data = x
+                }
+            })
+            $('.container_list').empty();
+            renderPageContainer(current_page_data)
+        })
+    }
+
+    /******************************** 中间相关 ********************************/
+    function renderPageContainer(page_item){ //渲染中间单个页面
+        $('#zoom-div').hide();
+        $('.lock_mask').hide();
+        if (!page_item) return;
+        var tpl_W = '750px',
+            tpl_H = '530px',
+        lst_print_page_containers = [];//容器数组
+        
+
+        lst_print_page_containers = page_item.data.pageData;
+        $('#tpl_page,#tpl_mask_div').css({
+            'width': tpl_W,
+            'height': tpl_H,
+            '-webkit-transform': 'scale(1)',
+            'transform': 'scale(1)',
+            '-webkit-transform-origin': 'center',
+            'transform-origin': 'center',
+        });
+        $('#tpl_mask_div').show();
+        $('.pageBackMask').css({
+            'background': 'url(' + page_item.data.backimgurl + ') no-repeat center',
+            'background-size': '100% 100%',
+            'z-index':13
+        });
+
+        lst_print_page_containers.map(function (v) {
+            if(v.itemType === 'circular'){
+                $('.img_container_list').append(render_circular(v));
+            }else if (v.itemType == "square") {
+                $('.img_container_list').append(render_square(v));
+            }else if (v.itemType == "textarea") {
+                $('.txt_container_list').append(render_txt(v));
+            }else if (v.itemType == "justshow") {
+                $('.show_container_list').append(render_show(v));
+            }else if (v.itemType == "score") {
+                $('.score_container_list').append(render_score(v));
+            }else if (v.itemType == "video") {
+                $('.video_container_list').append(render_video(v));
+            }else if(v.itemType == "chart"){
+                $(".chart_container_list").append(render_chart(v))
+            }
+        })
+        select_lock = true;
+        ImgBoxListenerAdd()
+        TextareaListenerAdd()
+        VideoListenerAdd()
+        ScoreListenerAdd()
+        ChartBoxListenerAdd()
+        add_zoom_fn()
+        page_to_render_img()
+        $(".right_tabs_items.tabs-item[tab-tag=auth]").click()
+        $("#PageAuth").val(page_item.auth)
+        if(page_item.auth !== 2){
+            $('.lock_mask').show();
+        }else {
+            page_to_render_chart()
+            leader_auto_init(PageList,is_input_change)
+        }
+
+    }
+
+    function Next(){ //中间下一个
+        let n =  $(".page-unit.act");
+        if (n.next().length) {
+            n.next().click();
+            ScrollToActive()
+        }
+    }
+
+    function Prev(){ //中间上一个
+        let n =  $(".page-unit.act");
+        if (n.prev().length) {
+            n.prev().click();
+            ScrollToActive()
+        }
+    }
+
+    /******** 渲染容器  ********/
+    function render_score(score_msg) {//渲染评分容器
+        var z_index = 0, width = 0, height = 0, top = 0, left = 0, rotate = 'rotate(0deg)', container_type = '', font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, area_width = 1, area_height = 1, small_font_size = 1, _ary;
+        let ItemClient = score_msg.Client;
+        let ItemPosition = score_msg.Position;
+        width = ItemClient.width;
+        height = ItemClient.height;
+        top = ItemPosition.top;
+        left = ItemPosition.left;
+        let lineHeight = ItemClient.lineHeight
+        z_index = ItemPosition.zIndex;
+        color = ItemClient.fontColor;
+        font_size = Number(ItemClient.fontSize);
+        score_content = ItemClient.scoreData
+        var styleS, htmlS, imgS = '';
+        styleS ="position:absolute;z-index:" + z_index +";top:" + top + "px;left: " + left + "px;width: " + width + "px;height: " + height + "px;transform:" + rotate + ";-webkit-transform:" + rotate + ";";
+        score_styleS ="font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;transform:scale(" + small_font_size + ");-webkit-transform:scale(" + small_font_size + ");display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-pack:center;width:100%;line-height: " + lineHeight +" px;"
+
+        let ItemWidth = 100 / (score_content.length + 1)
+        for(let IIs in score_content){
+            let InputRound = 'scoreInputRound'
+            if(ItemClient.setValue === Number(IIs)){
+                InputRound += ' inSelect'
+            }
+
+            let ImgBoxS = '';
+            let TxtBoxS = '';
+            if(ItemClient.scoreImgData[IIs] !== ''){
+                ImgBoxS = ` <img src="${ItemClient.scoreImgData[IIs]}" style="margin-right:5px;height:${font_size + 3}px;width:${font_size + 3}px">`;
+            }
+            if(score_content[IIs] !== ''){
+                TxtBoxS = ` <span class="scorecom" style="color:${color};line-height: ${lineHeight}px;font-size:${font_size}px;">${score_content[IIs]}</span>`
+            }
+            imgS += ` <div class="scoreItem_01" style="width:${ItemWidth}%">
+            ${ImgBoxS}
+            <div class="${InputRound}" data-setValue="${IIs}" style="height: ${font_size + 1}px;width: ${font_size + 1}px;border-radius: 50%;border:1px solid gray;background-color:white"></div>
+                ${TxtBoxS}
+            </div>`;
+        }
+
+        htmlS = '<div  class="container_box container_score" style="' + styleS + '">' +
+                '   <li  draggable="false" class="scoreItem" style="display:flex;align-items:center">' +
+                '       <div class="scoreItemTxt" data-font_size="' + font_size + '" style="width:'+ItemWidth + '%;position:relative;"><input style="' + score_styleS + '" placeholder="评分项名称" value="' + ItemClient.title + '"></input></div>' + imgS +
+                '   </li>' +
+                '</div>';
+        return htmlS;
+    }
+
+    function render_circular(ImgContainer) { //渲染圆形容器
+        let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+        ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+        ItemPosition = ImgContainer.Position
+        ItemClient = ImgContainer.Client
+        styleS =`position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;border-radius: 50%;-webkit-border-radius: 50%;transform:0;-webkit-transform:0;`;
+        htmlS = `<div data-src="${ItemClient.PhotoUrl}" data-offset_value="${ItemClient.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ItemClient.ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+        return htmlS;
+    }
+
+    function render_square(ImgContainer) { //渲染方形容器
+        let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+        ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+        ItemPosition = ImgContainer.Position
+        ItemClient = ImgContainer.Client
+        styleS =`position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;transform:0;-webkit-transform:0;`;
+        htmlS = `<div data-src="${ItemClient.PhotoUrl}" data-offset_value="${ItemClient.OffsetValue}" data-container_uid = "${ItemClient.tagid}" data-zoom_num="${ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+        return htmlS;
+    }
+
+    function render_txt(txt_msg) {//渲染文本容器
+        var font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, z_index = 1, width = 100, height = 30, top = 0, left = 0, rotate = 0, area_width = 100, area_height = 100, small_font_size = 1, container_uid = '', text_container = '', text_placeholder = '请输入文字'
+        ;
+        if (txt_msg) {
+            ItemCLient = txt_msg.Client;
+            ItemPosition = txt_msg.Position;
+
+            //font_family = txt_font_family;
+            width = ItemCLient.width;
+            height = ItemCLient.height;
+            top = ItemPosition.top;
+            left = ItemPosition.left;
+            //rotate = styleObj.rotate;
+            z_index = ItemPosition.zIndex;
+            font_size = ItemCLient.fontSize;
+            line_height = ItemCLient.lineHeight;
+            typeid = ItemCLient.typeid;
+            color = ItemCLient.fontColor;
+            maxLength = ItemCLient.maxLength;
+            text_container =  ItemCLient.TextContent === undefined ? "" : ItemCLient.TextContent;
+
+            txt_msg.ContainerText ? text_placeholder = txt_msg.ContainerText : null;
+        }
+
+        var styleS =
+            "position:absolute;z-index:" + z_index +
+            ";top: " + top + "px;left: " + left + "px;width: " + width + "px;height: " + height + "px;"
+        var txt_style =
+            "position: absolute;z-index: 2;width:100%;height:100%;font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+        var num_style = 'display: inline-block;position: absolute;right: 0px;bottom: 0;font-size: 12px;';
+        var txt_Html = '<textarea data-typeid="'+ typeid + '" data-container_uid="' + container_uid + '" style="' + txt_style + '" placeholder="' + text_placeholder + '" maxlength="' +maxLength + '">' + text_container + '</textarea><div class="max_num" max_num="' +maxLength + '" style="' + num_style + '">' + text_container.length + '/' + maxLength + '</div>';
+        var htmlS = '<div container_uid="' + container_uid + '" type="txt"  font_size = "' + font_size + '" class="container_box txt_box" style="' + styleS + '">' + txt_Html +
+            '</div>';
+        return htmlS;
+    }
+
+    function render_show(ShowContainer) {//渲染展示容器
+        let ItemClient = ShowContainer.Client;
+        let ItemPosition = ShowContainer.Position;
+        var area_width = 100, area_height = 100, small_font_size = 1, font_size = 12; showS = '';
+        font_size = ItemClient.fontSize;
+        if(ItemClient.showInfo == "schoolQrcode" || ItemClient.showInfo == "schoolLogo"){
+            showS = '<img src = "' + `${ItemClient.showTitle}` + '" style="width:100%;height:100%;">';
+        }else{
+            showS = ItemClient.showTitle;
+        }
+        
+        var styleS =
+            "position:absolute;z-index:" + ItemPosition.zIndex +
+            ";top: " + ItemPosition.top + "px;left:" + ItemPosition.left + "px;width: " + ItemClient.width + "px;height: " + ItemClient.height + "px;transform:rotate(0deg);-webkit-transform:rotate(0deg);text-align: center;"
+        var txt_style =
+            "position: absolute;z-index: 2;width:" + 100 + "%;height:" + 100 + "%;font-size:" + ItemClient.fontSize + "px;color:" + ItemClient.fontColor + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+        var txt_Html = '<div style="' + txt_style + '">' + showS + '</div>';
+        var htmlS = '<div type="show" font_size = "' + font_size + '" show_type="' + ItemClient.showInfo + '" class="container_box" style="' + styleS + '">' +
+            txt_Html +
+            '</div>';
+        return htmlS;
+    }
+
+    function render_title(title_msg) {//渲染标题容器
+        var area_width = 100, area_height = 100, small_font_size = 1, font_size = 12, text_placeholder = '', text_container = '', isDisabled = isAddPage?'': 'disabled';
+        font_size = title_msg.ContainerFontSize;
+        if (font_size < 12) {
+            small_font_size = font_size / 12;
+            area_width = area_width / small_font_size;
+            area_height = area_height / small_font_size;
+        }
+        text_container = title_msg.TextContent;
+        title_msg.ContainerText ? text_placeholder = title_msg.ContainerText : null;
+        var styleS =
+            "position:absolute;z-index:" + title_msg.ListOrder +
+            ";top: " + title_msg.ContainerY + "px;left: " + title_msg.ContainerX + "px;width: " + title_msg.ContainerWidth + "px;height: " + title_msg.ContainerHeight + "px;transform:rotate(0deg);-webkit-transform:rotate(0deg);text-align:" + title_msg.ExInfo01+";"
+        var txt_style =
+            "position: absolute;z-index: 2;width:" + area_width + "%;height:" + area_height + "%;font-family:" + txt_font_family + "; font-size:" + font_size + "px;color:" + title_msg.ContainerFontColor + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;transform:scale(" + small_font_size + ");-webkit-transform:scale(" + small_font_size + ");text-align: " + title_msg.ExInfo01 + ";";
+        if (isAddPage) {
+            txt_style = txt_style + 'border:1px solid #ccc';
+        }
+        var num_style = 'display: inline-block;font-family:' + txt_font_family + ';position: absolute;right: 0px;bottom: 0;font-size: 12px;';
+        var txt_Html = '<textarea ' + isDisabled + ' data-container_uid="' + title_msg.ContainerUid + '" style="' + txt_style + '" placeholder="请输入标题" maxlength="' + title_msg.ExInfo02 + '">' + title_msg.TextContent + '</textarea>';
+        var htmlS = '<div type="title"  font_size = "' + font_size + '" class="container_box" style="' + styleS + '">' + txt_Html +
+            '</div>';
+        return htmlS;
+    }
+
+    function render_video(VideoContainer){ //渲染视频容器
+        let ItemClient = VideoContainer.Client
+        let ItemPosition = VideoContainer.Position
+        let IsValue = Boolean(ItemClient.videoQrUrl)
+        let html = `<div type="video" isvalue="${IsValue}" class="container_box video_box" style="position:absolute;z-index:${ItemPosition.zIndex}; top: ${ItemPosition.top}px;left: ${ItemPosition.left}px;width: ${ItemClient.width}px;height: ${ItemClient.height}px;transform:rotate(0);-webkit-transform:rotate(0);">
+             <div style="display:flex;flex-direction:column;height:100%">
+                <img draggable="false" src="${ItemClient.videoQrUrl || 'https://manger.weimeizhan.com/addons/fm_jiaoyu/public/web/images/qrcode_example.png'}"   style="width: 100%;object-fit: contain; height: 1px; flex: 1;margin-bottom:4px"/>
+                <div class="videocom"  style="border-top: 1px solid #c1c1c1;width: 100%; top: 170px; padding: 3px; font-size:${ItemClient.fontSize}px; color:${ItemClient.fontColor}; line-height:${ItemClient.lineHeight}px;white-space: normal; word-break: break-all; word-wrap: break-word;"> <textarea style="height:100%;width:100%;overflow:hidden;resize:none;background-color: transparent;" maxlength="${ItemClient.maxLength}" type="text">${ItemClient.description}</textarea> </div>
+            </div>
+            </div>`;
+       return html;
+    }
+
+    function render_chart(ChartContainer){ //渲染chart容器
+            ItemPosition = ChartContainer.Position
+            ItemClient = ChartContainer.Client
+            var chartMenu =''
+            if(ItemClient.chartMenu){
+                chartMenu = ItemClient.chartMenu.toString();;
+            }
+            styleS =`background: url({MODULE_URL}/public/web/images/tabletemplate.png) no-repeat center;background-size:90%;background-color:${ItemClient.ChartBgColor};position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;border: 1px solid black;`;
+            htmlS = `<div  data-container_uid ="${ChartContainer.tagid}" data-chart_type="${ItemClient.ChartType}" data-ChartBgColor="${ItemClient.ChartBgColor}" data-time_start="${ItemClient.start}" data-time_end="${ItemClient.end}" data-chartMenu="${chartMenu}" type="chart" class="container_box chart_box" style="${styleS}"></div>`;
+            return htmlS;
+    }
+
+    function leader_auto_init(lst_print_pages, is_input_change) { //自动激活容器
+        var img_box_div = $('.img_container_list .img_box').toArray(); //所有图片容器
+        var txt_box_div = $('.txt_container_list .container_box textarea').toArray(); //所有文本容器
+        var no_has_content = false;
+        var _page_instance_uid = Number($('.nc_page_ul .act').data('tagid')); //当前激活的页面 tagid
+        var page_item = lst_print_pages.filter(function (item) { //取出当前激活页面数据
+            return _page_instance_uid == item.tagid;
+        })
+        current_page_data = page_item[0]; //取出当前激活页面数据
+
+
+        current_page_data.data.pageData.some(function (item) { //任意一个满足，就不再执行
+            if (item.itemType == "circular" || item.itemType == 'square') { //如果是图片容器
+                if (!item.Client.PhotoUrl && !item.Client.OffsetValue ) { //未设置图片、未设置value、未打开input change
+                    let CzIndex = item.Position.zIndex; //则为当前激活容器
+                    img_box_div.forEach(function (img_item) {
+                        if (Number($(img_item).css('z-index')) == CzIndex) {
+                            $(img_item).click(); //找到当前激活的容器，并激活它
+                        }
+                    })
+                    // no_has_content = true;
+                    return true;
+                }
+            }
+            // if (item.ContainerType == "text_container") {
+            //     if (!item.TextContent && !is_input_change) {
+            //         var container_uid = item.ContainerUid;
+            //         txt_box_div.forEach(function (txt_item) {
+            //             if ($(txt_item).data('container_uid') == container_uid) {
+            //                 $(txt_item).focus();
+            //             }
+            //         })
+            //         return true;
+            //     }
+            // }
+        })
+    }
+
+    /******** 容器监听事件  ********/
+    function ImgBoxListenerAdd(){ //图片容器动态添加监听事件
+        $(".img_container_list .img_box").off('click')
+        $(".img_container_list  .img_box").on('click',function() {
+            if(!$(this).hasClass('is_select')){
+                $('.video_select').removeClass('video_select')
+                $('.select_txt').removeClass('select_txt')
+                $(".select_chart").removeClass("select_chart")
+                $(".img_box").removeClass('is_select')
+                $('.chart_container_list').removeClass('is_select');
+                $(this).addClass('is_select')
+                $(".right_tabs_items.tabs-item[tab-tag=img]").click()
+            }
+            if ($(this).find('img').length) {
+                    show_zoom_div($(this));
+                }
+        })
+    }
+
+    function ScoreListenerAdd(){ //评分容器点击事件监听
+        $(".container_box.container_score").find("input").off("click")
+        $(".container_box.container_score").find("input").off("input")
+        $(".container_box.container_score").find("input").on("click",function(){
+            $('.video_select').removeClass('video_select')
+            $('.select_txt').removeClass('select_txt')
+            $(".select_chart").removeClass("select_chart")
+            $('.img_container_list .img_box').removeClass('is_select');
+            $('.chart_container_list').removeClass('is_select');
+            $('#zoom-div').hide();
+            let txt = $(this).val()
+        })
+        $(".container_box.container_score").find("input").on("input",function(){
+            $('#zoom-div').hide();
+            $('.video_select').removeClass('video_select')
+            $('.select_txt').removeClass('select_txt')
+            $(".select_chart").removeClass("select_chart")
+            $('.img_container_list .img_box').removeClass('is_select');
+            $('.chart_container_list').removeClass('is_select');
+            let txt = $(this).val()
+            let page_instance_uid = $('.nc_page_ul .act').data('tagid')
+            let container_uid = Number($(this).parent().parent().parent().css("z-index"))
+            PageList.map( (v) => {
+                if (v.tagid == page_instance_uid) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex && d.itemType === 'score') {
+                            d.Client.title = txt;
+                        }
+                    })
+                }
+            })
+        })
+        $(".container_box.container_score").find(".scoreItem_01").find("*").off("click")
+        $(".container_box.container_score").find(".scoreItem_01").find("*").on("click",function(){
+            $('.video_select').removeClass('video_select')
+            $('#zoom-div').hide();
+            $('.video_select').removeClass('video_select')
+            $('.select_txt').removeClass('select_txt')
+            $(".select_chart").removeClass("select_chart")
+            $('.img_container_list .img_box').removeClass('is_select');
+            $(this).parent().parent().parent().find(".scoreInputRound").removeClass("inSelect")
+            $(this).parent().find(".scoreInputRound").addClass("inSelect")
+            let setValue = Number($(this).parent().find(".scoreInputRound").attr("data-setValue"))
+            let page_instance_uid = $('.nc_page_ul .act').data('tagid')
+            let container_uid = Number($(this).parent().parent().parent().css("z-index"))
+            let page_item_data;
+            PageList.map( (v) => {
+                if (v.tagid == page_instance_uid) {
+                    page_item_data = v
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            d.Client.setValue = setValue;
+                            
+                        }
+                    })
+                }
+            })
+
+            var is_ok = check_page_ok(page_item_data);
+            if (is_ok) {
+                $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                    display: '-webkit-box',
+                    display: '-ms-flexbox',
+                    display: 'flex',
+                })
+            } else {
+                $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                    display: 'none',
+                })
+            }
+
+        })
+    }
+
+    function TextareaListenerAdd() { //文本容器事件监听
+        $('.txt_container_list>div').find('textarea').on('focus', function () {
+            if(!$(this).hasClass("select_txt")){
+                $('.video_select').removeClass('video_select')
+                $(".select_chart").removeClass("select_chart")
+                $('.img_container_list .img_box').removeClass('is_select');
+                $('.chart_container_list').removeClass('is_select');
+                $('#zoom-div').hide();
+                is_input_change = false;
+                // search_comment_data($(this).data('container_uid'));
+                $('.txt_container_list>div').find('textarea').removeClass('select_txt').css({
+                    'border': 'none'
+                });
+                $(this).addClass('select_txt');
+                $(this).css({
+                    'border': '1px solid #ccc'
+                });
+                $('.right_tabs_items.tabs-item[tab-tag=words]').click()
+            }
+        })
+
+
+        $('.txt_container_list>div').find('textarea').on('input', function () {
+            is_input_change = true;
+            var max_num = $(this).siblings('.max_num').attr('max_num');
+            $(this).val($(this).val().replace(/\n/g, ""));
+            $(this).siblings('.max_num').html($(this).val().length + '/' + max_num);
+            set_txt_to_pages();
+        }).on('blur', function () {
+            is_input_change = false;
+            $(this).val($(this).val().trim());
+            $(this).css({
+                'border': 'none'
+            });
+        })
+    }
+
+    function VideoListenerAdd(){ //视频容器点击事件监听
+        $(".video_container_list .video_box").off('click')
+        $(".video_container_list .video_box").find("textarea").off('click')
+        $(".video_container_list .video_box").find("textarea").off('focus')
+        $(".video_container_list .video_box").find("textarea").off('blur')
+        $(".video_container_list  .video_box").on('click',function() {
+            if(!$(this).hasClass('video_select')){
+                $(this).addClass('video_select')
+                $('#zoom-div').hide();
+                $('.select_txt').removeClass('select_txt')
+                $(".select_chart").removeClass("select_chart")
+                $('.img_container_list .img_box').removeClass('is_select');
+                $('.chart_container_list').removeClass('is_select');
+                $(".right_tabs_items.tabs-item[tab-tag=video]").click()
+            }
+        })
+
+        $(".video_container_list  .video_box").find("textarea").on('focus', function () {
+            is_input_change = false;
+            $(".video_container_list  .video_box").find('textarea').css({
+                'box-shadow': 'none'
+            });
+            $(this).css({
+                'box-shadow': '0px 0px 0px 1px  #ccc'
+            });
+        }).on('blur', function () {
+            is_input_change = false;
+            $(this).css({
+                'box-shadow': 'none'
+            });
+        })
+
+        $(".video_container_list  .video_box").find("textarea").on('input',function() {
+            if(!$(this).parent().parent().parent().hasClass('video_select')){
+                $(".right_tabs_items.tabs-item[tab-tag=video]").click()
+            }
+            let page_instance_uid = $('.nc_page_ul .act').data('tagid');
+            let container_uid = Number($(this).parent().parent().parent().css('z-index'));
+            let txt = $(this).val();
+            PageList.map(function (v, i) {
+                if (v.tagid == page_instance_uid) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            d.Client.description = txt;
+                        }
+                    })
+                }
+            })
+            is_change = true;
+        })
+    }
+    
+    /**************************************图表数数据监听结果***************************************/
+    function ChartBoxListenerAdd(){ //图表容器动态添加监听事件
+        $(".chart_container_list .chart_box").off('click')
+        $(".chart_container_list  .chart_box").on('click',function() {
+            $('.video_select').removeClass('video_select')
+            $('.select_txt').removeClass('select_txt')
+            $('.img_container_list .img_box').removeClass('is_select');
+            $('.chart_container_list').find('.is_select').removeClass('is_select');
+            $(this).addClass('is_select');
+            // alert("图表容器相关事件")
+            let page_instance_uid = $('.nc_page_ul .act').data('tagid');
+            let container_uid = Number($(this).css('z-index'));
+            $("#SelectTime").modal('toggle');
+            PageList.map(function (v, i) {
+                if (v.tagid == page_instance_uid) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            if(d.itemType === 'chart'){
+                                $("input[name='createtime[start]']").val(d.Client.start)
+                                $("input[name='createtime[end]']").val(d.Client.end)
+                                $($("input[name='createtime[end]']").next().find('.date-title')).html(d.Client.start+'至'+d.Client.end)
+                                
+                            }
+                        }
+                    })
+                }
+            })
+        })
+    }
+    function SelectTime(){ //确定时间选择
+        let page_instance_uid = $('.nc_page_ul .act').data('tagid');
+        var img_box_elm = $('.chart_container_list .is_select'); //被选中的容器
+        let container_uid = Number($(img_box_elm).css('z-index'));
+        $("#SelectTime").modal('toggle');
+        PageList.map(function (v, i) {
+            if (v.tagid == page_instance_uid) {
+                v.data.pageData.map(function (d, t) {
+                    if (container_uid == d.Position.zIndex) {
+                        if(d.itemType === 'chart'){
+                            d.Client.start = $("input[name='createtime[start]']").val()
+                            d.Client.end = $("input[name='createtime[end]']").val()
+                        }
+                    }
+                })
+            }
+        })
+    }
+    /**************************************图表数数据监听结果***************************************/
+    
+    function ClearAllClick(){ //清理所有选中
+        $("#tpl_page").find(".container_box").removeClass("is_select")
+    }
+
+    function image_touch_moving_start(ev) {// 图片开始移动
+        ox = parseFloat($(this).css('left').replace("px", ""));
+        oy = parseFloat($(this).css('top').replace("px", ""));
+    }
+
+    function boximage_touch_moving(ev) {//图片移动中
+        ev.preventDefault();
+        var container_uid = Number($(this).parent().css('z-index'));
+        let my = ev.y + oy;
+        let mx = ev.x + ox;
+        var myMax = -($(this).height() - $(this).parent().height());
+        my = my > 0 ? 0 : (my < myMax ? myMax : my);
+        var mxMax = -($(this).width() - $(this).parent().width());
+        mx = mx > 0 ? 0 : (mx < mxMax ? mxMax : mx);
+        $(this).css({
+            left: mx,
+            top: my,
+        })
+        var img_W = $(this).width();
+        var img_H = $(this).height();
+        $('.nc_page_ul .act').data('change', 'true');
+        var page_instance_uid = $('.nc_page_ul .act').data('tagid');
+        PageList.map(function (v, i) {
+            if (v.tagid == page_instance_uid) {
+                v.data.pageData.map(function (d, t) {
+                    if (container_uid == d.Position.zIndex) {
+                        var OffsetValue = mx / img_W + ',' + my / img_H;
+                        d.Client.OffsetValue = OffsetValue;
+                    }
+                })
+            }
+        })
+        is_change = true;
+    }
+
+    function image_touch_moving_end(ev) {//图片移动结束
+        ev.preventDefault();
+        ox = 0;
+        oy = 0;
+    }
+
+    function check_page_ok(page_item) { //检查当前页面是否已完成
+        if (!page_item) return;
+        var is_ok = true;
+        page_item.data.pageData.map(function (v, i) {
+            if (v.itemType == "circular" || v.itemType == 'square') {
+                if (!v.Client.PhotoUrl || !v.Client.OffsetValue) {
+                    is_ok = false;
+                }
+            } else if (v.itemType == "textarea") {
+                if (!v.Client.TextContent) {
+                    is_ok = false;
+                }
+            }else if (v.itemType == "video") {
+                if (!Boolean(v.Client.videoQrUrl)) {
+                    is_ok = false;
+                }
+            }
+            else if (v.itemType == "score") {
+                if (v.Client.setValue === undefined ) {
+                    is_ok = false;
+                }
+            }
+        })
+        page_item.is_ok = is_ok
+      
+        return is_ok;
+    }
+
+    function show_zoom_div(elm) {//显示放大缩小
+        var top = $(elm).offset().top  + $(elm).height()-70;
+        var left = $(elm).offset().left - $('.content-cell-box.side.left').width() + $(elm).width()/2-10;
+        $('#zoom-div').css({
+            'display': '-webkit-box',
+            'display': '-moz-box',
+            'display': '-ms-flexbox',
+            'display': '-webkit-flex',
+            'display': 'flex',
+            'top': top + 'px',
+            'left': left + 'px',
+        })
+    }
+
+    function add_zoom_fn() { //放大缩小
+        $('.zoom-big,.zoom-small').off('click');
+        $('.zoom-big,.zoom-small').on('click', function () {
+            var img_box_elm = $('.img_container_list .is_select');
+            if (!img_box_elm.length) return;
+            var select_img = img_box_elm.find('img');
+            if (!select_img.length) return;
+            var page_instance_uid = $('.nc_page_ul .act').data('tagid'),
+                container_uid =  Number(img_box_elm.css('z-index')),
+                zoom_num = Number(img_box_elm.data('zoom_num')),
+                width = select_img.data('width'),
+                height = select_img.data('height'),
+                _left = '',
+                _top = '',
+                offset_value = '';
+            if ($(this).hasClass('zoom-big')) {
+                //放大
+                zoom_num += 0.1;
+            } else {
+                //缩小
+                zoom_num -= 0.1;
+                if (zoom_num < 1) return;
+            }
+            select_img.css({
+                'width': width * zoom_num,
+                'height': height * zoom_num,
+            });
+            zoom_num = zoom_num.toFixed(2);
+            var _width = select_img.css('width').replace('px', '') - 0;
+            var _height = select_img.css('height').replace('px', '') - 0;
+            if (_width - Math.abs(select_img.css('left').replace('px', '') - 0) < img_box_elm.css('width').replace('px', '') - 0) {
+                select_img.css('left', select_img.css('left').replace('px', '') - 0 + ((img_box_elm.css('width').replace('px', '') - 0) - (_width - Math.abs(select_img.css('left').replace('px', '') - 0))));
+            }
+            if (_height - Math.abs(select_img.css('top').replace('px', '') - 0) < img_box_elm.css('height').replace('px', '') - 0) {
+                select_img.css('top', select_img.css('top').replace('px', '') - 0 + ((img_box_elm.css('height').replace('px', '') - 0) - (_height - Math.abs(select_img.css('top').replace('px', '') - 0))));
+            }
+            _left = select_img.css('left').replace('px', '') - 0;
+            _top = select_img.css('top').replace('px', '') - 0;
+            offset_value = _left / (width * zoom_num) + ',' + _top / (height * zoom_num);
+
+            img_box_elm.data('zoom_num', zoom_num);
+            is_change = true;
+            PageList.map(function (v, i) {
+                if (v.tagid == page_instance_uid) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            d.Client.ExInfo03 = zoom_num;
+                            d.Client.OffsetValue = offset_value;
+                        }
+                    })
+                }
+            })
+        });
+    }
+
+    function page_to_render_chart() { //切换模板页渲染图片数据
+        var chart_container_list = $('.chart_container_list .chart_box').toArray();
+        chart_container_list.map(function (v, i) {
+            render_chart_box(v,studentid);
+        })
+    }
+
+    function page_to_render_img() { //切换模板页渲染图片数据
+        var img_container_list = $('.img_container_list .img_box').toArray();
+        img_container_list.map(function (v , i) {
+            var photoUrl = $(v).data('src');
+            if (photoUrl) {
+                var offset_value = $(v).data('offset_value');
+                render_img(v, photoUrl, $(v).width(), $(v).height(), $(v).data('offset_value'));
+            }
+        })
+    }
+    
+    /******************************** 右侧相关 ********************************/
+   
+    function ChangePageAuth(e){ //修改当前页面权限
+        if(current_page_data === null){
+            return;
+        }else {
+            let Auth = Number($(e).val())
+            let tagid = current_page_data.tagid
+            current_page_data.auth = Auth
+            if(Auth != 2){
+                $(".lock_mask").show()
+            }else{
+                $(".lock_mask").hide()
+            }
+
+            if(Auth === 2){
+                $(`.page-unit.nc_page_item[data-tagid=${tagid}]`).find(".lock_type").text("老师")
+                $(`.page-unit.nc_page_item[data-tagid=${tagid}]`).find(".is_lock").css("background-color",'transparent')
+                $(`.page-unit.nc_page_item[data-tagid=${tagid}] .is_lock`).find("img").hide()
+                leader_auto_init(PageList,is_input_change)
+            }else if(Auth === 3){
+                $(`.page-unit.nc_page_item[data-tagid=${tagid}]`).find(".lock_type").text("家长")
+                $(`.page-unit.nc_page_item[data-tagid=${tagid}]`).find(".is_lock").css("background-color",'rgba(0,0,0,0.5)')
+                $(`.page-unit.nc_page_item[data-tagid=${tagid}] .is_lock`).find("img").show()
+                $("#tpl_page").find(".container_box").removeClass("is_select")
+            }
+        }
+    }
+
+    function ActiveTabs(type){ //右侧tab切换
+        $(".ReloadTabs").find(".tabs-item").removeClass("tabs_active")
+        $(".ReloadTabs").find(`.tabs-item[tab-tag=${type}]`).addClass("tabs_active")
+        $(".ReloadTabs").find(`.tabs_content`).hide()
+        $(".ReloadTabs").find(`.tabs_content[tab-key=${type}]`).show()
+        CLearVD()
+        if(type === 'img'){
+            GetBjXc(bjid)
+            RightImgListenerAdd()
+        }
+        if(type === 'video'){
+            GetBjVideo(bjid); //获取班级视频
+            GetXcVideo(bjid,0,2) //获取相册中的视频
+            RightVideoListenerAdd()
+        }
+        if(type === 'words'){
+            var txt_box_elm = $('.txt_container_list>div .select_txt');
+            let txtlength = txt_box_elm.length;
+            if(txtlength>0){
+                let typeid = $(txt_box_elm).data('typeid');
+                GetComment(typeid);
+            }else{
+            }
+            RightTextListenerAdd()
+        }
+    }
+
+    function RightImgListenerAdd(){ //右侧图片点击事件监听
+        $(".imgRootBox img").off('click')
+        $(".imgRootBox img").on('click',function(e){
+            var img_box_elm = $('.img_container_list .is_select'); //被选中的容器
+            if (!img_box_elm.length) return;
+            img_box_elm.data('zoom_num','1');
+            var src = $(this).attr('src'); //图片链接
+            var box_W = $(img_box_elm).width(); //容器宽
+            var box_H = $(img_box_elm).height(); //容器高
+            is_change = true;
+            render_img(img_box_elm, src, box_W, box_H);
+            is_change = true;
+            $('.nc_page_ul .act').data('change', 'true');
+        })
+    }
+
+    function RightVideoListenerAdd(){ //右侧视频点击事件监听
+        $(".imgRootBox img").off('click')
+        $(".imgRootBox img").on('click',function(e){
+            var img_box_elm = $('.video_container_list .video_select'); //被选中的容器
+            if (!img_box_elm.length) return;
+            let page_instance_uid = $('.nc_page_ul .act').data('tagid');
+            let container_uid = Number($(img_box_elm).css('z-index'));
+            img_box_elm.data('zoom_num','1');
+            var src = $(this).attr('dasrc'); //视频链接
+            let page_item_data ;
+            $($(img_box_elm).find('img')[0]).attr('src',src)
+            $(img_box_elm).attr("isvalue",'true')
+            PageList.map(v => {
+                if (v.tagid == page_instance_uid) {
+                    v.data.pageData.map(function (d , t) {
+                        if (container_uid === Number(d.Position.zIndex)) {
+                            d.Client.videoQrUrl = src;
+                            page_item_data = v
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+            if (is_ok) {
+                $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                    display: '-webkit-box',
+                    display: '-ms-flexbox',
+                    display: 'flex',
+                })
+            } else {
+                $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                    display: 'none',
+                })
+            }
+
+        })
+    }
+
+    function RightTextListenerAdd(){ //右侧文本点击事件监听
+        $(".imgRootBox .WordItem").off('click')
+        $(".imgRootBox .WordItem").on('click',function(e){
+            e.preventDefault();
+            var txt_box_elm = $('.txt_container_list>div .select_txt');
+            if (!txt_box_elm.length) return;
+            var txt = $(this).text();
+            var max_num = txt_box_elm.siblings('.max_num').attr('max_num');
+            if (txt.length > max_num) {
+                TestA('超过字数限制，请重新选择或输入！');
+                // $(txt_box_elm).val("");
+                return;
+            }
+            $(txt_box_elm).val(txt);
+            $(txt_box_elm).val($(txt_box_elm).val().replace(/\n/g, ""));
+            $(txt_box_elm).siblings('.max_num').html($(txt_box_elm).val().length + '/' + max_num);
+            is_input_change = false;
+            set_txt_to_pages();
+            is_change = true;
+        })
+    }
+
+    function set_txt_to_pages() { //设置文本数据到总数据
+        var page_instance_uid = $('.nc_page_ul .act').data('tagid');
+        var txt_area = $('.txt_container_list>div .select_txt');
+        if (!txt_area.length) return;
+        $('.nc_page_ul .act').data('change', 'true');
+        var container_uid = Number($(txt_area).parent().css('z-index'));
+        var txt = $(txt_area).val();
+        var page_item_data = '';
+        PageList.map(function (v, i) {
+            if (v.tagid == page_instance_uid) {
+                v.data.pageData.map(function (d, t) {
+                    if (container_uid == d.Position.zIndex) {
+                        d.Client.TextContent = txt;
+                        page_item_data = v;
+                    }
+                })
+            }
+        })
+        var is_ok = check_page_ok(page_item_data);
+        if (is_ok) {
+            $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                display: '-webkit-box',
+                display: '-ms-flexbox',
+                display: 'flex',
+            })
+        } else {
+            $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                display: 'none',
+            })
+        }
+
+    
+        is_change = true;
+        // //自动切换
+        // leader_auto_init(PageList, is_input_change);
+    }
+
+    function render_chart_box(v){ // 生成chart图表
+        var start = $(v).attr('data-time_start');
+        var end = $(v).attr('data-time_end');
+        var charttype = $(v).attr('data-chart_type');
+        var chartMenu = $(v).attr('data-chartMenu');
+        var ChartBgColor = $(v).attr('data-ChartBgColor') === undefined ? $(v).attr('data-ChartBgColor') : '#ffffff' ;
+        // let zIndex = $(v).css("z-index")
+        
+        let W = $(v).css("width")
+        let H = $(v).css("height")
+        let ChartData = {
+            'start' : start,
+            'end' : end,
+            'type' : charttype,
+            'sid' : studentid,
+            'id' : `{$_GPC['id']}`,
+            'bjid' : `{$_GPC['bjid']}`,
+            'chartMenu' : chartMenu,
+        }
+        $.post("{php echo $this->createWebUrl('indexajax',array('op'=>'GetChart','schoolid'=>$schoolid))}",ChartData,function(datas){
+            require(["echarts"], function(echarts){
+
+            var ds;
+            if(datas.type == 1){
+                ds = PieOption['webzzfb'];
+                ds.legend = {
+                    textStyle:{
+                        fontSize:8
+                    },
+                    itemWidth:8,
+                    itemHeight:8,
+                };
+                ds.legend.data = datas.title;
+                ds.series[0].data = datas.data;
+            }else if (datas.type == 2){
+                ds = PieOption['webchartstumc_new'];
+                ds.xAxis [0].data = datas.date;
+                ds.legend.data = datas.ds.legend
+                ds.series = datas.series
+                ds.series.map((x,y)=>{
+                    ds.series[y]['label'] = { //每个点上显示数值
+                        show: true,
+                        color:'#333',
+                        fontSize:8,
+                        formatter: function (value,x) {
+                            return Number(value.data).toFixed(1);
+                        }
+                    }
+                })
+            }
+            
+            ds.backgroundColor = ChartBgColor //背景颜色 new
+            var myChart = echarts.init($(v)[0]);
+            myChart.setOption(ds,true);
+            $(window).resize(myChart.resize);
+            });
+
+        },'json');
+    }
+    function render_img(img_box_elm, photoUrl, box_W, box_H, offset_value) {//渲染图片
+        var left = 0;
+        var top = 0;
+        var img = new Image();
+        img.src = photoUrl;
+        img.onload = function () {
+            var container_uid = Number($(img_box_elm).css('z-index'));
+            var zoom_num = $(img_box_elm).data('zoom_num');
+            var zoom_size, imgW, imgH;
+            var width = img.width;
+            var height = img.height;
+            var kW = box_W;
+            var kH = box_H;
+            if (height * kW / width > kH) {
+                zoom_size = kW / width / 0.9;//容器的宽除以图片的宽除以0.9
+                imgW = width * zoom_size//图片按0.9缩放后的宽
+                imgH = height * zoom_size//图片按0.9缩放后的高
+            } else {
+                zoom_size = kH / height / 0.9;//容器的宽除以图片的宽除以0.9
+                imgW = width * zoom_size//图片按0.9缩放后的宽
+                imgH = height * zoom_size//图片按0.9缩放后的高
+            }
+            if (offset_value) {
+                var offset_value_ary = offset_value.split(',');
+                left = offset_value_ary[0] * imgW * zoom_num;
+                top = offset_value_ary[1] * imgH * zoom_num;
+            }
+            $(img_box_elm).html("<img class='targetObj' data-width='" + imgW + "'  data-height='" + imgH + "' style='position: relative;width:" + imgW * zoom_num + "px;height:" + imgH * zoom_num + "px;left:" + left + "px;top:" + top + "px;' src='" + photoUrl + "'ondragstart='return false' />");
+
+
+            var $targetObj = $(img_box_elm).find(".targetObj");
+            // //初始化拖动手势
+            touch.on($targetObj, "touchstart", image_touch_moving_start);
+            touch.on($targetObj, 'drag', boximage_touch_moving);
+            touch.on($targetObj, 'touchmove', function (e) {
+                e.preventDefault();
+            });
+            touch.on($targetObj, 'dragend', image_touch_moving_end);
+
+            var page_instance_uid = $('.nc_page_ul .act').data('tagid');
+            var page_item_data = '';
+            PageList.map(function (v , i) {
+                if (v.tagid == page_instance_uid) {
+                    v.data.pageData.map(function (d , t) {
+                        if (container_uid == d.Position.zIndex) {
+                            var OffsetValue = left / (imgW * zoom_num) + ',' + top / (imgH * zoom_num);
+                            d.Client.ExInfo03 = zoom_num;
+                            d.Client.PhotoUrl = photoUrl;
+                            d.Client.OffsetValue = OffsetValue;
+                            page_item_data = v;
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+            if (is_ok) {
+                $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                    display: '-webkit-box',
+                    display: '-ms-flexbox',
+                    display: 'flex',
+                })
+            } else {
+                $('.nc_page_ul .act .page_pre').find('.is_ok').css({
+                    display: 'none',
+                })
+            }
+            // 自动切换下一个框
+            leader_auto_init(PageList, is_input_change);
+            showLoad = false;
+
+        }
+        // img.onerror = function () {
+        //     showLoad = false;
+        //     clearTimeout(timeNum);
+        //     layer.closeAll();
+        // }
+    }
+
+    $(function(){
+        var PageState = {
+            ActPageOrder : 0,
+        }
+
+        $(".click-left").on('click',function(){
+            let Target = $(this).parent().next();
+            let MaxWWW = $(Target).find('div').width();
+            let DivLeft = $(Target).find('div').position().left;
+            if(DivLeft < 5){
+                DivLeft += 110;
+            }
+            $(Target).find('div').animate({left:DivLeft+'px'},150)
+        })
+
+        $(".click-right").on('click',function(){
+            let Target = $(this).parent().prev();
+            let MaxWWW = $(Target).find('div').width();
+            let DivLeft = $(Target).find('div').position().left;
+            if(DivLeft > 220 - MaxWWW){
+                DivLeft -= 110;
+            }
+            $(Target).find('div').animate({left:DivLeft+'px'},150)
+        })
+        $(".ReloadTabs").find(".tabs-item").on('click',function(){
+            ActiveTabs($(this).attr("tab-tag"))
+        })
+        renderPageList(PageList)
+    })
+    GetBjXc(bjid); //获取班级相册
+    GetXcImg(bjid,0,2) //获取相册中的相片
+</script>
+<!-- 整个页面容器渲染相关操作 -->
+
+<!-- 上传照片相关操作 -->
+<script>
+    function show_order(){ //显示上传图片框
+        $('#Modal2').modal('toggle');
+        $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetBjXc','schoolid'=>$schoolid))}", {'bjid': bjid}, function(res) {
+            let data = res.data
+            let html = '<option value="0">请选择相册</option>'
+            for(item of data){
+                html += `<option value="${item['ctype']}" data-type="${item['type']}">${item['sname']}</option>`
+            }
+            $("#xcdata").html(html)
+        },'json');
+    }
+
+    function uploadPhotos(){    //执行照片上传
+        let ctype = $("select[name='xcdata'] option:selected").val();
+        let type = $("select[name='xcdata'] option:selected").attr('data-type');
+        let photoarr = []
+        $("input[name='photoarr[]']").each(function(i){
+            photoarr.push($(this).val());
+        })
+        let PostData = {
+            weid : `{$weid}`,
+            bj_id : bjid,
+            ctype : ctype,
+            type : type,
+            photoarr : photoarr,
+        }
+
+        if(!photoarr){
+            alert('请选择需要上传的图片')
+            return
+        }
+        if(!type){
+            alert('请选择相册')
+            return
+        }
+        $.ajax({
+            type: "POST",//方法类型
+            dataType: "json",//预期服务器返回的数据类型
+            url: "{php echo $this->createWebUrl('manualgrowpage',array('op'=>'uploadPhotos','schoolid'=>$schoolid))}" ,//url
+            data: PostData,
+            success: function (back) {
+                alert(back.msg)
+                location.reload()
+            },
+            error : function() {
+                alert("异常！");
+            }
+        });
+    }
+
+</script>
+<!-- 上传照片相关操作 -->
+
+
+
+<script>
+    function lookVideo(url){ //预览视频
+        $("#ShowVideoHtml").show()
+        let html = `<video style="position: relative; min-height: 350px;max-height: 700px;" controls="controls" >
+                        <source src="${url}" type="video/mp4">
+                    </video>    `
+        $("#ShowVideoHtml").html(html)
+        $('#Modal11').modal('toggle',150)
+
+    }
+
+    function CLearVD(){ //重置右侧水平标签
+        $(".content_slide_tabs_content").find(".picture_Tag ")[0].click()
+        $(".content_slide_tabs_content>div").css("left","5px")
+    }
+
+
+function show_video(){ //显示上传视频框
+    $('#Modal3').modal('toggle');
+    $.post("{php echo $this->createWebUrl('manualgrowpage',array('op'=>'GetBjXc','schoolid'=>$schoolid))}", {'bjid': bjid}, function(res) {
+        let data = res.data
+        let html = '<option value="0">请选择相册</option>'
+        for(item of data){
+            html += `<option value="${item['ctype']}" data-type="${item['type']}">${item['sname']}</option>`
+        }
+        $("#videodata").html(html)
+    },'json');
+}
+
+function uploadVideo(){    //执行照片上传
+    let ctype = $("select[name='videodata'] option:selected").val();
+    let type = $("select[name='videodata'] option:selected").attr('data-type');
+    let videoimg = $("input[name='videoimg']").val()
+    let video = $("input[name='video']").val()
+
+    let PostData = {
+        weid : `{$weid}`,
+        bj_id : bjid,
+        ctype : ctype,
+        type : type,
+        videoimg : videoimg,
+        video : video,
+    }
+    if(!video){
+        alert('请选择视频')
+        return
+    }
+    if(!videoimg){
+        alert('请选择视频封面图')
+        return
+    }
+    if(!type){
+        alert('请选择相册')
+        return
+    }
+    $.ajax({
+        type: "POST",//方法类型
+        dataType: "json",//预期服务器返回的数据类型
+        url: "{php echo $this->createWebUrl('manualgrowpage',array('op'=>'uploadVideo','schoolid'=>$schoolid))}" ,//url
+        data: PostData,
+        success: function (back) {
+            alert(back.msg)
+            location.reload()
+        },
+        error : function() {
+            alert("异常！");
+        }
+    });
+}
+</script>
+<script>
+    // 切换发送与未发送
+    function IsSend(e,is_send){
+        $('.SendClass').find('.SendClassAct').removeClass('SendClassAct');
+        $(e).addClass('SendClassAct')
+        //TODO:切换数据后,加载显示
+        $("#loading").show()
+        let data = {
+            bjid : `{$_GPC['bjid']}`,
+            gid : `{$_GPC['id']}`,
+            is_send : is_send,
+        }
+        $.ajax({
+            url: "{php echo $this->createWebUrl('manualbjgrowpage',array('op'=>'GetIsSend','schoolid'=>$schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:data,
+            success: function (res) {
+                let stulist = res.data
+                let html = ''
+                for(i in stulist){
+                    if(`${i}` == 0){
+                        var thisChecked = 'select_student';
+                    }else{
+                        var thisChecked = '';
+                    }
+                    html += `<li class="student_item ${thisChecked}" onclick="ChangeStu(this,${stulist[i]['id']})">                              
+                        <div style="width:50%">${stulist[i]['s_name']}</div>                              
+                        <div class="send_state"><span>${stulist[i]['wcnum']}</span>/<span>${stulist[i]['allnum']}</span>页</div>                          
+                    </li>`
+                }
+                $("#loading").hide()
+                $('#stulist').html(html)
+            },
+        });
+    }
+   
+</script>
+</html>
+

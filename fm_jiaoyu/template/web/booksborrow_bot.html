@@ -1,0 +1,127 @@
+ 
+ <div class="panel panel-info">
+    <div class="panel-heading" style="background-color:unset;color:black">学生信息</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal original" role="form">
+			{if $is_find}
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生头像：</label>
+					<div class="col-sm-2 col-lg-2">
+					 <img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($students['icon'])}{php echo tomedia($students['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" width="50" style="border-radius: 3px;" />
+					 </div>	
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生姓名：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['s_name']}</span>
+						<input class="form-control" name="stuId"  id="stuId" type="hidden" value="{$students['id']}">
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生年级：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['njname']}</span>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生班级：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['bjname']}</span>
+					</div>					
+				</div>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">书名：</label>
+					<div class="col-sm-2 col-lg-2" style="width:50%">
+						<input class="form-control" name="bookName"  id="bookName" type="text" value="{$_GPC['bookName']}">
+					</div>	
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">图书价值/元：</label>
+					<div class="col-sm-2 col-lg-2">
+						<input class="form-control" name="bookworth"  id="bookworth" type="text" value="{$_GPC['bookworth']}">
+					</div>	
+					<div class="col-sm-2 col-lg-2 newRecord" style="width:8%;" >
+						<a class="btn btn-primary qx_602" onclick="newborrow();"  ><i class="fa fa-plus"></i> 新增借阅</a>				
+					</div>					
+				</div>
+			{else}	
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">未查询到学生</label>
+				</div>
+			{/if}
+            </form>
+			
+        </div>
+    </div>
+
+
+<div class="panel panel-default"  >
+	<div class="panel-heading" style="background-color:unset;color:black">借阅信息</div>
+	<div class="table-responsive panel-body">
+		{if $list}
+		<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="width:30%">书名</th>
+						<th style="width:8%">图书价值</th>
+						<th style="width:8%">借阅时间</th>
+						<th style="width:8%">状态</th>
+						<th style="width:8%">归还时间</th>								
+						<th class="qx_e_d" style="text-align:right; width:100px">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr>
+						
+						<td>{$item['bookname']}</td>
+						<td  ><span class="label label-primary">￥{$item['worth']}</span></td>
+						<td><span class="label label-info">{php echo  date("Y-m-d H:i:s",$item['borrowtime'])}</span></td>
+						<td>
+						{if $item['status'] == 1}
+						<span class="label label-danger">暂未归还</span>
+						{elseif $item['status'] == 2}
+						<span class="label label-success">已归还</span>
+						{/if}
+						</td>
+						<td>
+						{if $item['returntime'] != 0 }
+						<span class="label label-success">{php  echo date("Y-m-d H:i:s",$item['returntime'])}</span>
+						{else}
+						<span class="label label-danger">暂未归还</span>
+						{/if}
+						</td>		
+						<td class="qx_e_d" style="text-align:right;">
+							{if $item['status'] == 1}	
+							<a class="btn btn-default btn-sm qx_902" onclick="returnbooks({$item['id']});" title="归还图书"><i class="fa fa-check"></i></a>
+							&nbsp;&nbsp;
+							{/if}
+							<a class="btn btn-default btn-sm qx_904" onclick="deletebooks({$item['id']});"  title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+					{/loop}
+				</tbody>
+			</table>
+			{$pager}
+		</form>
+		{else}
+		<div class="form-group ">
+			<label  >未查询到借阅信息</label>
+		</div>
+		{/if}
+	</div>
+</div>
+<script>
+function newborrow(){
+	var stuid = $("#stuId").val();
+	var bookName = $("#bookName").val();
+	var bookworth = $("#bookworth").val();
+	$.post("{php echo $this->createWebUrl('booksborrow',array('op'=>'newborrow','schoolid'=>$schoolid))}", {'stuid': stuid,'bookName':bookName,'bookworth':bookworth}, function(data1) {	
+		if(data1.result){
+			alert(data1.msg);
+			getdetail();
+		}else{
+			alert(data1.msg);
+		}
+		console.log(data);
+	},'json');
+
+
+}
+
+
+</script>

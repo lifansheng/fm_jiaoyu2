@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<title>授权登录</title>
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/mNewMsg.css?v=1?v=1111" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+{php include $this->template('port');}
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+.order{width:100%;text-align:center;margin-top: 31%;}
+.order span{ font-size: 41px;}
+.msgSubmit { margin-left: 29%; }
+.msgSubmit button {width: 37%;}
+.user_info {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 9999;font-size: 20px;color: #fe6700;}
+.user_info>div {position: absolute;left: 6%;right: 6%;top: 200px;padding: 0 20px;background-color: #fff;padding-bottom: 33px;padding-top: 10px;}
+.user_name {text-align: left;color: #666;font-size: 14px;}
+.btn {height: 44px;display: block;background-color: #7bb52d;font: 20px "黑体";text-align: center;color: #fff;cursor: pointer;}
+.user_info>div>span {display: inline-block;width: 30px;height: 30px;background: #fff;font-size: 24px;color: #aaa;-webkit-border-radius: 100%;-moz-border-radius: 100%;-o-border-radius: 100%;border-radius: 100%;line-height: 30px;text-align: center;position: absolute;top: -15px;right: -15px;
+font-family: 宋体b8b\4f53;cursor: default;}
+.user_name > input {display: block;width: 100%;border-radius: 3px;height: 44px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;box-sizing: border-box;}
+.user_name > select {display: block;width: 100%;height: 44px;border-radius: 3px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;
+box-sizing: border-box;text-align: left;color: #666;font-size: 14px;}
+.close_pupop_c {width: 200px; margin: 0 auto;}
+.close_pupop_button {width: 90px;height: 30px;border-radius: 5px;line-height: 30px;font-size: 16px;text-align: center;}
+.close_pupop_button_1 {background: #e74580;color: #fff;}
+.close_pupop_button_2 {background: #56c454;color: #fff;margin-left: 20px;}
+.selectList {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 30;font-size: 20px;color: #fe6700;}
+.selectList .single {position: absolute;left: 6%;right: 6%;top: 5%;padding: 0 20px;background-color: #fff;padding-bottom: 15px;padding-top: 10px;}
+.selectList ul {width: 100%;height: auto;overflow: auto;}
+.selectList ul li {height: 50px;line-height: 50px;border-bottom: 1px solid #e9e9e9;padding: 5px 10px;margin-top:5px;background:#efefef;border-radius: 10px}
+.selectList ul li span.le {height: 50px;line-height: 50px;float: left;font-size: 16px;}
+.selectList ul li span.ri {float: right;height: 50px;line-height: 50px;font-size: 16px;}
+</style>
+<body class="auto_height">
+	<div class="order">
+		<span><img src="{$_W['fans']['avatar']}" style="height:80px; width:80px;border-radius:80px"></span>
+		<p onclick="choseschool()">{$_W['fans']['nickname']}</p>
+	</div>
+	<div class="order">
+		<p>请使用已绑定的教师微信登录</p>
+	</div>
+	<div class="msgSubmit" id="loginbox">
+		<button class="mainColor" style="background-color: #14c682;" onclick="login();">确认登录</button>
+	</div>
+	<div class="msgSubmit" id="unloginbox">
+		<button class="mainColor" style="background-color: #a2a2a2;" onclick="unlogin();">取消登录</button>
+	</div>
+	<div class="user_info" id="user_info" style="display:none">
+		<div style="border-radius: 5%;">
+			<ul>
+				<p>请补充手机信息</p>
+				<li class="user_name">
+					手机号
+					<input type="number" placeholder="请输入您的手机号" name ="mobile" id="mobile" value="">
+				</li>
+			</ul>
+			<div class="close_pupop_c">
+				<div id="tijiao1" onclick="edit_user()" class="close_pupop_button close_pupop_button_1 float_l">确定</div>
+				<div id="close" class="close_pupop_button close_pupop_button_2 float_l">取消</div>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" id="nowtid" value="">
+	<input type="hidden" id="token" value="{$token}">
+</body>
+<script>
+function login(){
+	ajax_start_loading("加载中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('pcauthlogin', array('op' => 'login'), true)}",
+		type: "post",
+		dataType: "json",
+		data:{schoolid:"{$schoolid}",token:"{$token}"},
+		success: function(result) {
+			ajax_stop_loading();
+			jTips(result.msg);
+			if(result.result){
+				if(result.userinfo){
+					$('#loginbox').hide()
+					$('#unloginbox').hide()
+				}else{
+					$('#nowtid').val(result.tid)
+					$('#mobile').val(result.mobile)
+					$('#user_info').show()
+				}
+			}
+		},
+		error: function(e) {
+			ajax_stop_loading();
+			jTips('访问网络失败');
+		}
+	});	
+}
+function edit_user(){
+	var mobile = $("#mobile").val();
+	if(!$("#mobile").val().match(/^(0|86|17951)?(13[0-9]|15[012356789]|16[012356789]|17[0-9]|18[0-9]|19[0-9]|14[57])[0-9]{7,8}$/)){
+		jTips("手机格式不正确！");
+		return;
+	}
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('pcauthlogin', array('op' => 'edit_user'), true)}",
+		type: "post",
+		dataType: "json",
+		data:{tid:$('#nowtid').val(),mobile:mobile},
+		success: function(result) {
+			if(result.result){
+				login()
+			}
+		},
+		error: function(e) {
+			ajax_stop_loading();
+			jTips('访问网络失败');
+		}
+	});	
+}
+$("#close").on('click', function () {
+	$('#user_info').hide();
+});
+function unlogin(){
+	$('#loginbox').hide()
+	$('#unloginbox').hide()
+	jTips('您已取消登录');
+}
+</script>
+<script>
+$(function() {
+  WeixinJSHideAllNonBaseMenuItem();
+});
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem()
+		});
+	}
+}
+var WeixinApi = (function () {
+	return {
+		imagePreview:imagePreview
+    };
+    "use strict";
+    function imagePreview(curSrc,srcList) {
+        if(!curSrc || !srcList || srcList.length == 0) {
+            return;
+        }
+        WeixinJSBridge.invoke('imagePreview', {
+            'current' : curSrc,
+            'urls' : srcList
+        });
+    }
+    return {
+        version         :"2.5",
+        imagePreview    :imagePreview
+    };
+})();
+</script>
+</html>

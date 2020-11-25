@@ -1,0 +1,988 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<!-- <script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.easypiechart.js"></script> -->
+{if $operation == 'display'}
+<style>
+.pull-left{margin-right: 6% !important; width: 45px;height: 45px;text-align: center;line-height: 45px;}
+.icon-rounded {color: #ffffff;border-radius: 50px; -webkit-border-radius: 50px; -moz-border-radius: 50px; -o-border-radius: 50px;-ms-border-radius: 50px;font-size: 20px;}
+.text-succ{color:#11c8cb;}
+.text-dang{color: rgb(64, 158, 255);}
+.text-infoo{color:#fb8327;}
+</style>
+{template 'mobile/face'}
+<style>
+.modal-body {width: 50%;float: left;  border-bottom: 1px solid #F1F3F5;border-right: 1px solid #F1F3F5;}
+.form=group { position: relative;padding: 0}.form-group img{width:129px;width:129px;} .form-group .mask .wi-right:before {content: "\e6c1";}
+.form-group .mask{position: absolute;font-family: we7icon!important;top: 29px;left: 28%;width: 129px;height: 129px;border-radius: 50%;background: rgba(0,0,0,.5);color: #fff;
+line-height: 129px;text-align: center;display: none;}
+.TopFlex{display: flex;flex-direction: row;}
+.TopFlex>.col-sm-3{flex:1;}
+.ibox-content small{color:#b7b4b4}
+.label-primary { background-color: rgb(64, 158, 255); }
+ </style>
+<div class="modal fade" style="min-width: 583px!important;" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static"></div>
+<input type="hidden" id="nowms" value="">
+<input type="hidden" id="changemsurl" value="{$rlsrll}">
+<div class="clearfix">
+	<div class="row TopFlex">
+		{if $schooltype}
+		<div class="col-sm-3" >
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>排课数</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-language icon-rounded" style="color: #5A8DEE !important;background-color: rgba(90, 141, 238, 0.2) !important"></i>
+					<h2 class="no-margins" id="todayKc">{$todayKc}节</h2>
+					<div class="stat-percent font-bold text-success">{if $todayKc !=0 & $allKc !=0}{php echo sprintf('%.2f', ($todayKc/$allKc)*100);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总排课</small>
+				</div>
+			</div>
+		</div>
+		 <div class="col-sm-3" >
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>签到人数</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-check icon-rounded" style="color: #39DA8A !important;background-color: rgba(57, 218, 138, 0.2) !important"></i>
+					<h2 class="no-margins" id="todaySign">{$todaySign}人</h2>
+					<div class="stat-percent font-bold text-success">{if $todaySign !=0 & $allSign !=0}{php echo sprintf('%.2f',( $todaySign/$allSign)*100);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总签到</small>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-3" >
+			<div class="ibox float-e-margins">
+			   <div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>购买课程人数</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-users icon-rounded" style="color:#00CFDD;background-color:#CCF5F8;"></i>
+					<h2 class="no-margins" id="todayBuy">{$todayBuy}人</h2>
+					<div class="stat-percent font-bold text-info">{if $todayBuy !=0 & $allBuy !=0}{php echo sprintf('%.2f', ($todayBuy/$allBuy)*100);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占购买课程</small>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-3" >
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>新增学生</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-user icon-rounded" style="color:#FF5B5C !important;background-color:rgba(255, 91, 92, 0.2) !important"></i>
+					<h2 class="no-margins" id="todayStu">{$todayStu}人</h2>
+					<div class="stat-percent font-bold text-navy">{if $todayStu !=0 & $allstu_lee !=0}{php echo sprintf('%.2f', ($todayStu/$allstu_lee)*100);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总人数</small>
+				</div>
+			</div>
+		</div>
+	   {if $logo['is_cost'] == 1 || $_W['isfounder'] || $_W['role'] == 'owner' || $_W['role'] == 'vice_founder'}
+		<div class="col-sm-3" >
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>总收入额</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-rmb icon-rounded" style="color:#FDAC41 !important;background-color:rgba(253, 172, 65, 0.2) !important"></i>
+					<h2 class="no-margins">{if !empty($cose)}{$cose}{else}0{/if}元</h2>
+					<div class="stat-percent font-bold text-danger">{if !empty($cose)}{php echo sprintf('%.2f', $cose/$ddzj);}%{else}0.00%{/if}<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总收入</small>
+				</div>
+			</div>
+		</div>
+		{/if}	
+		{else}
+		<div class="col-sm-3">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>报名数</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-users icon-rounded" style="color: #5A8DEE !important;background-color: rgba(90, 141, 238, 0.2) !important"></i>
+					<h2 class="no-margins" id="baom">{$baom}人</h2>
+					<div class="stat-percent font-bold text-success">{if $baom !=0 & $bm !=0}{php echo sprintf('%.2f', $baom/$bm);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总报名</small>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-3">
+			<div class="ibox float-e-margins">
+			   <div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>班级圈消息</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-weixin icon-rounded" style="color: #39DA8A !important;background-color: rgba(57, 218, 138, 0.2) !important"></i>
+					<h2 class="no-margins" id="bjqz">{$bjqz}条</h2>
+					<div class="stat-percent font-bold text-info">{if $bjqz !=0 & $bjq !=0}{php echo sprintf('%.2f', $bjqz/$bjq);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总消息</small>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-3">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>考勤总计</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-check icon-rounded" style="color:#FF5B5C !important;background-color:rgba(255, 91, 92, 0.2) !important"></i>
+					<h2 class="no-margins" id="checklog">{$checklog}次</h2>
+					<div class="stat-percent font-bold text-navy">{if $checklog !=0 & $kq !=0}{php echo sprintf('%.2f', $checklog/$kq);}{else}0.00{/if}%<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总考勤</small>
+				</div>
+			</div>
+		</div>
+		{if $logo['is_cost'] == 1 || $_W['isfounder'] || $_W['role'] == 'owner' || $_W['role'] == 'vice_founder'}
+		<div class="col-sm-3">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<span class="label label-primary pull-right">今天</span>
+					<h5>总收入额</h5>
+				</div>
+				<div class="ibox-content">
+					<i class="pull-left fa fa-rmb icon-rounded" style="color:#FDAC41 !important;background-color:rgba(253, 172, 65, 0.2) !important"></i>
+					<h2 class="no-margins">{if !empty($cose)}{$cose}{else}0{/if}元</h2>
+					<div class="stat-percent font-bold text-danger">{if !empty($cose)}{php echo sprintf('%.2f', $cose/$ddzj);}%{else}0.00%{/if}<i class="fa fa-bolt"></i>
+					</div>
+					<small>占总收入</small>
+				</div>
+			</div>
+		</div>
+		{/if}
+		{/if}
+	</div>	
+<style>
+.span_8 {text-align: center;padding-left: 15px;}
+/* @media (min-width: 992px) */
+.col-md-4 {width: 33.33333333%;}		
+.activity_box {background: #fff;min-height: 392px;box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.2);}
+.scrollbar {height: 392px;background: #fff;overflow-y: scroll;padding: 2em 1em;}
+.activity-row {margin-bottom: 2em;}
+.activity-row, .activity-row1 {text-align: left;}
+.graphs {padding: 2em 1em;background: #f2f4f8;font-family: 'Roboto', sans-serif;}
+.col-md-4{position: relative;min-height: 1px;padding-right: 15px;padding-left: 15px;}
+</style>
+<script src="{OSSURL}public/mobile/js/faceMap.js?v=5.61" type="text/javascript"></script>
+<!-- 顶部数据统计 -->
+<div class="row">
+	<div class="col-sm-12">
+		<div class="ibox float-e-margins">
+			<div class="ibox-title">
+				<form action="javascript:GetMiddleData(false)" method="get" class="form-horizontal" role="form" id="list">
+					<input type="hidden" name="c" value="site">
+					<input type="hidden" name="a" value="entry">
+					<input type="hidden" name="m" value="fm_jiaoyu">
+					<input type="hidden" name="do" value="start"/>
+					<input type="hidden" name="op" value="display"/>
+					<input type="hidden" name="schoolid" value="{$schoolid}"/>
+					<div class="form-group clearfix">
+						<span style="float: left;line-height: 20px;padding-top: 7px;font-size: 15px;font-weight: bold;margin-left: 21px;">{if !empty($_GPC['addtime'])}{php echo date('Y-m-d', $starttime);}至{php echo date('Y-m-d', $endtime)}{/if}数据统计 </span>
+						<label class="col-xs-4 col-sm-1 col-md-1 control-label">时间范围</label>
+						<div class="input-group input-group-sm">
+							{php echo tpl_form_field_daterange('addtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+							<input class="btn btn-xs btn-info" name="commit" type="submit" value="查询">
+						</div>	
+					</div>
+				</form>
+			</div>
+			<style>
+				.middle-data i{
+					font-style:normal
+				}
+				.middle-time-change{
+					font-style:normal
+				}
+			</style>
+			<div class="account-stat middle-data" style="background-color: #ffffff;margin-top: -20px;width: 100%;">
+				<div class="account-stat-btn">
+					{if $logo['is_cost'] == 1 || $_W['isfounder'] || $_W['role'] == 'owner' || $_W['role'] == 'vice_founder'}<div class="col-12" style="width:8%">已付总额<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="cose1">--</i></span></div>{/if}
+					<div class="col-12" style="width:8%">报名数<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="baomzj">--</i> 人</i></div>
+					{if !$_W['schooltype']}
+					<div class="col-12" style="width:8%">考勤数<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="checklogzj">--</i> 次</span></div>
+					{else}
+					<div class="col-12" style="width:8%">消课数<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="checklogzj">--</i> 次</span></div>
+					{/if}
+					<div class="col-12" style="width:8%">班级圈<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="bjqzj">--</i> 条</span></div>	
+					<div class="col-12" style="width:8%">照片数<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="xczj">--</i> 张</span></div>
+					<div class="col-12" style="width:8%">已绑教师<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="ybjs">--</i> 人</span></div>
+					<div class="col-12" style="width:8%">已绑学生<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="ybxs">--</i> 人</span></div>
+					<div class="col-12" style="width:8%">教师人数<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="jszj">--</i> 人</span></div>
+					{if $_W['schooltype']}
+					<div class="col-12" style="width:8%">授课中<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="xszj">--</i> 课</span></div>
+					<div class="col-12" style="width:8%">已结课<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="xszjGuoqi">--</i> 课</span></div>
+					{else}
+					<div class="col-12" style="width:8%">未毕业学生<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="xszj">--</i> 人</span></div>
+					<div class="col-12" style="width:8%">已毕业学生<span style="font-size: 22px;color: rgb(64, 158, 255);" ><i id="xszjGuoqi">--</i> 人</span></div>
+					{/if}
+				</div>
+			</div>
+		</div>	
+	</div>
+</div>
+<style>
+.new_info_tips3 { margin-top: -16px; margin-right: auto; margin-bottom: 10px; margin-left: auto; line-height: 20px; border-radius: 5px; display: block; width: 140px; height: 26px; padding: 2px; box-sizing: border-box; background-color: #383939; color: #fff; text-align: center; position: relative; cursor:pointer }
+.new_info_tips3 .img { border-radius: 3px; position: absolute; left: 13px; top: 2px; }
+.new_info_tips3 .text { box-sizing: border-box; padding-left: 10px; }
+</style>
+<!-- 中部数据动态消息 -->
+{if $_W['schooltype']}
+<div class="new_info_tips3 down" onclick="change_dt_box(this)">
+	<div class="img"><i class="fa fa-plus-circle"></i></div>
+	<div class="text">展开动态列表</div>
+</div>
+{else}
+<div class="new_info_tips3 up" onclick="change_dt_box(this)">
+	<div class="img"><i class="fa fa-minus-circle"></i></div>
+	<div class="text">收起动态列表</div>
+</div>
+{/if}
+<div class="row dt_boxs" style="margin-bottom: 15px;{if $_W['schooltype']}display:none{/if}">
+	<div class="col-md-4 span_8">
+		<div class="activity_box">
+			<div class="panel-heading">
+                    <h4 class="panel-title">班级圈消息</h4>
+            </div>
+			<div class="scrollbar" id="style-2">
+			{loop $lastbjq $item}
+				<div class="activity-row">
+					<div class="col-xs-1"><i class="fa fa-comment text-info"></i> </div>
+					<div class="col-xs-3 activity-img" style="width:auto;"><img style="width:50px;height:50px;border-radius:50%;" src="{php echo tomedia($item['avatar'])}" class="img-responsive" alt=""></div>
+					<div class="col-xs-8 activity-desc">
+						<h5>
+							<a href="#">{$item['shername']}</a>&nbsp;&nbsp;{$item['bjname']}<a href="#">{if $item['isopen'] == 1}*未审核*{/if}</a>
+							{if $item['msgtype'] == 1}<span class="label label-success pull-right">图文</span>{/if}
+							{if $item['msgtype'] == 2}<span class="label label-warning pull-right">语音</span>{/if}
+							{if $item['msgtype'] == 3}<span class="label label-danger pull-right">视频</span>{/if}	
+							{if $item['msgtype'] == 4}<span class="label label-info pull-right">分享</span>{/if}	
+							{if $item['msgtype'] == 5}<span class="label label-primary pull-right">多媒体</span>{/if}		
+						</h5>
+						<p class="neirong">{$item['content']}</p>
+						<h6>{php echo sub_day($item['createtime'])}前</h6>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			{/loop}	
+			<a href="{php echo $this->createWebUrl('bjquan', array('op' => 'display', 'schoolid' => $schoolid))}">点击查看更多</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4 span_8">
+		<div class="activity_box">
+			<div class="panel-heading">
+                    <h4 class="panel-title">校园动态</h4>
+            </div>		
+			<div class="scrollbar" id="style-2">
+			{loop $lasttz $item}
+				<div class="activity-row1">
+					 <div class="col-xs-1">{if $item['ismobile'] == 1}<i class="fa fa-desktop text-info icon_12">{else}<i class="fa fa-weixin text-info icon_12">{/if}</i></div>
+					 <div class="col-xs-3 activity-img" style="width:auto;"><img style="width:50px;height:50px;border-radius:50%;" src="{if $item['thumb']}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($logo['tpic'])}{/if}" class="img-responsive" alt="">
+					 </div>
+					 <div class="col-xs-8 activity-desc">
+						<h5>
+							<a href="#">{$item['tname']}</a> <a href="#">{$item['bjname']}</a>
+							{if $item['type'] == 2}<span class="label label-danger pull-right">校园通知</span>{/if}
+							{if $item['type'] == 1}<span class="label label-info pull-right">班级通知</span>{/if}
+							{if $item['type'] == 3}<span class="label label-primary pull-right">作业通知</span>{/if}
+						</h5>
+						<p>{$item['title']}</p>
+						<h6>{php echo sub_day($item['createtime'])}前</h6>
+					 </div>
+					 <div class="clearfix"> </div>
+				 </div>
+			{/loop}	
+			<a href="{php echo $this->createWebUrl('notice', array('op' => 'display', 'schoolid' => $schoolid))}">点击查看更多</a>
+			</div>
+		</div>
+	</div>
+	{if $schooltype}
+	<div class="col-md-4 span_8">
+		<div class="activity_box">
+			<div class="panel-heading">
+                    <h4 class="panel-title">消课记录</h4>
+            </div>		
+			<div class="scrollbar" id="style-2">
+			{loop $lastxk $item}
+				<div class="activity-row1">
+					 <div class="col-xs-1"> <i class="fa fa-comment text-info"></i></div>
+					 <div class="col-xs-3 activity-img" style="width:auto;">
+					 <img style="width:50px;height:50px;border-radius:50%;" src="{if $item['sicon']}{php echo tomedia($item['sicon'])}{else}{php echo tomedia($logo['spic'])}{/if}" class="img-responsive" alt="">
+					 </div>
+					 <div class="col-xs-8 activity-desc">
+						<h5>
+							<a href="#"><span class="label label-success">学生</span>{$item['s_name']}</a> 
+							<span class="label label-info">{$item['kcname']}</span> 
+						</h5>
+						 
+						<h6>{php echo sub_day($item['createtime'])}前</h6>
+					 </div>
+					 <div class="clearfix"> </div>
+				 </div>
+			{/loop}
+			<a href="{php echo $this->createWebUrl('checklog', array('op' => 'display', 'schoolid' => $schoolid))}">点击查看更多</a>
+			</div>
+		</div>
+	</div>
+	{else}
+	<div class="col-md-4 span_8">
+		<div class="activity_box">
+			<div class="panel-heading">
+                    <h4 class="panel-title">考勤记录</h4>
+            </div>		
+			<div class="scrollbar" id="style-2">
+			{loop $lastkq $item}
+				<div class="activity-row1">
+					 <div class="col-xs-1">{if $item['checktype'] == 1}<i class="fa fa-credit-card text-info icon_12">{else}<i class="fa fa-weixin text-info icon_12">{/if}</i></div>
+					 <div class="col-xs-3 activity-img" style="width:auto;">
+					 <img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($item['sid'])}{if $item['sicon']}{php echo tomedia($item['sicon'])}{else}{php echo tomedia($logo['spic'])}{/if}
+					 {else}{if $item['thumb']}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($logo['tpic'])}{/if}{/if}" class="img-responsive" alt="">
+					 </div>
+					 <div class="col-xs-8 activity-desc">
+						<h5>
+							<a href="#">{if !empty($item['sid'])}<span class="label label-success">学生</span>{$item['s_name']}{else}<span class="label label-info">老师</span>{$item['tname']}{/if}</a> <a href="#">{$item['bj_name']}</a>
+							{if $item['type'] =='进校'}<span class="label label-success">{$item['type']}</span>{else}<span class="label label-info">{$item['type']}</span>{/if}
+							{if $item['isconfirm'] == 2}<span class="label label-danger">待老师确认</span>{/if}
+						</h5>
+						<p>{$item['title']}</p>
+						<h6>{$item['time']}前</h6>
+					 </div>
+					 <div class="clearfix"> </div>
+				 </div>
+			{/loop}
+			<a href="{php echo $this->createWebUrl('checklog', array('op' => 'display', 'schoolid' => $schoolid))}">点击查看更多</a>
+			</div>
+		</div>
+	</div>	
+	{/if}
+</div>	
+{if keep_MC() && $schoolset['is_mc'] == 1 && !$_W['schooltype']}
+<div class="row" style="margin-left: 0px; margin-right: 15px; background-color: #fff; margin-bottom: 15px;box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13);transition: all .3s ease-in-out;">
+	<div class="col-md-8" >
+		<div class="panel panel-default">
+			<div class="chart-title  ng-binding" style="padding: 4px 10px;"><i class="middle-time-change">今日</i>晨检情况
+			</div>
+			<div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;">
+				<div class="loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+				<div class="echarts" id="echarts-pie-chart-mc"></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="form-horizontal form panel panel-default">
+			<div class="form-group" style="margin-bottom:1px;">
+				<select style="width: 147px;float: right;margin-right: 16px;margin-top: 10px;" class="form-control" onchange="sel_change(this)">
+				{loop $AllNj $row}
+					<option value="{$row['sid']}">{$row['sname']}</option>
+				{/loop}	
+				</select>
+			</div>
+			<div style="padding: 20px; height: 338px; display: block; overflow-y: scroll;">
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th style="width:30%">班级</th>
+							<th style="width:30%">已检测</th>
+							<th style="width:30%">未检测</th>
+						</tr>
+					</thead>
+					<tbody id='bjmclist'>
+						{loop $nowbj $row}
+						<tr>
+							<td>
+								<span class="td_tnam" style="width:100%;">{$row['sname']}</span>
+							</td>
+							<td>
+								{$row['mcsum']}人
+							</td>
+							<td>
+								{$row['nomcsum']}人
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{/if}
+<style>
+
+</style>
+<!-- 柱状图与表格 -->
+	<div class="row">
+		<!-- 柱状图 -->
+		<div class="col-md-6">
+		{if GetSchoolType($schoolid,$weid)}
+			<div class="panel panel-default" style="box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13);transition: all .3s ease-in-out;">
+				<div class="chart-title  ng-binding" style="padding: 4px 10px;height: 40px;"><i class="middle-time-change">今日</i>各课程情况
+					<div class="fr classNameColor" style="float: right;">
+						<div class="col-sm-2 col-lg-2">
+							<select style="width: 147px;" id="ctype_id" class="form-control">
+							{loop $njchecklog $row}
+								<option value="{$row['sid']}">{$row['sname']}</option>
+							{/loop}	
+							</select>
+						</div>
+						<div class="col-sm-2 col-lg-2" style="float:left;left:120px">
+							<select style="width: 147px;" id="kc_id" class="form-control">
+								<option value="0">请选择课程</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;">
+
+					<div class="loading-layer"><div><img src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""></div></div>
+					<div class="echarts" id="echarts-pie-chart-d"></div>
+				</div>
+			</div>
+		{else}
+			<div class="panel panel-default" style="box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13);transition: all .3s ease-in-out;">
+				<div class="chart-title  ng-binding" style="padding: 4px 10px;"><i class="middle-time-change">今日</i>各班考勤情况
+					<div class="fr classNameColor" style="float: right;">
+						<div class="col-sm-2 col-lg-2">
+							<select style="width: 147px;" id="xq_id" class="form-control">
+							{loop $njchecklog $row}
+								<option value="{$row['sid']}">{$row['sname']}</option>
+							{/loop}	
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;">
+					<div class="loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""> </div> </div>
+					<div class="echarts" id="echarts-pie-chart-c"></div>
+				</div>
+			</div>
+		{/if}
+		</div>
+		<!-- 表格 -->
+		<div class="col-md-6" style="position: relative;">
+			<div class="loading-layer" style="width:calc(100% - 30px )"> <div style="padding-top:80px"> <img   src="{OSSURL}public/web/images/blue_four_round.png"  alt=""> </div> </div>
+			<div id="kcanalysisTable" class="panel panel-default" style="position: relative;min-height:396px;box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13);transition: all .3s ease-in-out;">
+			{if GetSchoolType($schoolid,$weid)}
+				<div class="chart-title ng-binding" style="padding: 4px 10px;height: 40px;"><i class="middle-time-change">今日</i>各课程类型签到情况</div>
+				<div style="min-height: 357px;">
+					<!-- ngIf: charts.gradeAttendance.loading -->
+					<div class="slimScrollDiv" style="position: relative; width: auto; height: 338px;">
+						<div style="overflow-y: scroll;width: auto; height: 335px;">
+							
+						</div>
+					</div>
+				</div>
+			{else}
+				<div class="chart-title ng-binding" style="padding: 4px 10px;"><i class="middle-time-change">今日</i>各年级出勤情况</div>
+				<div style="min-height: 357px;">
+					<!-- ngIf: charts.gradeAttendance.loading -->
+					<div class="slimScrollDiv" style="position: relative; width: auto; height: 338px;">
+						<div style="overflow-y: scroll;width: auto; height: 335px;">
+							<!-- <div class="loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png" alt=""> </div> </div> -->
+						</div>
+					</div>
+				</div>
+			{/if}
+			</div>
+		</div>
+	</div>
+
+{if keep_mutikc() && $_W['schooltype']}
+	<style>
+		#MidTwo2Three .col-sm-6{width:33%};
+		.RemindTitle{width:100%;height: 30px;border-bottom: 2px solid rgb(218,218,218);line-height: 30px;margin-bottom: 5px}
+		.RemindDiv{font-weight: bold;float: left;}
+		.RemindBody{width:100%;height: calc(100% - 35px);overflow: auto;}
+		.RemindCell{width:100%;height: 30px;line-height: 30px;display: flex;flex-direction: row;border-bottom: 1px solid rgb(218,218,218);}
+		.Cell-info.KcName{overflow: hidden;text-overflow: ellipsis;white-space: nowrap}
+	</style>
+{/if}
+	<div class="clearfix" id="MidTwo2Three">
+		<div class="row">
+            <div class="col-sm-6" >
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5><i class="middle-time-change"></i>交互功能使用率</h5>
+                    </div>
+                    <div class="ibox-content" style="position: relative;">
+							<div class="loading-layer" style="height: calc(100% - 35px);width:calc(100% - 40px);"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"  alt=""> </div> </div>
+                        <div class="echarts" id="echarts-pie-chart-b"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5> <i class="middle-time-change"></i> 支付方式比例图</h5>
+                    </div>
+                    <div class="ibox-content" style="position: relative;">
+							<div class="loading-layer" style="height: calc(100% - 35px);width:calc(100% - 40px);"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"  alt=""> </div> </div>
+						
+
+                        <div class="echarts" id="echarts-pie-chart-a"></div>
+                    </div>
+                </div>
+			</div>
+			
+			{if keep_mutikc() && $_W['schooltype']}
+ 
+			<div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>剩余课时预警</h5>
+                    </div>
+                    <div class="ibox-content">
+						<div class="echarts"  >
+							<div class="RemindTitle">
+								<div class="RemindDiv" style="width:15%;">学生</div>
+								<div class="RemindDiv" style="width:20%;">联系方式</div>
+								<div class="RemindDiv" style="width:30%;">课程</div>
+								<div class="RemindDiv" style="width:15%;">剩余课时</div>
+								<div class="RemindDiv" style="width:20%;">上次签到时间</div>
+							</div>
+							<div class="RemindBody">
+								{loop $remindlist $row}
+								<div class="RemindCell">
+									<div class="Cell-info" style="width:15%;">{$row['s_name']}</div>
+									<div class="Cell-info" style="width:20%;">{$row['mobile']}</div>
+									<div class="Cell-info KcName" style="width:30%;">{$row['kcname']}</div>
+									<div class="Cell-info" style="width:15%;text-align: center">{$row['restnum']}</div>
+									<div class="Cell-info" style="width:20%;">{$row['nearkcsign']}</div>
+								</div>
+								{/loop}
+								<div style="width:100%;text-align: center;margin-top: 20px;height: 20px" >
+									<a href="{php echo $this->createWebUrl('kswaring', array('op' => 'display', 'schoolid' => $schoolid))}">点击查看更多</a>
+								</div>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+			{/if}
+
+      </div>
+	</div>
+	{if $logo['is_cost'] == 1 || $_W['isfounder'] || $_W['role'] == 'owner' || $_W['role'] == 'vice_founder'}
+	<div class="col-sm-12" style="box-shadow: -8px 12px 18px 0 rgba(25, 42, 70, 0.13);transition: all .3s ease-in-out;padding-left:0px">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="table-responsive">
+					<table class="table table-hover table-bordered table-text-center">
+						<thead class="navbar-inner">
+							<tr>
+								<th width="300">时间</th>
+								<th>营业额</th>
+								<th>订单数</th>
+								<th>在线支付</th>
+								<th>现金支付</th>
+								<th>查看详情</th>
+							</tr>
+						</thead>
+						<tbody>
+							{loop $return $k $dca}
+							<tr>
+								<th>{$k}</th>
+								<td>{php echo sprintf('%.2f', $dca['cose']);} 元</td>
+								<td>{php echo intval($dca['count']);} 单</td>
+								<td>{php echo sprintf('%.2f', $dca['1']);} 元</td>
+								<td>{php echo sprintf('%.2f', $dca['2']);} 元</td>
+								<td>
+									<a href="{php echo $this->createWebUrl('payall', array('op' => 'display', 'schoolid' => $schoolid));}" class="btn btn-success" target="_blank">详情</a>
+								</td>
+							</tr>
+							{/loop}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	{/if}
+</div>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.flot.js?v=2.1.4"></script>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/echarts-all.js?v=2.1.4"></script>	
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>	
+<script type="text/javascript">
+{if $schooltypes}loadmoal();{/if}
+function loadmoal(){
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'checkverstypeforhtml','schoolid'=>$schoolid))}",function(data){
+		if(data.result){
+			$("#Modal1").html(data.log);
+		}else{
+			//alert(data.msg);
+		}
+	},'json');
+}
+{if $nowdatatype}
+	$('#Modal1').modal('toggle');
+{/if}
+
+
+function change_dt_box(elm){
+	if($(elm).hasClass("down")){
+		$(elm).removeClass('down')
+		$(elm).addClass('up')
+		$(elm).children().children('.fa').removeClass("fa-plus-circle")
+		$(elm).children().children('.fa').addClass("fa-minus-circle")
+		$(elm).children('.text').text("收起动态列表")
+		$('.dt_boxs').slideDown(300)
+	}else{
+		$(elm).removeClass('up')
+		$(elm).addClass('down')
+		$(elm).children().children('.fa').removeClass("fa-minus-circle")
+		$(elm).children().children('.fa').addClass("fa-plus-circle")
+		$(elm).children('.text').text("展开动态列表")
+		$('.dt_boxs').slideUp(300)
+	}
+}
+function glms(){
+	$("#glmsmask").show();
+	$("#pxmsmask").hide();
+	$("#nowms").val(2);
+}
+
+function pxms(){
+	$("#pxmsmask").show();
+	$("#glmsmask").hide();
+	$("#nowms").val(1)
+}
+function showmsmodel(){
+	$('#Modal1').modal('toggle');
+	$('#canlbtn').show();
+}
+
+$(function(){
+	GetMiddleData()
+	
+})
+
+ 
+function GetMiddleData(IsDefault = true){
+ 
+	let start = '',end = '';
+ 
+	if(IsDefault === false){
+		start = $('input[name=addtime\\[start\\]]').val(),
+	    end   = $('input[name=addtime\\[end\\]]').val()
+		 
+		
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('start', array('op' => 'GetMiddleData'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {
+			start: start,
+			end:end,
+			schoolid: '{$schoolid}',
+			weid:'{$weid}'
+		},
+		success: function (data) {
+			console.log(data)
+			let getData = data.data;
+			for(let i in getData){
+				$(`#${i}`).html('0')
+				move(`${i}`,`${getData[i]}`,'');	
+			}
+			if(start != '' && start != '1970-01-01'){
+				$('.middle-time-change').text(`${start} 至 ${end}`)
+
+			}
+		 
+			GetKcAnalysisData()
+			GetChartDataDefault('b');
+			GetChartDataDefault('a');
+			AddKcBarEnter()
+			 
+
+		},
+		
+	});
+}
+
+
+
+function GetKcAnalysisData(){
+	$('#kcanalysisTable').prev().show();
+	let start = '',end = '';
+	 
+		start =  $('input[name=addtime\\[start\\]]').val(),
+	    end   = $('input[name=addtime\\[end\\]]').val()
+		//console.log(start,end)
+	 
+	$.ajax({
+		url: "{php echo $this->createWebUrl('start', array('op' => 'GetKcAnalysis'), true)}",
+		type: "post",
+		dataType: "html",
+		data: {
+			start: start,
+			end:end,
+			schoolid: '{$schoolid}',
+			weid:'{$weid}'
+		},
+		success: function (data) {
+			$('#kcanalysisTable').prev().hide();
+
+			$('#kcanalysisTable').html(data)	
+		}
+	});
+}
+
+
+function tijiao(){
+	var nowms = $("#nowms").val();
+	if(!nowms || nowms == null || nowms == ''){
+		alert('请选择本校模式,温馨提示:幼儿园或早教机构请选择公立模式');
+	}else{
+		$.post($("#changemsurl").val(),{nowms: nowms,wxnam:"{$_W['uniaccount']['name']}",site:"{$_W['siteroot']}",weid:"{$weid}"},function(data){
+			if(data.result){
+				//alert(data.msg);
+			}else{
+				//alert(data.msg);
+			}
+			location.reload();
+		},'json');
+	}
+}
+
+
+icon_replace($(".neirong"));
+
+function icon_replace(content_box) {
+    var face_map_url = "{OSSURL}public/mobile/img/face/";
+    $(content_box).each(function () {
+        //替换表情
+        if (typeof ($(this).html()) != 'undefined') {
+            var desc = $(this).html().replace(/\[([^\]]+)\]/g, function (a, b) {
+                return "<img class='face_icon' style='width: 20px;' src='" + face_map_url + objMap[b] + ".gif'>";
+            });
+            $(this).html(desc);
+        }
+    })
+}
+
+{if $schooltype}
+	move('todayStu','{$todayStu}','人');
+	move('todayBuy','{$todayBuy}','人');
+	move('todaySign','{$todaySign}','人');
+	move('todayKc','{$todayKc}','节');
+{else}
+	move('baom','{$baom}','人');
+	move('bjqz','{$bjqz}','条');
+	move('checklog','{$checklog}','次');
+{/if}
+
+
+function move(div,nub,dw){
+	let oSpan=document.getElementById(div);
+	if(oSpan.innerHTML != undefined ){
+		let d= nub === 'null' ? 0 : nub ;//跳动到最后的数字
+		let s= parseInt(oSpan.innerHTML);//起始起始值 一般是 0 或其他
+		let time=1000;  //所用时间 1000毫秒（ 在1秒内 数值增加到d）;
+		let outTime=0;  //所消耗的时间
+		let interTime=30;
+		let timer = setInterval(function(){
+			outTime+=interTime;
+			if(outTime < time){
+				oSpan.innerHTML= parseInt(d/time*outTime)+dw;
+			}else{
+				oSpan.innerHTML=d+dw;
+				clearInterval(timer)
+			}
+		},interTime);
+	}
+	return
+	
+}
+
+
+  
+
+
+function GetChartDataDefault(type,trans_params = {},IsDfFunc = false,callback){
+	$(`#echarts-pie-chart-${type}`).prev().show()
+	var schoolid = "{$schoolid}";
+	var url = "{php echo $this->createWebUrl('start');}";
+	var stat_params = {
+			'start': $('#list input[name="addtime[start]"]').val(),
+			'end': $('#list input[name="addtime[end]"]').val(),
+			'op' : type,
+			'schoolid' : schoolid
+		};
+
+	let params = $.extend(false, {}, trans_params, stat_params);
+	$.post(url, params, function(data){
+		if(IsDfFunc === false){
+			var data = $.parseJSON(data);
+			var ds = PieOption[type];
+			ds.series[0].data = data.message.message;
+			var pieChart = echarts.init($(`#echarts-pie-chart-${type}`)[0]);
+			pieChart.setOption(ds);
+			$(window).resize(pieChart.resize);
+		}else{
+			callback(data,type);
+		}
+ 		$(`#echarts-pie-chart-${type}`).prev().hide()
+	
+	});
+}
+
+ 
+ 
+
+$(document).ready(function() {
+	{if GetSchoolType($schoolid,$weid)}
+		$("#ctype_id").change(function() {
+			changeKecheng();
+			
+		});
+		$("#kc_id").change(function() {
+			var kc_id = $("#kc_id option:selected").attr('value');
+			var type = 1;
+			addbarKc(kc_id, type, function() {
+			});
+		});
+		changeKecheng();
+	{else}
+		$("#xq_id").change(function() {
+		
+			var type = 1;
+			addbar();
+		});
+	{/if}	
+	
+
+	// 晨检数据
+	{if keep_MC() && $schoolset['is_mc'] == 1}
+		GetMcData()
+	{/if}
+});
+
+function changeKecheng() {
+	//alert(cityId);
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	//获取班次
+	var ctypeId = $('#ctype_id').val();
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getkclist'))}", {'ctypeId': ctypeId, 'schoolid': schoolid}, function(data) {
+		data = JSON.parse(data);
+		classlevel = data.kclist;
+		var htmls = `<option value="0">请选择课程</option>`;
+		if (classlevel != '') {
+			for (var i in classlevel) {
+				htmls += '<option value="' + classlevel[i].id + '">' + classlevel[i].name + '</option>';
+			}
+		}
+		$('#kc_id').html(htmls);	
+		addbarKc();		
+	});
+}
+
+
+
+
+
+//按照课程进行统计
+function addbarKc() {
+	let kcid = $('#kc_id').val();
+	GetChartDataDefault('d',{kcid:kcid},true,function(data, type){
+		let datas = $.parseJSON(data);
+		console.log(datas);
+		let ds = PieOption[type];
+		ds.xAxis[0].data = datas.allthisbj;
+		ds.series[0].data = datas.ksnum;
+		ds.series[1].data = datas.dosign;
+		ds.series[2].data = datas.qingjia;
+		ds.series[3].data = datas.notsign;
+		ds.series[4].data = datas.newPay;
+		ds.series[5].data = datas.newcose;
+		console.log(ds);
+		let myChart = echarts.init($('#echarts-pie-chart-d')[0]);
+		myChart.setOption(ds);
+		$(window).resize(myChart.resize);
+	});
+}
+	
+function addbar() {
+	let njid = $("#xq_id option:selected").attr('value');
+	GetChartDataDefault('c',{njid:njid},true,function(data, type){
+		let datas = $.parseJSON(data);
+		let ds = PieOption[type];
+		ds.xAxis [0].data = datas.allthisbj;
+		ds.xAxis [1].data = datas.allthisbj;
+		ds.series[0].data = datas.bjcqzs;
+		ds.series[1].data = datas.bjkqbl;
+		var myChart = echarts.init($('#echarts-pie-chart-c')[0]);
+		myChart.setOption(ds);
+		console.log(myChart);
+		$(window).resize(myChart.resize);
+
+	});
+}
+
+function GetMcData() {
+	GetChartDataDefault('mc',{njid:135},true,function(data, type){
+		let datas = $.parseJSON(data);
+		let ds = PieOption[type];
+		ds.xAxis [0].data = datas.leixing;
+		ds.series[0].data = datas.normal;
+		ds.series[1].data = datas.nonormal;
+		ds.series[2].data = datas.noexamine;
+		var myChart = echarts.init($('#echarts-pie-chart-mc')[0]);
+		myChart.setOption(ds);
+		$(window).resize(myChart.resize);
+
+	});
+}
+
+function AddKcBarEnter(){
+	{if GetSchoolType($schoolid,$weid)}
+		addbarKc();
+	{else}
+		addbar();
+	{/if}
+}
+
+function sel_change(obj){
+	let schoolid = `{$schoolid}`
+	let nj_id = $(obj).val();
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'GetBjMcList'))}", {'nj_id': nj_id, 'schoolid': schoolid}, function(data) {
+		data = JSON.parse(data);
+		bjmclist = data.data;
+		var htmls = '';
+		if (bjmclist != '') {
+			for (var i in bjmclist) {
+				htmls += `<tr>
+							<td>
+								<span class="td_tnam" style="width:100%;">${bjmclist[i]['sname']}</span>
+							</td>
+							<td>
+								${bjmclist[i]['mcsum']}人
+							</td>
+							<td>
+								${bjmclist[i]['nomcsum']}人
+							</td>
+						</tr>`;
+			}
+		}
+		$('#bjmclist').html(htmls);	
+	});
+}
+</script>
+{/if}
+{template 'public/footer'}

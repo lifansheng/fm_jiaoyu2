@@ -1,0 +1,317 @@
+<!--正文导航-->
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta content="telephone=no" name="format-detection" /> 
+<meta name="google-site-verification" content="DVVM1p1HEm8vE1wVOQ9UjcKP--pNAsg_pleTU5TkFaM">
+	<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+	{php echo register_jssdks();}
+	{php include $this->template('port');}
+<style>
+	body > a:first-child,body > a:first-child img{ width: 0px !important; height: 0px !important; overflow: hidden; position: absolute}
+	body{padding-bottom: 0 !important;}
+</style>
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<title>{$school['title']}</title>
+<link rel="stylesheet" href="{OSSURL}public/mobile/css/resetnew.css">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link rel="stylesheet" href="{MODULE_URL}public/mobile/css/newCourseDetail.css">
+{php echo register_jssdks();}	
+<script src="{MODULE_URL}public/mobile/js/jquery.js"></script>
+<style type="text/css" media="screen" id="test">
+	        	.gw_num{
+		        	padding-right:.8em;
+	        	    margin-right: 10%;
+				    
+				    float: right;
+		        	border: 1px solid #dbdbdb;
+		        	width: 51%;
+		        	line-height: 26px;
+		        	overflow: hidden;
+		        	display:inline
+		        	
+		        	}
+		        	
+				.gw_num em{
+					display: block;
+					height: 26px;
+					width: 26px;
+					float: left;
+					color: #7A7979;
+					border-right: 1px solid #dbdbdb;
+					text-align: center;
+					cursor: pointer;
+					}
+				.gw_num .num1{
+					display: block;
+					float: left;
+					text-align: center;
+					width: 52px;
+					height:26px;
+					font-style: normal;
+					font-size: 14px;
+					line-height: 26px;
+					border: 0;
+					}
+				.gw_num em.jia{
+					float: right;
+					border-right: 0;
+					border-left: 1px solid #dbdbdb;
+					}
+	        </style>
+</head>
+<body>
+	<div id="BlackBg" class="BlackBg"></div>
+<div id="titlebar" class="header mainColor">
+	<div class="l"><a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a></div>
+	<div class="m"><a><span style="font-size: 18px">课程详情</span></a></div>
+	<div id="headerMenu" class="r">
+		  
+		</div>	
+</div>
+<div class="top_head_blank" style="height:50px" id="titlebar_bg"></div>
+    <div id="wrap" class="count_inf">
+        <dl id="main">
+            <dt class="count_tit">{$item['name']}</dt>
+            <dd class="count_inf">
+                <div class="teacher">
+                    <div style=" background-image:url({if !empty($teacher_main['thumb'])}{php echo tomedia($teacher_main['thumb']);}{else}{php echo tomedia($school['tpic']);}{/if})"></div>
+                    <p>{$teacher_main['tname']}</p>
+                </div>
+                <ul>
+                    <li><label>日期：</label>
+                    {php echo date('Y/m/d',$item['start'])}-{php echo date('Y/m/d',$item['end'])}
+					{if $item['isSign'] == 1 && empty($_GPC['notOwner']) }
+                    <a class="outline_link" onclick="startsign()" id="kcsign">签到</a>
+					{/if}
+                    </li>
+                    <li><label>科目：</label>{if !empty($item['xq_id'])}{$category[$item['xq_id']]['sname']}/{$category[$item['bj_id']]['sname']}/{$category[$item['km_id']]['sname']}{else}{$category[$item['km_id']]['sname']}{/if}</li>
+                    <li><label>教室：</label>{$item['adrr']}</li>
+                    <li><label>授课教师：</label>{$tname_array_end}</li>
+                </ul>            
+                <div style="clear:both"></div>
+            </dd> 	
+        </dl>
+        <dl class="count_outline">
+            <dt><a href="{php echo $this->createMobileUrl('kcdg', array('id' => $item['id'],'schoolid' => $schoolid), true)}" >课程大纲 <span class="outline_link" id="syllabus">查看详情</span></a></dt>
+        </dl>
+	</div>	
+	{if $item['OldOrNew'] == 0 && $item['isSign'] == 0}
+	<div id="wrap" class="user_inf">
+        <a class="help" href="javascript:void(0)"><span style="background-color:#F0AD4E;">&nbsp;&nbsp;&nbsp;&nbsp;</span>有内容&nbsp;<span style="background-color:#00b8ff;">&nbsp;&nbsp;&nbsp;&nbsp;</span>已授课程&nbsp;<span style="background-color:#999;">&nbsp;&nbsp;&nbsp;&nbsp;</span>未开始</a>
+    </div>
+	<div id="wrap" class="count_inf">
+        <dl class="counts">
+            <dt>授课记录</dt>
+            <div>
+				{loop $list $item1}
+		      	<dd{if $item1['isxiangqing'] == 1}{if $item1['date'] > TIMESTAMP} {else} class="click1" onclick="touch({$item1['id']})"{/if}{else}{if $item1['date'] > TIMESTAMP}{else} class="click" onclick="touch({$item1['id']})"{/if}{/if}>第<span>{$item1['nub']}</span>课<br/>{php echo date('m月d',$item1['date'])}</br>{if !empty($category[$item1['sd_id']])}{$category[$item1['sd_id']]['sname']}{/if}</dd> 
+				{/loop}
+          		<div style="clear:both"></div>
+            </div>
+        </dl>
+    </div>
+    {elseif $item['OldOrNew'] ==0 && $item['isSign'] == 1}
+	    {if $_GPC['notOwner'] =='notOwner'}
+		<div id="wrap" class="user_inf">
+	        <a class="help" href="javascript:void(0)"><span style="background-color:#F0AD4E;">&nbsp;&nbsp;&nbsp;&nbsp;</span>有内容&nbsp;<span style="background-color:#00b8ff;">&nbsp;&nbsp;&nbsp;&nbsp;</span>已授课程&nbsp;<span style="background-color:#999;">&nbsp;&nbsp;&nbsp;&nbsp;</span>未开始</a>
+	    </div>
+		<div id="wrap" class="count_inf">
+	        <dl class="counts">
+	            <dt>授课记录</dt>
+	            <div>
+					{loop $list $item1}
+			      	<dd{if $item1['isxiangqing'] == 1}{if $item1['date'] > TIMESTAMP} {else} class="click1" onclick="touch_check({$item1['id']})"{/if}{else}{if $item1['date'] > TIMESTAMP}{else} class="click" onclick="touch_check({$item1['id']})"{/if}{/if}>第<span>{$item1['nub']}</span>课<br/>{php echo date('m月d',$item1['date'])}</br>{if !empty($category[$item1['sd_id']])}{$category[$item1['sd_id']]['sname']}{/if}</dd> 
+					{/loop}
+	          		<div style="clear:both"></div>
+	            </div>
+	        </dl>
+	    </div>
+	    {elseif empty($_GPC['notOwner'])}
+		<div id="wrap" class="user_inf">
+	        <a class="help" href="javascript:void(0)"><span style="background-color:#F0AD4E;">&nbsp;&nbsp;&nbsp;&nbsp;</span>他人签到&nbsp;<span style="background-color:#00b8ff;">&nbsp;&nbsp;&nbsp;&nbsp;</span>自己签到&nbsp;<span style="background-color:red;">&nbsp;&nbsp;&nbsp;&nbsp;</span>无人签到&nbsp;<span style="background-color:#999;">&nbsp;&nbsp;&nbsp;&nbsp;</span>未开始</a>
+	    </div>
+		<div id="wrap" class="count_inf">
+	        <dl class="counts">
+	            <dt>授课记录</dt>
+	            <div>
+					{loop $list $item1}
+			      	{if $item1['date'] < TIMESTAMP} 
+			      		{if $item1['checksign'] == 1}
+				      	<dd class="click" onclick="touch({$item1['id']})">
+				      	{elseif $item1['checksign'] == 2}
+				      	 <dd class="click1">
+				      	 {elseif empty($item1['checksign'])}
+				      	 <dd  class="click" style="background-color: red;" >
+				      	 {/if}
+			      	 {else}
+				      	 <dd>
+			      	  {/if}
+			      	  第<span>{$item1['nub']}</span>课<br/>{php echo date('m月d',$item1['date'])}</br>{if !empty($category[$item1['sd_id']])}{$category[$item1['sd_id']]['sname']}{/if}</dd> 
+					{/loop}
+	          		<div style="clear:both"></div>
+	            </div>
+	        </dl>
+	    </div>
+	    {/if}
+    {elseif $item['OldOrNew'] == 1 && $item['isSign'] == 1}
+	    {if $_GPC['notOwner'] =='notOwner'}
+	    <div id="wrap" class="count_inf">
+	        <dl class="counts">
+	            <dt>授课记录</dt>
+	            <div>
+					{loop $kslist $key $item1}
+			      	<dd class="click" onclick="touch_New_check({$item1['createtime']})">
+		      	  	第<span>{php echo $key+1}</span>课<br/>{php echo date('m月d日',$item1['createtime'])}</br></dd> 
+					{/loop}
+	          		<div style="clear:both"></div>
+	            </div>
+	        </dl>
+	    </div>
+	   {elseif empty($_GPC['notOwner'])}
+		<div id="wrap" class="user_inf">
+	        <a class="help" href="javascript:void(0)"><span style="background-color:#F0AD4E;">&nbsp;&nbsp;&nbsp;&nbsp;</span>他人签到&nbsp;<span style="background-color:#00b8ff;">&nbsp;&nbsp;&nbsp;&nbsp;</span>自己签到</a>
+	    </div>
+
+	    <div id="wrap" class="count_inf">
+	        <dl class="counts">
+	            <dt>授课记录</dt>
+	            <div>
+					{loop $kslist $key $item1}
+			      		{if $item1['tid'] == $it['tid']}
+				      	<dd class="click" onclick="touch_New({$item1['createtime']})">
+				      	{elseif $item1['tid'] != $it['tid']}
+				      	 <dd class="click1" >
+			      	  	{/if}
+		      	  	第<span>{php echo $key+1}</span>课<br/>{php echo date('m月d日',$item1['createtime'])}</br></dd> 
+					{/loop}
+	          		<div style="clear:both"></div>
+	            </div>
+	        </dl>
+	    </div>
+	    {/if}
+    {/if}
+	<input id="userid" name="userid" type="hidden" value="{$it['id']}">
+	<input id="ReNum" name="ReNum" type="hidden" value="{$item['ReNum']}">
+		<input id="RePrice" name="RePrice" type="hidden" value="{$item['RePrice']}">
+   
+	
+<script>
+	function closed(){
+			$("#qdqr").hide();
+		};
+		var OldOrNew = {$item['OldOrNew']};
+	function startsign(){
+		var s_isSign = {$item['isSign']};
+		var OldOrNew = {$item['OldOrNew']};
+		{if !empty($hasSign)}
+			alert("今日课程已有其他老师签到");
+			return;
+		{elseif $myhassign['status'] == 1}
+			alert("您已签到今日课程,请等待确认");
+			return;
+		{elseif $myhassign['status'] ==2}
+			alert("您已签到今日课程,请勿重复签到");
+			return;
+		{else}
+		if(OldOrNew == 1){
+			//直接签到
+			$("#qdqr").show();
+		}else if(OldOrNew == 0){
+			{if !empty($isHaveKs) && $isHaveKs['tid'] == $it['tid']}
+				//有课时
+				$("#qdqr").show();
+			{elseif !empty($isHaveKs) && $isHaveKs['tid'] != $it['tid']}
+				alert("您该课程今日无课时");
+				{else}
+				//无课时
+				alert("该课程今日无课时");
+			{/if}
+		}
+		{/if}		
+	}
+
+	function qd_ajax(){
+		if(OldOrNew == 1){
+			var data={
+				weid: {$weid},
+				schoolid:{$schoolid},
+				OldOrNew :1,
+				kcid: {$id},
+				tid:{$it['tid']},
+				status:1
+			};
+			kcqd_ajax_end(data);
+		}else if(OldOrNew == 0){
+			{if !empty($isHaveKs)}
+				//有课时
+				var data={
+					weid: {$weid},
+					schoolid:{$schoolid},
+					OldOrNew :0,
+					kcid: {$id},
+					ksid:{$isHaveKs['id']},
+					tid:{$it['tid']},
+					//signtime:{php echo time()},
+					status:1
+				};
+				//直接签到
+				kcqd_ajax_end(data);
+			{else}
+				//无课时
+				alert("该课程今日无课时");
+			{/if}
+		}
+	}
+
+	function kcqd_ajax_end(datas){
+		$.ajax({
+				url: "{php echo $this->createMobileUrl('kcajax', array('op' => 'tkcsign'), true)}",
+				type: "post",
+				dataType: "json",
+				data: datas,
+				success: function (data_s) {
+					console.log(data_s);
+					jTips(data_s.msg);
+					location.reload();
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown){
+					alert(textStatus);
+				}
+			});
+	}
+
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+function touch(itemid) {
+	var id = itemid;
+	window.location.href = "{php echo $this->createMobileurl('txsbqkc', array('schoolid' => $schoolid,'userid'=>$it['id'],'kcid'=>$item['id']), true)}" + '&ksid=' + id;
+}
+function touch_New(time) {
+	window.location.href = "{php echo $this->createMobileurl('txsbqkc', array('schoolid' => $schoolid,'userid'=>$it['id'],'kcid'=>$item['id']), true)}" + '&time=' + time;
+}
+function touch_check(itemid) {
+	var id = itemid;
+	window.location.href = "{php echo $this->createMobileurl('txsbqkc', array('schoolid' => $schoolid,'userid'=>$it['id'],'kcid'=>$item['id'],'notOwner'=>'notOwner'), true)}" + '&ksid=' + id;
+}
+function touch_New_check(time) {
+	window.location.href = "{php echo $this->createMobileurl('txsbqkc', array('schoolid' => $schoolid,'userid'=>$it['id'],'kcid'=>$item['id'],'notOwner'=>'notOwner'), true)}" + '&time=' + time;
+}
+
+</script>
+	{php include $this->template('newfooter');}	   
+</body>
+</html>

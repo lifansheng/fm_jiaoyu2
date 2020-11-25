@@ -1,0 +1,187 @@
+<style>
+.comment .topss { font-size: 13px; color: #374F5E; border-bottom: 1px solid #cbcdd0; padding: 20px 0; } .comment { margin: 10px auto 0; padding: 15px; } .comment .topss i {width: 50px; height: 15px; display: block; float: right; font-size: 8px; color: #868383; line-height: 46px; text-align: center; margin-top: 4px;background: url("{MODULE_URL}public/mobile/img/comment.png") no-repeat center center / 15px 15px; } .default { padding-top: 55px; text-align: center; font-size: 12px; color: #b3c5dd; position: relative; } .default img { width: 280px; height: 280px; } .default div { width: 100%; text-align: center; position: absolute; left: 0; bottom: 15px; } .comment_lsit { padding-top: 20px; } .comment_item { padding-left: 50px; position: relative; min-height: 40px; margin: 0 0 40px; font-size: 12px; } .comment_item img { width: 40px; height: 40px; position: absolute; left: 0; top: 10px; border-radius: 40px; } .comment_item text { display: block; } .comment_item .n { color: #4C91FF; margin-bottom: 10px; } .comment_item .c { font-size: 13px; color: #374F5E; margin-bottom: 9px; } .comment_item .t { color: #91A0B2; } .comment_item .reply { background: #FAFBFC; padding: 12px; margin-top: 20px;border-radius: 7px;} .comment_tips { color: #AEC1D9; font-size: 11px; text-align: center; margin-bottom: 30px; } .comment_tips i { display: inline-block; margin: 0 20px; } .content{width:90%;margin:0 5%;color:#333333;line-height:30px;padding-bottom:20px;word-break:break-all;word-wrap:break-word;} .content p{margin:0 !important;} .content span{margin-bottom:10px;} .content img{max-width:100%;margin:5px 0;} .content .nodata{margin:0 auto;/* width:70%; */background:#eee;border:1px solid #aaa;padding:10px;border-radius:5px;} .content .nodata span{font-size:14px;color:#999;display:block;width:100%;margin:0;} .content .nodata a{font-size:14px;color:red;}.audio_div{width:100%;margin-top: 10px;display:none;}
+.popUpBox5{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102;}.btnCancelsubTy { width: 100px; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; background: #ff9f22; margin-left: 30%; margin-right: 10px; } 
+.popUpBoxOut { animation-name: popFadeOut; -webkit-animation-name: popFadeOut; -ms-animation-name: popFadeOut; -moz-animation-name: popFadeOut; -o-animation-name: popFadeOut; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; } @keyframes popFadeIn { 0% { opacity: 0; }  100% { opacity: 1; } }  @keyframes popFadeOut { 0% { opacity: 1; }  100% { opacity: 0; } } .trackMatte { position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: black; opacity: .5; }  .popContentBox { position: absolute; width: 80%; margin-left: 10%; max-height: 80%; top: 49%; transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }  .poptitle { width: 100%; font-size: 16px; color: #333333; text-align: center; padding: 5px 0; }  .popinfo { width: 100%; font-size: 13px; color: #333333; text-align: center; padding: 5px 0; } .popNotifyDescribe { background: #f0f0f2; border-radius: 5px; }  .popNotifyDescribe span { text-align:center; border-radius: 5px; padding: 12px; color: #666666; font-size: 12px; display: inline-block; }  .sectionContBox { margin: 10px; } .btnBox { display: -webkit-box; /* 老版本语法: Safari,  iOS, Android browser, older WebKit browsers.  */ display: -moz-box; /* 老版本语法: Firefox (buggy) */ display: -ms-flexbox; /* 混合版本语法: IE 10 */ display: -webkit-flex; /* 新版本语法： Chrome 21+ */ display: flex; /* 新版本语法： Opera 12.1, Firefox 22+ */ margin: 7px 0; }  .btnPass, .btnCancel { width: 100px; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; } .btnPass { background: #06c1ae; margin-left: 12px;  } .btnCancel { background: #ff9f22; margin-left: auto; margin-right: 10px; } .notifyCreateTime{ font-size: 12px; color: #a7a5a5; } .form-line{ margin:10px } .stu_info_text{ font-size: 13px; width: 90%; height: 82px; }
+.huifbtn{position: absolute;right: 0;font-size: 12px;color: #1f57dc;}
+.shanchu{position: absolute;font-size: 12px;margin-left: 6px;color: red;}
+.form-order>.form-line{ margin-bottom:5px } .input-wrapper { padding: 2px 2px; border: 1px solid #d5d7d9; border-radius: 2px; } .input-wrapper>input, .input-wrapper>textarea { width: 100%; outline: 0; box-sizing: border-box; border: none; font-size: 12px; resize: none; display: block; }
+</style>
+<div class="comment block">
+	<div class="topss">
+		<text class="liuyan_count">评论留言</text>
+		<i class="send_msg">写留言</i>
+	</div>
+	<div class="comment_lsit">
+		<div class="comment_tips">
+			<i>-</i>点击评论区右上角写留言，写下你的评论吧<i>-</i>
+		</div>
+	</div>
+	<div class="default">
+		<image src="{MODULE_URL}public/mobile/img/comment_bg.png"></image>
+		<div>暂无评论留言，写下你的精彩评论吧!</div>
+	</div>
+</div>
+<!--课程留言-->
+<div class="popUpBox5" style="display: none">
+	<div class="trackMatte"></div>
+	<input type="hidden" id="commentid" value="0">
+	<div class="popContentBox">
+		<div class="poptitle">留言评论<p class="notifyCreateTime">请输入您的评论</p></div>
+		<div class="sectionContBox">
+			<div class="mb20 phone_wrap">
+				<div class="over_hidden h35">
+					<div class="form-line">
+						<div class="input-wrapper">
+							<textarea id="liuyan" class="stu_info_text" placeholder="请输入留言,50个字以内"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="btnBox">
+				<div class="btnPass mb_marsk" onclick="sub_ly();">提交</div>
+				<div class="btnCancelsubTy mb_marsk">关闭</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+get_notice_commont();
+$("body").css("position", "");
+function get_notice_commont(){
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('dongtaiajax',array('op'=>'get_notice_commont'))}",
+		data: {
+			weid:"{$weid}",
+			schoolid: "{$schoolid}",
+			userid:"{$it['id']}",
+			noticeid:"{$leave['id']}",
+		},
+		type: "POST",
+		dataType: "json",
+		success: function (data) {
+			if (data.result) {
+				$('.comment_lsit').show();
+				$('.default').hide();
+				let html = "";
+				let datas = data.comment
+				if(datas.length > 0){
+					for (var i in datas) {
+						var huifu = '';
+						var reply = '';
+						var shanchu = '';
+						var shanchu2 = '';
+						var replys = datas[i].reply
+						if(replys.length > 0){
+							for (var k in replys) {
+								if(replys[k].is_my){
+									var shanchu2 = '<a class="shanchu" onclick="delete_rep('+replys[k].id+',this)">删除</a>';
+								}
+								reply += '<div class="reply"><text class="n">'+replys[k].username +'回复'+shanchu2+'</text><text class="c">'+replys[k].comment +'</text><text class="t">'+replys[k].time +'</text></div>';
+							}
+						}
+						if(data.is_owner || datas[i].is_my){
+							if(data.is_owner){
+								var shanchu = '<a class="shanchu" onclick="delete_rep('+datas[i].id+',this)">删除</a>';
+							}
+							if(datas[i].is_my){
+								var shanchu = '<a class="shanchu" onclick="delete_rep('+datas[i].id+',this)">删除</a>';
+							}
+							if(data.is_owner && datas[i].is_my){
+								var huifu = '<a class="huifbtn" onclick="huifbtn('+datas[i].id+')">回复Ta</a>';
+								var shanchu = '<a class="shanchu" onclick="delete_rep('+datas[i].id+',this)">删除</a>';
+							}
+						}
+						html += '<div class="comment_item" id="'+datas[i].id+'">'+huifu+'<img src="' + datas[i].icon + '"/><text class="n">' + datas[i].username + ''+shanchu+'</text><text class="c">' + datas[i].comment + '</text><text class="t">' + datas[i].time + '</text>'+reply+'</div>';
+					}
+				}
+				$('.liuyan_count').text('评论留言('+data.count+')')
+				$('.comment_lsit').prepend(html);
+			} else {
+				$('.comment').hide();
+				$('.comment_lsit').hide();
+				$('.default').show();
+			}
+		},
+		error: function () {
+			$('.comment_lsit').hide();
+			$('.default').hide();
+			jTips("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+		},
+	});
+}
+function sub_ly(){
+	let commentid = $('#commentid').val()
+	let comment = $('#liuyan').val()
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('dongtaiajax',array('op'=>'post_notice_commont'))}",
+		data: {
+			weid:"{$weid}",
+			schoolid: "{$schoolid}",
+			userid:"{$it['id']}",
+			noticeid:"{$leave['id']}",
+			comment:comment,
+			commentid:commentid,
+		},
+		type: "POST",
+		dataType: "json",
+		success: function (data) {
+			if (data.result) {
+				if(commentid !=0){
+					let html = '<div class="reply"><text class="n">我</text><text class="c">'+comment +'</text><text class="t">刚刚</text></div>';
+					$('#'+commentid).append(html);
+				}else{
+					let html = '<div class="comment_item"><img src="' + data.icon + '"/><text class="n">我</text><text class="c">' + comment + '</text><text class="t">刚刚</text></div>';
+					$('.comment_lsit').prepend(html);
+				}
+				
+			}
+			jTips(data.msg);
+			$('#liuyan').val('');
+			$('.popUpBox5').slideUp(200);
+			$('#commentid').val(0);
+		},
+		error: function () {
+			jTips("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+		},
+	});
+}
+function delete_rep(id,e){
+	jConfirm("确认删除评论？", "删除确定对话框", function (isConfirm) {
+		if(isConfirm){
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('dongtaiajax',array('op'=>'delete_notice_commont'))}",
+				data: {
+					weid:"{$weid}",
+					schoolid: "{$schoolid}",
+					userid:"{$it['id']}",
+					commentid:id,
+				},
+				type: "POST",
+				dataType: "json",
+				success: function (data) {
+					if (data.result) {
+						$(e).parent().parent().hide()
+					}
+					jTips(data.msg);
+				},
+				error: function () {
+					jTips("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+				},
+			});
+		}
+	});
+}
+$('.send_msg').click(function() {
+	$('#commentid').val(0);
+	$('.popUpBox5').slideDown(200);
+});
+function huifbtn(commentid){
+	$('#commentid').val(commentid);
+	$('.popUpBox5').slideDown(200);
+}
+$('.btnCancelsubTy').click(function() {
+	$('.popUpBox5').slideUp(200);
+	$('#commentid').val(0);
+	$('html,body').removeClass('popNoscroll');
+});
+</script>

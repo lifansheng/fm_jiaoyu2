@@ -1,0 +1,20 @@
+{loop $score_tea_list $key_s $row_s}
+				<div class="contentRecord main1" time="{$key_s}"  onclick="todetail({$row_s['tid']});">
+					<div class="contentItem " style="width: {$width}%;" >{$row_s['tname']}</div>
+					{loop $scoreObPa $row_p}
+					<div class="contentItem "  	style="width: {$width}%;">
+					{if $row_s[$row_p['sname']]}
+						{$row_s[$row_p['sname']]}
+					{else}
+						暂无评分
+					{/if}
+					</div>
+					{/loop}
+					<div class="contentItem " 	style="width: {$width}%;">{$row_s['all']}</div>
+					<div class="contentItem " 	style="width: {$width}%;">
+						<a>
+							<div class="btn_seeSgin">点击查看</div>
+						</a>
+					</div>
+				</div>
+				{/loop}

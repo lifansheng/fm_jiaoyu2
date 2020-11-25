@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mGrzxTeacher.css?v=4.8" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/pageContent.css?v=4.80120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/activityNotice.css?v=4.80120" />
+<link href="{OSSURL}public/mobile/css/wx_sdk.css" rel="stylesheet" />
+{php echo register_jssdks();}
+{php include $this->template('bjqcss');}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.2.min.js?v=4.9"></script>
+{php include $this->template('port');}
+</head>
+<style>
+	#btSubmit1{
+		    width: 40%;
+    margin-left: 30%;
+    padding: 10px;
+    font-size: 16px;
+    color: #fff;
+    background: #737b7b;
+    border: none;
+    -webkit-appearance: none;
+    border-radius: 20px;
+    margin-bottom: .5rem;
+    margin-top: .5rem;
+	}
+	.user_info {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 9999;font-size: 20px;color: #fe6700;}
+.user_info>div {position: absolute;left: 6%;right: 6%;top: 45px;padding: 0 20px;background-color: #fff;padding-bottom: 33px;padding-top: 10px;}
+.user_name {text-align: left;color: #666;font-size: 14px;}
+.btn {height: 44px;display: block;background-color: #7bb52d;font: 20px "黑体";text-align: center;color: #fff;cursor: pointer;}
+.user_info>div>span {display: inline-block;width: 30px;height: 30px;background: #fff;font-size: 24px;color: #aaa;-webkit-border-radius: 100%;-moz-border-radius: 100%;-o-border-radius: 100%;border-radius: 100%;line-height: 30px;text-align: center;position: absolute;top: -15px;right: -15px;
+font-family: 宋体b8b\4f53;cursor: default;}
+.user_name > input {display: block;width: 100%;border-radius: 3px;height: 44px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;box-sizing: border-box;}
+.user_name > select {display: block;width: 100%;height: 44px;border-radius: 3px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;
+box-sizing: border-box;text-align: left;color: #666;font-size: 14px;}
+.close_pupop_c {width: 200px; margin: 0 auto;}
+.close_pupop_button {width: 90px;height: 30px;border-radius: 5px;line-height: 30px;font-size: 16px;text-align: center;}
+.close_pupop_button_1 {background: #e74580;color: #fff;}
+.close_pupop_button_2 {background: #56c454;color: #fff;margin-left: 20px;}
+.answerSpan
+{
+    font-size: 15px;
+    margin-top: 10px;
+	
+}
+.topic_send_btn1 {position: absolute;right: 10px;width: 80px;height: 35px;line-height: 35px;background: #e5457f;font-size: 16px;border-radius: 5px;color: #fff;text-align: center;position: absolute;right: 10px;}
+</style>
+<body>
+<div id="titlebar" class="header mainColor">
+	<div class="l"><a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a></div>
+	<div class="m">
+     <span style="font-size: 18px">
+	     {if $groupac['type'] == 2}
+			家政服务详情
+			{elseif $groupac['type'] == 3}
+			家教服务详情
+			{/if}
+			</span>   
+	</div>
+</div>
+<div id="titlebar_bg" class="_header"></div>
+<input type="hidden"  id="hide_sid"  value="{$it['sid']}">
+<input type="hidden"  id="hide_tid"  value="{$it['tid']}">
+<input type="hidden"  id="hide_schoolid"  value="{$schoolid}">
+<input type="hidden"  id="hide_weid"  value="{$weid}">
+<input type="hidden" id="txtQuestionnaireId" value="{$leaveid}">
+<input type="hidden"  id="bj_id"  value="{$leave['bj_id']}">
+<input type="hidden"  id="km_id"  value="{$leave['km_id']}">
+		<div class="title" style="    padding: 20px 5% 20px">{$groupac['title']}</div>		
+		<div class="publishInfo" style="height:30px;" >
+			<span class="source" style="margin-right: 5px;height:auto;">服务类型：</span>
+			{if $groupac['type'] == 2}
+			<span class="voice_btn" style="width: auto;margin-top: 3px;">家政服务</span>
+			{elseif $groupac['type'] == 3}
+			<span class="video_btn" style="width: auto;margin-top: 3px;">家教服务</span>
+			{/if}
+			</div>
+			{if $_GPC['op'] != 'signup'}
+			<div class="publishInfo" >
+			<span class="time"style="margin-left: 0;">可预约日期：{php echo (date('Y-m-d',$groupac['starttime']))} 至 {php echo (date('Y-m-d ',$groupac['endtime']))}</span>
+			<span class="read"></span>		
+		</div>
+		{/if}
+		{if $_GPC['op'] == 'signup'}
+		<div class="publishInfo" style="height:100px;" >
+			<span class="time"style="margin-left: 0;height:auto;">预约人：{$checksign['pard']} - {$checksign['username']} </span>
+			<span class="time"style="margin-left: 0;height:auto;">上门日期：{php echo (date('Y-m-d',$checksign['servetime']))}</span>
+			<span class="time"style="margin-left: 0;height:auto;">预约日期：{php echo (date('Y-m-d H:i:s',$checksign['createtime']))}</span>
+		</div>
+		{/if}
+		<div class="publishInfo">
+			<span class="time"style="margin-left: 0;">服务描述：</span>		
+		</div>
+		<div class="content parent">
+			<p id="neirong">{php echo htmlspecialchars_decode($groupac['content'])}</p><br/>
+
+		</div>	
+		
+{if $_GPC['op'] != 'signup'}
+{if $groupac['starttime']  <=time() && $groupac['endtime'] >= time()}
+<button type="button" id="btSubmit" style="background: #06c1ae;">我要预约</button>
+{else}
+<button type="button" id="btSubmit1">不可预约</button>
+{/if}
+{/if}
+
+<div class="user_info" id="user_info" style="display:none;">
+   <div style="border-radius: 5%;">
+		<ul>
+			<p     style="font-size: 18px;margin-top: 10px;margin-bottom: 10px;">预约信息</p>
+			<li class="user_name" style="font-size: 16px;">
+			<p     style="font-size: 16px; margin-top: 6px;margin-bottom: 6px;">预约人</p>
+					<select name="select" id="userid" >
+					     <option value="">选择预约人</option>
+					 
+						{loop $user $row}
+				         <option value="{$row['id']}">{$row['bjname']} {$row['s_name']}</option>
+						{/loop} 
+						 
+						
+				     </select>
+				
+			</li>
+			<li class="user_name">
+			 <p     style="font-size: 16px; margin-top: 6px;margin-bottom: 6px;">预约时间</p>
+				<input type="date"  name ="mobile" id="ordertime" >
+			</li>
+		</ul>
+		<div class="close_pupop_c">
+			<div id="tijiao1" class="close_pupop_button close_pupop_button_1 float_l">确定</div>
+			<div id="close" class="close_pupop_button close_pupop_button_2 float_l">取消</div>
+		</div>
+   </div>
+</div>
+{php include $this->template('comad');}
+</body>
+<script src="{MODULE_URL}public/mobile/js/idangerous.swiper.min.js?v=1717"></script>
+
+<script src="{OSSURL}public/mobile/js/common.js?v=1717"></script>
+<script src="{OSSURL}public/mobile/js/faceMap.js?v=5.61" type="text/javascript"></script>
+
+<script type="text/javascript">
+var ROOT_URL = "{OSSURL}";
+var MODULE_URL = "{MODULE_URL}";
+    $(document).ready(function () {
+        //针对ios设备 点击文本框头部跑掉的处理方法
+        var ios_nav = /ios | iPhone | iPad/i.test(navigator.userAgent);
+        var top_div = $(".top");
+        if (ios_nav && top_div.length > 0) {
+            $("input[type=text]").on("focus", function () {
+                top_div.css("position", "absolute");
+                this.scrollIntoView();
+            }).on("blur", function () {
+                top_div.css("position", "fixed");
+            });
+        }
+    });
+</script>
+<script>var face_img_base_url = ROOT_URL + "public/mobile/img/";</script>
+<script src="{OSSURL}public/mobile/js/wxUpload_v0.3.js?v=1717"></script>
+
+<script src="{MODULE_URL}public/mobile/js/uploaderh5V3.js?v=1717"></script>
+<script src="{OSSURL}public/mobile/js/favorite.js?v=1717"></script>
+
+
+<script>
+
+	setTimeout(function() {
+		if(window.__wxjs_environment === 'miniprogram'){
+			$("#titlebar").hide();
+			$("#titlebar_bg").hide();
+		}
+	}, 100);
+
+
+	$(function () {
+		$("#close").on('click', function () {
+			$('#user_info').hide();
+		});
+
+		$("#btSubmit").click(function () {
+			$("#user_info").show();  
+		});
+		$("#tijiao1").on('click', function () {
+	var userid =  $("#userid").val(); 
+	var ordertime = $("#ordertime").val();
+	
+	 data = {
+		schoolid:"{$schoolid}",
+		weid:"{$weid}",
+		userid:userid,
+		gaid:"{$gaid}",
+		ordertime:ordertime
+	}
+
+	if (userid == "" || userid == undefined || userid == null) {
+		jTips('请选择预约人！');
+		return false;
+	}
+	if (ordertime == "" || ordertime == undefined || ordertime == null) {
+		jTips('请选择预约时间！');
+		return false;
+	}
+	
+	
+
+	$.post("{php echo $this->createMobileUrl('comajax',array('op'=>'horder'))}",data,
+		function(data){
+			if(data.result){
+				jTips(data.msg);
+				location.reload();
+				window.location.href = "{php echo $this->createMobileUrl('horder' , array('schoolid' => $schoolid), true)}";
+			}else{
+				jTips(data.msg);
+			}
+		},'json');	
+		
+});
+	  //  $("#tijiao1").click(function () {
+			//$.ajax({
+			//		url: "{php echo $this->createMobileUrl('comajax', array('op' => 'gasignup','gaid' => $gaid,'weid'=>$weid), true)}",
+			//		type: "post",
+			//		data: {
+						
+			//			schoolid:{$schoolid},
+			//		},
+			//		success: function (data) {
+			//			var data1 = JSON.parse(data);
+			//			console.log(data1);
+			//			jTips(data1.msg);
+			//			if(data1.result == true)
+			//			{window.location.href = "{php echo $this->createMobileUrl('gadetail' , array('op' => 'signup'), true)}"+ '&gaid=' + data1.gaid + '&schoolid=' + data1.schoolid + '&userid=' + data1.userid;}
+			//		},
+			//		fail:function(){
+			//			jTips("报名失败");
+			//		}
+			//	});
+	  //      return;
+	  //  });
+	});
+</script>
+
+
+
+</html>

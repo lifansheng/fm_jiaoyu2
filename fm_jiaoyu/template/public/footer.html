@@ -1,0 +1,34 @@
+			</div>
+		</div>
+	</div>
+	<!-- 选择老师进入用户中心 modal -->
+	<div class="modal fade" style="min-width: 600px!important;z-index: 1050 !important;" id="UserCenterBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+		<div class="modal-dialog" style="left: 30%;top: 8%;">
+			<div class="modal-content">
+				<div class="modal-header" style="color: black;">					
+					<h4 class="modal-title">请选择一个老师</h4>	
+				</div>
+				<div class="card-body usercentermodal">
+
+				</div>				
+			</div>
+		</div>
+	</div>
+	<script>
+	function GoToUserCenter(){
+		$('#UserCenterBox').modal('toggle');
+		$('.usercentermodal').empty()
+		$.ajax({
+			url: "{php echo $this->createWebUrl('usercenter', array('op'=>'userlist','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "html",
+			data: {schoolid:"{$schoolid}"},
+			success: function (result) {
+				if (result) {
+					$('.usercentermodal').html(result)
+				}
+			}
+		});
+	}
+	</script>
+{template 'public/footer-base'}

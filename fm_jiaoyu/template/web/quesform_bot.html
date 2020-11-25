@@ -1,0 +1,58 @@
+<style>
+    .juti_wenzi{--ItemHeight:-10px;padding-left: 40px;}
+    .juti_wenzi input[type="checkbox"],.juti_wenzi input[type="radio"] { width: 0; height: 0; margin-right: 13px; position: relative;}
+    .juti_wenzi input[type="checkbox"]::before,.juti_wenzi input[type="radio"]::before{ content:''; position: absolute; left: -10px; top:calc(var(--ItemHeight) / 2 - 8px); width: 16px; height: 16px; border-radius: 50%; border: 1px solid #999;transition: background-color 0.1s linear; }
+    .juti_wenzi input[type="checkbox"]::before{border-radius: unset;}
+    /*设置选中的input的样式*/
+    .juti_wenzi input[type="checkbox"]:checked::before,.juti_wenzi input[type="radio"]:checked::before{ background-color: #006eb2; border: 1px solid #006eb2; }
+    .juti_wenzi input[type="checkbox"]:after{position: absolute; width: 4px; height: 8px; top:calc(var(--ItemHeight) / 2 - 6px); left: -4px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg);opacity: 0;content: '';transition: all .2s linear;}
+    .juti_wenzi input[type="checkbox"]:checked::after,.juti_wenzi input[type="radio"]:checked::after {opacity: 1;}
+    .juti_wenzi input[type="radio"]:after{position: absolute; width: 6px; height: 6px;     top: calc(var(--ItemHeight) / 2 - 3px); left: -5px; border-radius: 50%; background-color: white;;opacity: 0;content: '';transition: all .2s linear;}
+</style>
+<div class="all_660">
+    <div class= "yd_box"></div>
+    <div class="具体内容" style="color:black;font-weight:bold;">标题：{$title}</div>
+    {loop $ZY_contents $key $row}
+        <div class="tm_wenzi"  style="line-height: 32px;color: #666;padding-left: 10px;">
+            <span class="nmb">{$ZY_contents[$key]['qorder']}</span>.&nbsp
+            <span class="bt_wenzi">{$ZY_contents[$key]['title']}</span>
+            {if $ZY_contents[$key]['type'] == '1'}
+            <span style="color:blue;">【单选】</span>
+            
+            {elseif $ZY_contents[$key]['type'] == '2'}
+            <span style="color:blue;">【多选】</span>
+        
+            {elseif $ZY_contents[$key]['type'] == '3'}
+            <span style="color:blue;">【问答】</span>
+            {/if}
+            
+        </div>
+        {if $ZY_contents[$key]['type'] == '1'}
+        <div class="juti_wenzi"  style="line-height: 32px;color: #666;">
+            {loop $ZY_contents[$key]['content'] $keys $rows}
+                <div style="position: relative;"><input type="radio" {if $testAA[$ZY_contents[$key]['qorder']] == $keys} checked="checked" {/if} disabled><span>{$ZY_contents[$key]['content'][$keys]['title']}</span></div>
+            {/loop}
+        </div>
+        {else if $ZY_contents[$key]['type'] == '2'}
+        <div class="juti_wenzi"  style="line-height: 32px;color: #666;">
+            {loop $ZY_contents[$key]['content'] $keys $rows}
+                {if $testAA}
+                    {if in_array($keys, $testAA[$ZY_contents[$key]['qorder']])}
+                    <input type="checkbox" checked="checked"  disabled>
+                    <span>{$ZY_contents[$key]['content'][$keys]['title']}
+                    </span><span style="color:red;"></span></br>
+                    {else}
+                    <input type="checkbox"  disabled >
+                        <span>{$ZY_contents[$key]['content'][$keys]['title']}
+                    </span></br>
+                    {/if}
+                {/if}
+            {/loop}
+        </div>
+        {else if $ZY_contents[$key]['type'] == '3'}
+        <div class="juti_wenzi"  style="line-height: 32px;color: #666;">
+            <span style="color:red">【回答内容】</span><span style="color:green">{$testAA[$ZY_contents[$key]['qorder']]}</span>
+        </div>
+        {/if}
+    {/loop}
+</div>

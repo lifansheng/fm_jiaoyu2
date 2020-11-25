@@ -1,0 +1,300 @@
+
+				<div id="stutop" class="editor" style="display: none;" >
+					<div class="ng-scope">
+					<!--页面标题设置-->
+						<div class="app-header-setting">
+							<div class="arrow-left"></div>
+							<div class="app-header-setting-inner">
+								<div class="panel panel-default">
+									<div class="panel-body form-horizontal">
+										<input type="hidden" name="place[{$row['id']}]" value="3" />
+										<input type="hidden" name="type[{$row['id']}]" value="1" />
+										<div class="form-group">
+											<label class="col-xs-12 col-sm-3 col-md-2 control-label">顶部背景类型</label>
+											<div class="col-sm-9" style="font-size: 14px;">
+												<label class="radio-inline">
+													<input type="radio" style="-webkit-appearance:radio;margin-top: 2px;" name="topType" value="1" {if $stutop['status'] == 1 || $stutop['status'] == 0 }checked="checked"{/if} >纯色
+												</label>
+												<label class="radio-inline">
+													<input type="radio" style="-webkit-appearance:radio;margin-top: 2px;" name="topType" value="2" {if $stutop['status'] == 2}checked="checked"{/if}  >图片
+												</label>
+												
+											</div>	
+										</div>
+										<div class="form-group" id="pureColor"  {if $stutop['status'] == 2}style="display: none;"{/if}>
+											<label class="col-xs-12 col-sm-3 col-md-2 control-label">顶部颜色</label>
+											<div class="col-sm-8">			
+												<script type="text/javascript">
+													$(function(){
+														$(".colorpicker").each(function(){
+															var elm = this;
+															util.colorpicker(elm, function(color){
+																$(elm).parent().prev().prev().val(color.toHexString());
+																$(elm).parent().prev().css("background-color", color.toHexString());
+																var topColor = $('input[name="topColor"]').val();
+																$(".head").css("background",topColor);
+															});
+														});
+														$(".colorclean").click(function(){
+															$(this).parent().prev().prev().val("");
+															$(this).parent().prev().css("background-color", "#FFF");
+															var topColor = $('input[name="topColor"]').val();
+															$(".head").css("background",topColor);
+														});
+													});
+												</script>
+												<div class="row row-fix">
+													<div class="col-xs-8 col-sm-8" >
+														<div class="input-group">
+															<input class="form-control" type="text" name="topColor" placeholder="请选择颜色" value="{if $stutop['color']}{$stutop['color']}{else}#1071b7{/if}">
+															<span class="input-group-addon" style="width:35px;border-left:none;background-color:{if $stutop['color']}{$stutop['color']}{else}#1071b7{/if}"></span>
+															<span class="input-group-btn">
+																<button class="btn btn-default colorpicker" type="button">选择颜色 <i class="fa fa-caret-down"></i></button>
+																<button class="btn btn-default colorclean" type="button"><span><i class="fa fa-remove"></i></span></button>
+															</span>
+														</div>
+													</div>
+												</div>
+												 
+											</div>
+										</div>
+										<div class="form-group" id="topImage" {if $stutop['status'] == 1 || $stutop['status'] == 0 }style="display: none;"{/if}>
+											 <!--'top_image', $stutop['icon']-->
+								            <label class="col-xs-12 col-sm-3 col-md-2 control-label">顶部图片</label>
+						                    <div class="col-xs-9">
+												{template 'public/imgeschoses'}
+												<div class="input-group ">
+													<input type="text" name="top_image" id="iconpics{$stutop['id']}" value="{php echo tomedia($stutop['icon'])}" class="form-control" autocomplete="off" filename="" url="">
+													<span class="input-group-btn">
+														<button class="btn btn-default" type="button" onclick="showImageDialog{$stutop['id']}(this);">选择图片</button>
+													</span>
+												</div>
+												<div class="input-group " style="margin-top:.5em;">
+													<img src="{if $stutop['icon']}{php echo tomedia($stutop['icon'])}{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+													<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+												</div>
+												<span class="help-block">推荐尺寸420*170左右,长方形图标</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>		
+				</div>
+				<script type="text/javascript">
+					function showImageDialog{$stutop['id']}(elm, opts, options) {
+						require(["util"], function(util){
+							var btn = $(elm);
+							var ipt = btn.parent().prev();
+							var val = ipt.val();
+							var img = ipt.parent().next().children();
+							options = {'global':false,'class_extra':'','direct':true,'multiple':false};
+							util.image(val, function(url){
+								if(url.url){
+									if(img.length > 0){
+										img.get(0).src = url.url;
+									}
+									ipt.val(url.attachment);
+									ipt.attr("filename",url.filename); 
+									ipt.attr("url",url.url);
+									$(".head").css("background","url("+url.url+")");
+									$(".head").css("background-size","100% auto");
+								}
+								if(url.media_id){
+									if(img.length > 0){
+										img.get(0).src = "";
+									}
+									ipt.val(url.media_id);
+									$(".head").css("background","url("+url.media_id+")");
+									$(".head").css("background-size","100% auto");
+								}
+							}, null, options);
+						});
+					}
+	
+				</script>	
+				<!-- 顶部按钮 -->
+				{loop $icons1 $row}
+				<div id="iconeditor{$row['id']}" class="editor" style="top: 200px !important;">
+					<div class="ng-scope">
+					<!--页面标题设置-->
+						<div class="app-header-setting">
+							<div class="arrow-left"></div>
+							<div class="app-header-setting-inner">
+								<div class="panel panel-default">
+									<div class="panel-body form-horizontal">
+										<input type="hidden" name="place[{$row['id']}]" value="3" />
+										<input type="hidden" name="type[{$row['id']}]" value="1" />
+										<div class="form-group">
+											<label class="col-xs-3 control-label"><span class="red">*</span>显示状态</label>
+											<div class="col-xs-9">
+												<input type="checkbox" value="{$row['status']}" name="status[]" data-id="{$row['id']}" {if $row['status'] == 1}checked{/if}>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-xs-3 control-label"><span class="red">*</span>按钮名称</label>
+											<div class="col-xs-9">
+												<input type="text" id="btnname{$row['id']}" name="btnname[{$row['id']}]" onkeyup="SwapTxt({$row['id']})" placeholder="按钮名称" value="{$row['name']}" class="form-control ng-pristine ng-untouched ng-valid">
+											</div>
+										</div>
+										<div class="form-group ng-scope">
+											<label class="control-label col-xs-3">链接地址</label>
+											<div class="col-xs-9">
+											<div class="ng-isolate-scope">
+												<div class="dropdown link">
+													<div class="input-group">
+														<input type="text" value="{$row['url']}" id = "url{$row['id']}" name="url[{$row['id']}]" class="form-control" autocomplete="off">
+														{template 'public/linkchose'}
+													</div>
+												</div>
+											</div>
+											</div>
+										</div>										
+										<div class="form-group">
+											<label class="control-label col-xs-3"><span class="red">*</span>图标</label>
+											<div class="col-xs-9">
+												{template 'public/imgeschoses'}
+												<div class="input-group ">
+													<input type="text" name="iconpics[{$row['id']}]" id="iconpics{$row['id']}" value="{php echo tomedia($row['icon'])}" class="form-control" autocomplete="off" filename="" url="">
+													<span class="input-group-btn">
+														<button class="btn btn-default" type="button" onclick="showImageDialog{$row['id']}(this);">选择图片</button>
+													</span>
+												</div>
+												<div class="input-group " style="margin-top:.5em;">
+													<img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}./resource/images/nopic.jpg{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+													<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+												</div>
+												<span class="help-block">推荐尺寸45*45左右,正方形图标</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>		
+				</div>	
+				{/loop}	
+	            <!-- 魔方开始 -->
+				{loop $icons2 $row}
+				<div id="iconeditor{$row['id']}" class="editor editor11" style="top: 300px !important;">
+					<div class="ng-scope">
+					<!--页面标题设置-->
+						<div class="app-header-setting">
+							<div class="arrow-left"></div>
+							<div class="app-header-setting-inner">
+								<div class="panel panel-default">
+									<div class="panel-body form-horizontal">
+										<input type="hidden" name="type[{$row['id']}]" value="1" />
+										<input type="hidden" name="place[{$row['id']}]" value="4" />								
+										<div class="form-group">
+											<label class="col-xs-3 control-label"><span class="red">*</span>显示状态</label>
+											<div class="col-xs-9">
+												<input type="checkbox" value="{$row['status']}" name="status[]" data-id="{$row['id']}" {if $row['status'] == 1}checked{/if}>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-xs-3 control-label"><span class="red">*</span>按钮名称</label>
+											<div class="col-xs-9">
+												<input type="text" id="btnname{$row['id']}" name="btnname[{$row['id']}]" onkeyup="SwapTxt1({$row['id']})" placeholder="按钮名称" value="{$row['name']}" class="form-control ng-pristine ng-untouched ng-valid">
+											</div>
+										</div>										
+										<div class="form-group ng-scope">
+											<label class="control-label col-xs-3">链接地址</label>
+											<div class="col-xs-9">
+											<div class="ng-isolate-scope">
+												<div class="dropdown link">
+													<div class="input-group">
+														<input type="text" value="{$row['url']}" id = "url{$row['id']}" name="url[{$row['id']}]" class="form-control" autocomplete="off">
+														{template 'public/linkchose'}
+													</div>
+												</div>
+											</div>
+											</div>
+										</div>										
+										<div class="form-group">
+											<label class="control-label col-xs-3"><span class="red">*</span>图标</label>
+											<div class="col-xs-9">
+												{template 'public/imgeschoses'}
+												<div class="input-group ">
+													<input type="text" name="iconpics[{$row['id']}]" id="iconpics{$row['id']}" value="{php echo tomedia($row['icon'])}" class="form-control" autocomplete="off" filename="" url="">
+													<span class="input-group-btn">
+														<button class="btn btn-default" type="button" onclick="showImageDialogmf_new{$row['id']}(this);">选择图片</button>
+													</span>
+												</div>
+												<div class="input-group " style="margin-top:.5em;">
+													<img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}./resource/images/nopic.jpg{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+													<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+												</div>
+												<span class="help-block">推荐尺寸45*45左右,正方形图标</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>		
+				</div>	
+				{/loop}
+	            <!-- 列表开始 -->
+				{loop $icons3 $row}
+				<div id="iconeditor{$row['id']}" class="editor" style="top: 500px !important;">
+					<div class="ng-scope">
+					<!--页面标题设置-->
+						<div class="app-header-setting">
+							<div class="arrow-left"></div>
+							<div class="app-header-setting-inner">
+								<div class="panel panel-default">
+									<div class="panel-body form-horizontal">
+										<input type="hidden" name="type[{$row['id']}]" value="1" />
+										<input type="hidden" name="place[{$row['id']}]" value="5" />								
+										<div class="form-group">
+											<label class="col-xs-3 control-label"><span class="red">*</span>显示状态</label>
+											<div class="col-xs-9">
+												<input type="checkbox" value="{$row['status']}" name="status[]" data-id="{$row['id']}" {if $row['status'] == 1}checked{/if}>
+											</div>
+										</div>
+										<div class="form-group">
+											<label class="col-xs-3 control-label"><span class="red">*</span>按钮名称</label>
+											<div class="col-xs-9">
+												<input type="text" id="btnname{$row['id']}" name="btnname[{$row['id']}]" onkeyup="SwapTxt1({$row['id']})" placeholder="按钮名称" value="{$row['name']}" class="form-control ng-pristine ng-untouched ng-valid">
+											</div>
+										</div>																			
+										<div class="form-group ng-scope">
+											<label class="control-label col-xs-3">链接地址</label>
+											<div class="col-xs-9">
+											<div class="ng-isolate-scope">
+												<div class="dropdown link">
+													<div class="input-group">
+														<input type="text" value="{$row['url']}" id = "url{$row['id']}" name="url[{$row['id']}]" class="form-control" autocomplete="off">
+														{template 'public/linkchose'}
+													</div>
+												</div>
+											</div>
+											</div>
+										</div>										
+										<div class="form-group">
+											<label class="control-label col-xs-3"><span class="red">*</span>图标</label>
+											<div class="col-xs-9">
+												{template 'public/imgeschoses'}
+												<div class="input-group ">
+													<input type="text" name="iconpics[{$row['id']}]" id="iconpics{$row['id']}" value="{php echo tomedia($row['icon'])}" class="form-control" autocomplete="off" filename="" url="">
+													<span class="input-group-btn">
+														<button class="btn btn-default" type="button" onclick="showImageDialoglb{$row['id']}(this);">选择图片</button>
+													</span>
+												</div>
+												<div class="input-group " style="margin-top:.5em;">
+													<img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}./resource/images/nopic.jpg{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+													<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+												</div>
+												<span class="help-block">推荐尺寸25*25左右,正方形透明底图标</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>		
+				</div>	
+				{/loop}	
+				<script src="{MODULE_URL}public/web/js/diyjs.js" type="text/javascript"></script>

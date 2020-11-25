@@ -1,0 +1,161 @@
+<div class="form-group">
+    <label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">选择群发对象 </label>
+    <div class="col-sm-2 col-lg-2" >
+        <input type="radio" name="is_show" value="1" checked> 指定班级
+        <input type="radio" name="is_show" value="2" > 指定学生
+    </div>
+</div>
+<div class="form-group choosediv" >
+    <label class="col-xs-12 col-lg-2 control-label">选择课程</label>
+    <div class="col-sm-2" >
+        <select style="margin-right:15px;" name="kcid" id="kcid" class="form-control">
+            <option value="0">请选择课程</option>
+            {loop $kclist $it}
+            <option value="{$it['id']}" data-name="{$it['name']}">{$it['name']}</option>
+            {/loop}
+        </select>
+    </div>
+    <div class="bjinfo" style="display: none;">
+        <label class="col-xs-12 col-lg-2 control-label">选择班级</label>
+        <div class="col-sm-2" id="bjlist">
+            
+        </div>
+    </div>
+</div>
+
+<div class="form-group choosediv" id="StuDiv">
+    <label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label"></label>
+    <div class="col-sm-12 col-lg-8" id="StuCheckBoxList">
+    </div>
+</div>
+<div class="form-group" id="showSelectStu" style="display: none;">
+    <label class="col-xs-12 col-sm-4 col-md-3 col-lg-2 control-label">发送对象</label>
+    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 20px;"  ></label>
+    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="text-align:left;width:65%;max-width: unset; overflow-y: scroll; max-height: 100px; min-height: 42px; border: 1px solid #ebdddd;" id="Send_label" >
+        请选择发送学生
+    </label>
+</div>
+<script>
+
+    //选择课程
+    $("select[name='kcid']").change(function(){
+        let type = $('input[name=is_show]:checked').val();
+        var kcid = $(this).val()
+        if(type == 1){
+            var kcname = $(this).find("option:selected").text();
+            $.ajax({
+                url:  "{php echo $this->createWebUrl('notice', array('op' => 'getPxBjinfo','weid'=>$weid,'schoolid'=>$schoolid))}",
+                type: "post",
+                dataType: "json",
+                data:{kcid:kcid},
+                success: function (res) {
+                    $('.bjinfo').show()
+                    var bjlist = res.data.stulist;
+                    var bjhtml = '';
+                    for(item of bjlist){
+                        bjhtml += `<label  class="checkbox-inline" style="margin-left: 10px">
+                            <input type="checkbox"  class="bjcheckb" name="bjidarr[]" value="${item.bjid}" data-kcid="${kcid}" data-name="${kcname}-${item.bjname}" style="float: none;" >${item.bjname}
+                        </label>`
+                    }
+                    $("#bjlist").html(bjhtml)
+                },
+                
+            });
+        }else{
+            $('#Send_label').html('');
+            $('.stuCheck').attr("checked", false);
+            $("#StuCheckBoxList").slideUp()
+            $.ajax({
+                url: "{php echo $this->createWebUrl('notice', array('op' => 'getPxBjinfo','weid'=>$weid,'schoolid'=>$schoolid))}",
+                type: "post",
+                dataType: "json",
+                data:{kcid:kcid},
+                success: function (res) {
+                    $('.bjinfo').show()
+                    if(res.data.stulist){
+                        let bjhtml = `<select style="margin-right:15px;" name="bj_id" onchange="selectBj(this,${kcid})"  class="form-control"><option value="0">请选择班级</option>`
+                        for(item of res.data.stulist){
+                            bjhtml += `<option value="${item.bjid}">${item.bjname}</option>`
+                        }
+                        bjhtml  += `</select>`  
+                        $('#bjlist').html(bjhtml);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                    console.log(jqXHR)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                }
+            });
+        }
+    })
+
+    //选择班级
+    function selectBj(e,kcid){
+        let bjid = $(e).val();
+        let bjname = $(e).find("option:selected").text();
+        $("#StuCheckBoxList").slideDown()
+        $.ajax({
+            url:  "{php echo $this->createWebUrl('notice', array('op' => 'getPxBjStu','weid'=>$weid,'schoolid'=>$schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:{kcid:kcid,bjid:bjid},
+            success: function (data) {
+                $("#StuDiv").show()
+                var stuhtml = '';
+                for(item of data.data){
+                    stuhtml += `<label  class="checkbox-inline" style="margin-left: 10px">
+                        <input type="checkbox"  class="stuCheck" data-bjname='${bjname}' data-bjid='${bjid}' data-sname='${item.s_name}' onclick="checkStu(this)" id="checkbox_${item.id}" value="${item.id}">${item.s_name}
+                    </label>`
+                }
+                $("#StuCheckBoxList").html(stuhtml)
+            },
+            
+        });
+    }
+
+    //选择班级学生
+    function checkStu(th){
+		var span_length = $("#Send_label span").length;
+		if(span_length == 0 ){
+			$('#Send_label').html('');
+		}
+		var sid= th.value; //学生id
+		var stuName = $(th).attr("data-sname");
+		var bjName = $(th).attr("data-bjname");
+		var bjid = $(th).attr("data-bjid");
+		let addhtml = '';
+		if(th.checked == false){
+			del_stu(sid);
+		}else if(th.checked == true){
+            addhtml = `<span style="border: 1px solid #e8e8e8; padding:3px 3px;" onclick="del_stu(${sid})" id="span_${sid}"> ${bjName} - ${stuName}<input type = "hidden" name="sidarr[${bjid}][]" value = "${sid}" >&nbsp;&nbsp;&nbsp;<i class="fa fa-times" ></i></span>`
+			$('#Send_label').append(addhtml);
+		}
+    }
+    
+    //移除追加的学生
+    function del_stu(id) {
+		$("#span_" + id).remove();
+		$("#checkbox_" + id).attr("checked", false);
+		var span_length = $("#Send_label span").length;
+		if (span_length == 0) {
+            let endhtml = "请选择发送学生";
+            $("#Send_label").html(endhtml);
+		}
+	};
+
+    //发送班级学生切换
+    $('input[name=is_show]').change(function () {
+		$('.bjinfo').hide()
+		$("#kcid").val(0)
+		let value = $(this).val();
+		if(value == 2){
+			$('#showSelectStu').slideDown();
+			$('#Send_label').html('请选择发送学生');
+		}else{
+			$('#showSelectStu').slideUp();
+
+        }
+	})
+
+</script>

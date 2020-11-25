@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>疫情打卡</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/common.css" />
+<link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+{php include $this->template('students/candercss');} 
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+<style>
+    body{background-color: #283678;}
+.mainColor {
+    background: #06c1ae !important;
+}
+.headerContent {
+    margin: 0 auto;
+    width: 250px;
+    height: 100%;
+    /* border: 1px solid red; */
+    position: absolute;
+    left: 50%;
+    line-height: 45px;
+    transform: translate(-50%);
+    -webkit-transform: translate(-50%);
+    -moz-transform: translate(-50%);
+    -ms-transform: translate(-50%);
+    -o-transform: translate(-50%);
+}
+.select_date {
+    margin: 0 10px 0 10px;
+}
+.selectBtn {
+    font-size: 14px;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    /* padding: 7px 10px 6px 10px; */
+}
+.selectMonth {
+    width: 35px;
+    display: inline-block;
+}
+.selectBtn {
+    font-size: 14px;
+    color: #808080;;
+    cursor: pointer;
+    text-decoration: none;
+    /* padding: 7px 10px 6px 10px; */
+}
+.last_left, .select_date, .next_right {
+    display: inline-block;
+    color: #808080;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.selectList {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 30;font-size: 20px;color: #fe6700;}
+.selectList .single {position: absolute;left: 6%;right: 6%;top: 5%;padding: 0 20px;background-color: #fff;padding-bottom: 15px;padding-top: 10px;}
+.selectList ul {width: 100%;height: auto;overflow: auto;}
+.selectList ul li {height: 60px;line-height: 60px;border-bottom: 1px solid #e9e9e9;padding: 5px 10px;margin-top:5px;background:#efefef;border-radius: 10px}
+.selectList ul li span.le {height: 50px;line-height: 50px;float: left;font-size: 16px;}
+.selectList ul li span.ri {float: right;height: 50px;line-height: 50px;font-size: 16px;}
+.font_icon{width: 15px;margin-top: 6px;margin-left: 7px;margin-right: 2px;}
+.useredits{line-height: 28px;float: right;margin-right: 4px;color:#fff}
+.pull-left{border-radius: 12px;width: 93%;height: 81px; background: rgba(0,0,0,0.2);}
+.cashbag{width: 100%;height: 60px;margin-bottom: 10px;position: relative;background-color: #fff;padding: 10px 0 0 0px;}
+.left_bag{width: 21%;float: left;text-align: center;margin-left: 25px;}
+.center_bag{float: left;margin-top: 10px;margin-left: 19px;{if $school['Is_point'] == 1}width: 32%;{else}width: 50%;{/if}}
+.right_bag{float: left;margin-top: 13px;{if $school['is_chongzhi'] == 1}width: 32%;{else}width: 50%;{/if}}
+.stuimg{ border-radius: 50%;margin-left:1px;margin-right:5px;width: 50px; height: 50px;float: left;}
+.stutext{float: left;width: 70%;}
+.stutitle{max-width:100%;height: 25px; line-height: 25px; font-size: 14px; color:gray; float: left; overflow: hidden; text-overflow:ellipsis;white-space: nowrap}
+#birthday{border-bottom:1px solid #c6c6c6;position:relative;display:block;height:30px;line-height:30px;opacity:1;}
+#selMonth{margin-left:-40px;position:relative;z-index:10;opacity:0;}
+.item-button{position: absolute;right: 0px;border-radius: 5px;border: 1px solid #14c682;bottom: 0px;}
+.item-button a{margin: 2px;font-size: 13px;color: #6f6969;}
+.boytip {height: 20px;width: 22px; float:left; background: url({OSSURL}public/mobile/img/boy_icon.png) right center no-repeat;align-items: center;background-size: 16px;}
+.girltip {height: 20px;width: 22px; float:left; background: url({OSSURL}public/mobile/img/girl_icon.png) right center no-repeat;align-items: center;background-size: 16px;}
+input[type="radio"] + label::before {
+    content: "\a0"; /*不换行空格*/
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 18px;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 50%;
+    border: 1px solid #01cd78;
+    line-height: 1; 
+}
+input[type="radio"]:checked + label::before {
+    background-color: #01cd78;
+    background-clip: content-box;
+    width: 8px;
+    height: 8px;
+    padding: 2px;
+}
+
+input[type="checkbox"] + label::before {
+    content: "\a0"; /*不换行空格*/
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 18px;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 2px;
+    border: 1px solid #01cd78;
+    line-height: 1; 
+}
+input[type="checkbox"]:checked + label::before {
+    background-color: #01cd78;
+    background-clip: content-box;
+    width: 8px;
+    height: 8px;
+    padding: 2px;
+}
+input[type="radio"],input[type="checkbox"] {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+}
+
+.nametitle {
+    height: 45px;
+    line-height: 24px;
+    margin-top: 12px;
+    color: white;
+    font-size: 15px;
+}
+.inputclass{
+    border: none; height: 30px; font-size: 16px;border-bottom: 1px solid #c6c6c6; margin-left: 30px;
+}
+.click {width: auto;height: 31px;right: 0;top: 25px;background-color: #50bdce;border-radius: 50px 0 0 50px;z-index: 2; position: fixed;}
+.font_icon{width: 15px;margin-top: 6px;margin-left: 7px;margin-right: 2px;}
+.useredits{line-height: 15px;float: right;margin-right: 4px;color:#fff;width:57px;margin-top: 5px}
+</style>
+</head>
+<body>
+<a class="click" id="Changesf">
+	<img class="font_icon" src="{MODULE_URL}public/mobile/img/change_image.png"></img><div class="useredits">切换学生</div>
+</a>
+<section style="top:0px;height: 270px;background: url({MODULE_URL}public/mobile/img/yqdkbgm.jpg?v=1);background-size: 100% auto;
+    -moz-background-size: 100% auto;
+    -webkit-background-size: 100% 100%;">
+    <div class="conentBox">
+        <div class="topInfo" style="margin-top:60px;width: 100px;height: 100px;-webkit-background-size: 100% 100%; background-image: url({MODULE_URL}public/mobile/img/dkbtn.png);">
+            <div class="monthTitle" style="color: #806140;font-size: 24px;padding-top: 35px" id="sign">签 到</div>
+        </div>
+        <div class="top_bottom" style="color: #fff;ont-size: 15px;font-weight: bold;">{$bj['sname']}·{$student['s_name']}</div>
+    </div>
+</section>
+<div style="margin: 10px 10px 0 10px;">
+    <div style=" display: flex; width: 100%; height: auto; background-color: white; border-radius: 10px;    justify-content: space-between; padding: 5px;">
+        <div>
+            <img src="{php echo tomedia($student['icon'])}" style="width: 36px; height: 36px; margin-left: 10px;margin-top: 5px; border-radius: 50%;">
+        </div>
+        <div style="color: #808080;margin: auto;" id="dkcount">您已连续打卡{$dkcount}天</div>
+        <div style="margin: auto;color: #ffff;font-weight: bold;text-align: center;width: 60px;height: 25px;border-radius: 15px 15px 15px 15px;background-color: #2191d2;">  <a href="{php echo $this->createMobileUrl('syqdklist',array('schoolid'=>$schoolid), true)}"  style="color: #ffff;;font-size: 11px;">查看</a></div>
+    </div>
+</div>
+
+<div style="margin: 10px 10px 0 10px;">
+    <div style=" display: flex; width: 100%; height: 50px; background-color: white; border-radius: 10px;    justify-content: center; padding: 5px;">
+        <div>
+            <a href="javascript:;" class="select_last_left" onclick="CalendarHandler.CalculateLastMonthDays();">
+                <div class="next_right"><</div>
+            </a>
+        </div>
+            <div class="select_date">
+                <a class="selectBtn selectYear"></a>
+                <a class="selectBtn selectMonth"></a>
+            </div>
+        <a href="javascript:;" class="select_next_right" onclick="CalendarHandler.CalculateNextMonthDays();">
+            <div class="next_right">></div>
+        </a>
+    </div>
+</div>
+
+<div class="datePickerBox" style="margin-top: -20px;margin-bottom: 70px;">
+    <div id="CalendarMain">
+        <div id="context">
+            <div class="week">
+                <div>日</div>
+                <div>一</div>
+                <div>二</div>
+                <div>三</div>
+                <div>四</div>
+                <div>五</div>
+                <div>六</div>
+            </div>
+            <div id="center">
+                <div id="centerMain">
+                    <div id="selectYearDiv"></div>
+                    <div id="centerCalendarMain">
+                        <div id="Container"></div>
+                    </div>
+                    <div id="selectMonthDiv"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="all" style="position:fixed; top:0px; left: 100vw;">
+    <div style="background-color: #fff; width: 100%; height: 35px; line-height: 35px; font-size: 16px;">
+        <div style="float: left; width: 100px;padding-left: 10px;" onclick="javascript:window.history.back();">
+            <i class="fa fa-angle-left" style="font-size: 20px; margin-right: 5px;"></i>返回
+        </div>
+        <div style="float: left; width: calc(100vw - 200px); text-align: center;">
+            疫情打卡
+        </div>
+    </div>
+	<div class="bangdingForm" style=" margin: 0; height: calc(100vh - 85px); overflow-y: scroll;">
+		<div class="bangdingBox" style=" text-align: left;padding-left: 10px;">
+			<div id="parentBox" class="changeBox activeBox">
+				<ul>
+					<form action="javascript: return false;" id='form'>
+						<div style="display: flex; justify-content: space-around; flex: 1;float: left;flex-wrap: wrap;">
+							<div style="line-height: 30px; width: 100%; margin-top: 5%;">
+								<div style="float: left;">体温:</div>
+								<div >
+									<input type="text" name="tiwen" placeholder="例:36.5" value="{$newyqdk['tiwen']}" class="inputclass">
+								</div>
+							</div>
+							{loop $set $row}
+							<div style="line-height: 30px;  width: 100%; margin-top: 5%;">
+								<div>{php echo yqselect($row,'title')}:</div>
+								{php $yqdkdata = yqselect($row,'data')}
+								{loop $yqdkdata $key2 $item}
+								<div style="margin-left: 40px;">
+									{if yqselect($row,'type') == 'checkbox'} 
+										<input type="{php echo yqselect($row,'type')}"  name="add[{$row}][]" id="add{$row}{$key2}" value="{$key2}" {if in_array($key2,$newyqdk['content'][$row])} checked {/if}/>
+									{else}  
+										<input type="{php echo yqselect($row,'type')}" name="add[{$row}]" id="add{$row}{$key2}" value="{$key2}" {if $key2 == $newyqdk['content'][$row]} checked {/if}/>
+									{/if} 
+									<label for="add{$row}{$key2}">{$item}</label>
+								</div>
+								{/loop}
+							</div>
+							{/loop}
+							<input type="hidden" name="bj_id" value={$bj['sid']}>
+							<input type="hidden" name="nj_id" value={$nj['sid']}>
+							<input type="hidden" name="openid" value={$openid}>
+						</div>
+						<li class="user_name">
+						</li>
+					</form>
+				</ul>
+			</div>
+			<div class="submitBtn mainColor" onclick="Tijiao();">提交</div>
+		</div>
+	</div>
+</div>
+    <div id="common_progress" class="common_progress_bg"><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>
+
+    <div class="selectList" id="selectList" style="z-index:100000;display:none;">
+        <div class="single" style="z-index:100000;border-radius: 5%;">
+            <ul>
+                <span style="color:#444;font-size: 16px;line-height: 30px;height: 30px;font-weight: bold">切换学生</span>
+                <div style="overflow-x: hidden;overflow-y: auto;max-height:360px;">
+                {loop $user $row}
+                <li onclick="isSelect({$row['id']},{$row['schoolid']});">
+                    <img src="{php echo tomedia($row['icon'])}" class="stuimg">
+                    <div class="stutext">
+                        <div class="stutitle">
+                            <div style="float:left;">姓名：{$row['s_name']}</div>{if $row['sex'] == 1}<div class="boytip"></div>{/if}{if $row['sex'] == 0}<div class="girltip"></div>{/if}&nbsp;&nbsp;<div class="pard2">{$row['pard']}</div>
+                        </div>
+                        <div class="stutitle">班级：{$row['bjname']}</div>
+                    </div>
+    
+                </li>
+                {/loop}
+                </div>
+            </ul>
+        </div>
+    </div>
+
+    <input id="flag" value="1" type="hidden">
+    <input id="nowtime" value="{php echo date('Y-m-d',TIMESTAMP)}" type="hidden">
+</body>	
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+	}
+}, 100);
+
+</script>
+<script type="text/javascript">
+function Tijiao(){
+    wxGetLocation();
+}
+$("#Changesf").on('click', function () {
+    $('#selectList').show();
+});
+$("#selectList").on('click', function () {
+    $('#selectList').hide();
+    $('html,body').removeClass('ovfHiden');
+});
+
+
+//阻止页面跳转监听
+var IsBlockReturn = false;
+window.addEventListener("popstate", function(e) { 
+	if(IsBlockReturn === true){
+		yqback()
+	}
+}, false); 
+
+//阻止页面跳转实际函数
+function pushHistory() { 
+    var state = { 
+        title: "title", 
+        url: "#"
+    }; 
+    window.history.pushState(state, "title", "#"); 
+}
+
+$("#sign").on('click', function () {
+    $.post("{php echo $this->createMobileUrl('comajax', array('op' => 'GetYqDkInfo'))}",{ sid: "{$it['sid']}", schoolid: "{$schoolid}" },function(data){
+        if(data.result){
+            jTips(data.msg);
+        }else{
+            $('.all').animate({'left':0},150);
+            IsBlockReturn = true;
+            pushHistory()
+        }
+    },'json');	
+});
+
+function yqback(){
+    $('.all').animate({'left':'100vw'},150);
+    IsBlockReturn = false;
+}
+function isSelect(userid,schoolid){
+    location.href = "{php echo $this->createMobileUrl('syqdk')}"+ '&userid=' + userid + '&schoolid=' + schoolid;
+}
+function wxGetLocation(){
+    var form = new FormData(document.getElementById('form'));
+    if(form.get('tiwen') === null || form.get('tiwen') == ''){
+        jTips('请填写体温');
+        return
+    }
+    wx.getLocation({
+        type: 'gcj02',
+        success: function(res) {
+            latitude = res.latitude;
+            longitude = res.longitude;
+            form.append("lat",latitude);
+            form.append("lng",longitude);
+            form.append("schoolid",`{$schoolid}`);
+            form.append("weid",`{$weid}`);
+            form.append("sid",`{$it['sid']}`);
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('comajax', array('op' => 'Addyqdk'))}",
+                type: "post",
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    var data = jQuery.parseJSON(result);
+                    jTips(data.msg);
+                    $("#dkcount").html(`您已连续打卡${data.dkcount}天`)
+                    let nowtime = $("#nowtime").val();
+	                GetAttendData(nowtime);
+                    window.history.back()
+                },
+                error: function(e) {
+                    alert('访问网络失败');
+                }
+            });
+        },
+        fail:function(){
+            form.append("lat",`{$newyqdk['lat']}`);
+            form.append("lng",`{$newyqdk['lng']}`);
+            form.append("schoolid",`{$schoolid}`);
+            form.append("weid",`{$weid}`);
+            form.append("sid",`{$it['sid']}`);
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('comajax', array('op' => 'Addyqdk'))}",
+                type: "post",
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    var data = jQuery.parseJSON(result);
+                    jTips(data.msg);
+                    $("#dkcount").html(`您已连续打卡${data.dkcount}天`)
+                    let nowtime = $("#nowtime").val();
+	                GetAttendData(nowtime);
+                    window.history.back()
+                },
+                error: function(e) {
+                    alert('访问网络失败');
+                }
+            });
+        }
+    });
+};
+
+</script>
+{php include $this->template('footer');}
+</html>
+
+<script>
+
+var flag = $("#flag").val();
+if (flag == 1){
+	var nowtime = $("#nowtime").val();
+	GetAttendData(nowtime);
+}else{
+	$("#flag").val("");
+}
+
+//设置标注
+function setTip(vacation, absent, signIn, rest) {
+    var date = [];
+    $('.tipBox').text('').removeClass('signin').css('display', 'none');
+    $('.dateBox').removeClass('sginTip').removeClass('leaveTip').removeClass('absentTip');
+
+    if ($(".dayItem").length >= 2) {
+        $('.dayItem:last-child .item').each(function (index, obj) {
+            date.push($(this));
+        });
+    } else {
+        $('.item').each(function (index, obj) {
+            date.push($(this));
+        });
+    }
+    setCurrentDay(date);
+
+
+    if (checkSet()) {
+        $(date).each(function (index, obj) {
+
+            if (signIn.indexOf(parseInt($(this).find('.dateBox').text())) != -1) {
+                $(this).find('.tipBox').text('签');
+                $(this).find('.tipBox').addClass('signin');
+                $(this).find('.tipBox').css('display', 'none');
+                $(this).find('.dateBox').addClass('sginTip');
+            }
+            if (absent.indexOf(parseInt($(this).find('.dateBox').text())) != -1) {
+                $(this).find('.tipBox').text('缺');
+                $(this).find('.tipBox').css('display', 'none');
+
+                $(this).find('.dateBox').addClass('absentTip');
+            }
+
+
+        });
+    }
+}
+
+
+//设置当前日期
+function setCurrentDay(dateItem) {
+    var date = new Date();
+    var year = $(".selectYear").text().substring(0, 4);
+    var month = $(".selectMonth").text().substring(0, 2);
+    var tempMonth = parseInt(month);
+    var tempYear = parseInt(year);
+    var date = new Date();
+    var currentYear = date.getFullYear();
+    var currentMonth = date.getMonth() + 1;
+    var day = date.getDate();
+    if (tempYear == currentYear && tempMonth == currentMonth) {
+        var dayItem = $('.item .dateBox').text();
+        $(dateItem).each(function (index, obj) {
+            if ($(this).find('.dateBox').text() == day) {
+                $(this).find('.outSide').css('display', 'block');
+            }
+        });
+    }
+}
+
+function initAttendData(array) {
+    var vacation = []; //请假
+    var absent = []; //缺
+    var signIn = []; //微信签
+    var rest = []; //休
+    if (array != null && array.length > 0) {
+        for (var i = 0; i < array.length; i++) {
+            var type = array[i]["Type"];
+            var date = array[i]["Date"];
+            //微信签到
+            if (type == "wx" || type == "card") {
+                signIn.push(date);
+            }
+            //缺卡
+            else if (type == "skip") {
+                absent.push(date);
+            }
+            //请假
+            else if (type == "leave") {
+                vacation.push(date);
+            }
+            if (type == "holiday") {
+                rest.push(date);
+            }
+        }
+    }
+    setTip(vacation, absent, signIn, rest);
+}
+
+//获取状态数据
+function GetAttendData(time) {
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('dongtaiajax', array('op' => 'GetYqDkStuData','schoolid' => $schoolid), true)}",
+		type: "post",
+		data: {
+			sDate: time,
+			sid: "{$it['sid']}",
+			schoolid: "{$schoolid}"
+		},
+		success: function (data) {
+
+			var dt = eval("(" + data + ")");
+			var count = dt.AttendanceCount;
+            var lstAttendInfo = dt.lstAttendInfo;
+			initAttendData(lstAttendInfo);
+		}
+	});
+}
+
+//蒙版初始化
+function popInitialize() {
+    var width = $(window).width();
+    var height = $(window).height();
+    $('.popupWxAlertxBox').css({ 'width': width, 'height': height }); //微信打开弹窗
+}
+//检查是否允许设置标注
+function checkSet(e) {
+    var year = $(".selectYear").text().substring(0, 4);
+    var month = $(".selectMonth").text().substring(0, 2);
+    var tempMonth = parseInt(month);
+    var tempYear = parseInt(year);
+    var date = new Date();
+    var currentYear = date.getFullYear();
+    var currentMonth = date.getMonth() + 1;
+    var day = date.getDate();
+
+    if (tempYear > currentYear) {
+        return false;
+    }
+    if (tempYear == currentYear && tempMonth > currentMonth) {
+        return false;
+    }
+
+    return true;
+};
+
+
+$(function () {
+    var array = []
+    CalendarHandler.initialize();
+    popInitialize(); //蒙版初始化
+    initAttendData(array);
+    $(".choice_baby").on("click", function (e) {
+        e.stopPropagation();
+        $(".slide_left_menu_bg").addClass("show_menu_bg");
+    });
+    $(".slide_left_menu_bg").on("click", function () {
+        $(this).removeClass("show_menu_bg");
+    });
+
+});
+var CalendarHandler = {
+currentYear: 0,
+currentMonth: 0,
+isRunning: false,
+showYearStart: 2009,
+tag: 0,
+initialize: function () {
+    $calendarItem = this.CreateCalendar(0, 0, 0);
+    $("#Container").append($calendarItem);
+
+
+    $("#selectYearDiv").css("width", $("#context").width() + "px");
+    $("#selectMonthDiv").css("width", $("#context").width() + "px");
+    $("#centerCalendarMain").css("width", $("#context").width() + "px");
+
+
+    $("#Container").css("height", "0px").css("width", "0px").css("margin-left", $("#context").width() / 2 + "px").css("margin-top", ($("#context").height() - 30) / 2 + "px");
+    $("#Container").animate({
+        width: $("#context").width() + "px",
+        height: ($("#context").height() - 30) * 2 + "px",
+        marginLeft: "0px",
+        marginTop: "0px"
+    }, 300, function () {
+        $calendarItem.css("visibility", "visible");
+    });
+    $(".dayItem").css("width", $("#context").width() + "px");
+    var itemPaddintTop = $(".dayItem").height() / 6;
+    $(".item").css({
+        "width": $(".week").width() / 7 + "px",
+        "line-height": itemPaddintTop + "px",
+        "height": itemPaddintTop + "px"
+    });
+    //            $(".currentItem>a").css("margin-left", ($(".item").width() - 25) / 2 + "px").css("margin-top", ($(".item").height() - 25) / 2 + "px");
+    $(".week>div").css("width", $(".week").width() / 7 + "px");
+    this.CSS();
+},
+CreateSelectYear: function (showYearStart) {
+    CalendarHandler.showYearStart = showYearStart;
+    $(".currentDay").show();
+    $("#selectYearDiv").children().remove();
+    var yearindex = 0;
+    for (var i = showYearStart; i < showYearStart + 12; i++) {
+        yearindex++;
+        if (i == showYearStart) {
+            $last = $("<div>往前</div>");
+            $("#selectYearDiv").append($last);
+            $last.click(function () {
+                CalendarHandler.CreateSelectYear(CalendarHandler.showYearStart - 10);
+            });
+            continue;
+        }
+        if (i == showYearStart + 11) {
+            $next = $("<div>往后</div>");
+            $("#selectYearDiv").append($next);
+            $next.click(function () {
+                CalendarHandler.CreateSelectYear(CalendarHandler.showYearStart + 10);
+            });
+            continue;
+        }
+
+        if (i == this.currentYear) {
+            $yearItem = $("<div class=\"currentYearSd\" id=\"" + yearindex + "\">" + i + "</div>")
+
+        } else {
+            $yearItem = $("<div id=\"" + yearindex + "\">" + i + "</div>");
+        }
+        $("#selectYearDiv").append($yearItem);
+
+        $yearItem.click(function () {
+            $calendarItem = CalendarHandler.CreateCalendar(Number($(this).html()), 1, 1);
+            $("#Container").append($calendarItem);
+            CalendarHandler.CSS();
+            CalendarHandler.isRunning = true;
+            $($("#Container").find(".dayItem")[0]).animate({
+                height: "0px"
+            }, 300, function () {
+                $(this).remove();
+                CalendarHandler.isRunning = false;
+            });
+            $("#centerMain").animate({
+                marginLeft: -$("#center").width() + "px"
+            }, 500);
+        });
+        if (yearindex == 1 || yearindex == 5 || yearindex == 9) $("#selectYearDiv").find("#" + yearindex).css("border-left-color", "#fff");
+        if (yearindex == 4 || yearindex == 8 || yearindex == 12) $("#selectYearDiv").find("#" + yearindex).css("border-right-color", "#fff");
+
+    }
+    $("#selectYearDiv>div").css("width", ($("#center").width() - 4) / 4 + "px").css("line-height", ($("#center").height() - 4) / 3 + "px");
+    $("#centerMain").animate({
+        marginLeft: "0px"
+    }, 300);
+},
+CreateSelectMonth: function () {
+    $(".currentDay").show();
+    $("#selectMonthDiv").children().remove();
+    for (var i = 1; i < 13; i++) {
+        if (i == this.currentMonth) $monthItem = $("<div class=\"currentMontSd\" id=\"" + i + "\">" + i + "月</div>");
+        else $monthItem = $("<div id=\"" + i + "\">" + i + "月</div>");
+        $("#selectMonthDiv").append($monthItem);
+        $monthItem.click(function () {
+            $calendarItem = CalendarHandler.CreateCalendar(CalendarHandler.currentYear, Number($(this).attr("id")), 1);
+            $("#Container").append($calendarItem);
+            CalendarHandler.CSS()
+            CalendarHandler.isRunning = true;
+            $($("#Container").find(".dayItem")[0]).animate({
+                height: "0px"
+            }, 300, function () {
+                $(this).remove();
+                CalendarHandler.isRunning = false;
+            });
+            $("#centerMain").animate({
+                marginLeft: -$("#center").width() + "px"
+            }, 500);
+        });
+        if (i == 1 || i == 5 || i == 9) $("#selectMonthDiv").find("#" + i).css("border-left-color", "#fff");
+        if (i == 4 || i == 8 || i == 12) $("#selectMonthDiv").find("#" + i).css("border-right-color", "#fff");
+    }
+    $("#selectMonthDiv>div").css("width", ($("#center").width() - 4) / 4 + "px").css("line-height", ($("#center").height() - 4) / 3 + "px");
+    $("#centerMain").animate({
+        marginLeft: -$("#center").width() * 2 + "px"
+    }, 300);
+},
+IsRuiYear: function (aDate) {
+    return (0 == aDate % 4 && (aDate % 100 != 0 || aDate % 400 == 0));
+},
+CalculateWeek: function (y, m, d) {
+    var arr = "7123456".split("");
+    with (document.all) {
+        var vYear = parseInt(y, 10);
+        var vMonth = parseInt(m, 10);
+        var vDay = parseInt(d, 10);
+    }
+    var week = arr[new Date(y, m - 1, vDay).getDay()];
+    return week;
+},
+CalculateMonthDays: function (m, y) {
+    var mDay = 0;
+    if (m == 0 || m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) {
+        mDay = 31;
+    } else {
+        if (m == 2) {
+            //判断是否为润年
+            var isRn = this.IsRuiYear(y);
+            if (isRn == true) {
+                mDay = 29;
+            } else {
+                mDay = 28;
+            }
+        } else {
+            mDay = 30;
+        }
+    }
+    return mDay;
+},
+CreateCalendar: function (y, m, d) {
+    $dayItem = $("<div class=\"dayItem\"></div>");
+    $borderLine = $("<div class=\"borderLine\"></div>");
+    //获取当前月份的天数
+    var nowDate = new Date();
+    if (y == nowDate.getFullYear() && m == nowDate.getMonth() + 1 || (y == 0 && m == 0))
+        $(".currentDay").hide();
+    var nowYear = y == 0 ? nowDate.getFullYear() : y;
+    this.currentYear = nowYear;
+    var nowMonth = m == 0 ? nowDate.getMonth() + 1 : m;
+    this.currentMonth = nowMonth;
+    var nowDay = d == 0 ? nowDate.getDate() : d;
+    $(".selectYear").html(nowYear + "年");
+    nowMonth = nowMonth > 9 ? nowMonth : '0' + nowMonth;
+    $(".selectMonth").html(nowMonth + "月");
+    //获取年-月-天数
+    var nowDaysNub = this.CalculateMonthDays(nowMonth, nowYear);
+    //获取当月第一天是星期几
+
+    var nowWeek = parseInt(this.CalculateWeek(nowYear, nowMonth, 1));
+    //console.log(nowWeek);
+
+    //获取上个月的天数
+    var t = -1;
+    //根据某月第一天是周几 生成几个空格
+    switch (nowWeek) {
+        case 1:
+            for (var i = 0; i < 1; i++) {
+                t++;
+                $dayItem.append("<a class=\"item lastItem\"><div class='dateBox weekBox'>" + 999 + "</div><div class='outSide'></div></a>");
+            }
+            break;
+        case 2:
+            for (var i = 0; i < 2; i++) {
+                t++;
+                $dayItem.append("<a class=\"item lastItem\"><div class='dateBox weekBox'>" + 999 + "</div><div class='outSide'></div></a>");
+            }
+            break;
+        case 3:
+            for (var i = 0; i < 3; i++) {
+                t++;
+                $dayItem.append("<a class=\"item lastItem\"><div class='dateBox weekBox'>" + 999 + "</div><div class='outSide'></div></a>");
+            }
+            break;
+        case 4:
+            for (var i = 0; i < 4; i++) {
+                t++;
+                $dayItem.append("<a class=\"item lastItem\"><div class='dateBox weekBox'>" + 999 + "</div><div class='outSide'></div></a>");
+            }
+            break;
+        case 5:
+            for (var i = 0; i < 5; i++) {
+                t++;
+                $dayItem.append("<a class=\"item lastItem\"><div class='dateBox weekBox'>" + 999 + "</div><div class='outSide'></div></a>");
+            }
+            break;
+        case 6:
+            for (var i = 0; i < 6; i++) {
+                t++;
+                $dayItem.append("<a class=\"item lastItem\"><div class='dateBox weekBox'>" + 999 + "</div><div class='outSide'></div></a>");
+            }
+            break;
+        case 7:
+            //no thing
+            break;
+    }
+    //生成当月的日期
+    for (var i = 0; i < nowDaysNub; i++) {
+        t++;
+        if (t % 7 == 0) {
+            $dayItem.append("<div class=\"borderLine\"></div>");
+        }
+        if (i == (nowDay - 1)) {
+            var week = parseInt(this.CalculateWeek(nowYear, nowMonth, i + 1));
+            if (week == 6 || week == 7) {
+                $dayItem.append("<a class=\"item\"><div class='dateBox weekBox'>" + (i + 1) + "</div><div class='outSide'></div><div class='tipBox'></div></a>");
+            } else {
+                $dayItem.append("<a class=\"item\"><div class='dateBox'>" + (i + 1) + "</div><div class='outSide'></div><div class='tipBox'></div></a>");
+            }
+
+        } else {
+            var week = parseInt(this.CalculateWeek(nowYear, nowMonth, i + 1));
+            if (week == 6 || week == 7) {
+                $dayItem.append("<a class=\"item\"><div class='dateBox weekBox'>" + (i + 1) + "</div><div class='outSide'></div><div class='tipBox'></div></a>");
+            } else {
+                $dayItem.append("<a class=\"item\"><div class='dateBox'>" + (i + 1) + "</div><div class='outSide'></div><div class='tipBox'></div></a>");
+            }
+
+        }
+
+    }
+    $dayItem.append("<div class=\"borderLine\"></div>");
+    $dayItem.append("<div class='bottomBoxNav'><div class='itemBox'><span class='itemDots'></span><span class='itemNav'>已签</span></div><div class='itemBox'><span class='itemDotsQx'></span><span class='itemNav'>未签</span></div>");
+
+    //console.log($dayItem);
+    return $dayItem;
+},
+CSS: function () {
+    $(".dayItem").css("width", $("#context").width() + "px");
+    var itemPaddintTop = ($(".dayItem").height() - 5) / 6;
+    $(".item").css({
+        "width": $(".week").width() / 7 + "px",
+        "line-height": 50 + "px",
+        "height": 50 + "px"
+    });
+    //   $(".currentItem>a").css("margin-left", ($(".item").width() - 25) / 2 + "px").css("margin-top", ($(".item").height() - 25) / 2 + "px");
+},
+CalculateNextMonthDays: function () {
+    if (this.isRunning == false) {
+        $(".currentDay").show();
+        var m = this.currentMonth == 12 ? 1 : this.currentMonth + 1;
+        var y = this.currentMonth == 12 ? (this.currentYear + 1) : this.currentYear;
+        var d = 0;
+        var nowDate = new Date();
+        if (y == nowDate.getFullYear() && m == nowDate.getMonth() + 1) d = nowDate.getDate();
+        else d = 1;
+        $calendarItem = this.CreateCalendar(y, m, d);
+        $("#Container").append($calendarItem);
+        var year = $(".selectYear").text().substring(0, 4);
+        var month = $(".selectMonth").text().substring(0, 2);
+        var time = year + "-" + month + "-01";
+
+        //补班
+        //GetOverTime(time);
+        GetAttendData(time);
+        //GetHolidayData(time);
+        this.CSS();
+        this.isRunning = true;
+        $($("#Container").find(".dayItem")[0]).animate({
+            height: "0px"
+        }, 300, function () {
+
+
+            $(this).remove();
+            CalendarHandler.isRunning = false;
+        });
+    }
+},
+CalculateLastMonthDays: function () {
+    if (this.isRunning == false) {
+        $(".currentDay").show();
+        var nowDate = new Date();
+        var m = this.currentMonth == 1 ? 12 : this.currentMonth - 1;
+        var y = this.currentMonth == 1 ? (this.currentYear - 1) : this.currentYear;
+        var d = 0;
+
+        if (y == nowDate.getFullYear() && m == nowDate.getMonth() + 1) d = nowDate.getDate();
+        else d = 1;
+        $calendarItem = this.CreateCalendar(y, m, d);
+        $("#Container").append($calendarItem);
+
+        var year = $(".selectYear").text().substring(0, 4);
+        var month = $(".selectMonth").text().substring(0, 2);
+        var time = year + "-" + month + "-01";
+
+        GetAttendData(time);
+        //补班
+        //GetOverTime(time);
+        //setTip();
+        var itemPaddintTop = $(".dayItem").height() / 6;
+        this.CSS();
+        this.isRunning = true;
+
+
+        $($("#Container").find(".dayItem")[0]).animate({
+            height: "0px"
+        }, 300, function () {
+            $(this).remove();
+            CalendarHandler.isRunning = false;
+        });
+    }
+},
+CreateCurrentCalendar: function () {
+    if (this.isRunning == false) {
+        $(".currentDay").hide();
+        $calendarItem = this.CreateCalendar(0, 0, 0);
+        $("#Container").append($calendarItem);
+        this.isRunning = true;
+        $($("#Container").find(".dayItem")[0]).animate({
+            height: "0px"
+        }, 300, function () {
+            $(this).remove();
+            CalendarHandler.isRunning = false;
+        });
+        this.CSS();
+        $("#centerMain").animate({
+            marginLeft: -$("#center").width() + "px"
+        }, 500);
+    }
+},
+}
+
+</script>

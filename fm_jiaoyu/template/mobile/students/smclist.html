@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbum.css?v=5.00716" />	
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+    {php include $this->template('port');}
+</head>
+<style type="text/css">
+.tips_desc {
+    font-size: 1rem;
+    padding: 1.30rem 0 0.1rem 1.4rem;
+    color: #666;
+}
+.sick_list li {
+    overflow: hidden;
+    height: 5rem;
+    box-sizing: border-box;
+    padding: 10px 10px 0 10px;
+    margin: 1rem 1.2rem 0.2rem 1.2rem;
+    padding: 0.58rem 0.4rem;
+    background-color: #fff;
+    position: relative;
+    border-radius: 0.5rem;
+    display: flex;
+}
+.sick_list li .user_img {
+    float: left;
+    margin-right: 1rem;
+}
+.sick_list li .user_img img {
+    width: 3.92rem;
+    height: 3.92rem;
+    border-radius: 50%;
+}
+.sick_list li .user_name {
+    float: left;
+    padding-left: 0.4rem;
+    width: 75%;
+}
+.sick_list li .user_name .user_name_1 {
+    line-height: 1.6rem;
+    font-size: 1rem;
+    color: #333;
+}
+.sick_list li .user_name .user_name_1 .u_class {
+    font-size: 0.6rem;
+    color: #666;
+}
+.sick_list li .user_name .user_name_2 {
+    line-height: 1.3rem;
+    color: #ff9f22;
+}
+.sick_list li .user_name .user_name_3 {
+    font-size: 0.6rem;
+    color: #a1a1a1;
+}   
+</style>
+<body>
+    <div>
+        <div class="tips_desc">{$student['s_name']}的晨检结果 : 
+            <!-- <button style=" float: right; margin-right: 20px; color: #fff; font-size: 14px; border: 1px solid; border-radius: 10px; background: #00B7F3;width: 50px; height: 25px;" onclick="GoEchars()">图表</button> -->
+        </div>
+    </div>
+<div class="all">	
+    <div>
+        <ul class="sick_list" >
+            {loop $checklist $key $row}
+            <li class="main" time="{$key}" onclick="gomcdetail(`{$row['id']}`)">
+                <div class="user_img">
+                    <img src="{if $student['icon']}{php echo tomedia($student['icon'])}{else}{php echo tomedia($school['spic'])}{/if}">
+                </div>
+                <div class="user_name">
+                    <div class="user_name_1">
+                        <span class="u_name">{$student['s_name']}&nbsp;&nbsp;</span>
+                        <span class="u_class">{php echo date("Y年m月d日",$row['createdate'])}</span>
+                    </div>
+                        {if $row['tiwen'] < 35.5 || $row['tiwen'] >37.5}
+                        <div class="user_name_2">
+                            {$row['tiwen']}℃
+                        </div>
+                        {else}
+                        <div>
+                            {$row['tiwen']}℃
+                        </div>
+                        {/if}
+                    
+                        <div class="user_name_3">
+                            (正常体温参考值：35.5℃ - 37.5℃)
+                        </div>
+                    
+                </div>
+            </li>
+            {/loop}
+        </ul>
+    </div>
+</div>
+</body>
+<div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=5.00311"></script>
+<script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+{php include $this->template('footer');}
+</html>
+<script>
+function gomcdetail(id){
+    location.href = "{php echo $this->createMobileUrl('smcdetail', array('schoolid' => $schoolid), true)}"+ '&id=' + id;
+}
+
+function GoEchars(){
+    location.href = "{php echo $this->createMobileUrl('mcechars', array('schoolid' => $schoolid), true)}"+ '&id=' + `{$it['sid']}`;
+}
+
+// 底部加载更多
+new Scroll_load({
+    "limit": "0",
+    "pageSize": 28,
+    "ajax_switch": true,
+    "ul_box": ".sick_list",
+    "li_item": ".sick_list .main",
+    'param' : ['time'],
+    "ajax_url": "{php echo $this->createMobileUrl('smclist', array('schoolid' => $schoolid ,'op'=>'scroll_more'))}",
+    "page_name": "parent_home_index",
+    "after_ajax": function () {
+    }
+}).load_init();
+</script>

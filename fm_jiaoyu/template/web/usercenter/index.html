@@ -1,0 +1,561 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<style>
+/**没有内容的提示图片**/
+.no_conmentimg{max-width: 30%;}
+/**上传视频默认样式**/
+.favorites_play_icon { width: 100%; height: 100%; position: absolute; left: 162%; top: 0; background: url({OSSURL}public/mobile/img/v_play_icon.png) no-repeat center; background-size: 40px; }
+.del_btn { height: 20px; width: 20px; position: absolute; left: 93px; top: 0px; background: url({OSSURL}public/mobile/img/delete_say_btn.png) no-repeat center; background-size: 18px; z-index: 2; }
+/**学生进离校细部样式**/
+.jl_box{width:100%;height:210px}
+.jl_leftbox{width:16%;float: left;height:200px}
+.jl_rigntbox{width:84%;float: right;height:300px}
+.stu_boxs{position: relative;width: 100%; height: 280px; border-radius: 5px; background-color: #f7f7f7;overflow-y: scroll;}
+.stu_boxs .stu_nubline{ margin-left: 5%; width: 90%; padding-top: 5px; float: left; border-bottom: 1px #c1c1c1 solid; }
+.stu_nubline .stutype{ float: left; }
+.stu_nubline .stunub{ float: right; }
+.stu_list{margin-left: 5%; width: 90%; padding-top: 5px; float: left;}
+.stu_box { width: 12%; height: 50px; margin: 5px; float: left; text-align: center;user-select:none;}
+.stu_list .noact { background-image: url({OSSURL}public/mobile/img/check_icon_off.png); background-size: 15px 15px; background-repeat: no-repeat; background-position: top right; }
+.stu_list .act { background-image: url({OSSURL}public/mobile/img/icon-checked.png); background-size: 15px 15px; background-repeat: no-repeat; background-position: top right; }
+.stu_box img { width: 26px; height: 26px; border-radius: 50%; box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2); }
+/**消除课程列表的tab下划线**/
+.table.table-borderless td { border: none; }
+/**我的考勤日历**/
+.box{width: 100%;height: 100%;user-select: none;}
+.head{width: 100%;height:30px;cursor: pointer;max-width: 420px;}
+.head .prev_month,.head .next_month{width: 20%;text-align: center;float: left;line-height: 13px;font-size:13px;}
+.head .tomon{width: 30%;float: left;text-align: center;line-height: 13px;font-size:13px;}
+.head .now{width: 20%;float: left;text-align: center;line-height: 13px;font-size: 13px;}
+.date ol{width: 100%;height: 30px;background: #dcdbdb;padding: 0;max-width: 420px;}
+.date ol li{display:block;float: left;width: 13.16%;text-align: center;font-size: 13px;color: #444;border: none;padding: 0;line-height: 30px;height: 30px;}
+.date ul{width: 100%;display: flex;flex-direction: row;flex-wrap: wrap;}
+.date ul li{ display: block; width: 10.16%; height: 28px; border-radius: 5px;text-align: center; font-size: 14px; background: #fff; position: relative; margin:13px 6px 6px 6px;}
+.date ul li i{ font-size: 6px; position: absolute; right: 0; bottom: -5px; display: block; height: 3px; line-height: 15px; width: 125%; text-align: center; color: #5a8dee; }
+.date ul li span{display: block;width: 100%;height: 100%;line-height: 28px;text-align: center;}
+.date ul .no_date{color: #cac4c4;line-height:28px}
+.date ul .no_date:hover{cursor:pointer;color: #cac4c4;background: #fff;}
+.date ul .act_wk{color: #FDAC41;}
+.date ul .act_date{background: #2c6de9;color: #fff;box-shadow: 0 2px 4px 0 rgba(90, 141, 238, 0.5) !important;}
+.date ul .qq_date{background: #FDAC41 ;color: #fff;box-shadow: 0 2px 4px 0 rgba(90, 141, 238, 0.5) !important;}
+.date ul .qj_date{background: #FF5B5C;color: #fff;box-shadow: 0 2px 4px 0 rgba(90, 141, 238, 0.5) !important;}
+.date ul .act_today{border:1px solid #2c6de9;}
+.date ul .act_ds{background: ##b8bdc1;color: #fff;}
+/**隐藏超出文字**/
+.tz_hideword{min-width: 89px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+/**播放按钮**/
+.v_play_bg { background-color: rgba(0, 0, 0, 0.4); width: 100%; height: 100%; z-index: 1; top: 0; position: absolute; visibility: visible; }
+.v_play_icon { background: url({OSSURL}public/mobile/img/bv_play_icon.png) no-repeat center; background-size: 46px; width: 50px; height: 50px; z-index: 2; left: 50%; top: 40%; position: absolute; margin-left: -25px; }
+/**视频播放盒子**/
+.viewBox .picBox { width: 100%; height: 300px; }
+/**语音播放横条**/
+.app-audio{undefinedanimation:undefined;box-sizing: border-box;}
+.app-audio .inner{text-align: left;position: relative;}
+.app-audio .inner .audioLeft img{width: 40px;height: 40px;border-radius: 20px;display: inline-block;}
+.app-audio .inner .audioLeft span{position: absolute;font-size: 14px;color: #999;left: 170px;line-height: 36px;}
+.audio_def{ top: 15px; width: 160px; position: relative; height: 36px; display: inline-block; background: url({OSSURL}public/mobile/img/sprite_for-web.png) 0 0 no-repeat; background-size: 150px 36px; cursor: pointer; }
+.audio_play{ top: 15px; width: 160px; position: relative; height: 36px; display: inline-block; background: url({OSSURL}public/mobile/img/player.gif) 0 0 no-repeat; background-size: 150px 36px; cursor: pointer; }
+/**点赞的粉丝**/
+.fansboxs{position: relative;float: left;}
+.fansboxs img{border-radius:50%}
+.card-content video{height: 400px !important;}
+</style>
+<link href="{OSSURL}template/public/css/app-chat.css" rel="stylesheet">
+<script src="{OSSURL}public/mobile/js/faceMap.js?v=5.61" type="text/javascript"></script>
+<div class="main display_fixed">
+	<div class="col-xs-12">
+		<div class="card">
+			<div class="card-content pb-1">
+				<div class="card-body px-0">
+					<div class="col-xs-2">
+						<div class="user-profile" style="display: inline-flex;">
+							<div class="user-profile-images">
+								<img src="{$mythumb}" class="user-profile-image rounded" alt="user profile image" style="border-radius:50%" height="45" width="45">
+							</div>
+							<div class="user-profile-text ml-50">
+								<h4 class="mt-0 mb-0 text-bold-500 profile-text-color">{$myteacherinfo['tname']}</h4><small>{$myTitle}</small>
+							</div>
+						</div>	
+					</div>
+					<div class="col-xs-8">
+						<ul class="nav user-profile-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0" style="border-bottom: 0px solid #ddd;" role="tablist">
+							<a class="btn btn-light-primary btn-default glow cursor-pointer active mr-1 mb-1 home" onclick="change_left('home')">
+								<i class="fa fa-home"></i> 个人首页
+							</a>
+							<a class="btn btn-light-primary btn-default glow cursor-pointer mr-1 mb-1 bjq" onclick="change_left('bjq')">
+								<i class="fa fa-wechat"></i> {if $school['bjqstyle'] == 'old'}校园动态{else}班级圈{/if}
+							</a>
+							<!-- <a class="btn btn-light-primary btn-default glow cursor-pointer mr-1 mb-1 callbook" onclick="change_left('callbook')"> -->
+								<!-- <i class="fa fa-book"></i> 通讯录 -->
+							<!-- </a> -->
+							<a class="btn btn-light-primary btn-default glow cursor-pointer mr-1 mb-1 user" onclick="change_left('user')">
+								<i class="fa fa-files-o"></i> 个人资料
+							</a>
+						</ul>
+						<small class="text-muted"><i class="fa fa-exclamation-triangle warning"></i> 各类型通知仅显示最近10条,更多内容前往手机端查看</small>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 顶部数据统计 -->
+	<div class="col-xs-12 top_data_boxs pl-0 pr-0">
+		<div class="loading-layer" id="header_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		{if !$schooltype}
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-warning mx-auto my-1">
+							<i class="fa fa-file-code-o"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">我的作业</p>
+						<h2 class="mb-0" id="zy_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		{else}
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-warning mx-auto my-1">
+							<i class="fa fa-language"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">已授课时</p>
+						<h2 class="mb-0" id="zy_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		{/if}
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-primary mx-auto my-1">
+							<i class="fa fa-volume-up"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">发布通知</p>
+						<h2 class="mb-0" id="tz_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-info mx-auto my-1">
+							<i class="fa fa-check"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">我已签到</p>
+						<h2 class="mb-0" id="qd_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-success mx-auto my-1">
+							<i class="fa fa-wechat"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">我的动态</p>
+						<h2 class="mb-0" id="dt_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-danger mx-auto my-1">
+							<i class="fa fa-comment-o"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">我的留言</p>
+						<h2 class="mb-0" id="ly_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-2 col-md-2 col-sm-2">
+			<div class="card text-center">
+				<div class="card-content">
+					<div class="card-body">
+						<div class="badge-circle badge-circle-lg badge-circle-light-warning mx-auto my-1">
+							<i class="fa fa-tag"></i>
+						</div>
+						<p class="text-muted mb-0 line-ellipsis">我的请假</p>
+						<h2 class="mb-0" id="qj_nub">0</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 pl-0 pr-0">
+		<!-- 左侧大盒子 -->
+		<div class="col-xs-9 pl-0 pr-0 left_boxs">
+			<div class="loading-layer" id="left_bigload" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+			
+		</div>
+		<!-- 右侧大盒子 -->
+		<div class="col-xs-3 right_boxs">
+			<!-- 我的考勤日历 -->
+			<div class="card widget-overlay my_canderboxs">
+				<div class="card widget-overlay-card mb-0">
+					<div class="card-content">
+						<div class="loading-layer" id="kqrlheed_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+						<div class="card-body p-0">
+							<img class="card-img img-fluid" style="width: 100%;" src="{OSSURL}public/web/images/finance.jpg" alt="Card image">
+							<div class="card-img-overlay overlay-primary">
+								<div class="d-flex justify-content-between">
+									<span class="card-title text-white"><span class="bullet bullet-white bullet-sm"></span> 我的考勤</span>
+								</div>
+								<h1 class="font-large-2 text-center widget-overlay-card-title candertip"></h1>
+							</div>
+						</div>
+					</div>
+				</div>	
+				<div class="card widget-overlay-content mb-0">
+					<div class="card-content text-center">
+						<button class="btn btn-lg btn-white shadow inclusive-btn" type="button" style="font-size:14px;">我的考勤记录</button>
+					</div>
+					<div class="card-body px-0 pb-0">	
+						<div class="box">
+							<section class="date px-2" style="width:100%;min-width: 338px;max-width: 498px;overflow:hidden">
+								<div class="head">
+									<div class="prev_month">上一月</div>
+									<div class="tomon"><span class="year"></span>年 <span class="s_month"></span>月</div>
+									<div class="tomon">今天</div>
+									<div class="next_month">下一月</div>
+								</div>
+								<ol><li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li></ol>
+								<div class="loading-layer" id="kqrlboot_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+								<ul>
+									
+								</ul>
+							</section>
+						</div>
+					</div>
+					{php include $this->template('web/usercenter/canderjs');}
+				</div>
+				<div class="card-footer d-flex justify-content-between border-top">
+					<div class="d-flex">
+						<div class="d-inline-flex align-items-center mr-2">
+							<span class="bullet bullet-primary bullet-sm"></span>
+							<small>出勤</small>
+						</div>
+						<!-- <div class="d-inline-flex align-items-center mr-2"> -->
+							<!-- <span class="bullet bullet-warning bullet-sm"></span> -->
+							<!-- <small>缺勤</small> -->
+						<!-- </div> -->
+						<div class="d-inline-flex align-items-center mr-2">
+							<span class="bullet bullet-danger bullet-sm"></span>
+							<small>请假</small>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 消息留言 -->
+			<div class="card msg_boxs">
+				<div class="card-content">
+					<div class="card-body" style="min-height: 307px;">
+						<h2 class="card-title mb-1"><span class="bullet bullet-danger bullet-sm"></span> 留言消息</h2>
+						<ul class="chat-sidebar-list chatbox" style="max-height:600px;overflow-y:scroll">
+							{if $lyList}
+								{loop $lyList $row}
+								<li class="d-flex chat-demo-button justify-content-between" chat_id="{$row['id']}" data_name="{$row['name']}" data_icon="{$row['icon']}" data_bjname="{$row['bjname']}">
+									<div class="d-flex align-items-center">
+										<div class="avatar m-0 mr-50"><img src="{$row['icon']}" height="36" width="36" alt="sidebar user image">
+										</div>
+										<div class="chat-sidebar-name"><h5 class="mb-0">{$row['name']}</h5><span class="text-muted">{$row['bjname']}</span></div>
+									</div>
+									{if $row['count']}
+									<div class="d-flex align-items-center"><span class="badge badge-pill badge-danger">{$row['count']}</span></div>
+									{/if}
+								</li>
+								{/loop}
+							{else}
+								<div class="user-profile-birthday-image text-center p-2"><img class="img-fluid no_conmentimg" src="{OSSURL}public/mobile/img/no_data_icon.png" alt="image"></div>
+							{/if}
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- 今日课表 -->
+			<div class="card today_kbiao">
+				<div class="card-header" >
+					<div style="display: flex; justify-content: space-between;">
+						<h2 class="card-title"><span class="bullet bullet-success bullet-sm"></span> 今日课表</h2>
+						{if $_W['schooltype']}
+						<small class="text-muted" style="margin-top: 15px;">仅显示线下课程</small>
+						{/if}
+					</div>
+				</div>
+				<div class="card-content">
+					<div class="card-body">
+						<ul class="widget-timeline ps ps--active-y ml-2" style="overflow-y: auto !important;">
+							{if $kcbiao}
+							{loop $kcbiao $row}
+							<li class="timeline-items timeline-icon-{$row['status']} active">
+								<div class="timeline-time">{$row['sdname']}</div>
+								<h5 class="timeline-title">{$row['bjname']}</h5>
+								<div class="timeline-content">
+									<img src="{$row['icon']}" alt="document" style="border-radius: 50%; width: 27px; height: 27px;" class="mr-50">{$row['name']}{$row['othertips']}
+								</div>
+							</li>
+							{/loop}
+							{else}
+							<div class="user-profile-birthday-image text-center p-2">
+								<img class="img-fluid no_conmentimg" src="{OSSURL}public/mobile/img/nothing_jrwpk.png" alt="image">
+							</div>
+							{/if}
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{php include $this->template('web/usercenter/chat');}
+<input type="hidden" id="nowbjid" value="{$bj_id}">
+<input type="hidden" id="nowbjq_setid" value="{$bj_id}">
+<!-- 通知作业弹框 modal -->
+<div class="modal fade" id="notice_modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog uploader-modal modal-lg" role="document" style="min-width:800px!important;left:30%;top: 5%;">		
+		<div class="loading-layer" id="notice_load"><div><img style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="notice_boxs">			
+			
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+var chat_id = 0;//顶部数字滚动
+{if $schooltype}
+	move('zy_nub',`{$mytj['zy']}`);
+	move('tz_nub',`{$mytj['bjtz']}`);
+	move('qd_nub',`{$mytj['qd']}`);
+	move('dt_nub',`{$mytj['bjq']}`);
+	move('ly_nub',`{$mytj['ly']}`);
+	move('qj_nub',`{$mytj['qj']}`);
+{else}
+	move('zy_nub',`{$mytj['zy']}`);
+	move('tz_nub',`{$mytj['bjtz']}`);
+	move('qd_nub',`{$mytj['qd']}`);
+	move('dt_nub',`{$mytj['bjq']}`);
+	move('ly_nub',`{$mytj['ly']}`);
+	move('qj_nub',`{$mytj['qj']}`);
+{/if}
+/**顶部导航**/
+//进入本页默认直接加载home
+change_left('home')
+function change_left(page){
+	$(".user-profile-nav a").removeClass("active")
+	$("."+page).addClass("active")
+	$("#left_bigload").show(100)
+	if(page == 'home'){
+		$('.top_data_boxs').show(100)
+	}else{
+		$('.top_data_boxs').hide()
+	}
+	if(page == 'bjq'){
+		$('.msg_boxs').hide()
+		$('.today_kbiao').hide()
+	}else{
+		$('.msg_boxs').show(100)
+		$('.today_kbiao').show(100)
+	}
+	if(page == 'callbook'){
+		$('.my_canderboxs').hide()
+	}else{
+		$('.my_canderboxs').show(100)
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'display','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			tid:"{$nowtid}",
+			page:page
+		},
+		success: function (result) {
+			if (result) {
+				$("#left_bigload").hide()
+				$('.left_boxs').html(result)
+			}
+		}
+	});
+}
+
+function show_notice(noticeid){
+	$('#notice_modal').modal('toggle');
+	$('#notice_boxs').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'notcie','page' => 'detail','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {noticeid:noticeid},
+		success: function (data) {
+			if (data) {
+				$('#notice_load').hide()
+				$('#notice_boxs').html(data)
+			}
+		}	
+	});
+}
+{php  $word = $this->GetSensitiveWord($weid) }
+// 2.敏感词检查
+var sensitive_words = "{$word}";
+var filter = sensitive_words.split('|');
+
+
+/**发布图片生成预览以及判断图片数量**/
+function uploadMultiImage(elm) {
+	var bjqpic = $('#bjq_pic').children(".multi-item").length
+	if(bjqpic < 9){
+		var name = 'bjqpic';
+		util.image( "", function(urls){
+			if((bjqpic + urls.length) <= 9){
+				$.each(urls, function(idx, url){
+					$("#bjq_pic").append('<div class="multi-item"><img onerror="this.src=\'./resource/images/nopic.jpg\'; this.title=\'图片未找到.\'" src="'+url.url+'" class="img-responsive img-thumbnail"><input type="hidden" name="'+name+'[]" value="'+url.attachment+'"><em class="close" title="删除这张图片" onclick="deleteMultiImage(this)">×</em></div>');
+				});
+			}else{
+				ReToastGlobal("抱歉，您最多只能上传最多9张图片")
+				return false
+			}
+		}, {"multiple":true,"direct":false,"fileSizeLimit":5120000});
+	}else{
+		ReToastGlobal("抱歉，您最多只能上传最多9张图片")
+	}
+}
+/**删除选择发布的图片或视频 同时会移除input**/
+function deleteMultiImage(elm){
+	$(elm).parent().remove();
+}
+/**发布视频生成预览以及判断视频数量**/
+function showVideoDialog(elm, options) {
+	var bjqvods = $('#vod_li').children("li").length
+	if(bjqvods < 1){
+		require(["util"], function(util){
+			var btn = $(elm);
+			var ipt = btn.parent().prev();
+			var val = ipt.val();
+			util.audio(val, function(url){
+				if(url && url.attachment && url.url){
+					$("#vod_li").append('<li class="col-sm-2 col-2"><div class="favorites_play_icon"></div><img src="{OSSURL}public/mobile/img/wait_check_bg.png"><div class="del_btn" onclick="deleteMultiImage(this)"></div><input type="hidden" id="bjqvod" value="'+url.attachment+'" autocomplete="off"></li>');
+				}
+			}, {"direct":true,"multi":false,"type":"video","fileSizeLimit":5120000});
+		});
+	}else{
+		ReToastGlobal("抱歉，您最多只能上传一个视频")
+	}
+}
+
+//滚动数字
+function move(div,nub){
+	let oSpan = document.getElementById(div);
+	if(oSpan.innerHTML != undefined ){
+		let d= nub === 'null' ? 0 : nub ;//跳动到最后的数字
+		let s= parseInt(oSpan.innerHTML);//起始起始值 一般是 0 或其他
+		let time=1000;  //所用时间 1000毫秒（ 在1秒内 数值增加到d）;
+		let outTime=0;  //所消耗的时间
+		let interTime=30;
+		let timer = setInterval(function(){
+			outTime+=interTime;
+			if(outTime < time){
+				oSpan.innerHTML= parseInt(d/time*outTime);
+			}else{
+				oSpan.innerHTML=d;
+				clearInterval(timer)
+			}
+		},interTime);
+	}
+	return
+}
+//检查敏感词
+function filters(message){
+	var filtersnub = 0;
+	for (var i = 0; i < filter.length; i++) {
+		var filter_word = filter[i].trim();
+		if (filter_word == "")
+			continue;
+		if (message.indexOf(filter_word) > -1) {
+			filtersnub++
+		}
+	}
+	if(filtersnub>0){
+		return false;
+	}else{
+		return true;
+	}
+}
+function icon_replace(content_box) {
+    var face_map_url = "{OSSURL}public/mobile/img/face/";
+    $(content_box).each(function () {
+        //替换表情
+        if (typeof ($(this).html()) != 'undefined') {
+            var desc = $(this).html().replace(/\[([^\]]+)\]/g, function (a, b) {
+                return "<img class='face_icon' style='width: 20px;' src='" + face_map_url + objMap[b] + ".gif'>";
+            });
+            $(this).html(desc);
+        }
+    })
+}
+function getLyList(){
+	//及时监控是否有新数据
+	let maxleaveid = $(".chatbox").children().first().attr('chat_id')
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'getLyList','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {userid:userid,maxleaveid:maxleaveid},
+		success: function (res) {
+			if(res.result === true){ //有新数据
+				let html = '';
+				let data = res.data
+				for(item of data){
+					html += `<li class="d-flex chat-demo-button justify-content-between" chat_id="${item.id}" data_name="${item.name}" data_icon="${item.icon}" data_bjname="${item.bjname}">
+							<div class="d-flex align-items-center">
+								<div class="avatar m-0 mr-50"><img src="${item.icon}" height="36" width="36" alt="sidebar user image">
+								</div>
+								<div class="chat-sidebar-name"><h5 class="mb-0">${item.name}</h5><span class="text-muted">${item.bjname}</span></div>
+							</div>
+							<div class="d-flex align-items-center"><span class="badge badge-pill badge-danger">${item.count}</span></div>
+						</li>`
+				}
+				$(".chatbox").prepend(html);
+				$(".chat-demo-button").click(function () {
+					chat_id = $(this).attr("chat_id")
+					$("#chat-name").html($(this).attr("data_name"))
+					$("#chat-bjname").html($(this).attr("data_bjname"))
+					$("#chat-src").attr('src',$(this).attr("data_icon"))
+					$(".chat-demo-button").removeClass("active");
+					$(this).addClass("active");
+					LoadNewChat(chat_id)
+					clearInterval(interval);
+				});
+				$(".widget-chat-close").click(function () {
+					$(".widget-chat-demo").removeClass("d-block");
+					$(".widget-chat-demo").addClass("d-none")
+					$(".chat-demo-button").removeClass("active");
+					interval = setInterval(getLyList, 2000);
+				});
+				$(".chat-demo-button").on("click", function () {
+					$(".widget-chat-demo-scroll").animate({ scrollTop: $(".widget-chat-demo-scroll")[0].scrollHeight }, 800)
+				});
+			}else{
+				// console.log(res.msg)
+			}
+		}	
+	});
+}
+var interval = setInterval(getLyList, 2000); //启动,func不能使用括号
+</script>
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,28 @@
+<header class="chat-user-profile-header text-center border-bottom">
+	<div class="my-2">
+		<div class="avatar"><img src="{php echo tomedia($school['logo'])}" alt="user_avatar" height="50" width="50"></div>
+		<h5 class="mb-0">{$bjqInfo['njname']}</h5><span>{$bjqInfo['bjname']}</span>
+	</div>
+</header>
+<div class="chat-user-profile-content">
+	<div class="chat-user-profile-scroll ps" style="overflow-y: auto;">
+		<h6 class="text-uppercase mb-1">关于</h6>
+		<p class="mb-2">{$content['content']}</p>
+		<h6>本班概况</h6>
+		<ul class="list-unstyled mb-2"><li class="mb-25">学生人数：{$bjqInfo['snum']}人</li><li>班级圈消息：{$bjqInfo['bjqnum']}条</li></ul>
+		<h6 class="text-uppercase mb-1">现授课老师</h6>
+		<ul class="list-unstyled mb-2">
+			{loop $AllTea $row}
+			<li><a href="javascript:void(0);">{$row['tname']}</a>({$row['sub']})</li>
+			{/loop}
+		</ul>
+		<h6 class="text-uppercase mb-1">活跃度前五的用户</h6>
+		<ul class="list-unstyled">
+			{loop $active $item}
+			<li class="mb-50 "><a href="javascript:void(0);" class="d-flex align-items-center"><i class="bx bx-tag mr-50"></i>{$item['shername']}</a></li>
+			{/loop}
+		</ul>
+		<div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div>
+		<div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div>
+	</div>
+</div>

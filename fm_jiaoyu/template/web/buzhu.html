@@ -1,0 +1,226 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">国家补助发放记录</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="buzhu" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">支付状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('buzhu', array('id' => $item['id'], 'is_able' => '-1', 'schoolid' => $schoolid))}" class="btn {if $is_able == -1}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('buzhu', array('id' => $item['id'], 'is_able' => '1', 'schoolid' => $schoolid))}" class="btn {if $is_able == 1}btn-primary{else}btn-default{/if}">未生效</a>
+							<a href="{php echo $this->createWebUrl('buzhu', array('id' => $item['id'], 'is_able' => '2', 'schoolid' => $schoolid))}" class="btn {if $is_able == 2}btn-primary{else}btn-default{/if}">生效中</a>
+							<a href="{php echo $this->createWebUrl('buzhu', array('id' => $item['id'], 'is_able' => '3', 'schoolid' => $schoolid))}" class="btn {if $is_able == 3}btn-primary{else}btn-default{/if}">已失效</a>
+						</div>
+					</div>
+				</div>	
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按{NJNAME}</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="nj_id" id="xq" class="form-control">
+                            <option value="">请选择{NJNAME}搜索</option>
+                            {loop $nj $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['nj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>					
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" id="bj" class="form-control">
+                            <option value="">请选择班级搜索</option>
+                            {loop $bj $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+
+				</div>	
+               <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按学生姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="stuname" type="text" value="{$_GPC['stuname']}">
+                    </div>	
+					<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+					
+					<div class="col-sm-2 col-lg-2">						
+						<a class="btn btn-success qx_3902" href="javascript:;" onclick="$('#upload_list').slideToggle();$('#download_list').slideUp();"><i class="fa fa-upload">&nbsp;&nbsp;批量导入补助</i></a>
+                    </div>	
+				</div>
+            </form>
+        </div>
+    </div> 
+
+    <div class="panel panel-default file-container" style="display:none;" id="upload_list">
+        <div class="panel-body">
+            <form  id="form">
+				<a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i> 刷新</a>				
+                <input name="viewfile" id="viewfile" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+                <a class="btn btn-primary"><label for="unload" style="margin: 0px;padding: 0px;">上传...</label></a>
+                <input type="file" class="pull-left btn-primary span3" name="file" id="unload" style="display: none;"
+                       onchange="document.getElementById('viewfile').value=this.value;this.style.display='none';">
+                  <a class="btn btn-primary" onclick="submits('input_buzhu','form');">导入数据</a>
+				<input type="hidden" name="token" value="{$_W['token']}"/>
+                <a class="btn btn-primary" href="../addons/fm_jiaoyu/public/example/example_stubuzhu.xls">下载导入模板</a>
+            </form>
+        </div>
+    </div>
+	{template 'public/excel_input'}
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+                    <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+					
+					<th style="width:10%">学生</th>
+					<th style="width:10%;">班级</th>
+					<th style="width:10%;">年级</th>
+					<th style="width:10%;">发放补助金额</th>
+                    <th style="width:10%;">发放时间</th>
+				 
+				 
+					<th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					<td> <img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($item['sicon'])}{php echo tomedia($item['sicon'])}{else}{php echo tomedia($school['spic'])}{/if}" width="50" style="border-radius: 3px;" /></br></br>{$item['s_name']}</td>	
+					
+                    <td>
+					   {$item['bj_name']}
+                    </td>
+					<td>
+					   {$item['nj_name']}       
+                    </td>						
+					<td><span class="label label-success">￥{$item['start_yue']}</span></td> 
+					<td>
+					    <span class="label label-info">{php echo date("Y-m-d H:i:s",$item['createtime'])}</span>                   
+                    </td>
+					 
+					 
+				
+					<td class="qx_3903" style="text-align:right;">
+						<a class="btn btn-default btn-sm " href="{php echo $this->createWebUrl('buzhu', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('该操作将删除学生该条补助发放记录，是否确认操作？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr class="qx_3903">
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1003902,1,$schoolid))}
+		$(".qx_3902").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1003903,1,$schoolid))}
+		$(".qx_3903").hide();
+	{/if}
+
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的补助记录!');
+            return false;
+        }
+        if(confirm("确认要删除选择的补助记录?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('buzhu', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+
+
+
+	$(document).ready(function() {
+		$("#xq").change(function() {
+			var cityId = $("#xq option:selected").attr('value');
+			var type = 1;
+			changeGrade(cityId, type, function() {
+			});
+		});		
+	});	
+	function changeGrade(gradeId, type) {
+		//alert(cityId);
+		var schoolid = "{$schoolid}";
+		var classlevel = [];
+		//获取班次
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+		
+			data = JSON.parse(data);
+			classlevel = data.bjlist;
+			
+			var htmls = '';
+			htmls += '<select id="bj_id"><option value="">请选择班级</option>';		
+			if (classlevel != '') {
+				for (var i in classlevel) {
+					htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+				}
+			}
+			$('#bj').html(htmls);		
+		});
+
+	}
+</script>	
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<title>提现中心</title>
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-ui.js?v=4.8"></script>
+{php include $this->template('port');}
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+/**弹框开启后限制BODY高度**/
+.pop_open{height:100%;overflow:hidden}
+/**按钮点击特效**/
+.mb_marsk:foucs{ -webkit-mask:-webkit-linear-gradient(rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53));}
+/**加载花瓣转圈效果**/
+.loading-layer{ height: 100%;;width:79%;background-color: rgb(255,255,255,0.59);text-align: center;position: absolute;z-index: 1}
+.loading-layer div{width: 100%;height: 30px;padding-top:100px;display: flex;flex-direction: row;justify-content: space-around;}
+.loading-layer img{ height: 30px; width:30px; -webkit-transition-property: -webkit-transform; -webkit-transition-duration: 1s; -moz-transition-property: -moz-transform; -moz-transition-duration: 1s; -webkit-animation: rotate 1s linear infinite; -moz-animation: rotate 1s linear infinite; -o-animation: rotate 1s linear infinite; animation: rotate 1s linear infinite;}
+@-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)} to{-webkit-transform: rotate(360deg)} }
+@-moz-keyframes rotate{from{-moz-transform: rotate(0deg)} to{-moz-transform: rotate(359deg)} }
+@-o-keyframes rotate{from{-o-transform: rotate(0deg)} to{-o-transform: rotate(359deg)} }
+@keyframes rotate{from{transform: rotate(0deg)} to{transform: rotate(359deg)} }
+/**顶部固定信息**/
+.header_boxs{ width: 100%;}
+.head_big_boxa{ width: 100%; background-color: #1a90f2; }
+.head_top{ width: 96%; height: 73px; display: flex; margin-left: 2%; border-bottom: 1px #b2d3ef solid; }
+.head_top_left{ width: 23%; }
+.head_top_left .teaicon{ width: 55px; height: 55px; margin-left: 14%; margin-top: 10%; }
+.head_top_left .teaicon img{ width:100%; border-radius:50% }
+.head_top_right{ width: 67%; margin-top: 4%; color: #fff; }
+.head_top_right .teaname{ font-size:18px; font-weight: 500; }
+.head_top_right .teainfo{ font-size:12px; }
+.head_center{ width: 94%; height: 66px; padding-top: 10px; margin-left: 4%; color: #fff; }
+.head_center .head_center_left{ width: 50%; float:left; color: #fff; }
+.head_center .head_center_left .allow_title{ font-size:12px; }
+.head_center .head_center_left .allow_cash{ font-size:20px; }
+.head_center .head_center_right{ width: 50%; float:right; }
+.head_center .head_center_right .get_cash{ cursor: pointer;float: right; margin-top: 5%; margin-right: 8%; width: 50px; height: 25px; line-height: 24px; border-radius: 10px; text-align: center; border: 1px #fff solid; }
+.head_bot{ width: 100%; display: flex;height: 70px; background-color: #fff; text-align: center;}
+.head_bot .head_bot_left{ width: 50%; height: 45px; margin-top: 15px; border-right: 1px #ddd solid; }
+.head_bot .head_bot_right{ width: 50%; height: 45px; margin-top: 15px; }
+.ytx_title{ color: #1be416; }
+.txz_title{ color: #FDAC41; }
+/**中间菜单列表**/
+.center_box{ width:100%; margin-top:8px; height:auto; text-align: center; }
+.center_box .btn_box{ width:32%; background-color:#fff; height:110px; margin-left:1%; float:left; position: relative; }
+.btn_icon{ text-align: center; width: 100%; display: block; color: #323232; font-size: 1rem;margin-top: 8px;}
+.btn_name{ color: #666666; margin-top: 0.3rem; padding-top: 4px; }
+.btn_info{ color: #666666; font-size: 0.6rem; margin-top: 0.3rem; padding-top: 4px; }
+.btn_box .btn_icon img{ width:45%; }
+/**底部菜单**/
+.foot_bot{ width: 100%; height: 55px; bottom: 0; background-color: #fff; position: fixed;text-align: center;z-index: 3;}
+.foot_kc_bot{width: 100%;display:flex;text-align:center;float:left}
+.tea_sign{height:55px;width: 65%;}
+.tea_sign .check_all{width: 30%;line-height:55px;float:left;padding-left:5%;font-size:12px}
+.fenge::after{ position: relative;content: "";width: 1px;left: 32%;height: 30px;border-right: 1px #ddd solid;}
+.tea_sign .orderlistinfo{width: 65%;float: right;display: flex;line-height: 55px;}
+.bot_fee_info{font-size:10px;line-height:57px;}
+.bot_fee_box{font-size:13px;display: flex;}
+.bot_fee_rmb{font-size:10px;line-height:60px;color:#ef370b}
+.bot_fee{color:#ef370b;font-size:18px;}
+.tea_pk{height:55px;font-size: 18px;line-height:55px;width: 35%;background-color: #1a90f2;color: #fff;}
+.foot_bot .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 20px 20px; background-repeat:no-repeat;background-position:21% 48%;}
+.foot_bot .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 20px 20px; background-repeat:no-repeat;background-position:21% 48%;}
+.tjddcalss { -webkit-mask: -webkit-linear-gradient(rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53));}
+/**可提现列表滑块**/
+.popUpBox1{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 100;overflow-y: scroll;overflow-x: hidden;}
+.trackMak_stubox{ position: absolute; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.ajax_stu_box { position: absolute; width: 100%;height: 100%; z-index: 101; background-color: #f0f0f2;padding-bottom: 26px;margin-top:55px}
+.All{background: #f0f0f2;}
+.SpanInfo { font-size: 13px; color: #696969; }
+.orderlist {box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;padding-bottom: 20px;list-style: none;margin-top: 7px;}
+.orderlist img {margin-top: 0px;width: 100%;}
+.orderlist:first-child{ margin-top: 0px;}
+.orderlist:last-child{ margin-bottom: 70px;}
+.more{margin: 10px 10px;box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;border-radius: 10px;padding-bottom: 10px;}
+.stu_search_head{ width: 100%; z-index: 102; height: 55px; position: fixed; background-color: #f7f7f7; }
+.stu_search_box { height: 40px; box-sizing: border-box; padding: 3px 14px 4px 16px; background-color: #fff; border: 1px solid #ddd; position: fixed; border-radius: 6px; width: 96%; margin: 2%; }
+.stu_search_box input {-webkit-appearance: none;font-size: 14px;height: 34px;width: 82%;border: none;line-height: 30px;}
+.stu_search_box .stu_search_box_btn {position: absolute;right: 0%;top: 50%;margin-top: -20px;width: 21%;height: 39px;line-height: 40px;text-align: center;box-sizing: border-box;}
+.stu_search_box .stu_search_box_btn span{background: url({OSSURL}public/mobile/img/new_search_icon2.png) no-repeat left;background-size: 15px 15px;padding-left: 25px;font-size: 14px;color: #999999;}
+.ordercment { display: -webkit-flex; height: 50px; margin-top: 10px; position: relative; } 
+.ordercment .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 20px 20px; background-repeat:no-repeat;background-position:21% 48%;}
+.ordercment .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 20px 20px; background-repeat:no-repeat;background-position:21% 48%;}
+.ordercment .smallact{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:21% 48%;}
+.ordercment .smallnoact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:21% 48%;}
+.addks{ margin-right: 2px; margin-top: 14px; width: 9%; position: relative; }
+.tips{border: 1px #ddd solid; border-radius: 6px; padding-left: 2px; padding-right: 2px; font-size: 10px;}
+.redbtn{ color: #f76363; border-color: #f76363;}
+.bluebtn{ color: #38b2fb; border-color: #38b2fb;}
+.openclass{position: absolute;width: 8px;height:15px;right: 5%;background-image:url({OSSURL}public/mobile/img/arrow_right_pay.png);background-size: 8px 15px;}
+.closeclass{position: absolute;width: 15px;height:7px;right: 3.5%;background-image:url({OSSURL}public/mobile/img/down_arrow.png);background-size: 15px 7px;}
+.alread{display:none}
+.botleft { width: 14%; }
+.botleft .xqbox { height: 50px; text-align: center; width: 95%; background: #88c3f5; margin-left: 10%; margin-top: 5%; color: #fff; border-radius: 8px; }
+.xqbox .xqboxtop { width: 100%; background-color: #1a90f2; height: 21px; border-top-left-radius: 9px; border-top-right-radius: 9px; font-size: 11px; line-height: 21px; }
+.xqbox .xqboxbot { width: 100%; font-size: 12px; font-weight: bold; line-height: 32px; }
+/**选择提现方式和信息填写**/
+.next_class{ position: absolute; width: 100%; height: 100%; z-index: 101; background-color: #f0f0f2; padding-bottom: 26px; }
+.next_top{width: 100%; height: 130px;background-color: #fff;padding: 10px;}
+.next_top .next_top_info{width: 100%; height: 50px;border-bottom:1px #ddd solid}
+.next_top_cash{width: 100%;font-size:16px}
+.next_top_text{width: 100%;font-size:12px;color:#969696;padding-top: 5px;}
+.next_top .next_bot_info{width: 100%; height: 69px;display: flex;line-height: 69px;}
+.next_bot_left{width: 12%;color: #ef370b;font-size: 39px;text-align: center;}
+.next_bot_right{width: 80%;color: #ef370b;font-size: 29px;}
+.info{padding:8px;color: #969696;font-size:12px}
+.tx_type{width: 100%; height: 100px;background-color: #fff;padding: 10px;}
+.tx_type_top{width: 100%;font-size:16px}
+.tx_boxs{width: 100%;font-size:15px;padding-top: 10px;}
+.tx_boxs_icon{width:28%;display: flex; height: 34px; line-height: 32px; border-radius: 34px;float: left; margin-left: 10px;}
+.nochosed{border: 1px #dadada solid;}
+.chosed{border: 1px #ef370b solid;}
+.tx_icon{ width: 24%; line-height: 41px; margin-left: 12%; }
+.tx_icon img{width:100%}
+.tx_word{ font-size: 13px; margin-left: 5%; } 
+.my_infobox{width: 100%;background-color: #fff;padding: 10px;}
+.my_info_list{width: 100%;height:35px;display:flex;line-height: 35px;}
+.my_info_title{width:28%}
+.inputcalss{width:65%; border: 0;outline: none;background-color: rgba(0, 0, 0, 0);}
+/**提现记录列表**/
+.popUpBox2{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 100;overflow-y: scroll;overflow-x: hidden;}
+.trackMak_stubox{ position: absolute; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.ajax_stu_box { position: absolute; width: 100%;height: 100%; z-index: 101; background-color: #f0f0f2;padding-bottom: 26px;margin-top:55px}
+.All{background: #f0f0f2;}
+.SpanInfo { font-size: 13px; color: #696969; }
+.orderlist {box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;padding-bottom: 20px;list-style: none;margin-top: 7px;}
+.orderlist img {margin-top: 0px;width: 100%;}
+.orderlist:first-child{ margin-top: 0px;}
+.orderlist:last-child{ margin-bottom: 70px;}
+.more{margin: 10px 10px;box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;border-radius: 10px;padding-bottom: 10px;}
+.stu_search_head{ width: 100%; z-index: 102; height: 55px; position: fixed; background-color: #f7f7f7; }
+.stu_search_box { height: 40px; box-sizing: border-box; padding: 3px 14px 4px 16px; background-color: #fff; border: 1px solid #ddd; position: fixed; border-radius: 6px; width: 96%; margin: 2%; }
+.stu_search_box input {-webkit-appearance: none;font-size: 14px;height: 34px;width: 82%;border: none;line-height: 30px;}
+.stu_search_box .stu_search_box_btn {position: absolute;right: 0%;top: 50%;margin-top: -20px;width: 21%;height: 39px;line-height: 40px;text-align: center;box-sizing: border-box;}
+.stu_search_box .stu_search_box_btn span{background: url({OSSURL}public/mobile/img/new_search_icon2.png) no-repeat left;background-size: 15px 15px;padding-left: 25px;font-size: 14px;color: #999999;}
+.ordercment { display: -webkit-flex; height: 50px; margin-top: 10px; position: relative; } 
+.ordercment .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 20px 20px; background-repeat:no-repeat;background-position:21% 48%;}
+.ordercment .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 20px 20px; background-repeat:no-repeat;background-position:21% 48%;}
+.ordercment .smallact{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:21% 48%;}
+.ordercment .smallnoact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:21% 48%;}
+.addks{ margin-right: 2px; margin-top: 14px; width: 9%; position: relative; }
+.tips{border: 1px #ddd solid; border-radius: 6px; padding-left: 2px; padding-right: 2px; font-size: 10px;}
+.redbtn{ color: #f76363; border-color: #f76363;}
+.bluebtn{ color: #38b2fb; border-color: #38b2fb;}
+.openclass{position: absolute;width: 8px;height:15px;right: 5%;background-image:url({OSSURL}public/mobile/img/arrow_right_pay.png);background-size: 8px 15px;}
+.closeclass{position: absolute;width: 15px;height:7px;right: 3.5%;background-image:url({OSSURL}public/mobile/img/down_arrow.png);background-size: 15px 7px;}
+.alread{display:none}
+.botleft { width: 14%; }
+.botleft .xqbox { height: 50px; text-align: center; width: 95%; background: #88c3f5; margin-left: 10%; margin-top: 5%; color: #fff; border-radius: 8px; }
+.xqbox .xqboxtop { width: 100%; background-color: #1a90f2; height: 21px; border-top-left-radius: 9px; border-top-right-radius: 9px; font-size: 11px; line-height: 21px; }
+.xqbox .xqboxbot { width: 100%; font-size: 12px; font-weight: bold; line-height: 32px; }
+.txlist_li{list-style:none;width:96%; margin: 2%;border-radius: 10px;height:auto;padding: 5px 10px 5px 10px;background-color:#fff; position: relative;}
+.txlist_top{width:100%;height:25px;line-height:25px;    border-bottom: 1px #e4e4e4 solid;}
+.txlist_bot{width:100%;padding-top: 5px;display: flex;}
+.txlist_left{width:30%;height:50px;}
+.txlist_center{width:60%;height:50px}
+.tx_title{ text-align: center; width: 100%; font-size: 13px;line-height: 24px;}
+.tx_feenub{ color: #f34820; font-size: 14px; }
+.txlist_right{width:10%;height:50px}
+.right_icons{top: 25%; margin-left: 50%;}
+.openclassT { position: relative; width: 8px; height: 15px; background-image: url({OSSURL}public/mobile/img/arrow_right_pay.png); background-size: 8px 15px; }
+.closeclassT { position: relative; width: 16px; height: 8px; background-image: url({OSSURL}public/mobile/img/down_arrow.png); background-size: 16px 8px; }
+.audit_statusNew,.audit_statusIng, .audit_statusPass, .audit_statusPassReject {width: 50px;height: 20px;position: absolute;top: 0%;right: 0%;font-size: 11px;display: -webkit-box;display: -moz-box;
+display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;
+-webkit-box-pack: center;-moz-box-pack: center;-ms-flex-pack: center;-webkit-justify-content: center;justify-content: center;border-top-right-radius: 10px;border-bottom-left-radius: 10px;}
+.audit_statusIng {background-color: #ff9f22;color: #fff;}
+.audit_statusPass {background-color: #52b2ee;color: #fff;}
+.audit_statusNew {background-color: #cccccc;color: #33333;}
+/**进度样式**/
+.txlist_detail{width:100%;padding-top: 5px;padding-bottom: 5px;}
+.aui-step-one { display: -webkit-box; display: -webkit-flex; display: -ms-flexbox; display: flex; list-style: none; background: #f3f3f3; border-radius: 8px; overflow: hidden; } 
+.aui-step-one-item { -webkit-box-flex: 1; -webkit-flex: 1; -ms-flex: 1; flex: 1; position: relative; text-align: center; color: #333333; font-size: 13px; padding: 5px 0; }
+.aui-step-one-item:not(:last-child):before { content: " "; display: inline-block; height: 40px; width: 40px; border-width: 5px 5px 0 0; border-color: #fff; border-style: solid; -webkit-transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0); transform: matrix(0.71, 0.71, -0.71, 0.71, 0, 0); position: relative; top: -2px; position: absolute; top: 7%; margin-top: 0; right: 0; z-index: 2; } 
+.aui-step-one-item span { display: block; padding: 2px 0; }
+.aui-step-one-item span:nth-child(2) { color: #666666; }
+.last_act { background: #d4eeff; color: #52b2ee; position: relative; border-radius: 0 5px 5px 0; } 
+.last_act:before { content: " "; top: 0; left: -17px; display: block; position: absolute; width: 0; height: 0; border-width: 22px 22px 0; border-style: solid; border-color: #d4eeff transparent transparent; }
+.last_act:after { content: " "; bottom: 0; left: -17px; display: block; position: absolute; width: 0; height: 0; border-width: 0 22px 22px; border-style: solid; border-color: transparent transparent #d4eeff; } 
+.last_noact:before { content: " "; top: 0; left: -17px; display: block; position: absolute; width: 0; height: 0; border-width: 22px 22px 0; border-style: solid; border-color: #f3f3f3 transparent transparent; }
+.last_noact:after { content: " "; bottom: 0; left: -17px; display: block; position: absolute; width: 0; height: 0; border-width: 0 22px 22px; border-style: solid; border-color: transparent transparent #f3f3f3; } 
+.last_act span{ color:#52b2ee; }
+.last_act span:nth-child(2){ color:#52b2ee; }
+.aui_wiatact{ background: #d4eeff; color: #52b2ee;}
+.aui_act{ background: #d4eeff; color: #52b2ee;}
+.aui_act span:nth-child(2){ color:#52b2ee; }
+.jindu_info{width:100%;margin-top:10px; color: #696969;}
+.aui-flex{display:flex}
+.deltebtn{ padding-left: 4px; padding-right: 4px; height: 19px; line-height: 18px; border: 1px #52b2ee solid; border-radius: 7px; color: #52b2ee; font-size: 11px; top: 5px; left: 72%; position: absolute; } 
+</style>
+</head>
+<body class="auto_height">
+	<div class="header_boxs">
+		<div class="head_big_boxa">
+			<div class="head_top">
+				<div class="head_top_left">
+					<div class="teaicon">
+						<img src="{$thumb}"/>
+					</div>
+				</div>
+				<div class="head_top_right">
+					<span class="teaname">{$teainfo['tname']}</span><br>
+					<span class="teainfo">申请中的提现：<span id="getingcount">0</span>个</span>
+				</div>
+			</div>
+			<div class="head_center">
+				<div class="head_center_left">
+					<span class="allow_title">可提现金额</span><br>
+					<span class="allow_cash" id="getfee">0</span>
+				</div>
+				<div class="head_center_right">
+					<span class="get_cash mb_marsk" onclick="showtxlist('getcash')">提现</span>
+				</div>
+			</div>
+		</div>
+		<div class="head_bot">
+			<div class="head_bot_left">
+				<span class="ytx_title">已提现金额</span><br>
+				<span class="ytx_nubmer" id="getedfee">0</span>
+			</div>
+			<div class="head_bot_right">
+				<span class="txz_title">提现中金额</span><br>
+				<span class="ytx_nubmer" id="getingfee">0</span>
+			</div>
+		</div>
+	</div>
+	<div class="center_box">
+		<a class="btn_box mb_marsk" onclick="showtxlist('getcash')">
+			<span class="btn_icon">
+				<img src="{MODULE_URL}public/mobile/img/59ddef4d7a25b_90.png"/>
+			</span>
+			<span class="btn_name">发起提现</span><br>
+		</a>
+		<a class="btn_box mb_marsk" onclick="showtxlog()">
+			<span class="btn_icon">
+				<img src="{MODULE_URL}public/mobile/img/59ddef4d7a25b_38.png"/>
+			</span>
+			<span class="btn_name">提现记录</span><br>
+			<span class="btn_info" id="allgetfee">0</span>
+		</a>
+		<a href="{php echo $this->createMobileUrl('tmycourse', array('schoolid' => $schoolid), true)}" class="btn_box mb_marsk">
+			<span class="btn_icon">
+				<img src="{MODULE_URL}public/mobile/img/59ddef4d7a25b_49.png"/>
+			</span>
+			<span class="btn_name">我的授课</span><br>
+			<span class="btn_info">线下<span id="mykscount">0</span>个</span>
+		</a>
+	</div>
+	<!--可提现列表-->
+	<div class="popUpBox1" style="display: none">
+		<div class="trackMak_stubox"></div>
+		<div class="orderlistbox">
+
+		</div>
+	</div>
+	<!--提现记录列表-->
+	<div class="popUpBox2" style="display: none">
+		<div class="trackMak_stubox"></div>
+		<div class="txlist">
+
+		</div>
+	</div>
+</body>
+</html>
+<input type="hidden" id="index" value="index">
+<script type="text/javascript">
+startinfo()
+window.addEventListener("popstate", function(e) { 
+	var index = $('#index').val()
+	if(index == 'index'){
+　　	window.location = "{php echo $this->createMobileUrl('myschool', array('schoolid' => $schoolid), true)}";
+	}else if(index == 'getcash_next'){
+		$('.sign_list').slideLeftShow()
+		$('.next_class').slideRightHide()
+		$('#index').val('list')
+	}else if(index == 'txlog'){
+		$('html,body').removeClass('popNoscroll')
+		$('.popUpBox2').slideRightHide()
+	}else{
+		$('html,body').removeClass('popNoscroll')
+		$('.popUpBox1').slideRightHide()
+		$('#index').val('index')
+		startinfo()
+	}
+}, false); 
+function pushHistory() {
+　　var state = { 
+　　　　title: "title", 
+　　　　url: "#"
+　　}; 
+　　window.history.pushState(state, "title", "#"); 
+}
+//打开提现记录
+function showtxlog(){
+	$('html,body').addClass('popNoscroll')
+	$('.popUpBox2').slideRightShow()
+	$('#index').val('txlog')
+	$('.txlist').empty()
+	pushHistory();
+	ajax_start_loading("加载中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('getcash', array('schoolid' => $schoolid), true)}",
+		type: "post",
+		dataType: "html",
+		data: {op:'txlist'},
+		success: function (data) {
+			ajax_stop_loading();
+			if (data) {
+				$('.txlist').html(data)
+			}else{
+				jTips('抱歉，您没有授课数据');
+			}
+		}		
+	});
+}
+//打开可提现列表
+function showtxlist(type){
+	$('html,body').addClass('popNoscroll')
+	$('.popUpBox1').slideRightShow()
+	$('#index').val('list')
+	$('.orderlistbox').empty()
+	pushHistory();
+	ajax_start_loading("加载中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('getcash', array('schoolid' => $schoolid), true)}",
+		type: "post",
+		dataType: "html",
+		data: {op:'fqtx',type:type},
+		success: function (data) {
+			ajax_stop_loading();
+			if (data) {
+				$('.orderlistbox').html(data)
+			}else{
+				jTips('抱歉，您没有授课数据');
+			}
+		}		
+	});
+}
+//关闭可提现列表
+function close_orderlist(){
+	$('html,body').removeClass('popNoscroll')
+	$('.popUpBox1').slideRightHide()
+	$('#index').val('index')
+}
+//刷新本页数据
+function startinfo(){
+	ajax_start_loading("加载中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('getcash', array('schoolid' => $schoolid), true)}",
+		type: "post",
+		dataType: "json",
+		data: {op:'startinfo'},
+		success: function (result) {
+			ajax_stop_loading();
+			if (result) {
+				$('#getingcount').text(result.getingcount)
+				$('#getfee').text(result.getfee)
+				$('#getedfee').text(result.getedfee)
+				$('#getingfee').text(result.getingfee)
+				$('#allgetfee').text(result.allgetfee)
+				$('#mykscount').text(result.mykscount)
+			}
+		}		
+	});
+}
+{if $_GPC['open'] == 'log'}
+	showtxlog()
+{/if}
+common_ajax_callback = false;
+jQuery.fn.extend({
+  slideRightShow: function() {
+	return this.each(function() {
+		$(this).show('slide', {direction: 'right'}, 300);
+	});
+  },
+  slideLeftHide: function() {
+	return this.each(function() {
+		$(this).hide('slide', {direction: 'left'}, 300);
+	});
+  },
+  slideRightHide: function() {
+	return this.each(function() {
+	    $(this).hide('slide', {direction: 'right'}, 300);
+	});
+  },
+  slideLeftShow: function() {
+	return this.each(function() {
+		$(this).show('slide', {direction: 'left'}, 300);
+	});
+  },
+  slideBottomShow: function() {
+	return this.each(function() {
+		$(this).show('slide', {direction: 'bottom'}, 300);
+	});
+  },
+  slideBottomHide: function() {
+	return this.each(function() {
+		$(this).hide('slide', {direction: 'bottom'}, 300);
+	});
+  }
+});
+$(function() {
+  WeixinJSHideAllNonBaseMenuItem();
+});
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem()
+		});
+	}
+}
+var WeixinApi = (function () {
+	return {
+		imagePreview:imagePreview
+    };
+    "use strict";
+    function imagePreview(curSrc,srcList) {
+        if(!curSrc || !srcList || srcList.length == 0) {
+            return;
+        }
+        WeixinJSBridge.invoke('imagePreview', {
+            'current' : curSrc,
+            'urls' : srcList
+        });
+    }
+    return {
+        version         :"2.5",
+        imagePreview    :imagePreview
+    };
+})();
+function move(div,mub){//滚动数字特效
+	$("#"+div).prop('Counter',0).animate({
+		Counter: mub
+	},{
+		duration: 500,
+		easing: 'swing',
+		step: function (mub){
+			$("#"+div).text(Math.floor(mub));
+		}
+	});
+}
+</script>

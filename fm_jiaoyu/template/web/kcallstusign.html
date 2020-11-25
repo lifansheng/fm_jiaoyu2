@@ -1,0 +1,242 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+    <style>
+        .form-control-excel {
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+    </style>
+  
+    <div class="panel panel-info">
+	       <div class="panel-heading"><a class="btn btn-primary" href="{php echo $this->createWebUrl('kcbiao', array('op' => 'display', 'schoolid' => $schoolid))}"><i class="fa fa-tasks"></i> 返回课时列表</a></div>
+       
+			
+    </div>
+     <div class="panel-heading">课时签到{if !empty($kecheng['name'])}<span style="color:red;font-size:20px;font-weight:bold;">---{$kecheng['name']}第{$keshi['nub']}课时</span>{/if}</div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					 <th class='with-checkbox' style="width: 10px;"><input type="checkbox" class="check_all" /></th>
+					<th >学生</th>
+					<th>是否签到</th>
+					<th>签到时间</th>
+					<th>是否确认</th>
+					<th>确认老师</th>
+					<th>剩余课时</th>
+					<th class="qx_942" style="text-align:right; width:50px;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['sid']}"></td>
+					<td>{$item['s_name']}</td>
+				
+					<td>
+                        {if !empty($item['check'])}
+                        {if $item['status'] == 1 || $item['status'] == 2}
+                        <span class="label label-success">已签到</span>
+                        {elseif $item['status'] == 3}
+ 						<span class="label label-primary">已请假</span>
+                        {/if}
+                        {else}
+                        <span class="label label-danger">未签到</span>{/if}
+                    </td>
+                    <td>
+                        {if !empty($item['signtime'])}
+	                        {if $item['status'] == 2}
+	                        <span class="label label-success">
+							{elseif $item['status'] == 3}
+							<span class="label label-primary">
+							{/if}
+	                    	{php echo date('Y年m月d日 H:i:s',$item['signtime'])}</span>
+                        {else}<span class="label label-danger">未签到</span>{/if}
+                    </td>
+                    <td>
+	                    {if !empty($item['check'])}
+                        {if $item['status'] == 2 || $item['status'] == 3}
+                        <span class="label label-warning">已确认</span>
+                        {else}
+                        <span class="label label-default">未确认</span>{/if}
+                        {elseif empty($item['check'])}
+                        <span class="label label-danger">未签到</span>
+                        {/if}
+                    </td>
+                    <td>
+                       {if !empty($item['check'])}
+                        {if !empty($item['qrtea'])}<span class="label label-warning">{$item['qrtea']}</span>{else}<span class="label label-danger">无</span>{/if}
+                        {elseif empty($item['check'])}
+                        <span class="label label-danger">未签到</span>
+                        {/if}
+                    </td>
+                     <td>
+                        {if !empty($item['buycourse'])} <span class="label label-info">{$item['restnum']}课时</span>{else}无{/if}
+                    </td>
+					<td class="qx_942" style="text-align:right;">
+					 	{if $item['status'] != 2}
+                        <a class="btn btn-default btn-sm qx_942"
+                           href="{php echo $this->createWebUrl('kcallstusign', array('id' => $item['id'],'sid'=>$item['sid'],'kcid'=>$kcid1,'ksid'=>$ksid1, 'op' => 'sign', 'checkid' =>$item['check'],'schoolid' => $schoolid))}"
+                            onclick="return confirm('是否确认修改状态为已签到？');return false;"
+                           title="已签到"><i class="fa fa-check-square"></i>
+                        </a>
+                        {/if}
+                        {if !empty($item['status'])}
+                        <a class="btn btn-default btn-sm qx_942"
+                           href="{php echo $this->createWebUrl('kcallstusign', array('id' => $item['id'], 'sid'=>$item['sid'],'checkid' =>$item['check'],'kcid'=>$kcid1,'ksid'=>$ksid1, 'op' => 'unsign', 'schoolid' => $schoolid))}"
+                            onclick="return confirm('是否确认修改状态为未签到？');return false;"
+                           title="未签到"><i class="fa fa-circle-o"></i>
+                        </a>
+                        {/if}
+                        {if $item['status'] != 3}
+                        <a class="btn btn-default btn-sm qx_942"
+                           href="{php echo $this->createWebUrl('kcallstusign', array('id' => $item['id'], 'sid'=>$item['sid'],'checkid' =>$item['check'],'kcid'=>$kcid1,'ksid'=>$ksid1,'op' => 'leave', 'schoolid' => $schoolid))}"
+                            onclick="return confirm('是否确认修改状态为已请假？');return false;"
+                           title="已请假"><i class="fa fa-smile-o"></i>
+                        </a>
+                        {/if}
+                      
+					</td>			
+					
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary qx_942" name="btnsignall" value="批量已签到" />
+                     <input type="button" class="btn btn-primary qx_942" name="btnunsignall" value="批量未签到" />
+                      <input type="button" class="btn btn-primary qx_942" name="btnleaveall" value="批量已请假" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+<!--
+	var category = {php echo json_encode($children)};
+//-->
+$(function(){
+		var e_r_d = 3 ;
+	{if !(IsHasQx($tid_global,1000942,1,$schoolid))}
+		$(".qx_942").hide();
+	{/if}
+
+	var checked = 0 ;
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        console.log(checked);
+        	$("input[type=checkbox]").attr("checked",checked);
+       
+    });
+
+    $("input[name=btnsignall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要操作的学生!');
+            return false;
+        }
+        if(confirm("确认要签到选择的学生?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('kcallstusign', array('kcid'=>$kcid1,'ksid'=>$ksid1,'op' => 'signall','schoolid' => $schoolid))}";
+            $.post(url,{idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json');
+        }
+    });
+    $("input[name=btnunsignall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要操作的学生!');
+            return false;
+        }
+        if(confirm("确认批量未签到?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('kcallstusign', array('kcid'=>$kcid1,'ksid'=>$ksid1,'op' => 'unsignall','schoolid' => $schoolid))}";
+            $.post(url,{idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json');
+        }
+    });
+
+    $("input[name=btnleaveall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要操作的学生!');
+            return false;
+        }
+        if(confirm("确认批量请假?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('kcallstusign', array('kcid'=>$kcid1,'ksid'=>$ksid1, 'op' => 'leaveall','schoolid' => $schoolid))}";
+            $.post(url,{idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+					    //console.log(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json');
+        }
+    });
+
+});
+</script>
+<script type="text/javascript">
+    <!--
+    var category = {php echo json_encode($children)};
+    //-->
+</script>
+{/if}
+{template 'public/footer'}

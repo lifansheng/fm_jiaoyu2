@@ -1,0 +1,504 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+    <div class="panel panel-info">
+        <div class="panel-body">
+           {php echo $this -> set_tabbar($action1, $schoolid, $_W['role'], $_W['isfounder'], $_W['schooltype']);}
+        </div>
+    </div>
+<ul class="nav nav-tabs">
+    <li class="qx_edit {if $operation == 'post'}active{/if}"><a href="{php echo $this->createWebUrl('score', array('op' => 'post', 'schoolid' => $schoolid))}">添加{if is_TestFz()}考试{else}成绩期号{/if}</a></li>
+    <li {if $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('score', array('op' => 'display', 'schoolid' => $schoolid))}">{if is_TestFz()}考试{else}成绩期号{/if}管理</a></li>
+</ul>
+ <style>
+.cLine { overflow: hidden;padding: 5px 0;color:#000000;}
+.alert {
+padding: 8px 35px 0 10px;
+text-shadow: none;
+-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+background-color: #f9edbe;
+border: 1px solid #f0c36d;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+color: #333333;
+margin-top: 5px;
+}
+.alert p {
+margin: 0 0 10px;
+display: block;
+}
+.alert .bold{
+font-weight:bold;
+}
+
+.loading-layer{height: 100%;width:100%;background-color: #ffffffbd;text-align: center;position: relative;z-index: 1}
+.loading-layer div{width: 100%;height: 90px;padding-top:40px;display: flex;flex-direction: row;justify-content: space-around;}
+.loading-layer img{ 
+	height: 40px;
+	width:40px;
+	-webkit-transition-property: -webkit-transform;
+    -webkit-transition-duration: 1s;
+    -moz-transition-property: -moz-transform;
+    -moz-transition-duration: 1s;
+    -webkit-animation: rotate 1s linear infinite;
+    -moz-animation: rotate 1s linear infinite;
+    -o-animation: rotate 1s linear infinite;
+    animation: rotate 1s linear infinite;}
+ 
+@-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)}
+    to{-webkit-transform: rotate(360deg)}
+}
+@-moz-keyframes rotate{from{-moz-transform: rotate(0deg)}
+    to{-moz-transform: rotate(359deg)}
+}
+@-o-keyframes rotate{from{-o-transform: rotate(0deg)}
+    to{-o-transform: rotate(359deg)}
+}
+@keyframes rotate{from{transform: rotate(0deg)}
+    to{transform: rotate(359deg)}
+}
+
+.modal-backdrop{z-index:2040 !important}
+.modal-backdrop~.modal-backdrop{z-index: 2060 !important}
+ </style>
+<div class="cLine">
+    <div class="alert">
+    <p><span class="bold">使用方法：</span>
+   填写{if is_TestFz()}考试{else}成绩期号{/if},如 一诊,第一次月考,第二次月考....<br/>
+   <strong><font color='red'>特别提醒: 当你删除该{if is_TestFz()}考试{else}成绩期号{/if}项的时候,该{if is_TestFz()}考试{else}成绩期号{/if}项下相关的所有数据都会被删除,请谨慎操作!以免丢失数据!</font></strong>
+    </p>
+    </div>
+</div>
+{if $operation == 'post'}
+<style>
+.subject_check{margin-top: 5px !important}
+.checkbox-inline{width:100px;margin-left: 10px;}
+</style>
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="parentid" value="{$parent['id']}" />
+		<input type="hidden" name="schoolid" value="{$schoolid}" />	
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                {if is_TestFz()}考试{else}成绩期号{/if}分类编辑编辑
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>排序</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="ssort" class="form-control" value="{$score['ssort']}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>{if is_TestFz()}考试{else}成绩期号{/if}名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="catename" class="form-control" value="{$score['sname']}" />
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"> <span style="color:red">*</span> {if is_TestFz()}考试{else}期号{/if}类型</label>
+                    <div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="scoretype" id="scoretype" class="form-control">
+							<option value="score" {if $score['type'] == 'score'} selected="selected"{/if}>{if is_TestFz()}考试{else}成绩期号{/if}</option>
+							<option value="xq_score" {if $score['type'] == 'xq_score'} selected="selected"{/if}>学期{if is_TestFz()}考试{else}期号{/if}</option>
+						</select>
+                    </div>
+                </div>				
+				<div class="form-group xq_score_type" {if $score['type'] == 'xq_score'}style="display:block"{else}style="display:none"{/if}>
+					{if keep_MC()}
+					<!-- <div class="form-group">
+						<label class="col-md-2 control-label"><span style="color:red">*</span>学年</label>
+						<div class="col-sm-2">
+							<input type="text" name="scoreyear" class="form-control" value="{$score['scoreyear']}" />
+						</div>
+					</div> -->
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">上学期起止日期</label>
+						<div class="col-sm-9 col-xs-9 col-md-4">
+							<div class="input-group clockpicker" style="margin-bottom: 15px">
+								{php echo tpl_form_field_date('start', $score['sd_start'])}
+								<span class="input-group-addon" style="padding-left:10px">至</span>
+								{php echo tpl_form_field_date('firstlast', $score['firstlast'])}
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">下学期起止日期</label>
+						<div class="col-sm-9 col-xs-9 col-md-4">
+							<div class="input-group clockpicker" style="margin-bottom: 15px">
+								{php echo tpl_form_field_date('laststart', $score['laststart'])}
+								<span class="input-group-addon" style="padding-left:10px">至</span>
+								{php echo tpl_form_field_date('end', $score['sd_end'])}
+							</div>
+						</div>
+					</div>
+					{else}
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">起止日期</label>
+						<div class="col-sm-9 col-xs-9 col-md-4">
+							<div class="input-group clockpicker" style="margin-bottom: 15px">
+								{php echo tpl_form_field_date('start', $score['sd_start'])}
+								<span class="input-group-addon" style="padding-left:10px">至</span>
+								{php echo tpl_form_field_date('end', $score['sd_end'])}
+							</div>
+						</div>
+					{/if}
+				</div>
+				{if keep_MC()}
+				<div class="form-group xq_score_type" {if $score['type'] == 'xq_score'}style="display:block"{else}style="display:none"{/if}>
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">提示文字</label>
+					<div class="col-sm-9">
+						<input type="text" name="othertip" class="form-control" value="{$this_addinfo['othertip']}" />
+						<div class="help-block">当前学期未评分时的提示文字</div>
+					</div>
+				</div>
+				{/if}
+				{if !$_W['schooltype']}
+				<div class="form-group score_type" {if (empty($score['type']) || $score['type'] == 'score')  }style="display:block"{else}style="display:none"{/if} >
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">类型</label>
+                    <div class="col-sm-9">
+						<label for="isshow3" class="radio-inline"><input type="radio" name="qhtype" value="2" id="isshow3" {if !empty($score) && $score['qhtype'] == 2}checked="checked"{/if} /> 指定班级</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label for="isshow4" class="radio-inline"><input type="radio" name="qhtype" value="1" id="isshow4"  {if empty($score['qhtype']) || $score['qhtype'] == 1}checked="checked"{/if} /> 全校可用</label>
+                        <span class="help-block">指定班级或者设定为全校用</span>
+                    </div>
+				</div>
+				{else}
+					<input type="hidden" name="qhtype" value="1" />
+				{/if}
+ 
+				<div id="credit-status1" class="score_type1" {if $score['qhtype'] == 2}style="display:block"{else}style="display:none"{/if}>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">选择班级</label>
+						<div class="col-sm-9 col-xs-6">
+							<div class="input-group text-info">
+								<label class="checkbox-inline"><input type="checkbox" class="check_all" id="check_all" />全选</label></br>
+								{loop $banji $uni}
+								{php $is = $this->uniarr($uniarr,$uni['sid']);}
+										<label for="uni_{$uni['sid']}" class="checkbox-inline">
+										<input id="uni_{$uni['sid']}" type="checkbox" class="check_bj"  name="arr[]" value="{$uni['sid']}"{if ($is)}checked="checked"{/if}> {$uni['sname']}
+										</label>
+								{/loop}
+							</div>
+							<div class="help-block">选择要应用到的班级</div>
+						</div>
+					</div>
+				</div>
+				
+				{if !$_W['schooltype']}	
+				{if is_showpf()}
+				<div class="form-group score_type" {if (empty($score['type']) || $score['type'] == 'score')  }style="display:block"{else}style="display:none"{/if} >
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否考察</label>
+                    <div class="col-sm-9">
+                        <label  class="radio-inline"><input type="radio" name="is_review" value="1" id="is_review_Yes" {if !empty($score) && $score['is_review'] == 1}checked="true"{/if} /> 是</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label  class="radio-inline"><input type="radio" name="is_review" value="0" id="is_review_No"  {if empty($score['qhtype']) || $score['is_review'] == 0}checked="true"{/if} /> 否</label>
+                        <span class="help-block">是否启用统计考察</span>
+                    </div>
+                </div>
+
+				
+				<div class="form-group review_div " {if $score['is_review'] == 1}style="display:block"{else}style="display:none"{/if}>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"> <span style="color:red">*</span> 考察比例</label>
+                    <div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="review_p"  class="form-control">
+							<option value="80" {if $this_addinfo['review_per'] == '80'} selected="selected"{/if}>80%</option>
+							<option value="85" {if $this_addinfo['review_per'] == '85'} selected="selected"{/if}>85%</option>
+							<option value="90" {if $this_addinfo['review_per'] == '90'} selected="selected"{/if}>90%</option>
+							<option value="95" {if $this_addinfo['review_per'] == '95'} selected="selected"{/if}>95%</option>
+							<option value="98" {if $this_addinfo['review_per'] == '98'} selected="selected"{/if}>98%</option>
+							<option value="100" {if ($this_addinfo['review_per'] == '100' || empty($this_addinfo['review_per']))} selected="selected"{/if}>100%</option>
+							
+						</select>
+                    </div>
+                </div>
+				<div class=" review_div" {if $score['is_review'] == 1}style="display:block"{else}style="display:none"{/if}>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">选择考察科目</label>
+						<div class="col-sm-9 col-xs-6">
+							<div class="input-group text-info">
+								<label class="checkbox-inline"><input type="checkbox" class="check_all" style="margin-top: 5px" id="chack_allsubject" />全选</label></br>
+								{loop $subject $uni}
+								
+								<label for="uni_{$uni['sid']}" class="checkbox-inline ">
+								<input id="uni_{$uni['sid']}" type="checkbox" class="subject_check" name="sub_arr[]" value="{$uni['sid']}" {if (in_array( $uni['sid'],$this_subjectarr))}checked="checked"{/if} > {$uni['sname']}
+								</label>
+								{/loop}
+							</div>
+							<div class="help-block">选择要考察的科目</div>
+						</div>
+					</div>
+				</div>
+				{/if}
+				{/if}
+				
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $("#check_all").click(function(){
+		if($(this).is(':checked')){
+			$(".check_bj").prop("checked",true);
+		}else{
+			$(".check_bj").prop("checked",false);
+		}
+	});
+    
+	$(".check_bj").click(function(){
+		var allChecked = true;
+		$(".check_bj").each(function(){
+			if($(this).prop("checked") == false){
+				allChecked = false;
+			};
+		});
+		if(allChecked){
+			$("#check_all").prop("checked",true);
+		}else{
+			$("#check_all").prop("checked",false);
+		}
+	}); 
+	
+    $("#chack_allsubject").click(function(){
+		if($(this).is(':checked')){
+			$(".subject_check").prop("checked",true);
+		}else{
+			$(".subject_check").prop("checked",false);
+		}
+	});
+
+	$(".subject_check").click(function(){
+		var allChecked = true;
+		$(".subject_check").each(function(){
+			if($(this).prop("checked") == false){
+				allChecked = false;
+			};
+		});
+		if(allChecked){
+			$("#chack_allsubject").prop("checked",true);
+		}else{
+			$("#chack_allsubject").prop("checked",false);
+		}
+	}); 
+	   
+	$("input[name=is_review]").click(function(){
+	//alert($(this).val());
+		if($(this).val() == 1){
+			$(".review_div").show();
+		}else{
+			$(".review_div").hide();
+			$(".subject_check").prop("checked",false);
+			$("#chack_allsubject").prop("checked",false);
+		}
+	});
+	   
+	   
+	$('#isshow3').click(function(){
+		$('#credit-status1').show();
+	});
+	$('#isshow4').click(function(){
+		$('#credit-status1').hide();
+		$(".check_bj").prop("checked",false);
+		 $("#check_all").prop("checked",false);
+	});
+	
+	
+	$("#scoretype").change(function(){
+        var type = $(this).val();
+		if(type == 'score'){
+			$(".score_type").show();
+			$(".xq_score_type").hide();
+		}else if(type == 'xq_score'){
+			$(".score_type").hide(); 
+			$("#isshow4").prop("checked",true); 
+			$("#isshow3").prop("checked",false); 
+			$("#is_review_No").prop("checked",true); 
+			$("#is_review_Yes").prop("checked",false); 
+			$(".score_type1").hide(); 
+			$(".review_div").hide();
+			$(".xq_score_type").show();
+		}
+    });
+
+	
+</script>
+{elseif $operation == 'display'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i>刷新</a>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+					    <th style="width:100px;">序号</th>
+                        <th>{if is_TestFz()}考试{else}成绩期号{/if}名称</th>
+						<th style="width:10%;">{if is_TestFz()}考试{else}期号{/if}类型</th>
+						<th style="width:14%;text-align:center">备注</th>
+						<th style="width:14%;text-align:center">是否显示</th>
+                        <th class="qx_e_d" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $score $row}
+                    <tr>
+					    <td><div class="type-parent">{$row['sid']}</div></td>
+						<td><div class="type-parent">{$row['sname']}&nbsp;&nbsp;</div></td>
+					
+						{if $row['type'] == 'score'}
+						<td><div class="type-parent"><span class="label label-success">{if is_TestFz()}考试{else}成绩期号{/if}</span></div></td>
+						<td style="text-align:center">
+							<div class="type-parent">
+							{if $row['qhtype'] == 1}
+								<span class="label label-primary">全校可用</span>
+							{else}
+								<span class="label label-info">指定班级</span>
+							{/if}
+							</div>
+						</td>
+						{elseif $row['type'] == 'xq_score' }
+						<td><div class="type-parent"><span class="label label-info">学期{if is_TestFz()}考试{else}期号{/if}</span></div></td>
+
+						{if keep_MC()}
+						<td  style="text-align:center">
+							<div class="type-parent">
+								<span class="label label-info">{php echo date("Y-m-d",$row['sd_start'])}</span> 至 
+								<span class="label label-info">{php echo date("Y-m-d",$row['firstlast'])}</span>
+							</div>
+							<div class="type-parent">
+								<span class="label label-info">{php echo date("Y-m-d",$row['laststart'])}</span> 至 
+								<span class="label label-info">{php echo date("Y-m-d",$row['sd_end'])}</span>
+							</div>
+						</td>
+						{else}
+						<td  style="text-align:center">
+							<div class="type-parent">
+								<span class="label label-info">{php echo date("Y-m-d",$row['sd_start'])}</span> 至 
+								<span class="label label-info">{php echo date("Y-m-d",$row['sd_end'])}</span>
+							</div>
+						</td>
+						{/if}
+
+						
+                        {/if}
+                        
+
+
+						<td style="text-align: center;">	<input type="checkbox" value="{$row['is_show_qh']}" name="is_show_qh[]" data-id="{$row['sid']}" {if $row['is_show_qh'] == 1}checked{/if}></td>
+                        <td style="text-align:right;" class="qx_e_d">
+
+                            {if keep_MC() && $row['type'] == 'xq_score'}
+                            <a class="btn btn-default btn-sm qx_edit" data-toggle="tooltip"
+                                href="javascript:syncYear('{$row['sid']}')"
+                                title="同步学期1"><i class="fa fa-refresh"></i>
+                            </a>
+                            {/if}
+
+
+
+
+                            <a class="btn btn-default btn-sm qx_edit"
+                                href="{php echo $this->createWebUrl('score', array('op' => 'post', 'sid' => $row['sid'], 'schoolid' => $schoolid))}"
+                                title="编辑"><i class="fa fa-pencil"></i>
+                            </a>&nbsp;&nbsp;
+                            <a class="btn btn-default btn-sm qx_delete"
+                                href="{php echo $this->createWebUrl('score', array('op' => 'delete', 'sid' => $row['sid'], 'schoolid' => $schoolid))}"
+                                onclick="return confirm('确认删除此分类吗？');return false;" title="删除">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {/loop}
+                    <!--tr>
+                        <td colspan="3">
+                            <input name="submit" type="submit" class="btn btn-primary" value="批量更新排序">
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                        </td>
+                    </tr-->
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+
+
+<div class="modal fade" id="UpToXZFModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);width:600px;margin-top:60px;">
+		<div class="modal-content" style="border-radius: 5px;overflow: hidden;" >
+			<div class="loading-layer">
+				<div class="NS"> <img src="{OSSURL}public/web/images/blue_four_round.png"> </div>
+				<div id="synctbhtml" style="font-size: 120%;margin-top: 10px;">同步中。。。</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+
+    function syncYear(id){
+        let url = "{php echo $this->createWebUrl('score', array('schoolid' => $schoolid,'op'=>'SyncYear'))}"
+	    $("#UpToXZFModal").modal("show")
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "json",
+            data:{
+                id:id
+            },
+            success: function (res) {
+                $("#synctbhtml").text(res.msg)
+                setTimeout(() => {
+                    $("#UpToXZFModal").modal("hide")
+                }, 1000);
+            },
+            error: function (jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+                //DoSomething
+            }
+        });
+
+    }
+
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+$(':checkbox[name="is_show_qh[]"]').bootstrapSwitch();
+	$(':checkbox[name="is_show_qh[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+		let is_show = this.checked ? 1 : 0;
+		let sid = $(this).attr('data-id');
+		$.post("{php echo $this->createWebUrl('score', array('op' => 'ChangeShow','schoolid' => $schoolid))}", {is_show: is_show,sid:sid}, function(resp){
+			
+		});
+	});	
+})
+$(document).ready(function() {
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1000232,1,$schoolid))}
+		$(".qx_edit").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1000233,1,$schoolid))}
+		$(".qx_delete").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});	
+</script>
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,16 @@
+	{loop $tealist_this $key $item}
+		{if $key%2 == 0}
+		<li class="li" style="background-color: rgb(244, 244, 244);">
+		{else}
+		<li class="li" style="background-color: white;">
+		{/if}
+			<ul>
+				<li class="li1" style="width:25%">{$item['tname']}</li>
+				<li class="li2" style="width:15%;line-height: 20px;">{$item['allcount']}</li>
+				<li class="li3" style="width:15%;line-height: 20px;">{$item['bingcount']}</li>
+				<li class="li4" style="width:15%;line-height: 20px;">{$item['shicount']}</li>
+				<li class="li5" style="width:15%;line-height: 20px;">{$item['chaicount']}</li>
+				<li class="li5" style="width:15%;line-height: 20px;">{$item['qitacount']}</li>
+			</ul>		
+		</li>
+	{/loop}

@@ -1,0 +1,49 @@
+<style>
+    .ans-cell{padding-left: 30px;position: relative;line-height: var(--LH);--LH:25px;height: 25px;}
+    .ans-cell:before{position: absolute;content:'';height: 14px;width: 14px;border:1px solid #9e9e9e;top:calc(50% - 8px );left:5px}
+    .ans-cell.int-1:before{border-radius: 50%;}
+    .ans-cell.checked:before{background-color: #4072cc;border-color: #4072cc;}
+    .ans-cell.int-1.checked:after{position: absolute;content:'';height: 6px;width: 6px;background-color: white;left:10px;top:calc(50% - 3px);border-radius: 50%;}
+    .ans-cell.int-2.checked:after{position: absolute;content:'';height: 4px;width: 8px;left: 8px; top: calc(50% - 5px);border:2px solid white;border-right:none;border-top:none;transform: rotate(-45deg);}
+</style>
+
+<div style="width: 100%;" >
+    {loop $ZY_contents $kz $rz}
+        <div style="width: 100%;display: flex;line-height: 30px;" >
+            <div style="width: 20px;text-align: right;margin-right: 5px;">{$kz}. </div>
+            <div style="flex:1" >
+                {$rz['title']}
+            </div>
+        </div>
+        {if $rz['type'] == 1}
+        <div style="width: 100%;padding-left: 20px;" >
+            {loop $rz['content'] $rzk $rzc}
+                {if $testAA[$kz]['qorder'] == $rzk }
+                    <div class="ans-cell checked int-{$rz['type']}" >  {$rzc['title']}  </div>
+                    {else}
+                    <div class="ans-cell  int-{$rz['type']}" >  {$rzc['title']}  </div>
+                {/if}
+            {/loop}
+        </div>
+        {else if $rz['type'] == 2}
+        <div style="width: 100%;padding:20px">
+            {loop $rz['content'] $rzk $rzc}
+                {if in_array($rzk,$testAA[$kz])}
+                    <div class="ans-cell checked int-{$rz['type']}" >  {$rzc['title']}  </div>
+                {else}
+                    <div class="ans-cell  int-{$rz['type']}" >  {$rzc['title']}  </div>
+                {/if}
+            {/loop}
+        </div>
+        {else if $rz['type'] == 3}
+        <div style="width: 100%;padding:20px">
+            {if !empty($testAA[$kz]['qorder']) }
+                <div style="border: 1px solid #efecec;padding: 5px;">{$testAA[$kz]['qorder']}</div>
+            {else}
+                <div style="border: 1px solid #efecec;padding: 5px;"> 未回答。。。。。。</div>
+            {/if}
+        </div>
+        {/if}
+    {/loop}
+</div>
+

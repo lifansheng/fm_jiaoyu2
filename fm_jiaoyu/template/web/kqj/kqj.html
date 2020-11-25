@@ -1,0 +1,101 @@
+
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>卡类型</label>
+        <div class="col-sm-2 col-lg-3">
+            <select style="margin-right:15px;" name="cardtype" class="form-control">
+                <option value="1" {if $item['cardtype'] ==1} selected="selected"{/if}>IC卡</option>
+                <option value="2" {if $item['cardtype'] ==2 || empty($item['cardtype'])} selected="selected"{/if}>ID卡</option>
+            </select>
+            <div class="help-block">无特殊情况此处选择ID卡</div>
+        </div>
+    </div>
+    
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告标题/广告语</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="pop" value="{$banner['pop']}" placeholder="广告标题">
+            <div class="help-block">广告标题/广告语</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>班级播报语音话术</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="voice" value="{$banner['voice']}" placeholder="变量名含义，名称：[name] 关系：[relationship]">
+            <div class="help-block">举例:小明妈妈来了,其中[name]是小明,[relationship]是妈妈</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>voice</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="newvoice" value="{$banner['newvoice']}" >
+            <div class="help-block">举例:小明妈妈来了,其中[name]是小明,[relationship]是妈妈</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>欢迎语</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="welcome" value="{$banner['welcome']}" placeholder="考勤机开机启动广告语">
+            <div class="help-block">考勤机开机启动时播放的广告话术</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>密码</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="password" value="{$banner['password']}" placeholder="考勤机进入设置页面的密码">
+            <div class="help-block">只能是数字或字母，区分大小写，空为不启用</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>开机时间</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_clock(starttime, $banner['starttime']?$banner['starttime']:'00:00');}
+        <div class="help-block">考勤机自动开机时间（在手机使用无效）</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>关机时间</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_clock(shutdowntime, $banner['shutdowntime']?$banner['shutdowntime']:'00:00');}
+            <div class="help-block">考勤机自动关机时间（在手机使用无效）</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">体温枪</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="twmac" value="{if $item['twmac'] != -1}{$item['twmac']}{/if}" placeholder="例如:A0:EA:DC:08:2M">
+            <div class="help-block">填写体温枪MAC，不填则不启用</div>
+        </div>
+    </div>
+    {if $isShow}
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频链接</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="video" value="{$banner['video']}" placeholder="视频链接">
+            <div class="help-block">设备上显示视频，必须为物理地址不支持代码</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片1</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic1', $banner['pic1'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片2</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic2', $banner['pic2'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片3</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic3', $banner['pic3'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片4</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic4', $banner['pic4'])}
+        </div>
+    </div>
+    {/if}

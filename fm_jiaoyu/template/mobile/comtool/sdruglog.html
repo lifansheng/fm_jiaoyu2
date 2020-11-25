@@ -1,0 +1,29 @@
+{loop $drugloglist $v}
+<li class="main" time="{$v['location']}" ctype="{$ctype}" id="{$v['id']}" style="display: block;position: relative;overflow: hidden;">
+    <div class="cutting"></div>
+    <div class="notifyTopBox" style="height:85px;">
+        <div class="notifyTopLeft">
+            <img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+        </div>
+        <div class="notifyTopRight">
+            <div class="notifyTopRightTopBox">					
+                <span class="teacherInfo">{$v['sname']}</span>		
+                {if $v['status'] ==1}
+                <div class="HasDealTip"   >已处理</div>
+                {else}
+                <div class="NoDealTip"   >未处理</div>
+                {/if}
+            </div>
+            <p class="notifyCreateTime">喂药时间：{php echo date("m-d H:i",$v['datetime'])}</p>
+            <p class="notifyCreateTime">喂药老师：{$v['tname']} </p> 
+            <p class="notifyCreateTime">喂药状态：{$v['updatetime']} </p>
+        </div>
+    </div>
+</li>
+{/loop}	
+{if !empty($drugloglist)}
+<script>
+    $("#total_1").html(`{$total_1}`)
+    $("#total_2").html(`{$total_2}`)
+</script>
+{/if}

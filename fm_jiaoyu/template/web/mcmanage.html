@@ -1,0 +1,752 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if keep_MC()}
+<ul class="nav nav-tabs">
+	<li {if $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('mcmanage', array('op' => 'display', 'schoolid' => $schoolid))}">晨检管理</a></li>
+	<li {if $operation == 'report'}class="active"{/if}><a href="{php echo $this->createWebUrl('mcmanage', array('op' => 'report', 'schoolid' => $schoolid))}">晨检报表</a></li>
+</ul>
+{/if}
+{if $operation == 'display'}
+
+<div class="main">
+    <style>
+    .form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">晨检管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="mcmanage" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按年级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="nj_id" id="nj_id" class="form-control">
+                            <option value="0">请选择年级</option>
+                            {loop $xueqi $it}
+                            <option value="{$it['sid']}" {if $_GPC['nj_id'] == $it['sid']}selected{/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" id="bj_id" class="form-control">
+                            <option value="0">请选择班级搜索</option>
+                            {loop $bj $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>		
+                    <div class="col-sm-2 col-lg-2">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    <div class="col-sm-2 col-lg-2">						
+                        <button class="btn btn-success" name="out_putcode" value="out_putcode"><i class="fa fa-download"></i>导出数据</button> 
+                    </div>
+                    <div class="col-sm-2 col-lg-2">						
+                        <a class="btn btn-success" href="{php echo $this->createWebUrl('mcmanage', array('op' => 'GetQhData', 'schoolid' => $schoolid))}">学生详情</a> 
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {template 'public/excel_input'}
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th style="width:5%">姓名</th>
+                            <th style="width:8%;">年级</th>
+                            <th style="width:8%;">班级</th>
+                            <th style="width:8%;">检测老师</th>
+                            <th style="width:8%;">检测设备</th>
+                            <th style="width:8%;">体温</th>				
+                            <th style="width:8%;">检测时间</th>					
+                            <th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                            <td>{$item['s_name']}</td>	
+                            <td>
+                                {$item['nj_name']}
+                            </td>
+                            <td>
+                                {$item['bj_name']}
+                            </td>	
+                            <td>
+                                {$item['tname']}
+                            </td>
+                            <td>
+                                {if $item['issb'] == 1}{$item['macname']}{else}老师检测{/if}
+                            </td>
+                            <td>
+                                {if $item['tiwen'] < 35.5 || $item['tiwen'] >37.5}
+                                    <span class="label label-danger">{$item['tiwen']}℃</span>
+                                {else}
+                                    <span class="label label-info">{$item['tiwen']}℃</span>
+                                {/if}
+                            </td>
+                            <td>
+                                <span class="label label-success">{php echo date('Y-m-d',$item['createdate'])}</span>
+                            </td>
+                            <td class="qx_e_d" style="text-align:right;">
+                                {if $item['is_send'] == 0}
+                                    <a class="btn btn-default btn-sm qx_802" href="javascript:sendToStu(`{$item['id']}`);" title="发送"><i class="fa fa-paper-plane"></i></a>
+                                {/if}
+                                <a class="btn btn-default btn-sm qx_802" href="javascript:Look(`{$item['id']}`,'{$item['s_name']}');" title="查看"><i class="fa fa-eye"></i></a>
+                                <a class="btn btn-default btn-sm" href="javascript:;" title="编辑" onclick="showmodal(`{$item['id']}`)"><i class="fa fa-pencil"></i></a>
+                                &nbsp;&nbsp;<a class="btn btn-default btn-sm qx_804" href="{php echo $this->createWebUrl('mcmanage', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                    <tr>
+                        <td colspan="10">
+                            <input name="token" type="hidden" value="{$_W['token']}" />
+                            <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+                        </td>
+                    </tr>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">修改资料</h4>
+			</div>
+			<div class="modal-body" id="detail_checksen1d">
+				<form id="upsence_form" method="post" class="form-horizontal form">
+					<input type="hidden" name="schoolid" value="4">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">学生姓名</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="s_name" type="text" disabled>
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">身高</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="height" type="text" >
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">体重</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="weight" type="text" >
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">左眼视力</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="lefteye" type="text" >
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">右眼视力</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="righteye" type="text">
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">体温</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="tiwen" type="text">
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">口腔</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="mouth">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">咳嗽</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="cough">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+                            {if keep_MC()}
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">指甲</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="nail">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">外伤</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="trauma">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">疱疹</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="herpes">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">手掌疱疹</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="handHerpes">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+                            {/if}
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">呕吐</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="vomit">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">腹泻</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="diarrhea">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">感冒</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="cold">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">头痛</label>
+								<div class="col-sm-2 col-lg-3">
+									<select class="form-control" id="headache">
+                                        <option value="0">未检测</option>
+                                        <option value="1">正常</option>
+                                        <option value="2">不正常</option>
+                                    </select>
+								</div>
+                            </div>
+
+
+
+                            <input id="id" type="hidden">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="close_modal1" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit1" onclick="edit()">确定修改</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="uploader-modal modal right fade" style="z-index:1045 !important;" id="mcInfo" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft" style="width: 30%;">
+        <div class="loading-layer" id="mcInfo-loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+        <div class="modal-header">                
+            <h4 class="modal-title" id="myModalLabel">晨检详情 - <span id="CHeckMStu"></span> </h4>
+        </div>
+        <div class="modal-content">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <div class="form-horizontal form"  id="mcInfoData">
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" style="min-width: 600px!important;z-index: 1060 !important;" id="Modal11" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+	<div class="modal-dialog">
+		<div class="modal-content" style="background-color: transparent;">
+            <div class="modal-body form_paike_boxs" style="padding: 7px;position: relative; max-height: unset;" >
+                <div id='ShowImgHtml' style="text-align: center;"> </div>
+            </div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+    //班级年级联动
+    $("#nj_id").change(function() {
+        var type = 4;
+        var cityId = $("#nj_id option:selected").attr('value');
+        changeGrade(cityId,type, function() {});
+    });
+    function changeGrade(gradeId, type, __result) {
+        var schoolid = "{$schoolid}";
+        var classlevel = [];
+        //获取班次
+        $.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+            data       = JSON.parse(data);
+            classlevel = data.bjlist;
+            var html   = '';
+            html += '<select id="bj_kcbuy"><option value="">请选择班级</option>';
+            if (classlevel != '') {
+                for (var i in classlevel) {
+                    html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+                }
+            }
+            $('#bj_id').html(html);
+        });
+    }
+    $(function(){
+        $(".check_all").click(function(){
+            var checked = $(this).get(0).checked;
+            $("input[type=checkbox]").attr("checked",checked);
+        });
+        $("input[name=btndeleteall]").click(function(){
+            var check = $("input[type=checkbox][class!=check_all]:checked");
+            if(check.length < 1){
+                alert('请选择要删除的数据!');
+                return false;
+            }
+            if(confirm("确认要删除选择的数据?")){
+                var id = new Array();
+                check.each(function(i){
+                    id[i] = $(this).val();
+                });
+                var url = "{php echo $this->createWebUrl('mcmanage', array('op' => 'deleteall','schoolid' => $schoolid))}";
+                $.post(
+                    url,
+                    {idArr:id},
+                    function(data){
+                        if(data.result){
+                            alert(data.msg);
+                            location.reload();
+                        }else{
+                            alert(data.msg);
+                        }
+                    },'json'
+                );
+            }
+        });
+
+    });
+
+    //展示修改modal
+    function showmodal(id){
+        let schoolid = `{$schoolid}`
+        $('#EditModal').modal('toggle');
+        $.post("{php echo $this->createWebUrl('mcmanage',array('op'=>'GetMcData'))}", {'id': id, 'schoolid': schoolid}, function(data) {
+            let newdata = data.data;
+            $("#s_name").val(newdata.s_name);
+            $("#height").val(newdata.height);
+            $("#weight").val(newdata.weight);
+            $("#lefteye").val(newdata.lefteye);
+            $("#righteye").val(newdata.righteye);
+            $("#tiwen").val(newdata.tiwen);
+            $("#mouth").val(newdata.mouth);
+            $("#handHerpes").val(newdata.handHerpes);
+            $("#nail").val(newdata.nail);
+            $("#cough").val(newdata.cough);
+            $("#trauma").val(newdata.trauma);
+            $("#herpes").val(newdata.herpes);
+            $("#vomit").val(newdata.vomit);
+            $("#diarrhea").val(newdata.diarrhea);
+            $("#cold").val(newdata.cold);
+            $("#headache").val(newdata.headache);
+            $("#id").val(id);
+        },'json');
+    }
+
+    //修改数据
+    function edit(){
+        let data = {
+            'id' : $("#id").val(),
+            'height' : $("#height").val(),
+            'weight' : $("#weight").val(),
+            'lefteye' : $("#lefteye").val(),
+            'righteye' : $("#righteye").val(),
+            'mouth' : $("#mouth").val(),
+            'tiwen' : $("#tiwen").val(),
+            'handHerpes' : $("#handHerpes").val(),
+            'nail' : $("#nail").val(),
+            'cough' : $("#cough").val(),
+            'trauma' : $("#trauma").val(),
+            'herpes' : $("#herpes").val(),
+            'vomit' : $("#vomit").val(),
+            'diarrhea' : $("#diarrhea").val(),
+            'cold' : $("#cold").val(),
+            'headache' : $("#headache").val(),
+            'schoolid' : `{$schoolid}`,
+        }
+        $.post("{php echo $this->createWebUrl('mcmanage',array('op'=>'EditMcData'))}", data, function(data) {
+            alert(data.msg);
+            location.reload()
+        },'json');
+    }
+    function sendToStu(id){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('mcmanage', array('op' => 'sendToStu', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            data: {
+                id: id,
+            },
+            success: function (result) {
+                alert(result.msg);
+                location.reload()
+            },
+            error: function (e) {
+                alert('访问网络失败');
+            }
+        });
+    }
+    function Look(id,sname) {
+        $("#CHeckMStu").text(sname)
+        $('#mcInfo-loading-layer').show()
+        $("#mcInfoData").html("")
+        $('#mcInfo').modal('toggle');
+        $.ajax({
+            url: "{php echo $this->createWebUrl('mcmanage', array('op' => 'getMcInfo', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "html",
+            data: {
+                id: id,
+            },
+            success: function (result) {
+                
+                $("#mcInfoData").html(result)
+                    $(".LookImg").off('click')
+                    $('#mcInfo-loading-layer').hide()
+                    $(".LookImg").on('click',function(){
+                    let url = $(this).attr('data-url');
+                    $("#ShowImgHtml").show()
+                    let html = `<img src="${url}" style="position: relative; min-height: 350px;max-height: 700px;" >`
+                    $("#ShowImgHtml").html(html)
+                    $('#Modal11').modal('toggle',150)
+                })
+            },
+            error: function (e) {
+                alert('访问网络失败');
+            }
+        });
+    }
+</script>	
+{elseif $operation == 'GetQhData'}
+<div class="main">
+    <style>
+    .form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">晨检管理</div>
+        <div class="panel-body">
+            <div class="form-group" style="line-height: 30px;">
+                <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按期号</label>
+                <div class="col-sm-2 col-lg-2">
+                    <select style="margin-right:15px;" id="qh_id" class="form-control">
+                        <option value="0">请选择期号搜索</option>
+                        {loop $qh $row}
+                        <option value="{$row['sid']}" {if $row['sid'] == $_GPC['qh_id']} selected="selected"{/if}>{$row['sname']}</option>
+                        {/loop}
+                    </select>
+                </div>
+                <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择班级</label>
+                <div class="col-sm-2 col-lg-2">
+                    <select style="margin-right:15px;" name="bj_id" id="bj_id" class="form-control">
+                        <option value="0">请选择班级</option>
+                        {loop $bj $row}
+                        <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                        {/loop}
+                    </select>
+                </div>	
+                <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">请选择学生</label>
+                <div class="col-sm-2 col-lg-2">
+                    <select style="margin-right:15px;" name="sid" id="sid" class="form-control">
+                        <option value="0">请先选择班级</option>
+                    </select>
+                </div>	
+                <div class="col-sm-2 col-lg-2">
+                    <button class="btn btn-default" onclick='search()'><i class="fa fa-search"></i> 搜索</button>
+                </div>	
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel panel-default">
+	<div class="chart-title  ng-binding" style="padding: 4px 10px;"><i class="middle-time-change" id="s_name"></i>
+	</div>
+	<div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;">
+		<div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+		<div class="echarts" id="echarts-pie-chart-stumc"></div>
+	</div>
+</div>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.flot.js?v=2.1.4"></script>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/echarts-all.js?v=2.1.4"></script>	
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>	
+<script>
+    //默认进入取一个学生的数据
+    $(function(){
+        search()
+    })
+    //班级年级联动
+    $("#bj_id").change(function() {
+        var type = 4;
+        var BjId = $("#bj_id option:selected").attr('value');
+        changeGrade(BjId);
+    });
+    function changeGrade(BjId) {
+        var schoolid = "{$schoolid}";
+        //获取班级学生
+        $.post("{php echo $this->createWebUrl('indexajax',array('op'=>'GetBjStu'))}", {'bjid': BjId, 'schoolid': schoolid}, function(data) {
+            data       = JSON.parse(data);
+            classstu = data.data;
+            var html   = '';
+            // html += '<select id="bj_kcbuy"><option value="">请选择学生</option>';
+            if (classstu != '') {
+                for (var i in classstu) {
+                    html += '<option value="' + classstu[i].id + '">' + classstu[i].s_name + '</option>';
+                }
+            }
+            $('#sid').html(html);
+        });
+    }
+
+    function search(){
+        var sid = $("#sid").val()
+        var qh_id = $("#qh_id").val()
+        $.ajax({
+            url: "{php echo $this->createWebUrl('mcmanage',array('op'=>'GetStuMcData','schoolid'=>$schoolid))}",
+            type: "POST",
+            data: {sid:sid,qh_id:qh_id},
+            dataType: "json",
+            success: function (datas) {
+                // let datas = $.parseJSON(data);
+                
+                let ds = PieOption['stumc'];
+                ds.xAxis [0].data = datas.date;
+                ds.series[0].data = datas.height;
+                ds.series[1].data = datas.weight;
+                ds.series[2].data = datas.tiwen;
+                ds.series[3].data = datas.lefteye;
+                ds.series[4].data = datas.righteye;
+                var myChart = echarts.init($('#echarts-pie-chart-stumc')[0]);
+                myChart.setOption(ds);
+                $(window).resize(myChart.resize);
+                $("#s_name").html(datas.student.s_name+'的晨检情况')
+                $(".global-loading-layer").hide()
+            }
+        });
+    }
+
+</script>
+{elseif $operation == 'report'}
+
+<div class="main">
+    <style>
+    .form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">晨检报表</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="op" value="report" />
+                <input type="hidden" name="do" value="mcmanage" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <!-- <label class="col-lg-2 control-label" style="width: 100px;">学生姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input type="text" name="s_name" class="form-control">
+                    </div> -->
+                    <label class="col-lg-2 control-label" style="width: 100px;">按年份</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="year" class="form-control">
+                            <option value="">请选择年份</option>
+                            {loop $year $it}
+                            <option value="{$it['year']}" {if $_GPC['year'] == $it['year']}selected{/if}>{$it['year']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+
+                    <label class="col-lg-2 control-label" style="width: 100px;">类型</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="type" class="form-control">
+                            <option value="0">不限制</option>
+                            <option value="1" {if $_GPC['type'] == 1}selected{/if}>月度报告</option>
+                            <option value="2" {if $_GPC['type'] == 2}selected{/if}>学期报告</option>
+                            <option value="3" {if $_GPC['type'] == 3}selected{/if}>年度报告</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2 col-lg-2">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                </div>
+            </form>
+            <div class="col-sm-2 col-lg-2">						
+                <button class="btn btn-success" onclick="getReport()">获取报表</button> 
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th style="width:5%">标题</th>
+                            <th style="width:5%">姓名</th>
+                            <th style="width:8%;">班级</th>
+                            <th style="width:8%;">生成年份</th>
+                            <th style="width:8%;">生成月份</th>
+                            <th style="width:8%;">报告生成时间</th>
+                            <th style="width:8%;">获取时间</th>
+                            <th style="width:8%;">详情</th>				
+                            <th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td>
+                                {$item['title']}
+                            </td>	
+                            <td>
+                                <label style="text-align: center;">{$item['s_name']}</label> <br>
+                                <img src="{php echo tomedia($item['icon'])}" style="width: 40px; height: 40px; border-radius: 50%;">
+                            </td>
+                            
+                            <td>
+                                {$item['sname']}
+                            </td>	
+                            <td>
+                                {$item['year']}年
+                            </td>
+                            <td>
+                                {$item['month']}月
+                            </td>
+                            <td>
+                                {$item['gettime']}
+                            </td>
+                            <td>
+                                {$item['createtime']}
+                            </td>
+                            <td>
+                                <a href="javascript:;" onclick="lookInfo(`{$item['id']}`,`{$item['type']}`)">查看详情信息</a>
+                            </td>
+                            <td class="qx_e_d" style="text-align:right;">
+                                <a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('mcmanage', array('id' => $item['id'], 'op' => 'deletereport', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 侧滑展示信息 -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="ModalReport" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft" style="width: 540px;">
+        <div class="modal-content" id="mcReportInfoData" style="max-height:unset !important;">
+            
+        </div>
+    </div>
+</div>
+<!-- 侧滑展示信息 -->
+<script>
+    //查看报表详情信息
+    function lookInfo(id,type){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('mcmanage', array('op' => 'getReportInfo', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "html",
+            data: {
+                id: id,
+                type: type,
+            },
+            success: function (result) {
+                $('#ModalReport').modal('toggle',150)
+                $("#mcReportInfoData").html(result)
+            },
+            error: function (e) {
+                alert('访问网络失败');
+            }
+        });
+    }
+    //获取报表
+    function getReport(){
+        if(`{$difftime}` < 0){
+            ReToastGlobal('任务继续中!')
+            return
+        }else{
+            ReToastGlobal('正在获取中， 请勿再次提交')
+        }
+        $.ajax({
+            url: "{php echo $this->createWebUrl('mcmanage', array('op' => 'getReport', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            success: function (result) {
+                ReToastGlobal(result.msg)
+            },
+            
+        });
+    }
+</script>
+
+{/if}
+{template 'public/footer'}

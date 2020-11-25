@@ -1,0 +1,25 @@
+{loop $drugloglist $v}
+<li class="main" time="{$v['location']}" ctype="{$ctype}" id="{$v['id']}" style="display: block;position: relative;overflow: hidden;">
+    <div class="cutting"></div>
+    <div class="notifyTopBox" style="height:70px;">
+        <div class="notifyTopLeft">
+            <img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+        </div>
+        <div class="notifyTopRight">
+            <div class="notifyTopRightTopBox">					
+                <span class="teacherInfo">{$v['sname']}</span>		
+                <div class="HasDealTip"  {if $v['status'] ==0}style="display:none;"{/if}  >已处理</div>
+            </div>
+            <p class="notifyCreateTime">喂药时段：{php echo date("m-d H:i",$v['datetime'])}</p>
+            <p class="notifyCreateTime">喂药说明：<span style="color:#12c3bb" onclick="chack(this,`{$v['drugid']}`)">点击查看</span> </p> 
+        </div>
+    </div>
+    <div class="deal-btn" onclick="weiyao(this,`{$v['id']}`)" {if $v['status'] ==1}style="display:none;"{/if} >喂药</div>
+</li>
+{/loop}	
+{if !empty($drugloglist)}
+<script>
+    $("#total_1").html(`{$total_1}`)
+    $("#total_2").html(`{$total_2}`)
+</script>
+{/if}

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bjqCss.css?v=4.9">
+    <link href="{OSSURL}public/mobile/css/wx_sdk.css?v=1717" rel="stylesheet" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="https://manger.weimeizhan.com/web/resource/js/lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="{MODULE_URL}public/web/js/touch.min.js"></script>
+    <link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+    <script src=" {MODULE_URL}public/mobile/js/echarts/4.3.0/echarts.min.js"></script>
+    <script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/manual_mobile.css?v=1.0">
+    {php include $this->template('port');}
+    <title>{$school['title']}</title>
+
+    <style>
+        .TopBtnBox{
+            width: 100%;height: 60px;display: flex;justify-content: space-evenly;
+        }
+        .TopBtnBox>span{
+            padding:0 20px;border-radius: 15px;height: 30px;margin-top: 15px;line-height: 30px;
+        }
+        .Isplay{
+            display: none;
+        }
+        .nc_editor-page{height: 100%;width: 800px;}
+
+    </style>
+</head>
+<body style="margin:0">
+    <audio id="bgMusic" src="{php echo tomedia($bgMusic['audio'])}" ></audio>
+    <div class="Main">
+        <div class="content-cell-box" style="background-color: #656565;height: calc(100vh - 40px);">
+        <div class="TopBtnBox" >
+            <span onclick="javascript:goback()" style="background-color: coral;">退出</span>
+            <span class="Isplay" style="color:white;" id='playMusic' onclick="playMusic()"><i class="fas fa-play"></i>已暂停</span>
+            <span class="Isplay" style="color:white;" id='pauseMusic' onclick="pauseMusic()"><i class="fas fa-pause"></i>播放中</span>
+        <span style="background-color:{if $IsShowSave}#ccc;{else} #34cfc2;{/if}" onclick="EditPage()">编辑</span>
+        </div>
+        <div style="width: 100vw;overflow: auto;height: calc(100% - 60px);position: relative;">
+
+            <div class="nc_editor-page">
+                <div style="position: absolute;width: 80px;height: 40px;color:white;text-align: center;top:calc(50% - 20px);left:0" >
+                    <div><<< </div>
+                    <div>滑动更多</div>
+                </div>
+                <!-- 放大缩小box -->
+                <div id="zoom-div">
+                    <div class="changeimgbox" onclick="OpenAlbumList();$('#zoom-div').hide();">
+                        <i class="fas fa-image"></i>
+                        <div style="font-size:12px" >替换</div>
+                    </div>
+                    <div class="ZoomUpAndDownBox" >
+                        <div onclick="ZoomImg('add')"  class="ZoomUp"><i class="fas fa-plus"></i></div>
+                        <div onclick="ZoomImg('min')"><i class="fas fa-minus"></i></div>
+                    </div>
+                </div>
+                <!-- 中间页 -->
+                <div id="tpl_mask_div"
+                    style="background-color: white;">
+                    <div class="tpl_page" id="tpl_page">
+                        <div class="pageBackMask" id="pageBackMask" > </div>
+                        <div class="img_container_list container_list"   style="z-index: 14;position: absolute;"> </div>
+                        <div class="title_container_list container_list" style="position:absolute;z-index:16;">   </div>
+                        <div class="score_container_list container_list" style="position:absolute;z-index:16;">   </div>
+                        <div class="txt_container_list container_list"   style="position:absolute;z-index:16;">   </div>
+                        <div class="show_container_list container_list"  style="position:absolute;z-index:16;">   </div>
+                        <div class="video_container_list container_list" style="position:absolute;z-index:16;">   </div>
+                        <div class="chart_container_list container_list" style="position:absolute;z-index:16;">  </div>
+                    </div>
+                </div>
+                <div style="position: absolute;width: 80px;height: 40px;color:white;text-align: center;top:calc(50% - 20px);right: 0;" >
+                    <div>>>></div>
+                    <div>滑动更多</div>
+                </div>
+            </div>
+        </div>
+            <!-- 底部切换页 -->
+            <div  class="bottom_change_Box">
+                <div class="pageBtn" style="border-right: 1px solid black;" onclick="Prev()">上一页</div>
+                <div style="flex: 1;text-align: center;">  <span id="NowPageIn"></span>/<span id="AllPageC"></span></div>
+                <div class="pageBtn" style="border-left: 1px solid black;" onclick="Next()">下一页</div>
+            </div>
+        </div>
+        
+    <script>
+        /****************************  阻止返回键  ***************************/
+        var PageHistory = [];
+
+        function PushHistoryStack(funcName){
+            var state = {
+                title: "title",
+                url: "#"
+            };
+            window.history.pushState(state, "title", "#");
+            PageHistory.push(funcName)
+        }
+
+        function PopHistoryStack(){
+            if(PageHistory.length > 0){
+                eval(PageHistory.pop() + '()')
+            }else {
+                window.history.back()
+            }
+        }
+
+        window.addEventListener("popstate", function(e) {
+            PopHistoryStack()
+        }, false);
+
+        /****************************  阻止返回键  ***************************/
+
+        var NowTagId = 0; //当前操作页面
+
+        //模拟测试数据
+        var PageList = []
+        //模拟当前档案未启用
+        var IsBlockReturn = false;
+        var current_page_data = null;
+        var dragSrc
+        var ox, oy;
+        var is_input_change = false;
+
+        function _Init() {
+            let FirstData = {
+                id : `{$_GPC['id']}`,
+                schoolid : `{$_GPC['schoolid']}`,
+                sid : `{$_GPC['sid']}`,
+                sf : 'stu',
+                isOver : '{$isOver}'
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'GetFirstPage'))}", FirstData, function(data) {
+                PageList = data.data;
+                renderPageContainer(PageList[0])
+                NowTagId = PageList[0].tagid
+                $("#AllPageC").text(PageList.length)
+                $("#NowPageIn").text(1)
+            },'json');
+        }
+
+        function clearAllList() { //清除展示区域原有容器
+            $('.container_list').html('')
+        }
+
+        function renderPageContainer(page_item) { //渲染中间单个页面
+            clearAllList()
+            $('#zoom-div').hide();
+            $('.lock_mask').hide();
+            if (!page_item) return;
+            var tpl_W = '750px',
+                tpl_H = '530px',
+                lst_print_page_containers = [];//容器数组
+                
+            lst_print_page_containers = page_item.data.pageData;
+            $('#tpl_mask_div').css({
+                'width': tpl_W,
+                'height': tpl_H,
+                '-webkit-transform': 'scale(0.85)',
+                'transform': 'scale(0.85)',
+                '-webkit-transform-origin': 'center',
+                'transform-origin': 'center',
+            });
+            $('#tpl_page').css({
+                'width': tpl_W,
+                'height': tpl_H,
+                '-webkit-transform-origin': 'center',
+                'transform-origin': 'center',
+            });
+            $('#tpl_mask_div').show();
+            $('.pageBackMask').css({
+                'background': 'url(' + page_item.data.backimgurl + ') no-repeat center',
+                'background-size': '100% 100%',
+                'z-index': 13
+            });
+            lst_print_page_containers.map(function (v) {
+                if (v.itemType === 'circular') {
+                    $('.img_container_list').append(render_circular(v));
+                } else if (v.itemType == "square") {
+                    $('.img_container_list').append(render_square(v));
+                } else if (v.itemType == "textarea") {
+                    $('.txt_container_list').append(render_txt(v));
+                } else if (v.itemType == "justshow") {
+                    $('.show_container_list').append(render_show(v));
+                } else if (v.itemType == "score") {
+                    $('.score_container_list').append(render_score(v));
+                }else if(v.itemType === 'video'){
+                    $('.video_container_list').append(render_video(v));
+                }else if(v.itemType === 'chart'){
+                    $('.chart_container_list').append(render_chart(v))
+                }
+            })
+            select_lock = true;
+            add_zoom_fn()
+            page_to_render_img()
+            page_to_render_chart()
+            $(".right_tabs_items.tabs-item[tab-tag=auth]").click()
+            $("#PageAuth").val(page_item.auth)
+        }
+
+
+
+        function render_score(score_msg) {//渲染评分容器
+            var z_index = 0, width = 0, height = 0, top = 0, left = 0, rotate = 'rotate(0deg)', container_type = '', font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, area_width = 1, area_height = 1, small_font_size = 1, _ary;
+            let ItemClient = score_msg.Client;
+            let ItemPosition = score_msg.Position;
+            width = ItemClient.width;
+            height = ItemClient.height;
+            top = ItemPosition.top;
+            left = ItemPosition.left;
+            let lineHeight = ItemClient.lineHeight
+            z_index = ItemPosition.zIndex;
+            color = ItemClient.fontColor;
+            font_size = Number(ItemClient.fontSize);
+            score_content = ItemClient.scoreData
+            var styleS, htmlS, imgS = '';
+            styleS ="position:absolute;z-index:" + z_index +";top:" + top + "px;left: " + left + "px;width: " + width + "px;height: " + height + "px;transform:" + rotate + ";-webkit-transform:" + rotate + ";";
+            score_styleS ="font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;transform:scale(" + small_font_size + ");-webkit-transform:scale(" + small_font_size + ");display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-pack:center;width:100%;line-height: " + lineHeight +" px;"
+
+            let ItemWidth = 100 / (score_content.length + 1)
+            for(let IIs in score_content){
+                let InputRound = 'scoreInputRound'
+                if(Number(ItemClient.setValue) === Number(IIs)){
+                    InputRound += ' inSelect'
+                }
+                let ImgBoxS = '';
+                let TxtBoxS = '';
+                if(ItemClient.scoreImgData[IIs] !== ''){
+                    ImgBoxS = ` <img src="${ItemClient.scoreImgData[IIs]}" style="margin-right:5px;height:${font_size + 3}px;width:${font_size + 3}px">`;
+                }
+                if(score_content[IIs] !== ''){
+                    TxtBoxS = ` <span class="scorecom" style="color:${color};line-height: ${lineHeight}px;font-size:${font_size}px;">${score_content[IIs]}</span>`
+                }
+                imgS += ` <div class="scoreItem_01" style="width:${ItemWidth}%">
+                ${ImgBoxS}
+                <div class="${InputRound}" data-setValue="${IIs}" style="height: ${font_size + 1}px;width: ${font_size + 1}px;border-radius: 50%;border:1px solid gray;background-color:white"></div>
+                    ${TxtBoxS}
+                </div>`;
+            }
+
+            htmlS = '<div  class="container_box container_score" style="' + styleS + '">' +
+                    '   <li  draggable="false" class="scoreItem" style="display:flex;align-items:center">' +
+                    '       <div class="scoreItemTxt" data-font_size="' + font_size + '" style="width:'+ItemWidth + '%;position:relative;"><span style="' + score_styleS + '"  >'+ ItemClient.title +'</input></div>' + imgS +
+                    '   </li>' +
+                    '</div>';
+            return htmlS;
+        }
+
+        function render_circular(ImgContainer) { //渲染圆形容器
+            let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+            ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+            ItemPosition = ImgContainer.Position
+            ItemClient = ImgContainer.Client
+            styleS =`position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;border-radius: 50%;-webkit-border-radius: 50%;transform:0;-webkit-transform:0;`;
+            htmlS = `<div data-src="${ItemClient.PhotoUrl}" data-offset_value="${ItemClient.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ItemClient.ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+            return htmlS;
+        }
+
+        function render_square(ImgContainer) { //渲染方形容器
+            let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+            ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+            ItemPosition = ImgContainer.Position
+            ItemClient = ImgContainer.Client
+            styleS =`position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;transform:0;-webkit-transform:0;`;
+            htmlS = `<div data-src="${ImgContainer.PhotoUrl}" data-offset_value="${ImgContainer.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+            return htmlS;
+        }
+
+        function render_txt(txt_msg) {//渲染文本容器
+            var font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, z_index = 1, width = 100, height = 30, top = 0, left = 0, rotate = 0, area_width = 100, area_height = 100, small_font_size = 1, container_uid = '', text_container = '', text_placeholder = '请输入文字'
+            ;
+            if (txt_msg) {
+                ItemCLient = txt_msg.Client;
+                ItemPosition = txt_msg.Position;
+
+                //font_family = txt_font_family;
+                width = ItemCLient.width;
+                height = ItemCLient.height;
+                top = ItemPosition.top;
+                left = ItemPosition.left;
+                //rotate = styleObj.rotate;
+                z_index = ItemPosition.zIndex;
+                font_size = ItemCLient.fontSize;
+                line_height = ItemCLient.lineHeight;
+                typeid = ItemCLient.typeid;
+                color = ItemCLient.fontColor;
+                maxLength = ItemCLient.maxLength;
+                text_container =  ItemCLient.TextContent === undefined ? "" : ItemCLient.TextContent;
+
+                txt_msg.ContainerText ? text_placeholder = txt_msg.ContainerText : null;
+            }
+
+            var styleS =
+                "position:absolute;z-index:" + z_index +
+                ";top: " + top + "px;left: " + left + "px;width: " + width + "px;height: " + height + "px;"
+            var txt_style =
+                "position: absolute;z-index: 2;width:100%;height:100%;font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+            var num_style = 'display: inline-block;position: absolute;right: 0px;bottom: 0;font-size: 12px;';
+            var txt_Html = '<textarea readonly data-typeid="'+ typeid + '" data-container_uid="' + container_uid + '" style="' + txt_style + '" placeholder="' + text_placeholder + '" maxlength="' +maxLength + '">' + text_container + '</textarea><div class="max_num" max_num="' +maxLength + '" style="' + num_style + '">' + text_container.length + '/' + maxLength + '</div>';
+            var htmlS = '<div container_uid="' + container_uid + '" type="txt"  font_size = "' + font_size + '" class="container_box txt_box" style="' + styleS + '">' + txt_Html +
+                '</div>';
+            return htmlS;
+        }
+
+        function render_show(ShowContainer) {//渲染展示容器
+            let ItemClient = ShowContainer.Client;
+            let ItemPosition = ShowContainer.Position;
+            var area_width = 100, area_height = 100, small_font_size = 1, font_size = 12; showS = '';
+            font_size = ItemClient.fontSize;
+            if(ItemClient.showInfo == "schoolQrcode" || ItemClient.showInfo == "schoolLogo"){
+                showS = '<img src = "' + `${ItemClient.showTitle}` + '" style="width:100%;height:100%;">';
+            }else{
+                showS = ItemClient.showTitle;
+            }
+            var styleS =
+                "position:absolute;z-index:" + ItemPosition.zIndex +
+                ";top: " + ItemPosition.top + "px;left:" + ItemPosition.left + "px;width: " + ItemClient.width + "px;height: " + ItemClient.height + "px;transform:rotate(0deg);-webkit-transform:rotate(0deg);text-align: center;"
+            var txt_style =
+                "position: absolute;z-index: 2;width:" + 100 + "%;height:" + 100 + "%;font-size:" + ItemClient.fontSize + "px;color:" + ItemClient.fontColor + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+            var txt_Html = '<div style="' + txt_style + '">' + showS + '</div>';
+            var htmlS = '<div type="show" font_size = "' + font_size + '" show_type="' + ItemClient.showInfo + '" class="container_box" style="' + styleS + '">' +
+                txt_Html +
+                '</div>';
+            return htmlS;
+        }
+
+        function render_video(VideoContainer){ //渲染视频容器
+            let ItemClient = VideoContainer.Client
+            let ItemPosition = VideoContainer.Position
+            let videoQrUrl = `${ItemClient.videoQrUrl}` ? `${ItemClient.videoQrUrl}` : "https://manger.weimeizhan.com/addons/fm_jiaoyu/public/web/images/qrcode_example.png";
+            let html = `<div type="video" class="container_box video_box" style="position:absolute;z-index:${ItemPosition.zIndex}; top: ${ItemPosition.top}px;left: ${ItemPosition.left}px;width: ${ItemClient.width}px;height: ${ItemClient.height}px;transform:rotate(0);-webkit-transform:rotate(0);">
+                <div style="display:flex;flex-direction:column;height:100%">
+                    <img src="${videoQrUrl}" style="width: 100%;object-fit: contain; height: 1px; flex: 1;margin-bottom:4px"/>
+                    <div class="videocom"  style="border-top: 1px solid #c1c1c1;width: 100%; top: 170px; padding: 3px; font-size:${ItemClient.fontSize}px; color:${ItemClient.fontColor}; line-height:${ItemClient.lineHeight}px;white-space: normal; word-break: break-all; word-wrap: break-word;"> <span style="height:100%;width:100%;overflow:hidden;resize:none;background-color: transparent;" >${ItemClient.description}</span> </div>
+                </div>
+                </div>`;
+        return html;
+        }
+
+        function render_chart(ImgContainer) { //渲染chart容器
+            ItemPosition = ImgContainer.Position
+            ItemClient = ImgContainer.Client
+            var chartMenu =''
+            if(ItemClient.chartMenu){
+                chartMenu = ItemClient.chartMenu.toString();;
+            }
+            styleS =`background-color:white;position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;`;
+            htmlS = `<div data-container_uid ="${ImgContainer.tagid}" data-chart_type="${ItemClient.ChartType}" data-ChartBgColor="${ItemClient.ChartBgColor}" data-time_start="${ItemClient.start}" data-time_end="${ItemClient.end}" data-chartMenu="${chartMenu}" type="chart" class="container_box chart_box" style="${styleS}"></div>`;
+            return htmlS;
+        }
+
+        function Next() { //中间下一个
+            let NowIndex;
+            PageList.map((v, index) => {
+                if (v.tagid === NowTagId) {
+                    NowIndex = index + 1
+                }
+            })
+            if (PageList[NowIndex] !== undefined) {
+                NowTagId = PageList[NowIndex].tagid
+                renderPageContainer(PageList[NowIndex])
+                $("#NowPageIn").text(NowIndex+1)
+            }else {
+                jTips("已经是最后一页啦")
+
+            }
+        }
+
+        function Prev() { //中间上一个
+            let NowIndex;
+            PageList.map((v, index) => {
+                if (v.tagid === NowTagId) {
+                    NowIndex = index - 1
+                }
+            })
+            if (PageList[NowIndex] !== undefined) {
+                NowTagId = PageList[NowIndex].tagid
+                renderPageContainer(PageList[NowIndex])
+                $("#NowPageIn").text(NowIndex+1)
+            }else {
+                jTips("已经是第一页啦")
+
+            }
+
+        }
+
+        function ClearAllClick() {
+            $("#tpl_page").find(".container_box").removeClass("is_select")
+        }
+
+        function set_txt_to_pages() { //设置文本数据到总数据
+            var txt_area = $('.txt_container_list>div .select_txt');
+            if (!txt_area.length) return;
+            $('.nc_page_ul .act').data('change', 'true');
+            var container_uid = Number($(txt_area).parent().css('z-index'));
+            var txt = $(txt_area).val();
+            var page_item_data = '';
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            d.Client.TextContent = txt;
+                            page_item_data = v;
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+            is_change = true;
+        }
+
+        function render_chart_box(v){ // 生成chart图表
+            var start = $(v).attr('data-time_start');
+            var end = $(v).attr('data-time_end');
+            var charttype = $(v).attr('data-chart_type');
+            var ChartBgColor = $(v).attr('data-ChartBgColor') === undefined ? $(v).attr('data-ChartBgColor') : '#ffffff' ;
+            var chartMenu = $(v).attr('data-chartMenu');
+            let W = $(v).css("width")
+            let H = $(v).css("height")
+            let ChartData = {
+                'start' : start,
+                'end' : end,
+                'type' : charttype,
+                'sid' : `{$_GPC['sid']}`,
+                'chartMenu' : chartMenu,
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'GetChart','schoolid'=>$schoolid))}",ChartData,function(datas){
+                if(datas.type == 1){
+                    var ds = PieOption['webzzfb'];
+                    ds.legend = {
+                        textStyle:{
+                            fontSize:8
+                        },
+                        itemWidth:8,
+                        itemHeight:8,
+                    };
+                    ds.legend.data = datas.title;
+				    ds.series[0].data = datas.data;
+                }else if (datas.type == 2){
+                    ds = PieOption['webchartstumc_new'];
+                    ds.xAxis [0].data = datas.date;
+                    ds.legend.data = datas.ds.legend
+                    ds.series = datas.series
+                    ds.series.map((x,y)=>{
+                        ds.series[y]['label'] = { //每个点上显示数值
+                            show: true,
+                            color:'#333',
+                            fontSize:8,
+                            formatter: function (value,x) {
+                                return Number(value.data).toFixed(1);
+                            }
+                        }
+                    })
+                }
+                let loa = `<div class="ChartsSpin" style="position: absolute;width: `+W+`;height:`+H+`;" >
+                                    <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                        <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                     </div>
+                                </div>
+                    `;
+                $(v).html(loa)
+                ds.backgroundColor = ChartBgColor
+                var myChart = echarts.init($(v)[0]);
+                myChart.setOption(ds,true);
+                setTimeout(function(){
+                    let chartImgUrl = myChart.getConnectedDataURL({
+                         type:'jpg',
+                         backgroundColor:`${ChartBgColor}`,
+                    });
+                    let NewHtml = `
+                        <img style="width:100%;height:100%;" src="${chartImgUrl}">
+                    `;
+                    $(v).html(NewHtml)
+                },1200)
+
+                $(window).resize(myChart.resize);
+//USPUTRH5ZMEK
+            },'json');
+        }
+
+        function render_img(img_box_elm, photoUrl, box_W, box_H, offset_value) {//渲染图片
+            var left = 0;
+            var top = 0;
+            var img = new Image();
+            img.src = photoUrl;
+            img.onload = function () {
+                var container_uid = Number($(img_box_elm).css('z-index'));
+                var zoom_num = $(img_box_elm).data('zoom_num');
+                var zoom_size, imgW, imgH;
+                var width = img.width;
+                var height = img.height;
+                var kW = box_W;
+                var kH = box_H;
+                if (height * kW / width > kH) {
+                    zoom_size = kW / width / 0.9;//容器的宽除以图片的宽除以0.9
+                    imgW = width * zoom_size//图片按0.9缩放后的宽
+                    imgH = height * zoom_size//图片按0.9缩放后的高
+                } else {
+                    zoom_size = kH / height / 0.9;//容器的宽除以图片的宽除以0.9
+                    imgW = width * zoom_size//图片按0.9缩放后的宽
+                    imgH = height * zoom_size//图片按0.9缩放后的高
+                }
+                if (offset_value) {
+                    var offset_value_ary = offset_value.split(',');
+                    left = offset_value_ary[0] * imgW * zoom_num;
+                    top = offset_value_ary[1] * imgH * zoom_num;
+                }
+                $(img_box_elm).html("<img class='targetObj' data-width='" + imgW + "'  data-height='" + imgH + "' style='position: relative;width:" + imgW * zoom_num + "px;height:" + imgH * zoom_num + "px;left:" + left + "px;top:" + top + "px;' src='" + photoUrl + "'ondragstart='return false' />");
+
+
+                var $targetObj = $(img_box_elm).find(".targetObj");
+                // //初始化拖动手势
+                touch.on($targetObj, "touchstart", image_touch_moving_start);
+                touch.on($targetObj, 'drag', boximage_touch_moving);
+                touch.on($targetObj, 'touchmove', function (e) {
+                    e.preventDefault();
+                });
+                touch.on($targetObj, 'dragend', image_touch_moving_end);
+
+
+                var page_item_data = '';
+                PageList.map(function (v, i) {
+                    if (v.tagid == NowTagId) {
+                        v.data.pageData.map(function (d, t) {
+                            if (container_uid == d.Position.zIndex) {
+                                var OffsetValue = left / (imgW * zoom_num) + ',' + top / (imgH * zoom_num);
+                                d.Client.ExInfo03 = zoom_num;
+                                d.Client.PhotoUrl = photoUrl;
+                                d.Client.OffsetValue = OffsetValue;
+                                page_item_data = v;
+                            }
+                        })
+                    }
+                })
+                var is_ok = check_page_ok(page_item_data);
+                // 自动切换下一个框
+                // leader_auto_init(PageList, is_input_change);
+                showLoad = false;
+            }
+            // img.onerror = function () {
+            //     showLoad = false;
+            //     clearTimeout(timeNum);
+            //     layer.closeAll();
+            // }
+        }
+
+        function image_touch_moving_start(ev) {// 图片开始移动
+            ox = parseFloat($(this).css('left').replace("px", ""));
+            oy = parseFloat($(this).css('top').replace("px", ""));
+        }
+
+        function boximage_touch_moving(ev) {//图片移动中
+            ev.preventDefault();
+            var container_uid = Number($(this).parent().css('z-index'));
+            let my = ev.y + oy;
+            let mx = ev.x + ox;
+            var myMax = -($(this).height() - $(this).parent().height());
+            my = my > 0 ? 0 : (my < myMax ? myMax : my);
+            var mxMax = -($(this).width() - $(this).parent().width());
+            mx = mx > 0 ? 0 : (mx < mxMax ? mxMax : mx);
+            $(this).css({
+                left: mx,
+                top: my,
+            })
+            var img_W = $(this).width();
+            var img_H = $(this).height();
+            $('.nc_page_ul .act').data('change', 'true');
+
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            var OffsetValue = mx / img_W + ',' + my / img_H;
+                            d.Client.OffsetValue = OffsetValue;
+                        }
+                    })
+                }
+            })
+            is_change = true;
+        }
+
+        function image_touch_moving_end(ev) {//图片移动结束
+            ev.preventDefault();
+            ox = 0;
+            oy = 0;
+        }
+
+        function check_page_ok(page_item) { //检查当前页面是否已完成
+        if (!page_item) return;
+        var is_ok = true;
+        page_item.data.pageData.map(function (v, i) {
+            if (v.itemType == "circular" || v.itemType == 'square') {
+                if (!v.Client.PhotoUrl || !v.Client.OffsetValue) {
+                    is_ok = false;
+                }
+            } else if (v.itemType == "textarea") {
+                if (!v.Client.TextContent) {
+                    is_ok = false;
+                }
+            }else if (v.itemType == "video") {
+                if (!Boolean(v.Client.videoQrUrl)) {
+                    is_ok = false;
+                }
+            }
+            else if (v.itemType == "score") {
+                if (v.Client.setValue === undefined ) {
+                    is_ok = false;
+                }
+            }
+        })
+        page_item.is_ok = is_ok
+        return is_ok;
+    }
+
+        function page_to_render_img() { //切换模板页渲染图片数据
+            var img_container_list = $('.img_container_list .img_box').toArray();
+            img_container_list.map(function (v, i) {
+                var photoUrl = $(v).data('src');
+                if (photoUrl) {
+                    var offset_value = $(v).data('offset_value');
+                    render_img(v, photoUrl, $(v).width(), $(v).height(), $(v).data('offset_value'));
+                }
+            })
+        }
+
+        function page_to_render_chart() { //切换模板页渲染图片数据
+            var chart_container_list = $('.chart_container_list .chart_box').toArray();
+            chart_container_list.map(function (v, i) {
+                render_chart_box(v);
+            })
+        }
+
+        function add_zoom_fn() { //放大缩小监听事件
+            $('.zoom-big,.zoom-small').off('click');
+            $('.zoom-big,.zoom-small').on('click', function () {
+                var img_box_elm = $('.img_container_list .is_select');
+                if (!img_box_elm.length) return;
+                var select_img = img_box_elm.find('img');
+                if (!select_img.length) return;
+                    container_uid = Number(img_box_elm.css('z-index')),
+                    zoom_num = Number(img_box_elm.data('zoom_num')),
+                    width = select_img.data('width'),
+                    height = select_img.data('height'),
+                    _left = '',
+                    _top = '',
+                    offset_value = '';
+                if ($(this).hasClass('zoom-big')) {
+                    //放大
+                    zoom_num += 0.1;
+                } else {
+                    //缩小
+                    zoom_num -= 0.1;
+                    if (zoom_num < 1) return;
+                }
+                select_img.css({
+                    'width': width * zoom_num,
+                    'height': height * zoom_num,
+                });
+                zoom_num = zoom_num.toFixed(2);
+                var _width = select_img.css('width').replace('px', '') - 0;
+                var _height = select_img.css('height').replace('px', '') - 0;
+                if (_width - Math.abs(select_img.css('left').replace('px', '') - 0) < img_box_elm.css('width').replace('px', '') - 0) {
+                    select_img.css('left', select_img.css('left').replace('px', '') - 0 + ((img_box_elm.css('width').replace('px', '') - 0) - (_width - Math.abs(select_img.css('left').replace('px', '') - 0))));
+                }
+                if (_height - Math.abs(select_img.css('top').replace('px', '') - 0) < img_box_elm.css('height').replace('px', '') - 0) {
+                    select_img.css('top', select_img.css('top').replace('px', '') - 0 + ((img_box_elm.css('height').replace('px', '') - 0) - (_height - Math.abs(select_img.css('top').replace('px', '') - 0))));
+                }
+                _left = select_img.css('left').replace('px', '') - 0;
+                _top = select_img.css('top').replace('px', '') - 0;
+                offset_value = _left / (width * zoom_num) + ',' + _top / (height * zoom_num);
+
+                img_box_elm.data('zoom_num', zoom_num);
+                is_change = true;
+                PageList.map(function (v, i) {
+                    if (v.tagid == NowTagId) {
+                        v.data.pageData.map(function (d, t) {
+                            if (container_uid == d.Position.zIndex) {
+                                d.Client.ExInfo03 = zoom_num;
+                                d.Client.OffsetValue = offset_value;
+                            }
+                        })
+                    }
+                })
+            });
+        }
+
+        function ZoomImg(type){ // 图片放大缩小函数
+            var img_box_elm = $('.img_container_list .is_select');
+            if (!img_box_elm.length) return;
+            var select_img = img_box_elm.find('img');
+            if (!select_img.length) return;
+            var  container_uid = Number(img_box_elm.css('z-index')),
+                zoom_num = Number(img_box_elm.data('zoom_num')),
+                width = select_img.data('width'),
+                height = select_img.data('height'),
+                _left = '',
+                _top = '',
+                offset_value = '';
+            if (type === 'add') { //放大
+                zoom_num += 0.1;
+            } else {//缩小
+                zoom_num -= 0.1;
+                if (zoom_num < 1) return;
+            }
+            select_img.css({
+                'width': width * zoom_num,
+                'height': height * zoom_num,
+            });
+            zoom_num = zoom_num.toFixed(2);
+            var _width = select_img.css('width').replace('px', '') - 0;
+            var _height = select_img.css('height').replace('px', '') - 0;
+            if (_width - Math.abs(select_img.css('left').replace('px', '') - 0) < img_box_elm.css('width').replace('px', '') - 0) {
+                select_img.css('left', select_img.css('left').replace('px', '') - 0 + ((img_box_elm.css('width').replace('px', '') - 0) - (_width - Math.abs(select_img.css('left').replace('px', '') - 0))));
+            }
+            if (_height - Math.abs(select_img.css('top').replace('px', '') - 0) < img_box_elm.css('height').replace('px', '') - 0) {
+                select_img.css('top', select_img.css('top').replace('px', '') - 0 + ((img_box_elm.css('height').replace('px', '') - 0) - (_height - Math.abs(select_img.css('top').replace('px', '') - 0))));
+            }
+            _left = select_img.css('left').replace('px', '') - 0;
+            _top = select_img.css('top').replace('px', '') - 0;
+            offset_value = _left / (width * zoom_num) + ',' + _top / (height * zoom_num);
+            img_box_elm.data('zoom_num', zoom_num);
+            is_change = true;
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == d.Position.zIndex) {
+                            d.Client.ExInfo03 = zoom_num;
+                            d.Client.OffsetValue = offset_value;
+                        }
+                    })
+                }
+            })
+        }
+
+        function show_zoom_div(elm) {//显示放大缩小
+            var top = $(elm).offset().top + $(elm).height() - 50;
+            var left = $(elm).offset().left - $('.content-cell-box.side.left').width() + $(elm).width() / 2 - 20;
+            $('#zoom-div').css({
+                'display': '-webkit-box',
+                'display': '-moz-box',
+                'display': '-ms-flexbox',
+                'display': '-webkit-flex',
+                'display': 'flex',
+                'top': top + 'px',
+                'left': left + 'px',
+            })
+        }
+
+        function CancelAlbumTxt(){ //取消相册列表弹窗
+            IsBlockReturn = false;
+            $("#AlbumTxt").removeClass("OnShow")
+        }
+    $(function(){
+        _Init()
+    })
+    </script>
+</body>
+
+</html>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/imageUtil.js?v=5.00111"></script>
+<script>
+    // 图片放大
+    function showImg(){
+        var this_img_arr =[];
+        let videopic = $(".selectbox").attr('src');
+        
+        var this_img = $('.selectbox').attr('src');
+        if(!this_img){
+                jTips('请选择需要预览的图片')
+                return
+            }
+        this_img_arr.push(this_img)
+        wx.previewImage({
+            current: this_img, // 当前显示图片的http链接
+            urls: this_img_arr // 需要预览的图片http链接列表
+        });
+    }
+    /*******************************跳转到编辑页面**********************************/
+    function EditPage(){
+        if(`{$IsShowSave}`){
+            jTips("您已存档，不能进行再次编辑")
+            return;
+        }
+        window.location.href = "{php echo $this->createMobileUrl('smanualstupage',array('op'=>'display','schoolid'=> $schoolid))}" + "&sid=" + `{$_GPC['sid']}` + "&id=" + `{$_GPC['id']}`;
+    }
+    /*******************************背景音乐播放与暂停**********************************/
+    playMusic()
+    //播放音乐
+    function playMusic(){
+        $("#bgMusic")[0].play()
+        $("#pauseMusic").show()
+        $("#playMusic").hide()
+    }
+    //暂停播放
+    function pauseMusic(){
+        $("#bgMusic")[0].pause()
+        $("#playMusic").show()
+        $("#pauseMusic").hide()
+    }
+    /*******************************背景音乐播放与暂停**********************************/
+    function goback(){
+        location.href = "{php echo $this->createMobileUrl('smanuallist',array('op'=>'display','schoolid'=> $schoolid))}";
+    }
+</script>
+

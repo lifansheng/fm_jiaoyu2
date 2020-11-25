@@ -1,0 +1,116 @@
+{if GetSchoolType($schoolid,$weid)}
+    {if $njchecklog}
+        <div class="chart-title ng-binding" style="padding: 4px 10px;">{if (!empty($_GPC['start']) && $_GPC['start'] != '1970-01-01')}{php echo date('Y-m-d', $starttime1)}至{php echo date('Y-m-d', $endtime1)}{else}今日{/if}各课程类型签到情况</div>
+        <div style="min-height: 357px;">
+            <!-- ngIf: charts.gradeAttendance.loading -->
+            <div class="slimScrollDiv" style="position: relative; width: auto; height: 338px;">
+                <div style="overflow-y: scroll;width: auto; height: 335px;">
+                    <table class="table table-hover table-condensed table-layout-fixed   mb5 clear_bold">
+                        <thead>
+                            <tr>
+                                <th>类别</th>
+                                <th>课时总数</th>
+                                <th>应签人次</th>
+                                <th>已签人次</th>
+                                <th>请假人次</th>
+                                <th>缺签人次</th>
+                                <th>已签率</th>
+                                <th>请假率</th>
+                                <th>缺签率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop $njchecklog $row}
+                            <tr ng-repeat="post in charts.gradeAttendance.chartData" class="ng-scope">
+                                <td>
+                                    <div class="text-ellipsis ng-binding">{$row['sname']}</div>
+                                </td>
+                                <td class="ng-binding">{$row['ksnum']}</td>
+                                <td class="ng-binding">{$row['NeedSignNum']}</td>
+                                <td class="ng-binding">{$row['DoSignNum']}</td>
+                                <td class="ng-binding">{$row['QingJiaNum']}</td>
+                                <td class="ng-binding">{$row['NotSignNum']}</td>
+                            
+                                <td>
+                                    <div class="text-succ">{if $row['NeedSignNum'] !=0}{php echo round($row['DoSignNum']/$row['NeedSignNum']*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                <td>
+                                    <div class="text-dang">{if $row['NeedSignNum'] !=0}{php echo round($row['QingJiaNum']/$row['NeedSignNum']*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                <td>
+                                    <div class="text-dang">{if $row['NeedSignNum'] !=0}{php echo round($row['NotSignNum']/($row['NeedSignNum'])*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {else}
+        <div style="font-size: 20px; padding-top: 150px; text-align: center;">当前学校暂无课程,请前往创建课程</div>
+    {/if}
+
+{else}
+    {if $njchecklog}
+        <div class="chart-title ng-binding" style="padding: 4px 10px;">{if (!empty($_GPC['start']) && $_GPC['start'] != '1970-01-01')}{php echo date('Y-m-d', $starttime1)}至{php echo date('Y-m-d', $endtime1)}{else}今日{/if}各年级出勤情况</div>
+        <div style="min-height: 357px;">
+            <!-- ngIf: charts.gradeAttendance.loading -->
+            <div class="slimScrollDiv" style="position: relative; width: auto; height: 338px;">
+                <div style="overflow-y: scroll;width: auto; height: 335px;">
+                    <table class="table table-hover table-condensed table-layout-fixed   mb5 clear_bold">
+                        <thead>
+                            <tr>
+                                <th>类别</th>
+                                <th>年级人数</th>
+                                {if !empty($_GPC['addtime'])}<th>出勤人次</th>{else}<th>出勤人数</th>{/if}
+                                {if !empty($_GPC['addtime'])}<th>请假人次</th>{else}<th>请假人数</th>{/if}
+                                {if !empty($_GPC['addtime'])}<th>缺勤人次</th>{else}<th>缺勤人数</th>{/if}
+                                <th>出勤率</th>
+                                <th>请假率</th>
+                                <th>缺勤率</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop $njchecklog $row}
+                            <tr ng-repeat="post in charts.gradeAttendance.chartData" class="ng-scope">
+                                <td>
+                                    <div class="text-ellipsis ng-binding">{$row['sname']}</div>
+                                </td>
+                                <td class="ng-binding">{$row['njzrs']}</td>
+                                <td class="ng-binding">{$row['njcqzs']}</td>
+                                <td class="ng-binding">{$row['njqjrs']}</td>
+                                <td class="ng-binding">{$row['qqzrs']}</td>
+                                {if !empty($_GPC['addtime'])}
+                                <td>
+                                    <div class="text-succ">{if $row['njzrs'] !=0}{php echo round($row['njcqzs']/($row['njzrs']*$day_num)*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                <td>
+                                    <div class="text-dang">{if $row['njzrs'] !=0}{php echo round($row['njqjrs']/$row['njzrs']*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                <td>
+                                    <div class="text-dang">{if $row['njzrs'] !=0}{php echo round($row['qqzrs']/($row['njzrs']*$day_num)*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                {else}
+                                <td>
+                                    <div class="text-succ">{if $row['njzrs'] !=0}{php echo round($row['njcqzs']/$row['njzrs']*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                <td>
+                                    <div class="text-dang">{if $row['njzrs'] !=0}{php echo round($row['njqjrs']/$row['njzrs']*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                <td>
+                                    <div class="text-dang">{if $row['njzrs'] !=0}{php echo round($row['qqzrs']/($row['njzrs'])*100,2);}{else}0.00{/if}%</div>
+                                </td>
+                                {/if}
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {else}
+        <div style="font-size: 20px; padding-top: 150px; text-align: center;">当前学校暂无年级或班级,请前往创建年级或班级</div>
+    {/if}
+{/if}

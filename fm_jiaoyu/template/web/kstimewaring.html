@@ -1,0 +1,254 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+    require(['bootstrap'],function($){
+        $('.btn,.tips').hover(function(){
+            $(this).tooltip('show');
+        },function(){
+            $(this).tooltip('hide');
+        });
+    });
+</script>
+<div class="main">
+    <style>
+        .form-control-excel {
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+
+        .pard3{
+            padding: 0 3px;
+            border-radius: 5px;
+            color: white;
+            font-size: 90%;
+        }
+
+        .form-control-excel { height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.42857143; color: #555; background-color: #fff; background-image: none; border: 1px solid #ccc; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075); box-shadow: inset 0 1px 1px rgba(0,0,0,.075); -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s; -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; }
+        .schooltip { position: absolute; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">达到预警值学生</div>
+        <div class="panel ">
+            <div class="panel-heading">
+                <a class="btn btn-primary" href="{php echo $this->createWebUrl('kecheng', array('schoolid' => $schoolid))}"><i class="fa fa-tasks"></i> 返回课程列表</a>
+                <a class="btn btn-primary" href="{php echo $this->createWebUrl('kswaring', array('schoolid' => $schoolid))}"><i class="fa"></i> 按课时预警</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site">
+                <input type="hidden" name="a" value="entry">
+                <input type="hidden" name="m" value="fm_jiaoyu">
+                <input type="hidden" name="do" value="kstimewaring"/>
+                <input type="hidden" name="op" value="display"/>
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <input type="hidden" name="over_status" value="{$_GPC['over_status']}"/>
+                <div class="form-group">
+
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label" >按照学生姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <div class="input-group">
+                            <input class="form-control" name="keyword" id="" placeholder="学生姓名" type="text" value="{$_GPC['keyword']}">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label" >请选择课程</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="kcid" class="form-control">
+                            <option selected="selected" value="">请选择课程</option>
+                            {loop $kcall $row}
+                            <option value="{$row['id']}" {if $row['id'] == $_GPC['kcid']} selected="selected"{/if}>{$row['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label" >提醒状态</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="txzt" class="form-control">
+                            <option selected="selected" value="">请选择提醒状态</option>
+                            <option value="1" {if $_GPC['txzt'] == 1} selected="selected"{/if}>已提醒</option>
+                            <option value="2" {if $_GPC['txzt'] == 2} selected="selected"{/if}>未提醒</option>
+                        </select>
+                    </div>
+
+                    <!--<label class="col-xs-12 col-sm-3 col-md-1 control-label">选择时间</label>
+                    <div class="col-sm-2 col-lg-2">
+                        {if $nowtime}{php echo tpl_form_field_date('createtime', date('Y-m-d', $nowtime));}{else}{php echo tpl_form_field_date('createtime', date('Y-m-d', TIMESTAMP))}{/if}
+                    </div>-->
+
+                    <div class="col-sm-2 col-lg-1">
+                        <select style="margin-right:15px;" name="page_2" class="form-control">
+                            <option value="">分页</option>
+                            <option value="30" {if $_GPC['page_2'] == 30} selected="selected"{/if}>30</option>
+                            <option value="50" {if $_GPC['page_2'] == 50} selected="selected"{/if}>50</option>
+                            <option value="100" {if $_GPC['page_2'] == 100} selected="selected"{/if}>100</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2 col-lg-2" style="margin-left:50px">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                </div>
+        </div>
+
+        <div class="panel-info" style="padding:5px;">
+            <div class="form-group">
+                <a class="btn btn-sm btn-primary qx_702" onclick="selectAll('qx')">全选</a>
+                <a class="btn btn-sm btn-primary qx_702" onclick="selectAll('qbx')">全不选</a>
+                <a class="btn btn-sm btn-primary qx_702" onclick="selectAll('fx')">反选</a>
+                <a class="btn btn-sm btn-primary qx_702" onclick="timetx_fasong()" id="fasongtx">发送提醒</a>
+                <button class="btn btn-success qx_2102" name="out_putcode" value="out_putcode"><i class="fa fa-download"></i>导出至EXECL</button>
+            </div>
+        </div>
+        </form>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+                        <th style="width:1%"></th>
+                        <th style="width:15%">课程</th>
+                        <th style="width:10%;">学生</th>
+                        <th style="width:8%;">联系方式</th>
+                        <th style="width:8%;">剩余课时</th>
+                        <th style="width:8%;">课程到期时间</th>
+                        <th style="width:8%;">上次签到时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loop $list $item}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="idlist[]" value="{$item['sid']}" id="{$item['kcid']}">
+                        </td>
+                        <td>
+                            {$item['kcname']}
+                        </td>
+                        <td>
+                            <div><span class="show_yulan_img" style="border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white">{$item['s_name']}</span> </div>
+                            <div class="schooltip" style="padding:10px 10px;background-color:#1b1a1ab8;width:auto;max-width: 120px;color:white;">
+                                {loop $item['userinfo'] $item1}
+                                {$item1}
+                                {/loop}
+                            </div>
+                        </td>
+                        <td>
+                            {$item['mobile']}
+                        </td>
+                        <td>
+                            <span class="label label-info">{$item['restnum']}课时</span>
+                        </td>
+                        <td>
+                            {$item['overtime']}
+                        </td>
+                        <td>
+                            {$item['nearkcsign']}
+                        </td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+{/if}
+{template 'public/footer'}
+<script>
+    $("#frame-1").find('li').eq(4).addClass('active');
+    $(function(){
+        var x = -190;
+        var y = -60;
+        $(".show_yulan_img").mouseover(function (e) {
+            let NeedShow = $(this).parent().next();
+            $(NeedShow).show();
+            console.log(e.pageY);
+            $(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+        }).mouseout(function (e) {
+            let NeedShow = $(this).parent().next();
+            $(NeedShow).hide();
+        }).mousemove(function (e) {
+            let NeedShow = $(this).parent().next();
+            $(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});
+        });
+    });
+
+    function selectAll(type)
+    {
+        var obj=document.getElementsByName("idlist[]");
+        if(type=='qx'){
+            for(var i=0;i<obj.length;i++){
+                obj[i].checked="true";
+            }
+        }
+        if(type=='qbx'){
+            for(var i=0;i<obj.length;i++){
+                obj[i].checked="";
+            }
+        }
+        if(type=='fx'){
+            for(var i=0;i<obj.length;i++){
+
+                if(obj[i].checked){
+                    obj[i].checked="";
+                }else{
+                    obj[i].checked="true";
+                }
+            }
+        }
+    }
+
+
+
+    function timetx_fasong(){
+        var panduan = $("input[name='idlist[]']").is(':checked');
+
+        if (!panduan){
+            alert("您没有选中学生!");
+            return;
+        }
+
+        var str = new Array();
+        var kcid = new Array();
+        $("input:checkbox[name='idlist[]']:checked").each(function(i) {
+            var key = $(this).val();
+            var val = $(this).attr("id");
+            str[i] =  key;
+            kcid[i] =  val;
+        });
+        str = str.map((key,value)=>[key,kcid[value]]);
+
+        var schoolid = "{$schoolid}";
+
+        $.post("{php echo $this->createWebUrl('indexajax',array('op'=>'timetx_fasong'))}", {'schoolid': schoolid,'tid':"{$_W['tid']}",'str':str}, function(data) {
+            data = JSON.parse(data);
+            alert(data.msg)
+            location.reload();
+
+        });
+    }
+
+</script>

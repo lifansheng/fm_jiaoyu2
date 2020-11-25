@@ -1,0 +1,58 @@
+
+<div class="op_boxs">
+    <li class="opt_btn slide_li act" onclick="top_change(1,this)" {if $_GPC['leixing'] != 3} style="width: 50%;" {/if}>发热</li>
+    {if $_GPC['leixing'] == 3}
+    <li class="opt_btn slide_li " onclick="top_change(2,this)">异常</li>
+    {/if}
+    <li class="opt_btn slide_li " onclick="top_change(3,this)"  {if $_GPC['leixing'] != 3} style="width: 50%;" {/if}>病假</li>
+</div>
+<div id="heatlist">
+    {loop $heatlist $row}
+    <div class="stu_box">
+        <div class="stu_img">
+            <img src="{php echo tomedia($row['icon'])}"/>
+        </div>
+        <span>{$row['s_name']}</span>
+    </div>
+    {/loop}
+</div>
+{if $_GPC['leixing'] == 3}
+<div id="abnormal" style="display: none;">
+    {loop $abnormal $row}
+    <div class="stu_box">
+        <div class="stu_img">
+            <img src="{php echo tomedia($row['icon'])}"/>
+        </div>
+        <span>{$row['s_name']}</span>
+    </div>
+    {/loop}
+</div>
+{/if}
+<div id="sickleave" style="display: none;">
+    {loop $sickleave $row}
+    <div class="stu_box">
+        <div class="stu_img">
+            <img src="{php echo tomedia($row['icon'])}"/>
+        </div>
+        <span>{$row['s_name']}</span>
+    </div>
+    {/loop}
+</div>
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#date").val(`{$date}`)
+    $("#time").html(`{$time}`)
+    $("#title").html(`{$title}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+    
+    function gotodetail(njid){
+        let leixing = `{$_GPC['leixing']}`
+        window.location.href = "{php echo $this->createMobileUrl('tempbjcenter', array('schoolid' => $schoolid), true)}"+'&leixing='+leixing+'&njid='+njid+'&date='+`{$date}`
+    }
+</script>

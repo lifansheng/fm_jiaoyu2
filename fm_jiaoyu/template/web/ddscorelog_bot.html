@@ -1,0 +1,91 @@
+<style>
+    .extra-span{padding-left:20px;white-space: nowrap;position: relative;font-weight: normal;font-size: 12px;}
+    .extra-span:before{position: absolute;width: 8px;height: 8px;content:"";border-radius: 50%;top:5px;left:6px}
+    .extra-span.add-span:before{background-color: #4a8cc5;}
+    .extra-span.di-span:before{background-color: red;}
+
+    .TopWti{width: 100%;height: 40px;line-height: 40px;font-weight: bold;text-align: center;position: relative;display: flex;align-items: center;}
+    .TopWti .lli{flex:1;margin:0 30px;height: 1px;background-color: #9a9a9a;}
+    .iw i{transition: all .3s;}
+    .iw.inh i{transform: rotate(180deg);}
+</style>
+
+<div style="width: 100%;padding:0 10px" >
+    <div class="TopWti iw" onclick="switchT(this)">
+        <span class="lli"></span>
+        <span style="padding:0 30px">班级考核 <i class="fa fa-angle-down" ></i></span>
+        <span class="lli"></span>
+    </div>
+    <div>
+        {loop $item $row}
+        {if $row['type'] == 1}
+        <div  style=" padding: 10px;">
+            <div  style="font-weight: bold;margin-bottom: 5px;word-break:break-all;">
+                {$row['title']}
+                {if $row['addition'] == 1}
+                <span class="extra-span add-span"> 加分项 </span>
+                {else}
+                <span class="extra-span di-span"> 减分项 </span>
+                {/if}
+            </div>
+            <div style="padding-left: 20px;" >
+                <div style="display: flex;">
+                    <span>次数：</span>
+                    <span style="flex:1">{$row['score']}次</span>
+                </div>
+                {if $type == 1}
+                <div style="display: flex;">
+                    <span>备注：</span>
+                    <span style="flex:1;word-break:break-all; ">{$row['remark']}</span>
+                </div>
+                {/if}
+            </div>
+        </div>
+        {/if}
+    {/loop}
+    </div>
+</div>
+
+<div style="width: 100%;padding:0 10px" >
+    <div class="TopWti iw" onclick="switchT(this)">
+        <span class="lli"></span>
+        <span style="padding:0 30px">班主任考核 <i class="fa fa-angle-down" ></i></span>
+        <span class="lli"></span>
+    </div>
+    <div>
+        {loop $item $row}
+        {if $row['type'] == 2}
+        <div style=" padding: 10px;">
+            <div  style="font-weight: bold;margin-bottom: 5px;word-break:break-all;">
+                {$row['title']}
+                {if $row['addition'] == 1}
+                <span class="extra-span add-span"> 加分项 </span>
+                {else}
+                <span class="extra-span di-span"> 减分项 </span>
+                {/if}
+            </div>
+            <div style="padding-left: 20px;" >
+                <div style="display: flex;">
+                    <span>次数：</span>
+                    <span style="flex:1">{$row['score']}次</span>
+                </div>
+                {if $type == 1}
+                <div style="display: flex;">
+                    <span>备注：</span>
+                    <span style="flex:1;word-break:break-all; ">{$row['remark']}</span>
+                </div>
+                {/if}
+            </div>
+        </div>
+        {/if}
+    {/loop}
+    </div>
+    
+</div>
+
+<script>
+    function switchT(e){
+        $(e).toggleClass('inh').siblings().slideToggle(150)
+    }
+</script>
+

@@ -1,0 +1,170 @@
+<div class="form-group">
+    <label class="col-sm-3 col-xs-12 control-label">身高</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        <span class="form-control" style="border:none" >{php echo $hasdata['height'] ? $hasdata['height'].'cm' : '未检查' }</span>
+    </div>
+
+    <label class=" col-sm-2 col-xs-12 control-label">体重</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        <span class="form-control" style="border:none" >{php echo $hasdata['weight'] ? $hasdata['weight'].'kg' : '未检查' }</span>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3  control-label">体温</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        <span class="form-control" style="border:none" >{php echo $hasdata['tiwen'] ? $hasdata['tiwen'].'摄氏度' : '未检查' }</span>
+    </div>
+    {if keep_MC()}
+
+    {if !empty($hasdata['userPhoto'])}
+    <label class="col-xs-12 col-sm-2  control-label">晨检照片</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        <div style="line-height: 30px;cursor: pointer;" class="LookImg" data-url="{$hasdata['userPhoto']}"> [ 点击查看图片 ]</div>
+    </div>
+    {/if}
+    {/if}
+</div>
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 control-label">左眼视力</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        <span class="form-control" style="border:none" >{php echo $hasdata['lefteye'] ? $hasdata['lefteye'] : '未检查' }</span>
+    </div>
+
+    <label class="col-xs-12 col-sm-2 control-label">右眼视力</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+       <span class="form-control" style="border:none" >{php echo $hasdata['righteye'] ? $hasdata['righteye'] : '未检查' }</span>
+    </div>
+</div>
+{if keep_MC()}
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3  control-label">手掌疱疹</label>
+    <div class="col-sm-2 col-xs-12" style="line-height: 30px;">
+        <span class="form-control" style="border:none" >
+           {if $hasdata['handHerpes'] == 0}
+           <span class="label label-default">未检测</span>
+           {elseif  $hasdata['handHerpes'] == 1}
+           <span class="label label-info">未见异常</span>
+           {else}
+           <span class="label label-danger">异常</span>
+           {/if}
+        </span>
+    </div>
+    {if !empty($hasdata['handPhoto'])}
+    <div style="line-height: 30px;cursor: pointer;" class="LookImg" data-url="{$hasdata['handPhoto']}"> [ 点击查看图片 ]</div>
+    {/if}
+</div>
+{/if}
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3  control-label">口腔</label>
+    <div class="col-sm-2 col-xs-12" style="line-height: 30px;">
+        <span class="form-control" style="border:none" >
+           {if $hasdata['mouth'] == 0}
+           <span class="label label-default">未检测</span>
+           {elseif  $hasdata['mouth'] == 1}
+           <span class="label label-info">未见异常</span>
+           {else}
+           <span class="label label-danger">异常</span>
+           {/if}
+        </span>
+    </div>
+    {if keep_MC()}
+    {if !empty($hasdata['mouthPhoto'])}
+    <div style="line-height: 30px;cursor: pointer;" class="LookImg" data-url="{$hasdata['mouthPhoto']}"> [ 点击查看图片 ]</div>
+    {/if}
+    {/if}
+</div>
+{if keep_MC()}
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 control-label">指甲</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['nail'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['nail'] == 1}
+        <span class="label label-info">未见异常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+
+    <label class="col-xs-12 col-sm-2 control-label">咳嗽</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['cough'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['cough'] == 1}
+        <span class="label label-info">未见异常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 control-label">外伤</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['trauma'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['trauma'] == 1}
+        <span class="label label-info">未见异常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+
+    <label class="col-xs-12 col-sm-2 control-label">疱疹</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['herpes'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['herpes'] == 1}
+        <span class="label label-info">未见异常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+</div>
+{/if}
+{if !keep_MC()}
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 control-label">呕吐</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['vomit'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['vomit'] == 1}
+        <span class="label label-info">正常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+    <label class="col-xs-12 col-sm-2 control-label">腹泻</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['diarrhea'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['diarrhea'] == 1}
+        <span class="label label-info">正常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 control-label">感冒</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['cold'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['cold'] == 1}
+        <span class="label label-info">正常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+    <label class="col-xs-12 col-sm-2 control-label">头痛</label>
+    <div class="col-sm-3 col-xs-12" style="line-height: 30px;">
+        {if $hasdata['headache'] == 0}
+        <span class="label label-default">未检测</span>
+        {elseif  $hasdata['headache'] == 1}
+        <span class="label label-info">正常</span>
+        {else}
+        <span class="label label-danger">异常</span>
+        {/if}
+    </div>
+</div>
+{/if}

@@ -1,0 +1,1103 @@
+{if $optype == 'kcpingjia'}
+<style>
+#box { list-style: none; height: 14px; width: 135px; overflow: hidden; }
+.imageOne { height: 13px; width: 13px; float: left; background: url({OSSURL}public/mobile/img/star_pingjia_red.png) no-repeat; }
+</style>
+	{if $list}
+		{loop $list $row}
+			<div class="comment_item">
+				<img src="{$row['icon']}">
+				<text class="n">{$row['name']}
+					<a style="margin-left:15px" onclick="opt_pl({$row['id']},'del',this)">删除</a>
+					<span class="label label-{if $row['is_show'] == 1}warning{else}success{/if} btn-xs pull-right">{if $row['is_show'] == 1}隐藏{else}显示{/if}</span>
+					<input style="top:-10px;" class="weui_switchs" {if $row['is_show'] == 0}checked{/if} onclick="opt_pl({$row['id']},'hide',this)" type="checkbox">
+				</text>
+				<text class="c">{$row['content']}</text>
+				{if $row['star'] >0}
+				<text class="t"><ul id="box">{$row['h5']}</ul></text>
+				{/if}
+				<text class="t">{if $row['ksname']}<button type="button" class="btn btn-info btn-xs">{$row['ksname']}</button>{/if} {php echo date('m-d H:i',$row['createtime'])}    {$row['day']}前</text>
+				{loop $row['list'] $item}
+					<div class="reply">
+						<text class="n">{$item['name']}
+							<a style="margin-left:15px" onclick="opt_pl({$item['id']},'del',this)">删除</a>
+							<span class="label label-{if $item['is_show'] == 1}warning{else}success{/if} btn-xs pull-right">{if $item['is_show'] == 1}隐藏{else}显示{/if}</span>
+							<input style="top:-10px;" class="weui_switchs" {if $item['is_show'] == 0}checked{/if} onclick="opt_pl({$item['id']},'hide',this)" type="checkbox">
+						</text>
+						<text class="c">{$item['content']}</text>
+						<text class="t">{php echo date('m-d H:i',$item['createtime'])}    {$item['day']}前</text>
+					</div>
+				{/loop}
+			</div>
+		{/loop}
+		<div class="comment_tips">
+			<i>-</i>您可控制评论是否显示<i>-</i>
+		</div>
+	{else}
+	<div class="default" style="text-align:center">
+		<image src="{MODULE_URL}public/mobile/img/comment_bg.png"></image>
+		<div>暂无评论留言，尝试编辑课程开启评论功能,听听用户的声音</div>
+	</div>
+	{/if}
+<script>
+function opt_pl(id,type,elm){
+	if(type == 'del'){//仅删除时显示提示
+		if(!window.confirm('你确定要删除吗？')){
+			return false;
+		}
+		var thisval = type;
+	}else{
+		var thisval = $(elm).prop('checked')?0:1;
+		var word = $(elm).prop('checked')?"显示":"隐藏";
+	}
+	console.log(thisval)
+	$.ajax({
+		url: "{php echo $this->createWebUrl('kecheng', array('op'=>'opt_pl','schoolid'=>$schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			id:id,
+			type:thisval
+		},
+		success: function (data) {
+			if(data.reslut){
+				if(thisval == 'del'){ //仅删除时显示成功提示
+					$(elm).parent().parent().hide(200)
+					alert(data.msg)
+				}
+				if(thisval == 1){
+					$(elm).prev().removeClass('label-success')
+					$(elm).prev().addClass('label-warning')
+					$(elm).prev().text(word)
+				}
+				if(thisval == 0){
+					$(elm).prev().removeClass('label-warning')
+					$(elm).prev().addClass('label-success')
+					$(elm).prev().text(word)
+				}				
+			}else{
+				alert(data.msg)
+			}
+		}		
+	});
+}
+</script>	
+{/if}							
+{if $optype == 'teamlist'}
+	{if $allteam}
+		{loop $allteam $item}
+		<div class="ant-list-item {if $item['is_success']}team_sucess{else}{if !$item['is_success'] && $item['endtime'] < TIMESTAMP}team_defel{else}team_card{/if}{/if}">
+			<div class="ant-card ant-card-bordered ant-card-hoverable">
+				<div class="ant-card-body">
+					<div class="ant-card-meta">
+						{if $kcinfo['sale_type'] == 1 && $item['tuif']>0}<div class="markr mark_tuifei text_center">{$item['tuif']}条退款申请</div>{/if}
+						{if $kcinfo['sale_type'] == 1}<div class="markr mark_tuan_sucess text_center" style="display:{if $item['is_success']}block{else}none{/if}"></div>{/if}
+						{if $kcinfo['sale_type'] == 1}<div class="markr mark_tuan_defel text_center" style="display:{if !$item['is_success'] && $item['endtime'] < TIMESTAMP}block{else}none{/if}"></div>{/if}
+						{if $kcinfo['sale_type'] == 2}<div class="markr mark_rush_sucess text_center" style="display:{if $item['is_success']}block{else}none{/if}"></div>{/if}
+						{if $kcinfo['sale_type'] == 2}<div class="markr mark_rush_defel text_center" style="display:{if !$item['is_success'] && $item['endtime'] < TIMESTAMP}block{else}none{/if}"></div>{/if}
+						<div class="ant-card-meta-avatar">
+							<img class="style-cardAvatar" src="{$item['dz_avatar']}">
+							<span class="duizlabe">{if $kcinfo['sale_type'] == 1}团长{/if}{if $kcinfo['sale_type'] == 2}队长{/if}</span>
+						</div>
+						<div class="ant-card-meta-detail">
+							<div class="ant-card-meta-title">
+								<a>{$item['dz_name']} 的{if $kcinfo['sale_type'] == 1}团购{/if}{if $kcinfo['sale_type'] == 2}助力{/if}</a>
+								{if $_W['isfounder'] || $_W['role'] == 'owner'}<span class="btn btn-danger btn-xs" onclick="displayteam({$item['id']},this)">解散</span>{/if}
+								{if !$item['is_success'] && $item['endtime']> TIMESTAMP}
+									<div class="shy lxftime" lxfday="no" endtime="{$item['enddate']}"></div>
+								{/if}
+							</div>
+							<div class="ant-card-meta-description" style="overflow:hidden">
+							{loop $item['team'] $row}
+								<a class="headImg headact">
+									<img src="{$row['avatar']}">
+									<div class="line-limit-length">{if $row['is_really'] == 1}<span style="color:red">虚拟</span>{else}{$row['name']}{/if}</div>
+								</a>
+							{/loop}	
+							{if $item['nobody']}
+								{loop $item['nobody'] $r}
+									<a class="headImg nobody">
+										<img src="{$r['icon']}">
+									</a>
+								{/loop}
+							{/if}
+							</div>
+						</div>
+					</div>
+				</div>
+				<ul class="ant-card-actions">
+					<li onclick="xn_zd({$item['id']})" style="width: 50%;"><span><a>虚拟{if $kcinfo['sale_type'] == 1}拼团{/if}{if $kcinfo['sale_type'] == 2}助力{/if}</a></span></li>
+					<li onclick="teaminfo({$item['id']})" style="width: 50%;"><span><a>查看详情</a></span></li>
+				</ul>
+			</div>
+		</div>
+		{/loop}
+	{else}
+		<div class="ant-empty ant-empty-normal" style="text-align:center;margin-top:3%;display:block">
+			<div class="ant-empty-image">
+				<img alt="暂无数据" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA2NCA0MSIgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxKSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgIDxlbGxpcHNlIGZpbGw9IiNGNUY1RjUiIGN4PSIzMiIgY3k9IjMzIiByeD0iMzIiIHJ5PSI3Ii8+CiAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iI0Q5RDlEOSI+CiAgICAgIDxwYXRoIGQ9Ik01NSAxMi43Nkw0NC44NTQgMS4yNThDNDQuMzY3LjQ3NCA0My42NTYgMCA0Mi45MDcgMEgyMS4wOTNjLS43NDkgMC0xLjQ2LjQ3NC0xLjk0NyAxLjI1N0w5IDEyLjc2MVYyMmg0NnYtOS4yNHoiLz4KICAgICAgPHBhdGggZD0iTTQxLjYxMyAxNS45MzFjMC0xLjYwNS45OTQtMi45MyAyLjIyNy0yLjkzMUg1NXYxOC4xMzdDNTUgMzMuMjYgNTMuNjggMzUgNTIuMDUgMzVoLTQwLjFDMTAuMzIgMzUgOSAzMy4yNTkgOSAzMS4xMzdWMTNoMTEuMTZjMS4yMzMgMCAyLjIyNyAxLjMyMyAyLjIyNyAyLjkyOHYuMDIyYzAgMS42MDUgMS4wMDUgMi45MDEgMi4yMzcgMi45MDFoMTQuNzUyYzEuMjMyIDAgMi4yMzctMS4zMDggMi4yMzctMi45MTN2LS4wMDd6IiBmaWxsPSIjRkFGQUZBIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K"/>
+			</div>
+			<p class="ant-empty-description">暂无数据</p>
+		</div>
+	{/if}
+<script>
+function displayteam(teamid,elm){
+	if(confirm("解散团队将会同步删除成员所有订单，和已经报名的记录,点名记录则需要自行手动删除，确定操作吗?")){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('kcbiao', array('op'=>'displayteam','schoolid'=>$schoolid))}",
+			type: "post",
+			dataType: 'json',
+			data:{
+				weid:"{$weid}",
+				schoolid:"{$schoolid}",
+				teamid:teamid
+			},
+			success:function(data){
+				$(elm).parent().parent().parent().parent().parent().parent().hide()
+			}
+		});
+	}
+}
+</script>	
+{/if}
+{if $optype == 'bmlist'}
+	{if $list}
+	<table class="table table-hover">
+		<thead class="navbar-inner">
+			<tr>
+				<th style="width:7%">订单号 </th>
+				<th style="width:10%;">学生</th>
+				<th style="width:10%;">报名人</th>
+				<th style="width:8%;">手机</th>
+				<th style="width:15%;">付费时间</th>
+				{if $kcinfo['kc_type'] == 0}
+				<th style="width:8%;">购买课时</th>
+				{/if}
+				{if keep_sk77()}
+				<th style="width:8%;">课程状态</th>
+				{/if}
+				<th style="width:8%;">金额</th>
+				{if $ismoreguige}
+				<th style="width:8%;">规格</th>
+				{/if}
+				<th style="width:8%;">支付状态</th>
+				<th style="width:8%;">营销模式</th>
+				<th style="text-align:right; width:8%;">详情</th>
+			</tr>
+		</thead>
+		<tbody>
+			{loop $list $item}
+			<tr>
+				<td>
+				   {$item['id']}
+				</td>
+				<td>{$item['s_name']}</td>
+				<td>
+					{if $item['pard'] ==2}母亲:{/if}{if $item['pard'] ==3}父亲:{/if}{if $item['pard'] ==4}本人:{/if}{$item['realname']}
+					<p>{if $item['pkuser']}{$item['pkuser']} 手动添加{/if}
+				</td>
+				<td>
+					{if !empty($item['mobile'])}{$item['mobile']}{else}未填写{/if}
+				</td>
+				<td>
+					{if !empty($item['paytime'])}{php echo date('Y-m-d',$item['paytime'])}{/if}<p>
+				</td>
+				{if $kcinfo['kc_type'] == 0}
+				<td>{if !empty($item['ksnum'])} <span class="label label-info">{$item['ksnum']}课时</span>{else}无{/if}</td>
+				{/if}
+				{if keep_sk77()}
+				<td>
+					{if $item['status'] == 2 ||$item['status'] == 3 }
+						{if $item['kcstatus'] == 0}
+						<span class="label label-success">正常</span>
+						{elseif $item['kcstatus'] == 1}
+						<span class="label label-info">结业</span>
+						{elseif $item['kcstatus'] == 2}
+						<span class="label label-warning">欠费</span>
+						{elseif $item['kcstatus'] == 3}
+						<span class="label label-danger">退费</span>
+						{/if}
+					{elseif $item['status'] == 1}
+						<span class="label label-warning">未支付</span>
+					{/if}
+				</td>
+				{/if}
+				<td>
+				   ￥{$item['cose']}
+				</td>
+				{if $ismoreguige}
+				<td>{$item['guige']}</td>
+				{/if}
+				<td>
+				   {if $item['status'] == 1}<span class="label label-warning">未支付</span>{else if $item['status'] == 2}<span class="label label-success"><i class="fa fa-check-circle">已支付</i></span>{else if $item['status'] == 3}<span class="label label-danger">已退款</span>{/if}
+				</td>
+				<td>
+					{if $item['sale_type'] == 1}
+						<p><span class="label label-danger">团购</span>
+					{/if}
+					{if $item['sale_type'] == 2}
+						<p><span class="label label-info">助力</span>
+					{/if}
+				</td>
+				<td   class="qx_933" style="text-align:right;">
+					<a class="btn btn-default btn-xs" target="_blank" href="{php echo $this->createWebUrl('payall', array('number' => $item['id'], 'op' => 'display', 'schoolid' => $schoolid))}" title="订单详情">
+						<i class="fa fa-eye"></i>
+					</a>
+					<a class="btn btn-default btn-xs" onclick="del_order({$item['id']},this)" title="删除订单">
+						<i class="fa fa-trash-o"></i>
+					</a>
+				</td>
+			</tr>
+			{/loop}
+		</tbody>
+	</table>
+	{$pager}
+	<script>
+	function page_bmlist(url,page,elm){//报名订单翻页
+		$('#bm_list').empty()
+		$('#bm_list').append(loadcont);//加载动画
+		let is_pay = $('#is_pay').val()
+		<!-- let start = $("input[name='createtime[start]']").val() -->
+		<!-- let end = $("input[name='createtime[end]']").val() -->
+		console.log(is_pay)
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "html",
+			data: {
+				kcid:"{$kcid}",
+				is_pay:is_pay,
+				page:page,
+				<!-- start:start, -->
+				<!-- end:end -->
+			},
+			success: function (data) {
+				if (data) {
+					$('#bm_list').html(data)
+				}
+			}		
+		});
+	}
+
+	function del_order(id,elm){
+		if(confirm("此操作将同时移除本学员的签到记录以及订单信息,确定移除本学员吗?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('payall', array('op'=>'delete','form'=>'kcinfo','schoolid'=>$schoolid))}",
+				type: "post",
+				dataType: 'json',
+				data:{
+					weid:"{$weid}",
+					schoolid:"{$schoolid}",
+					id:id
+				},
+				success:function(data){
+					$(elm).parent().parent().hide()
+				}
+			});
+		}
+	}
+	</script>
+	{else}
+		<div class="ant-empty ant-empty-normal" style="text-align:center;margin-top:3%;display:block">
+			<div class="ant-empty-image">
+				<img alt="暂无数据" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA2NCA0MSIgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxKSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgIDxlbGxpcHNlIGZpbGw9IiNGNUY1RjUiIGN4PSIzMiIgY3k9IjMzIiByeD0iMzIiIHJ5PSI3Ii8+CiAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iI0Q5RDlEOSI+CiAgICAgIDxwYXRoIGQ9Ik01NSAxMi43Nkw0NC44NTQgMS4yNThDNDQuMzY3LjQ3NCA0My42NTYgMCA0Mi45MDcgMEgyMS4wOTNjLS43NDkgMC0xLjQ2LjQ3NC0xLjk0NyAxLjI1N0w5IDEyLjc2MVYyMmg0NnYtOS4yNHoiLz4KICAgICAgPHBhdGggZD0iTTQxLjYxMyAxNS45MzFjMC0xLjYwNS45OTQtMi45MyAyLjIyNy0yLjkzMUg1NXYxOC4xMzdDNTUgMzMuMjYgNTMuNjggMzUgNTIuMDUgMzVoLTQwLjFDMTAuMzIgMzUgOSAzMy4yNTkgOSAzMS4xMzdWMTNoMTEuMTZjMS4yMzMgMCAyLjIyNyAxLjMyMyAyLjIyNyAyLjkyOHYuMDIyYzAgMS42MDUgMS4wMDUgMi45MDEgMi4yMzcgMi45MDFoMTQuNzUyYzEuMjMyIDAgMi4yMzctMS4zMDggMi4yMzctMi45MTN2LS4wMDd6IiBmaWxsPSIjRkFGQUZBIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K"/>
+			</div>
+			<p class="ant-empty-description">没有查询到报名信息</p>
+		</div>
+	{/if}
+{/if}
+{if $optype == 'stu_list'}
+	{if $list['list']}
+	<table class="table table-hover">
+		<thead class="navbar-inner">
+			<tr>
+				<th style="width:6%;">学生</th>
+				<th style="width:8%;">电话</th>
+				<th style="width:10%;">报名时间</th>
+				{if $kcinfo['kc_type'] == 0}
+				<th style="width:8%;">总购课时</th>
+				<th style="width:8%;">已用课时</th>
+				<th style="width:8%;">剩余课时</th>
+				<th style="width:10%;">赠送课时</th>
+				{else}
+				<th style="width:15%;">学习进度</th>
+				{/if}
+				{if $_W['schooltype']}
+				<th style="width:15%;">转班</th>
+				{/if}
+				<th style="width:8%;">生源来源</th>
+				<th style="text-align:right; width:8%;">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{loop $list['list'] $item}
+			<tr>
+				<td  style="text-align: left;"><img class="sign_header" src="{$item['icon']}"><p style="overflow: hidden; white-space: nowrap;text-overflow: ellipsis; ">{$item['s_name']}<br/>{if $item['isover']}<span class="label label-danger">{$item['isover']}</span>{/if}</p></td>
+				<td>{$item['mobile']}</td>
+				<td>{if !empty($item['createtime'])}{php echo date('Y.m.d',$item['createtime'])}{/if}</td>
+				{if $kcinfo['kc_type'] == 0}
+				<td>
+					{if !empty($item['ksinfo']['buycourse'])} <span class="label label-warning">{$item['ksinfo']['buycourse']}</span>{else}0{/if}
+				</td>
+				<td>
+					{if !empty($item['ksinfo']['hasSign'])} <span class="label label-info">{$item['ksinfo']['hasSign']}</span>{else}0{/if}
+				</td>
+				<td>
+					{if !empty($item['ksinfo']['restnumber'])} <span class="label label-danger">{$item['ksinfo']['restnumber']}</span>{else}0{/if}
+				</td>
+				<td>
+				<span style="width: 25px; display: inline-block;text-align: center">{$item['grantks']}</span> &nbsp;<a href="javascript:;" onclick="ShowAddModel(`{$item['sid']}`,`{$item['s_name']}`,`{$item['kcid']}`,`{$kcinfo['name']}`)" title="添加"><i class="fa fa-plus"></i></a>&nbsp;|&nbsp;<a href="javascript:;" title="查看" onclick="ShowLookModel(`{$item['sid']}`,`{$item['kcid']}`)"><i class="fa fa-eye"></i></a>
+				</td>
+				{else}
+				<td>
+					{if $item['ks_jd']}{if $item['ks_jd'] > 100}100{else}{$item['ks_jd']}{/if}{else}0{/if}%
+					<span style="float:right;margin-right:50px;">{$item['hasSign']}节</span>
+					<div class="antd-pro-pages-list-basic-list-style-listContentItem">
+						<div class="ant-progress ant-progress-line ant-progress-status-{$item['mission']} ant-progress-show-info ant-progress-default">
+							<div>
+								<div class="ant-progress-outer">
+									<div class="ant-progress-inner">
+										<div class="ant-progress-bg" style="width:{if $item['ks_jd']}{if $item['ks_jd'] > 100}100{else}{$item['ks_jd']}{/if}{else}0{/if}%;height:9px;border-radius:100px;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>	
+				</td>
+				{/if}
+				{if $_W['schooltype']}
+				<td style="text-align:left">
+					{if $item['bjname'] == '未分班'}
+						<span>{$item['bjname']}|</span>
+						<a class="btn btn-default btn-xs" onclick="ShowChangeBj(`{$item['sid']}`,`{$item['kcid']}`,0)">
+							分班
+						</a>
+					{else}
+						<span>{$item['bjname']}|</span>
+						<a class="btn btn-default btn-xs" onclick="ShowChangeBj(`{$item['sid']}`,`{$item['kcid']}`,`{$item['bjid']}`)">
+							调班
+						</a>
+					{/if}
+					
+				</td>
+				{/if}
+				<td>
+				{if $item['order']['sale_type']}
+					{if $item['order']['sale_type'] == 1}<button type="button" class="btn btn-danger btn-xs">团购</button>{/if}
+					{if $item['order']['sale_type'] == 2}<button type="button" class="btn btn-info btn-xs">助力</button>{/if}
+				{/if}
+				{if $item['order']['tid']}
+					<button type="button" class="btn btn-default btn-xs">手动导入</button>
+				{else}
+					<button type="button" class="btn btn-default btn-xs">在线购买</button>
+				{/if}
+				{if $item['belong']}
+					{if $item['belong']['tname']}<button type="button" class="btn btn-default btn-xs">推广员:{$item['belong']['tname']}</button>{/if}
+					{if $item['belong']['name']}<button type="button" class="btn btn-default btn-xs">粉丝:{$item['belong']['name']}</button>{/if}
+					<button type="button" class="btn btn-default btn-xs">{$item['belong']['comfrom']}</button>
+				{/if}
+				</td>
+
+
+				<td style="text-align:right">
+					{if $kcinfo['kc_type'] == 0}
+						<a class="btn btn-default btn-xs" onclick="ShowChangeKc(`{$item['sid']}`,`{$item['kcid']}`)">
+							<i class="fa fa-exchange" aria-hidden="true"></i>
+						</a>
+					{/if}
+					<a class="btn btn-default btn-xs" onclick="remove_stu({$item['id']},this)">
+						<i class="fa fa-trash-o"></i>
+					</a>
+				</td>
+			</tr>
+			{/loop}
+		</tbody>
+	</table>
+	{$list['pager']}
+	{else}
+		<div class="ant-empty ant-empty-normal" style="text-align:center;margin-top:3%;display:block">
+			<div class="ant-empty-image">
+				<img alt="暂无数据" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA2NCA0MSIgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxKSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgIDxlbGxpcHNlIGZpbGw9IiNGNUY1RjUiIGN4PSIzMiIgY3k9IjMzIiByeD0iMzIiIHJ5PSI3Ii8+CiAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iI0Q5RDlEOSI+CiAgICAgIDxwYXRoIGQ9Ik01NSAxMi43Nkw0NC44NTQgMS4yNThDNDQuMzY3LjQ3NCA0My42NTYgMCA0Mi45MDcgMEgyMS4wOTNjLS43NDkgMC0xLjQ2LjQ3NC0xLjk0NyAxLjI1N0w5IDEyLjc2MVYyMmg0NnYtOS4yNHoiLz4KICAgICAgPHBhdGggZD0iTTQxLjYxMyAxNS45MzFjMC0xLjYwNS45OTQtMi45MyAyLjIyNy0yLjkzMUg1NXYxOC4xMzdDNTUgMzMuMjYgNTMuNjggMzUgNTIuMDUgMzVoLTQwLjFDMTAuMzIgMzUgOSAzMy4yNTkgOSAzMS4xMzdWMTNoMTEuMTZjMS4yMzMgMCAyLjIyNyAxLjMyMyAyLjIyNyAyLjkyOHYuMDIyYzAgMS42MDUgMS4wMDUgMi45MDEgMi4yMzcgMi45MDFoMTQuNzUyYzEuMjMyIDAgMi4yMzctMS4zMDggMi4yMzctMi45MTN2LS4wMDd6IiBmaWxsPSIjRkFGQUZBIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K"/>
+			</div>
+			<p class="ant-empty-description">没有查询到学员信息</p>
+		</div>
+	{/if}
+
+	<!-- 赠送课时操作 -->
+	<div class="modal fade" id="ShowAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="color: black;">
+					<h4 class="modal-title" id="ModalTitle">赠送课时</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group" style="height: 34px;">
+						<label class="col-xs-2 col-sm-1 col-md-1 control-label" style="width: 10%;">学生姓名</label>
+						<div class="col-sm-4 col-lg-4">
+							<input type="text" class="form-control" id="s_name_send" disabled value=""/>
+						</div>
+					</div>
+					
+					<div class="form-group" style="height: 34px;">
+						<label class="col-xs-2 col-sm-1 col-md-1 control-label" style="width: 10%;">所属课程</label>
+						<div class="col-sm-4 col-lg-4">
+							<input type="text" class="form-control" id="kcname_send" disabled value=""/>
+						</div>
+					</div>
+					
+					<div class="form-group" style="height: 34px;">
+						<label class="col-xs-2 col-sm-1 col-md-1 control-label" style="width: 10%;">课时量</label>
+						<div class="col-sm-4 col-lg-4">
+							<input type="text" class="form-control" id="ksnum_send" name="ksnum"/>
+						</div>
+					</div>
+
+					<div class="form-group" style="height: 34px;">
+						<label class="col-xs-2 col-sm-1 col-md-1 control-label" style="width: 10%;">备注</label>
+						<div class="col-sm-4 col-lg-4">
+							<input type="text" class="form-control" id="beizhu_send" name="beizhu"/>
+						</div>
+					</div>
+
+					<input type="hidden" id="checksid_send">
+					<input type="hidden" id="checkkcid_send">
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="AddKs()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 赠送课时操作 -->
+
+	
+	<!-- 查看操作 -->
+	<div class="modal fade" id="ShowLookModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="color: black;">
+					<h4 class="modal-title" id="ModalTitle">赠送记录</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-hover">
+						<thead class="navbar-inner">
+							<tr>
+								<th style="width:5%">学生</th>
+								<th style="width:10%;">课程</th>
+								<th style="width:10%;">课时数</th>
+								<th style="width:10%;">赠送时间</th>
+								<th style="width:10%;">备注</th>
+								<th style="width:10%;">操作员</th>
+							</tr>
+						</thead>
+						<tbody id="grantlist">
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 查看操作 -->
+
+	<!-- 转课程操作 -->
+	<div class="modal fade" id="ShowZkcModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="color: black;">
+					<h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;" id="ModalTitle">转课程</h4>
+				</div>
+				<div class="modal-body">
+					<div class="cLine"> 
+						<div class="alert">
+							转课程剩余课时不变，也可以转回当前课程
+						</div>
+					</div>
+					<div class="form-group" style="height: 34px;">
+						<label class="col-xs-2 col-sm-1 col-md-1 control-label" style="width: 15%;">请选择课程</label>
+						<select style="margin-right:15px;width: 25%;" id="newkcid" class="form-control" >
+							<option value="0">请选择课程</option>
+							{loop $AllKc $row}
+							<option value="{$row['id']}">{$row['name']}</option>
+							{/loop}
+						</select>
+					</div>
+					<input type="hidden" id="zkcsid">
+					<input type="hidden" id="zkckcid">
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="ChangeKc()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 转课程操作 -->
+
+	<!-- 调班操作 -->
+	<div class="modal fade" id="ShowZbModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index: 1050 !important;">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content" style="width:70%;left:30%;">
+				<div class="modal-header" style="color: black;">
+					<h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;" id="ModalBjTitle">转班级</h4>
+				</div>
+				<div class="modal-body">
+					<div class="cLine"> 
+						<div class="alert">
+							将当前学生转入新的班级
+						</div>
+					</div>
+					<div class="form-group" style="line-height: 34px;">
+						<label class="col-xs-3 control-label">请选择班级</label>
+						<select class="col-xs-5 control-label allBj" id="bjid" >
+							<option value="0">请选择班级</option>
+							{loop $AllBj $row}
+							<option value="{$row['id']}">{$row['title']}</option>
+							{/loop}
+						</select>
+						<label class="col-sm-4 control-label pzbj" onclick="pzbj()" style="color:#fc9c6b;cursor:pointer;">配置班级</label>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="ChangeBj()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="ShowBjModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content" style="border-radius: 20px;left: 36%;min-width: 320px !important;">
+				<div class="modal-header">
+					<h4 class="modal-title" id="modal-title-kc" style="text-align:center;color:#333;font-size: 17px;">配置班级</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;overflow-y: scroll;padding: 34px;height: 300px;">
+					<div class="time-box" id="time-box">
+						<li class="def_class">
+							<div class="right">
+								<span class="addNewBj">+ 新增班级</span>
+							</div>
+						</li>
+						<div id="new_timebox" style="display:none">
+							<li class="def_class">
+								<div class="left_timeboxs"><input class="form-control new_timesave" placeholder="班级名称" name="title" type="text" value=""/></div>
+								<div class="right">
+									<div class="opt_box">
+										<i class="fa fa-save" onclick="saveBj(this,0)" data-id="new"></i>
+										<i class="fa fa-times delNewBj" data-id="new"></i>
+									</div>
+								</div>
+							</li>
+						</div>
+						<div id="old_timebox">
+						</div>
+					</div>	
+				</div>
+				<div class="modal-footer" style="border-radius: 6px;">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 调班操作 -->
+	<script>
+	function page_stulist(url,page,elm){//在读学员翻页
+		$('#stu_list').empty()
+		$('#stu_list').append(loadcont);//加载动画
+		var stuseartype = $('#stuseartype').val()
+		if(stuseartype == 'search'){
+			var ks_type = $('#ks_type').val()
+			var mobile = $('#mobile').val()
+			var s_name = $('#s_name').val()
+		}else{
+			var ks_type = 0
+		}
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "html",
+			data: {
+				kcid:"{$kcid}",
+				ks_type:ks_type,
+				page:page
+			},
+			success: function (data) {
+				if (data) {
+					$('#stu_list').html(data)
+				}
+			}		
+		});
+	}
+	function remove_stu(id,elm){
+		if(confirm("此操作将同时移除本学员的签到记录以及订单信息,确定移除本学员吗?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('baoming', array('op'=>'del_cursbuy','schoolid'=>$schoolid))}",
+				type: "post",
+				dataType: 'json',
+				data:{
+					weid:"{$weid}",
+					schoolid:"{$schoolid}",
+					kcid:"{$kcid}",
+					id:id
+				},
+				success:function(data){
+					$(elm).parent().parent().hide()
+				}
+			});
+		}
+	}
+	
+	/**********赠送课时操作*************/ 
+	function ShowAddModel(sid,s_name,kcid,kcname){
+		$("#s_name_send").val(s_name)
+		$("#kcname_send").val(kcname)
+		$("#checksid_send").val(sid)
+		$("#checkkcid_send").val(kcid)
+		$('#ShowAddModal').modal('toggle');
+	}
+
+	function AddKs(){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('baoming', array('op'=>'GrantKs','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				kcid:$("#checkkcid_send").val(),
+				sid:$("#checksid_send").val(),
+				ksnum:$("#ksnum_send").val(),
+				beizhu:$("#beizhu_send").val(),
+			},
+			success: function (data) {
+				alert(data.msg)
+				search_stulist()
+			}		
+		});
+	}
+	/**********赠送课时操作*************/ 
+
+	/**********查看赠送课时操作*************/ 
+	function ShowLookModel(sid,kcid){
+		var schoolid = "{$schoolid}";
+		$.post("{php echo $this->createWebUrl('baoming',array('op'=>'GetGrantKs'))}", {'schoolid': schoolid,'kcid':kcid,'sid':sid}, function(data) {
+			var htmls = '';
+			grantinfo = data.data;
+			if(data.status == true){
+				for(var i = 0; i < grantinfo.length; i++){
+					htmls += `
+						<tr>
+							<td>
+								${grantinfo[i].s_name}
+							</td>
+							<td>
+								${grantinfo[i].kcname}
+							</td>
+							<td>
+								${grantinfo[i].ksnum}
+							</td>
+							<td>
+								${grantinfo[i].createtime}
+							</td>
+							<td>
+								${grantinfo[i].beizhu}
+							</td>
+							<td>
+								${grantinfo[i].czy}
+							</td>
+						</tr>
+							`;
+				}
+				$('#ShowLookModal').modal('toggle');
+				$('#grantlist').html(htmls);
+			}else{
+				alert(data.msg)
+			}
+		},'json');
+	}
+	/**********查看赠送课时操作*************/ 
+
+	/**********转课程操作*************/ 
+	
+	function ShowChangeKc(sid,kcid){
+		$("#zkcsid").val(sid)
+		$("#zkckcid").val(kcid)
+		$('#ShowZkcModal').modal('toggle');
+	}
+	function ChangeKc(){
+		var sid = $("#zkcsid").val()
+		var oldkcid = $("#zkckcid").val()
+		var newkcid = $("#newkcid").val()
+		var schoolid = "{$schoolid}"
+
+		$.ajax({
+			url: "{php echo $this->createWebUrl('baoming', array('op'=>'ZhuanKc','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				oldkcid:$("#zkckcid").val(),
+				sid:$("#zkcsid").val(),
+				newkcid:$("#newkcid").val(),
+			},
+			success: function (data) {
+				alert(data.msg)
+				search_stulist()
+			}		
+		});
+
+	}
+	/**********转课程操作*************/ 
+
+	/**********调班操作*************/ 
+	var defaultkcid = 0
+	var defaultsid = 0
+	//显示调班
+	function ShowChangeBj(sid,kcid,bjid){
+		defaultkcid = kcid
+		defaultsid = sid
+		$("#bjid").val(bjid)
+		$('#ShowZbModal').modal('toggle');
+	}
+	//配置班级
+	function pzbj(){
+		$('#ShowBjModal').modal('toggle');
+		getBj()
+	}
+	//新增班级
+	$('.addNewBj').click(function(){
+		$('#new_timebox').show(100)	
+		$('.addNewBj').text('编辑中......')
+	});
+	//删除新增班级操作
+	$('.delNewBj').click(function() {
+		$('#new_timebox').hide(100)
+		$('.addNewBj').text('+ 新增班级')	
+	});
+	//编辑班级操作
+	function editBj(elm){
+		$('.addNewBj').text('编辑中......')
+		$(elm).parent().parent().parent().hide()
+		$(elm).parent().parent().parent().next().show()
+	}
+	// 关闭编辑班级
+	function closeOldBj(elm){
+		$('.addNewBj').text('+ 新增班级')	
+		$(elm).parent().parent().parent().hide()
+		$(elm).parent().parent().parent().prev().show()
+	}
+	//保存班级
+	function saveBj(elm,id){
+		var title = $(elm).parent().parent().parent().find("input[name='title']").val()
+		$.ajax({
+			url: "{php echo $this->createWebUrl('indexajax', array('op'=>'editBj'))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				id:id,
+				kcid:defaultkcid,
+				title:title,
+				schoolid:"{$schoolid}"
+			},
+			success: function (data) {
+				if (data.result) {
+					getBj()
+					$('#new_timebox').hide(100)
+					$('.addNewBj').text('+ 新增班级')	
+				}
+				alert(data.msg)
+			}		
+		});
+	}
+	//获取所有班级
+	function getBj(){//获取最新时段列表并渲染
+		$('#old_timebox').empty()
+		$('.allBj').empty();
+		$.ajax({
+			url: "{php echo $this->createWebUrl('indexajax', array('op'=>'getAllBj'))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				schoolid:"{$schoolid}"
+			},
+			success: function (data) {
+				if (data.result) {
+					var html = '';
+					var html2 = '<option value="0">选择班级</option>';
+					var newData = data.data
+					if(newData){
+						for (var i = 0; i < newData.length; i++) {
+								html += `<li>
+											<div class="left_timebox">${newData[i].title}</div>
+											<div class="right">
+												<div class="opt_box">
+													<i class="fa fa-edit" onclick="editBj(this)"></i>
+													<i class="fa fa-trash-o" onclick="delBj(this,${newData[i].id})"></i>
+												</div>
+											</div>
+										</li>
+										<li style="display:none">
+											<div class="left_timeboxs"><input class="form-control new_timesave" name="title" type="text" value="${newData[i].title}"/></div>
+											<div class="right">
+												<div class="opt_box">
+													<i class="fa fa-save" onclick="saveBj(this,'${newData[i].id}')" data-id="new"></i>
+													<i class="fa fa-times" onclick="closeOldBj(this)" data-id="new"></i>
+												</div>
+											</div>
+										</li>`
+
+								html2 +=`<option value="${newData[i].id}">${newData[i].title}</option>`;				
+								// html2 +='<option value="'+sddata[i].sid+'">'+sddata[i].sname+'</option>';				
+						}
+					}
+					$('.allBj').append(html2);
+					$('#old_timebox').append(html);
+				}
+			}		
+		});
+	}
+
+	//删除当前班级
+	function delBj(elm,id){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'delBj'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			id:id,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				$(elm).parent().parent().parent().remove()
+				$(elm).parent().parent().parent().prev().remove()
+				get_newmenu()
+			}else{
+				
+			}
+			alert(data.msg)
+		}		
+	});
+}
+	//进行转班操作
+	function ChangeBj(){
+		if($("#bjid").val() == 0 || $("#bjid").val()== ''){
+			alert('请选择班级');
+			return
+		}
+		$.ajax({
+			url: "{php echo $this->createWebUrl('baoming', array('op'=>'ZhuanBj','schoolid' => $schoolid,'schooltype' => $_W['schooltype']))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				sid:defaultsid,
+				kcid:defaultkcid,
+				bjid:$("#bjid").val(),
+			},
+			success: function (res) {
+				alert(res.msg)
+			}		
+		});
+
+	}
+	/**********调班操作*************/ 
+</script>
+{/if}
+{if $optype == 'sign_list'}
+	{if $list['list']}
+	<table class="table table-hover">
+		<thead class="navbar-inner">
+			<tr>
+				<th style="width:8%;">姓名</th>
+				<th style="width:8%;">电话</th>
+				{if $kcinfo['kc_type'] == 0}<th style="width:10%;">签到课时</th>{/if}
+				{if $kcinfo['kc_type'] == 1}
+					{if $kcinfo['allow_menu'] == 1}
+					<th style="width:10%;">所属章节</th>
+					{/if}
+				<th style="width:8%;">课时名称</th>
+				{/if}
+				<th style="width:12%;">{if $kcinfo['kc_type'] == 0}签到时间{else}学习时间{/if}</th>
+				{if $kcinfo['kc_type'] == 0}
+				<th style="width:8%;">确认老师</th>
+				{/if}
+				<th style="width:8%;">课时状态</th>
+				{if $kcinfo['kc_type'] == 0}
+				<th style="width:8%;">剩余课时</th>
+				<th style="width:8%;">扣课时数</th>
+				<th style="width:8%;">签到状态</th>
+				{/if}
+				<th style="text-align:right; width:8%;">操作</th>
+			</tr>
+		</thead>
+		<tbody>
+			{loop $list['list'] $item}
+			<tr>
+				<td  style="text-align: left;">{if $item['sid'] !=0}<span class="label label-info">学</span>{else}<span class="label label-success">师</span>{/if}{$item['name']}</td>
+				<td>{$item['mobile']}</td>
+				{if $kcinfo['kc_type'] == 0}<td>第{$item['nubmer']}课</td>{/if}
+				{if $kcinfo['kc_type'] == 1}
+					{if $kcinfo['allow_menu'] == 1}
+						<td>{$item['menuname']}</td>
+					{/if}
+					<td>{$item['ksname']}</td>
+				{/if}
+				<td>{$item['time']}</td>
+				{if $kcinfo['kc_type'] == 0}
+				<td>{$item['qrname']}</td>
+				{/if}
+				<td>
+					{if $item['status'] == 0}<button type="button" class="btn btn-danger btn-xs">缺课</button>{/if}
+					{if $item['status'] == 1}<button type="button" class="btn btn-info btn-xs" onclick="qrsign({$item['id']},this)">待确认</button>{/if}
+					{if $item['status'] == 2}<button type="button" class="btn btn-success btn-xs">{if $kcinfo['kc_type'] == 0}到课{else}已学习{/if}</button>{/if}
+					{if $item['status'] == 3}<button type="button" class="btn btn-warning btn-xs">请假</button>{/if}
+				</td>
+				{if $kcinfo['kc_type'] == 0}
+				<td>{if $item['sid'] !=0}<button type="button" class="btn btn-info btn-xs">{$item['restks']}</button>{/if}</td>
+				<td>{if $item['sid'] !=0 && $item['status'] == 2}{$item['costnum']}{/if}</td>
+				<td>{if $item['signtype'] ==0}{/if}{if $item['signtype'] ==1}自签{/if}{if $item['signtype'] ==2}代签{/if}{if $item['signtype'] ==3}刷卡{/if}</td>
+				{/if}
+				<td style="text-align:right">
+					<a class="btn btn-danger btn-xs" onclick="remove_sign({$item['id']},this)">
+						<i class="fa fa-trash-o"></i>
+					</a>
+				</td>
+			</tr>
+			{/loop}
+		</tbody>
+	</table>
+	{$list['pager']}
+	{else}
+		<div class="ant-empty ant-empty-normal" style="text-align:center;margin-top:3%;display:block">
+			<div class="ant-empty-image">
+				<img alt="暂无数据" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA2NCA0MSIgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxKSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgIDxlbGxpcHNlIGZpbGw9IiNGNUY1RjUiIGN4PSIzMiIgY3k9IjMzIiByeD0iMzIiIHJ5PSI3Ii8+CiAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iI0Q5RDlEOSI+CiAgICAgIDxwYXRoIGQ9Ik01NSAxMi43Nkw0NC44NTQgMS4yNThDNDQuMzY3LjQ3NCA0My42NTYgMCA0Mi45MDcgMEgyMS4wOTNjLS43NDkgMC0xLjQ2LjQ3NC0xLjk0NyAxLjI1N0w5IDEyLjc2MVYyMmg0NnYtOS4yNHoiLz4KICAgICAgPHBhdGggZD0iTTQxLjYxMyAxNS45MzFjMC0xLjYwNS45OTQtMi45MyAyLjIyNy0yLjkzMUg1NXYxOC4xMzdDNTUgMzMuMjYgNTMuNjggMzUgNTIuMDUgMzVoLTQwLjFDMTAuMzIgMzUgOSAzMy4yNTkgOSAzMS4xMzdWMTNoMTEuMTZjMS4yMzMgMCAyLjIyNyAxLjMyMyAyLjIyNyAyLjkyOHYuMDIyYzAgMS42MDUgMS4wMDUgMi45MDEgMi4yMzcgMi45MDFoMTQuNzUyYzEuMjMyIDAgMi4yMzctMS4zMDggMi4yMzctMi45MTN2LS4wMDd6IiBmaWxsPSIjRkFGQUZBIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K"/>
+			</div>
+			<p class="ant-empty-description">没有查询到{if $kcinfo['kc_type'] == 0}签到信息{else}学习记录{/if}</p>
+		</div>
+	{/if}
+	<script>
+	function qrsign(id,elm){
+		if(confirm("确定确认该生的签到吗?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('baoming', array('op'=>'qr_onesign','schoolid'=>$schoolid))}",
+				type: "post",
+				dataType: 'json',
+				data:{
+					weid:"{$weid}",
+					schoolid:"{$schoolid}",
+					kcid:"{$kcid}",
+					id:id
+				},
+				success:function(data){
+					alert("确认成功");
+					$(elm).removeClass("btn-warning")
+					$(elm).addClass("btn-success")
+					$(elm).text("到课")
+				}
+			});
+		}
+	}
+	
+	function remove_sign(id,elm){
+		if(confirm("此操作将删除本条签到记录，确定删除吗?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('baoming', array('op'=>'del_kssign','schoolid'=>$schoolid))}",
+				type: "post",
+				dataType: 'json',
+				data:{
+					weid:"{$weid}",
+					schoolid:"{$schoolid}",
+					kcid:"{$kcid}",
+					id:id
+				},
+				success:function(data){
+					$(elm).parent().parent().hide()
+				}
+			});
+		}
+	}
+	function page_signlist(url,page,elm){
+		$('#sign_list').empty()
+		$('#sign_list').append(loadcont);//加载动画
+
+		var sign_porsen = $('#sign_porsen').val()
+		var qr_tid = $('#qr_tid').val()
+		var sign_type = $('#sign_type').val()
+		var ksid = $('#sign_ksid').val()
+
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "html",
+			data: {
+				kcid:"{$kcid}",
+				sign_porsen:sign_porsen,
+				qr_tid:qr_tid,
+				ksid:ksid,
+				sign_type:sign_type,
+				page:page
+			},
+			success: function (data) {
+				if (data) {
+					$('#sign_list').html(data)
+				}
+			}		
+		});
+	}
+	</script>
+{/if}
+{if $optype == 'kcyj_list'}
+	{if $list}
+	<table class="table table-hover">
+		<thead class="navbar-inner">
+			<tr>
+				<th style="width:8%;">姓名</th>
+				<th style="width:8%;">电话</th>
+				<th style="width:8%;">剩余课时</th>
+				<th style="text-align:right; width:8%;">上次签到</th>
+			</tr>
+		</thead>
+		<tbody>
+			{loop $list $item}
+			<tr>
+				<td  style="text-align: left;">{$item['s_name']}</td>
+				<td>{$item['mobile']}</td>
+				<td><div class="btn btn-{if $item['restnum'] == 0}danger{else}info{/if} btn-xs">{$item['restnum']}</div></td>
+				<td style="text-align:right">{$item['nearkcsign']}</td>
+			</tr>
+			{/loop}
+		</tbody>
+	</table>
+	{$pager}
+	{else}
+		<div class="ant-empty ant-empty-normal" style="text-align:center;margin-top:3%;display:block">
+			<div class="ant-empty-image">
+				<img alt="暂无数据" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA2NCA0MSIgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxKSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgIDxlbGxpcHNlIGZpbGw9IiNGNUY1RjUiIGN4PSIzMiIgY3k9IjMzIiByeD0iMzIiIHJ5PSI3Ii8+CiAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iI0Q5RDlEOSI+CiAgICAgIDxwYXRoIGQ9Ik01NSAxMi43Nkw0NC44NTQgMS4yNThDNDQuMzY3LjQ3NCA0My42NTYgMCA0Mi45MDcgMEgyMS4wOTNjLS43NDkgMC0xLjQ2LjQ3NC0xLjk0NyAxLjI1N0w5IDEyLjc2MVYyMmg0NnYtOS4yNHoiLz4KICAgICAgPHBhdGggZD0iTTQxLjYxMyAxNS45MzFjMC0xLjYwNS45OTQtMi45MyAyLjIyNy0yLjkzMUg1NXYxOC4xMzdDNTUgMzMuMjYgNTMuNjggMzUgNTIuMDUgMzVoLTQwLjFDMTAuMzIgMzUgOSAzMy4yNTkgOSAzMS4xMzdWMTNoMTEuMTZjMS4yMzMgMCAyLjIyNyAxLjMyMyAyLjIyNyAyLjkyOHYuMDIyYzAgMS42MDUgMS4wMDUgMi45MDEgMi4yMzcgMi45MDFoMTQuNzUyYzEuMjMyIDAgMi4yMzctMS4zMDggMi4yMzctMi45MTN2LS4wMDd6IiBmaWxsPSIjRkFGQUZBIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K"/>
+			</div>
+			<p class="ant-empty-description">没有查询到{if $kcinfo['kc_type'] == 0}签到信息{else}学习记录{/if}</p>
+		</div>
+	{/if}
+	<script>
+	function page_kcyjlist(url,page,elm){
+		$('#kcyj_list').empty()
+		$('#kcyj_list').append(loadcont);//加载动画
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "html",
+			data: {
+				kcid:"{$kcid}",
+				optype:"kcyj_list",
+				page:page
+			},
+			success: function (data) {
+				if (data) {
+					$('#kcyj_list').html(data)
+				}
+			}		
+		});
+	}
+	</script>
+{/if}

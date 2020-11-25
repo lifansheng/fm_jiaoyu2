@@ -1,0 +1,208 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+    require(['bootstrap'], function ($) {
+        $('.btn,.tips').hover(function () {
+            $(this).tooltip('show');
+        }, function () {
+            $(this).tooltip('hide');
+        });
+    });
+</script>
+
+<div class="main">
+    <style>
+    .form-control-excel { height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.42857143; color: #555; background-color: #fff; background-image: none; border: 1px solid #ccc; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075); box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075); -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s; -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s; }
+    .comment_item { padding-left: 50px; position: relative; min-height: 40px; margin: 0 0 40px; font-size: 12px; }
+    .comment_item text { display: block; }
+    .comment_item img { width: 40px; height: 40px; position: absolute; left: 0; top: 10px; border-radius: 40px; }
+    .comment_item .n { color: #4C91FF; margin-bottom: 10px; }
+    .comment_item .c { font-size: 13px; color: #374F5E; margin-bottom: 9px; }
+    .comment_item .t { color: #91A0B2; }
+    .comment_item .reply { background: #FAFBFC; padding: 12px; margin-top: 20px; border-radius: 7px; }
+    .fenge{ position: relative; line-height: 29px; text-align: center; }
+    .fenge i{ display: block; height: 1px; background: #e1e1e1; position: absolute; top: 15px; width: 100%; }
+    .fenge p{ display: inline-block; font-size: 12px; color: #c1c1c1; background: #fff; padding: 0 10px; text-align: center; margin: 0 auto; position: relative; }
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">咨询记录管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="psychology" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label"
+                        style="width: 100px;">按老师姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="tname" type="text" value="{$_GPC['tname']}">
+                    </div>
+                    <div class="col-sm-2 col-lg-2 qx_edit" style="margin-left:55px">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th style="width:10%;">咨询师</th>
+                            <th style="width:10%;">学生</th>
+                            <th style="width:12%;">第一次咨询时间</th>
+                            <th style="width:12%;">最近一次咨询时间</th>
+                            <th class="qx_edit" style="text-align:right; width:8%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td>
+                                <div style="display: flex;">
+                                    <img style="width:50px;height:50px;border-radius:50%;" src="{$item['thumb']}"
+                                        width="50" style="border-radius: 3px;" />
+                                    <div style="padding:0px 20px;">
+                                        <div>{$item['tname']}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex;">
+                                    <img style="width:50px;height:50px;border-radius:50%;" src="{$item['icon']}"
+                                        width="50" style="border-radius: 3px;" />
+                                    <div style="padding:0px 20px;">
+                                        <div>{$item['sname']}{if $item['isfans']} <label class=" label label-info">粉丝</label> {else}<label class=" label label-primary">学生</label>{/if}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {$item['mintime']}
+                            </td>
+                            <td>
+                                {$item['maxtime']}
+                            </td>
+
+                            <td class="qx_edit" style="text-align:right;">
+                                <a class="btn btn-default btn-sm " href="javascript:Look(`{$item['leaveid']}`)" title="查看"><i
+                                        class="fa fa-eye"></i></a>
+                                <a class="btn btn-default btn-sm "
+                                    href="{php echo $this->createWebUrl('psychology', array('id' => $item['leaveid'], 'op' => 'delete', 'schoolid' => $schoolid))}"
+                                    onclick="return confirm('该操作将删除该条记录的所有对话，是否确认操作？');return false;" title="删除"><i
+                                        class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;" id="EditShrink" tabindex="-1"
+    role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft">
+
+        <div class="modal-content" id="ed_stubox">
+            <div class="modal-header" style="text-align: center;color: black;">
+                <h4 class="modal-title" id="myModalLabel">编辑咨询师</h4>
+            </div>
+            <div class="modal-body" style="height:100%;overflow-y: scroll;">
+                <div class="loading-layer">
+                    <div><img style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div>
+                </div>
+                <form style="padding-top: 30px;">
+                    <input type="hidden" value="0" name="shrinkId">
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">老师</label>
+                        <div class="col-sm-9 ">
+                            <!-- <input type="text" class="form-control" name="" id=""> -->
+                            <select name="tid" id="" class="form-control">
+                                {loop $teacherlist $row}
+                                <option value="{$row['id']}">{$row['tname']}</option>
+                                {/loop}
+                            </select>
+
+                            <span class="form-control" style="border:none" id="TN">name</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">简介</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="description" class="form-control">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-foot">
+                <a class="btn btn-primary" style="color: #fff;" onclick="SureAddShrink();">确定</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑或新增老师 modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;" id="PjList" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft" style="width: 30%;">
+        <div class="loading-layer" id="PjList-loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+        <div class="modal-content" id="PlListBox" style="max-height:unset !important;">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <div class="form-horizontal form">
+                        <div class="form-group" style="margin-bottom:1px;">
+                            <label class="col-sm-4 control-label" style="text-align: left;">心理咨询聊天记录</label>
+                        </div>
+                        <div class="form-group" style="padding: 20px;max-height: 1000px;overflow-y: scroll;">
+                            <div class="comment_lsit" id="kspjlist">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+		{if !(IsHasQx($tid_global,1004702,1,$schoolid))}
+			$(".qx_edit").hide();
+		{/if}
+	});
+
+    function Look(leaveid) {
+        $('#PjList-loading-layer').show()
+        $("#kspjlist").html("")
+        $('#PjList').modal('toggle');
+        $.ajax({
+            url: "{php echo $this->createWebUrl('psychology', array('op' => 'getPsychology', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "html",
+            data: {
+                leaveid: leaveid,
+            },
+            success: function (result) {
+                setTimeout(function () {
+                    $('#PjList-loading-layer').hide()
+                    $("#kspjlist").html(result)
+                }, 300);
+            },
+            error: function (e) {
+                alert('访问网络失败');
+            }
+        });
+    }
+</script>
+{/if}
+{template 'public/footer'}

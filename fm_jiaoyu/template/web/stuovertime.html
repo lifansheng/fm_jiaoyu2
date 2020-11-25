@@ -1,0 +1,483 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+    require(['bootstrap'],function($){
+        $('.btn,.tips').hover(function(){
+            $(this).tooltip('show');
+        },function(){
+            $(this).tooltip('hide');
+        });
+    });
+</script>
+<div class="main">
+    <style>
+        .form-control-excel { height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.42857143; color: #555; background-color: #fff; background-image: none; border: 1px solid #ccc; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075); box-shadow: inset 0 1px 1px rgba(0,0,0,.075); -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s; -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; }
+        .pard3{ padding: 0 3px; border-radius: 5px; color: white; font-size: 90%;}
+        .tips_with_dot{height: 1px;width:100%;border-bottom: 1px dotted gray;margin-bottom: 10px;margin-top: 10px;}
+	.tips_with_dot div{height: 30px;line-height: 30px;top: -15px; position: relative;background-color: white;width:100px;font-size: 16px;text-align: center;margin-left: calc(50% - 50px)}
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">学生过期情况</div>
+        <div class="panel ">
+            <div class="panel-heading">
+                <a class="btn btn-primary" href="{php echo $this->createWebUrl('kecheng', array('schoolid' => $schoolid))}"><i class="fa fa-tasks"></i> 返回课程列表</a>
+            </div>
+        </div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site">
+                <input type="hidden" name="a" value="entry">
+                <input type="hidden" name="m" value="fm_jiaoyu">
+                <input type="hidden" name="do" value="stuovertime"/>
+                <input type="hidden" name="op" value="display"/>
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <input type="hidden" name="over_status" value="{$_GPC['over_status']}"/>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">状态</label>
+                    <div class="col-sm-9 col-xs-9 col-md-9">
+                        <div class="btn-group">
+                            <a href="{php echo $this->createWebUrl('stuovertime', array('id' => $item['id'], 'over_status' => '-1', 'schoolid' => $schoolid,'kcid'=>$_GPC['kcid']))}" class="btn {if $over_status == -1}btn-primary{else}btn-default{/if}">不限</a>
+                            <a href="{php echo $this->createWebUrl('stuovertime', array('id' => $item['id'], 'over_status' => '4', 'schoolid' => $schoolid,'kcid'=>$_GPC['kcid']))}" class="btn {if $over_status == 4}btn-primary{else}btn-default{/if}">正常</a>
+                            <a href="{php echo $this->createWebUrl('stuovertime', array('id' => $item['id'], 'over_status' => '1', 'schoolid' => $schoolid,'kcid'=>$_GPC['kcid']))}" class="btn {if $over_status == 1}btn-primary{else}btn-default{/if}">即将过期</a>
+                            <a href="{php echo $this->createWebUrl('stuovertime', array('id' => $item['id'], 'over_status' => '2', 'schoolid' => $schoolid,'kcid'=>$_GPC['kcid']))}" class="btn {if $over_status == 2}btn-primary{else}btn-default{/if}">已过期</a>
+                            <a href="{php echo $this->createWebUrl('stuovertime', array('id' => $item['id'], 'over_status' => '3', 'schoolid' => $schoolid,'kcid'=>$_GPC['kcid']))}" class="btn {if $over_status == 3}btn-primary{else}btn-default{/if}">已毕业</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">学生名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="stuname" id="" type="text" value="{$_GPC['stuname']}">
+                    </div>
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">课程名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="kcname" id="" type="text" value="{$_GPC['kcname']}">
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+                        <button class="btn btn-success qx_704" name="out_putcode" value="out_putcode"><i class="fa fa-download"></i>导出数据</button>
+                    </div>
+                    {if $tid_global =='founder' || $tid_global == 'owner' || $loginTeaFzid['is_sell'] == 2 || $loginTeaFzid['is_sell'] == 1  }
+                    <div class="col-sm-2 col-lg-2">
+                        <a class="btn btn-success" onclick="ChangeOvetTime()" >批量修改过期时间</a>
+                    </div>
+					{/if}
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    
+    <div class="panel panel-info" id="xiugaiguoqishijian" style="display: none">
+ 
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                
+ 
+                <div class="form-group" style="margin-bottom: 5px">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">选择过期时间</label>
+                    <div class="col-sm-2 col-lg-2">
+                            {php echo tpl_form_field_date('NewOverTime',time());}
+                    </div>
+                    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1">
+                        <a class="btn btn-success" onclick="SureChangeTime()">确定修改</a>
+                    </div>
+ 
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th style="width:15%">课程</th>
+                            <th style="width:10%;">学生</th>
+                            <th style="width:8%;">联系方式</th>
+                            <th style="width:8%;">剩余课时</th>
+                            <th style="width:10%;">负责人</th>
+                            <th style="width:8%;">状态</th>
+                            <th style="width:15%;">过期/毕业时间</th>
+                            <th style="width:15%;">课程结束时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {loop $list $item}
+                    <tr>
+                        <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}" kc-id = "{$item['kcid']}"></td>
+                        <td onclick="ClickHuiFang({$item['id']})">{$item['kcnanme']}
+                            {if $item['is_change'] == '1'}
+                            <br/>
+                            <span class="label label-default">已转班至 {$item['ChangeBjToName']}</span>
+                            {/if}
+                        </td>
+                        <td><span class="label label-danger">{$item['s_name']}</span></td>
+                        {php $userinfo = iunserializer($item['userinfo']);}
+                        <td>
+                            {$item['mobile']}
+                        </td>
+                        <td>
+                            {if keep_sk77()}
+                            {if !empty($item['buycourse'])} <span class="label label-info">{$item['restnum']}课时</span>{else}无{/if}
+
+                            {if $item['kcstatus'] == 0}
+
+                            {elseif $item['kcstatus'] == 1}
+                            <span class="pard3"  style="background: #1968bf;">结业</span>
+                            {elseif $item['kcstatus'] == 2}
+                            <span class="pard3"  style="background: #bf9823;">欠费</span>
+                            {elseif $item['kcstatus'] == 3}
+                            <span class="pard3"  style="background: #bf2434;">退费</span>
+                            {/if}
+                            {else}
+                            {if !empty($item['buycourse'])} <span class="label label-info">{$item['restnum']}课时</span>{else}无{/if}
+                            {/if}
+                        </td>
+                        <td>
+                            {if $item['selltea']['status'] == true}
+
+                            <span class="label label-warning">{$item['selltea']['sellteaname']}</span>
+
+                            {elseif $item['selltea']['status'] == false}
+                            <span class="label label-danger">未指定</span>
+                            {/if}
+                        </td>
+                        <td>{if $item['status'] == 3}
+                            <span class="label label-info">毕业</span>
+                            {else}
+                                {if $item['overtime'] != 0 }
+                                    {if $item['status'] == 0}
+                                    <span class="label label-success">正常</span>
+                                    {elseif $item['status'] == 1}
+                                    <span class="label label-warning">即将过期</span>
+                                    {elseif $item['status'] == 2}
+                                    <span class="label label-danger">过期</span>
+                                    {elseif $item['status'] == 3}
+                                    <span class="label label-info">毕业</span>
+                                    {/if}
+                                {else}
+                                <span class="label label-success">不过期</span>
+                                {/if}
+                            {/if}
+                        </td>
+                        <td>
+                            {if $item['overtime'] != 0}
+                             {php echo date("Y年m月d日",$item['overtime'])}
+                            {else}
+                            <span class="label label-success">不过期</span>
+                            {/if}
+                        </td>
+                        <td>
+                            {php echo date("Y年m月d日",$item['kcendtime'])}
+                        </td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                    <tr>
+                        <td colspan="10">
+                            {if keep_sk77()}
+                            {if $tid_global =='founder' || $tid_global == 'owner' || $loginTeaFzid['is_sell'] == 2}
+                            <input name="token" type="hidden" value="{$_W['token']}" />
+                                    <div class="col-sm-2 col-lg-2" id="sxname" style="width:30%">
+                                        <select name="jsid" id="jsid" class="form-control select" style="display:none">
+                
+                                        </select>
+                                        <input type="text" placeholder="课程名称" class="form-control sxword" value="{if $teaname}{$teaname}{/if}"/>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">
+                                        <span class="btn btn-default" id="search_kcname"><i class="fa fa-search"></i></span>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -4px;">
+                                        <span class="btn btn-default" style="background-color: #30d1e8"  data-toggle="tooltip" data-placement="bottom" title="重新筛选" data-delay='{"show":"700", "hide":"0"}' id="clear_kcname"><i class="fa fa-refresh"></i></span>
+                                    </div>
+                                
+
+                           <input type="button" class="btn btn-primary" name="change_bj" value="批量转移班级" />
+                           {/if}
+                            {/if}
+                        </td>
+
+                    </tr>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<style>
+.huifang-cell{display: flex;flex-direction: row;margin-bottom: 10px}
+.huifang-name-time{width:100px;color:black;text-align:right;}
+.huifang-content{width:calc(100% - 120px);text-indent:20px;color:black;padding-left:10px }
+</style>
+
+
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;">
+        <div class="modal-dialog modal-lg" role="document">		
+            <div class="modal-content">			
+                <div class="modal-header" style="color: black;">					
+                    <h4 class="modal-title" id="ModalTitle">回访记录</h4>	
+                </div>
+                <div class="modal-body">
+                     <div class="form-group">
+                        <div class="col-sm-9 col-xs-6" style="width:100% !important">
+                            <div class="tips_with_dot">
+                                <div>过往记录</div>	
+                            </div>
+                            <div class="input-group text-info" id="recordC" style="width:100%;max-height: 330px;min-height: 70px;margin-top: 15px;overflow-y: scroll;display: flex;flex-direction: column ">
+                                <div class="huifang-cell">
+                                    <div class="huifang-name-time">
+                                        <div >管理员 :</div>
+                                        <div style="color:gray;font-size: 13px"> 08-08 66:66</div>
+                                    </div>
+                                    <div class="huifang-content">回访内容</div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="tips_with_dot" style="margin-top: 10px">
+                                <div>新增回访</div>	
+                            </div>
+ 
+                            <div class="input-group text-info" style="width:100%;padding-top:20px">
+                                    <input type="hidden" value="{$tid_global}" id="tid" /> 
+                                    <input type="hidden" value="-1" id="recordid" /> 
+                                    <input type="hidden" value="-1" id="sid" /> 
+                                <div style="width:100%;float: left;" >
+                                    <textarea style="width:100%;resize: none;height: 80px;border-radius: 10px;border:1px solid gray;padding:5px" id="cltext"  ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>			
+                </div>				
+                <div class="modal-footer">	
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="submit2"   onclick="sethuifang()">添加回访</button>
+                </div>			
+            </div>	
+        </div>
+    </div>
+
+<script type="text/javascript">
+   function ChangeOvetTime(){
+        $("#xiugaiguoqishijian").slideToggle();
+    }
+
+ 
+function ClickHuiFang(id) {
+    let url = "{php echo $this->createWebUrl('stuovertime', array('op' => 'GetStuHuiFang', 'schoolid' => $schoolid))}";
+    $.ajax({
+        url: url,
+        type: "post",
+        dataType: "json",
+        data:{
+            id: id
+        },
+        success: function (res) {
+            let RData = res.data;
+            let ModalTitle = `${RData.kcname} - ${RData.sname} 回访记录`;
+            $("#ModalTitle").text(ModalTitle)
+            console.log(RData);
+            $("#sid").val(RData.sid)
+            $("#recordid").val(id)
+            let insert_html = '';
+            if(RData.is_Data == true){
+                for(item of RData.list){
+                    insert_html += `
+                    
+                    <div class="huifang-cell">
+                        <div class="huifang-name-time">
+                            <div >${item.tname}:</div>
+                            <div style="color:gray;font-size: 13px">${item.ctime}</div>
+                        </div>
+                        <div class="huifang-content">${item.content}</div>
+                    </div>`;
+                }
+            }else {
+                insert_html = `<div style="color:black">无过往回访记录</div>`;
+            }
+            $("#recordC").html(insert_html);
+            $('#Modal1').modal('toggle'); 
+        }
+    });
+}
+
+function sethuifang() {
+    let huifangtext = $("#cltext").val(),
+        recordid    = $("#recordid").val(),
+        sid         = $("#sid").val(),
+        tid         = "{$tid_global}";
+        if(huifangtext == ''){
+            alert("请输入回访记录内容");
+            return;
+        }
+    let url = "{php echo $this->createWebUrl('stuovertime', array('op' => 'SetHuiFang', 'schoolid' => $schoolid))}";
+    $.ajax({
+        url: url,
+        type: "post",
+        dataType: "json",
+        data:{
+            huifangtext:huifangtext,
+            sid:sid,
+            tid:tid,
+            recordid : recordid
+        },
+        success: function (res) {
+            alert("添加回访记录成功!");
+            $('#Modal1').modal('toggle'); 
+            window.location.reload();
+
+        }
+    });
+
+
+    
+}
+
+function SureChangeTime(){
+    var check = $("input[type=checkbox][class!=check_all]:checked");
+    if(check.length < 1){
+        alert('请选择要修改的记录!');
+        return false;
+    }
+    var NewOverTime = $("input[name=NewOverTime]").val();
+    if(confirm(`确认要将所选择记录设置为${NewOverTime}后过期?`)){
+        var id = new Array();
+        check.each(function(i){
+            id[i] = $(this).val();
+        });
+        var url = "{php echo $this->createWebUrl('stuovertime', array('op' => 'ChangeOverTime', 'schoolid' => $schoolid))}";
+        $.post(
+            url,
+            {idArr:id,NewOverTime:NewOverTime},
+            function(data){
+                if(data.result){
+                    alert(data.msg);
+                    location.reload();
+                }else{
+                    alert(data.msg);
+                }
+            },'json'
+        );
+    }
+}
+
+
+    $(function(){
+        {if !(IsHasQx($tid_global,1000933,1,$schoolid))}
+        $(".qx_933").hide();
+        {/if}
+        {if !(IsHasQx($tid_global,1000934,1,$schoolid))}
+        $(".qx_934").hide();
+        {/if}
+        $(".check_all").click(function(){
+            var checked = $(this).get(0).checked;
+            $("input[type=checkbox]").prop("checked",checked);
+        });
+
+
+        $(document).on('click', '#clear_kcname', function(){
+            var t = $(this).parents().children();
+            var want = t.find('input[class*=sxword]');
+            var selectdiv = t.find('select[class*=select]');
+
+            want.show();
+            selectdiv.html('')
+            want.val('');
+            selectdiv.hide();
+
+        });
+
+
+  
+        $(document).on('click', '#search_kcname', function(){
+            let t = $(this).parents().children(),
+                want      = t.find('input[class*=sxword]'),
+                selectdiv = t.find('select[class*=select]');
+
+                let kcname = want.val();
+            console.log(kcname);
+            want.hide();
+            selectdiv.show();
+            let html='';
+            let schoolid = "{$schoolid}";
+            let classlevel = [];
+            html += '<select id="schoolid"><option value="">选择课程</option>';
+            $.post("{php echo $this->createWebUrl('stuovertime',array('op'=>'GetSearchKc'))}", {'kcname': kcname,schoolid:schoolid}, function(data) {
+                data = JSON.parse(data);
+                if(data.result == true){
+                    classlevel = data.kclist;
+                    var html = '';
+                    if (classlevel != '') {
+                        for (var i in classlevel) {
+                            html +=  `<option value="${classlevel[i].id}" >${classlevel[i].name}</option>`;
+                        }
+                    }
+                    selectdiv.html(html);
+                }else{
+                    selectdiv.hide();
+                    want.show();
+                    alert(data.msg);
+                }
+            });
+        });
+
+
+
+        $("input[name=change_bj]").click(function(){
+            var check = $("input[type=checkbox][class!=check_all]:checked");
+            if(check.length < 1){
+                alert('请选择学生!');
+                return false;
+            }
+            var bj_id = $("#jsid").val();
+            if(bj_id == null || bj_id == 0 || bj_id == ""){
+                alert('请选择要转移到的课程!');
+                return false;
+            }
+            if(confirm("确认要选择的学生转班?")){
+                var id = new Array();
+                check.each(function(i){
+
+                    id[i] = new Object();
+                    id[i].id = $(this).val();
+                    id[i].kcid = $(this).attr("kc-id");
+                });
+                var url = "{php echo $this->createWebUrl('stuovertime', array('op' => 'change_bj', 'schoolid' => $schoolid))}";
+                $.post(
+                    url,
+                    {idArr:id,bj_id:bj_id},
+                    function(data){
+                        if(data.result){
+                            alert(data.msg);
+                            location.reload();
+                        }else{
+                            alert(data.msg);
+                        }
+                    },'json'
+                );
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    <!--
+    var category = {php echo json_encode($children)};
+    //-->
+</script>
+{/if}
+{template 'public/footer'}

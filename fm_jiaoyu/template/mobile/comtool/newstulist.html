@@ -1,0 +1,36 @@
+<li class="main" time="{$sid}" id="{$sid}" style="display: block;">
+	<div class="cutting"></div>
+	<div class="notifyTopBox">
+		<div class="notifyTopLeft">
+			<img src="{if $student['icon']}{php echo tomedia($student['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+		</div>
+		<div class="erwei" id="erwei{$sid}">
+		{if $qrid || $student['qrcode_id']}
+			<img src="{OSSURL}public/mobile/img/20180317214727.png" class="img-responsive">
+		{/if}
+		</div>
+		<div class="btnEditBox" onclick="itemEdit({$sid});return false;">
+			<img src="{OSSURL}public/mobile/img/btn_edit_01.png" class="img-responsive">
+		</div> 		
+		<div class="btnDeleteBox" onclick="del_notice({$sid});return false;">
+			<img src="{OSSURL}public/mobile/img/btn_delete_01.png" class="img-responsive">
+		</div>				
+		<div class="notifyTopRight">
+			<div class="notifyTopRightTopBox">
+				{if $_GPC['sex'] == 1}<div class="boytip"></div>{/if}
+				{if $_GPC['sex'] == 2}<div class="girltip"></div>{/if}				
+				<span class="teacherInfo">{$_GPC['s_name']}</span>			
+				{if $pard}<div class="wexintip"></div>{/if}
+				{if $pard}
+					{loop $pard $vs}
+						<div class="{if $vs['pardid'] ==2}pard2{/if}{if $vs['pardid'] ==3}pard3{/if}{if $vs['pardid'] ==4}pard4{/if}{if $vs['pardid'] ==5}pard5{/if}">{$vs['guanxi']}</div>
+					{/loop}
+				{else}	
+					<div class="JobLeaderBox">未绑定</div>
+				{/if}
+			</div>
+			<p class="notifyCreateTime">{$xq_id['sname']}</p>
+			{if $_GPC['numberid']}<p class="notifyCreateTime">学号:{$_GPC['numberid']}</p>{/if}
+		</div>
+	</div>
+</li>

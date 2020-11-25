@@ -1,0 +1,507 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<div class="main">
+	<style>
+		.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;
+			border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+	</style>
+	<div class="panel panel-info">
+		<div class="panel-heading">班级考试管理</div>
+		<div class="panel-body">
+			<form action="{php echo $this->createWebUrl('classcardexam', array('op' => 'display', 'schoolid' => $schoolid))}" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site" />
+				<input type="hidden" name="a" value="entry" />
+				<input type="hidden" name="m" value="fm_jiaoyu" />
+				<input type="hidden" name="do" value="classcardexam" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<div class="form-group">
+
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按考试名称</label>
+					<div class="col-sm-2 col-lg-2">
+						<input class="form-control" name="exam_name" id="" type="text" value="{$_GPC['exam_name']}">
+					</div>
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+
+				</div>
+				<div class="form-group">
+					<a style="margin-left:40px;background-color: #ffffff;" class="btn btn-primary " href="{php echo $this->createWebUrl('classcardexam', array('op' => 'post', 'schoolid' => $schoolid))}"></a>
+					<a  class="btn btn-primary qx_602" href="{php echo $this->createWebUrl('classcardexam', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i> 添加班级考试</a>
+
+					<a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i> 刷新</a>
+
+				</div>
+			</form>
+
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+					<tr>
+						<th >考试名称</th>
+						<th class="qx_e_d">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					{loop $list $item}
+					<tr>
+						<td>{$item['exam_name']}</td>
+						<td class="qx_e_d">
+							<a class="btn btn-default btn-sm qx_602" href="{php echo $this->createWebUrl('classcardexam', array('exam_name' => $item['exam_name'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_607" href="{php echo $this->createWebUrl('classcardexam', array('exam_name' => $item['exam_name'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					</tbody>
+
+				</table>
+				{$pager}
+			</form>
+		</div>
+	</div>
+</div>
+{elseif $operation == 'post'}
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/My97DatePicker/WdatePicker.js"></script>
+<div class="panel panel-info">
+	<div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回班级考试列表</a></div>
+</div>
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="id" value="{$item['id']}"/>
+		<input type="hidden" name="schoolid" value="{$schoolid}"/>
+		<div class="panel panel-default">
+			<div class="panel-body" id="testEdit">
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">考试名称</label>
+					<div class="col-sm-9">
+						<input type="text" name="exam_name" id="exam_name" class="form-control" value="{$exam_name}"  required="required" oninvalid="setCustomValidity('考试名称不能为空！！！');"/>
+						<input type="hidden" name="exam_name_id" id="exam_name_id" value="{$exam_name}"  />
+					</div>
+				</div>
+				<style>
+					.minus {
+						display: inline-block;
+						width: 20px;
+						height: 20px;
+						border-radius: 50%;
+						background-color: #ff0000;
+						text-align: center;
+						background-size: 20px 20px;
+						vertical-align: middle;
+						cursor: pointer;
+						color: #fff;font-size: 16px;
+					}
+					dl{ clear: both; margin-bottom: 5px;}
+					dl dd{ float: left;}
+					.plus {
+						display: inline-block;
+						width: 20px;
+						height: 20px;
+						border-radius: 50%;
+						border: 1px solid #3bcec6;
+						font: bold 18px/16px 'microsoft yahei';
+						text-align: center;
+						vertical-align: middle;
+					}
+					.lineChose {
+						overflow: auto;
+						/* padding: 10px 20px 10px 20px; */
+						background: #fff;
+					}
+					table tr th {
+						border: 1px solid #4ee4dc;
+						background: #3bcec6;
+						color: #FFFFFF;
+						font-weight: 500;
+						line-height: 40px;
+					}
+					.n-content-set-select {
+						margin-right: 10px;
+						width: 100px !important;
+						height: 25px !important;
+						border-radius: 12.5px !important;
+						border-color: #3bcec6 !important;
+						vertical-align: middle;
+						font: 14px/25px 'microsoft yahei';
+						color: #777;
+					}
+					table tr td {
+						height: 40px;
+						border: 1px solid #3bcec6;
+						color: #777;
+						word-break: break-all;
+					}
+					.random input {
+						width: 105px;
+						outline: none;
+						border: none;
+					}
+					input[type="text"], input[type="checkbox"] {
+						height: 25px;
+						/* outline-color: #ccc; */
+						outline: none !important;
+						border: 1px solid #3bcec6;
+						border-radius: 3px;
+						padding: 0 10px;
+						font: 14px/25px 'microsoft yahei';
+						color: #777;
+						/* text-indent: 5px; */
+					}
+
+					.Wdate {
+						border: #999 1px solid;
+						height: 20px;
+						/* background: #fff url(datePicker.gif) no-repeat right; */
+						background: #fff url({$_W['siteroot']}addons/fm_jiaoyu/public/web/My97DatePicker/WdateTime.png) no-repeat 95% 50%;
+					}
+				</style>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">考试设置</label>
+					<div class="col-sm-9">
+						{if $item}
+						{loop $item $exam}
+						<dl  class="testSubject">
+							<dd>
+								<input type="text" id="date" value="{php echo date('Y-m-d',$exam['start_time']);}" class="Wdate ydate mright1" autocomplete="off" onfocus="WdatePicker({skin:'whyGreen',minDate:'%y-%M-%d'})">
+								<input type="text" id="startTime" value="{php echo date('h:i',$exam['start_time']);}"  class="Wdate hdate hdate0" autocomplete="off" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'H:mm'})">
+								<span>到</span>
+								<input type="text" id="endTime" value="{php echo date('h:i',$exam['end_time']);}" class="Wdate hdate hdate1 mright1" autocomplete="off" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'H:mm'})">
+							</dd>
+							<dd>
+								<select class="mright1 n-content-set-select" id="subjectId" name="0">
+									{loop $allkm $row}
+
+									<option value="{$row['sid']}" {if $row['sid'] == $exam['course_id']} selected="selected"{/if}>{$row['sname']}</option>
+									{/loop}
+								</select>
+
+							</dd>
+						</dl>
+						{/loop}
+						{else}
+						<dl  class="testSubject">
+							<dd>
+								<input type="text" id="date" class="Wdate ydate mright1" autocomplete="off" onfocus="WdatePicker({skin:'whyGreen',minDate:'%y-%M-%d'})">
+								<input type="text" id="startTime" class="Wdate hdate hdate0" autocomplete="off" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'H:mm'})">
+								<span>到</span>
+								<input type="text" id="endTime" class="Wdate hdate hdate1 mright1" autocomplete="off" onfocus="WdatePicker({skin:'whyGreen',dateFmt:'H:mm'})">
+							</dd>
+							<dd>
+								<select class="mright1 n-content-set-select" id="subjectId" name="0">
+									{loop $allkm $row}
+									<option value="{$row['sid']}" {if $row['sid'] == $monarr['mon_1_km']} selected="selected"{/if}>{$row['sname']}</option>
+									{/loop}
+								</select>
+
+							</dd>
+						</dl>
+						{/if}
+
+						<p class="tips3 Validform_wrong"></p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">&nbsp;</label>
+					<div class="col-sm-9">
+
+						<input type="hidden" id="subjectIndex" value="0">
+						<p id="addTest" class="addLine"><i class="plus"></i><span>添加考试</span></p>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">考场设置</label>
+					<div class="col-sm-9 lineChose">
+						<table class="examRoom">
+							<thead>
+							<tr>
+								<th class="minW210">考场</th>
+								<th class="minW150">考场编号</th>
+								{if $item}
+								  {loop $item   $key  $v}
+								  {if $key == 0}
+								   <th  class="minW150 0" id="fristSubject">科目:{loop $allkm $row} {if $row['sid'] == $v['course_id']}{$row['sname']}{/if}{/loop}</th>
+								  {else}
+								    <th class="{$key}">科目:{loop $allkm $row} {if $row['sid'] == $v['course_id']}{$row['sname']}{/if}{/loop}</th>
+								   {/if}
+								 {/loop}
+								 {else}
+								<th  class="minW150 0" id="fristSubject"></th>
+								{/if}
+								<th class="minW70" id="setSeatTh"></th>
+							</tr>
+							</thead>
+							<tbody>
+							{if $exam_bj}
+							{loop $exam_bj $key  $v}
+							<tr>
+								<td>
+									<select name="classesId" id="selectClasses" class="gradeSelect n-content-set-select">
+										{loop $banji $uni}
+										<option value="{$uni['sid']}" {if $uni['sid'] == $v['bj_id']} selected {/if}>{$uni['sname']}</option>
+										{/loop}
+									</select>
+								</td>
+								<td>
+									<div>
+										<input type="text" value="{$v['code']}" class="examCode" id="examCode" placeholder="输入考场编号" >
+									</div>
+								</td>
+
+								{if $item}
+								{loop $item   $key1  $v1}
+								  <td class="{$key1}">
+									<div class="random">
+										{php $teacher_id= -1;}
+										{php $teacher_id1= -1;}
+										{loop $exam_details  $d_v}
+										 {if ($v['bj_id'] == $d_v['bj_id']) && ($v1['course_id']==$d_v['course_id'])}
+										  {php $teacher_id=$d_v['teacher_id'];}
+										  {php $teacher_id1=$d_v['teacher_id1'];}
+										 {/if}
+										{/loop}
+										<select id="tid" class="form-control">
+											{loop $teachers $row}
+											  <option {if $teacher_id == $row['id']} selected {/if} value="{$row['id']}">{$row['tname']}</option>
+											{/loop}
+										</select>
+										<select id="tid1" class="form-control">
+											{loop $teachers $row}
+											<option {if $teacher_id1 == $row['id']} selected {/if} value="{$row['id']}">{$row['tname']}</option>
+											{/loop}
+										</select>
+									</div>
+								  </td>
+								{/loop}
+                                {else}
+								<td class="0">
+									<div class="random">
+										<select id="tid" class="form-control">
+											{loop $teachers $row}
+											<option value="{$row['id']}">{$row['tname']}</option>
+											{/loop}
+										</select>
+										<select id="tid1" class="form-control">
+											{loop $teachers $row}
+											<option value="{$row['id']}">{$row['tname']}</option>
+											{/loop}
+										</select>
+									</div>
+								</td>
+								{/if}
+
+
+								<td id="setSeatTd" class="setSeatTd">
+									<div class="setSeatBtn">
+										<span></span>
+										<input type="hidden" id="roomIndex" value="0">
+									</div>
+								</td>
+							</tr>
+							{/loop}
+							{else}
+							 <tr>
+								<td>
+									<select name="classesId" id="selectClasses" class="gradeSelect n-content-set-select">
+
+										{loop $banji $uni}
+										<option value="{$uni['sid']}">{$uni['sname']}</option>
+
+										{/loop}
+
+									</select>
+
+								</td>
+								<td>
+									<div class="random">
+										<input type="text" class="examCode" id="examCode" placeholder="输入考场编号" >
+									</div>
+								</td>
+								<td class="0">
+									<div class="random">
+										<select id="tid" class="form-control">
+											{loop $teachers $row}
+											<option value="{$row['id']}">{$row['tname']}</option>
+											{/loop}
+										</select>
+										<select id="tid1" class="form-control">
+											{loop $teachers $row}
+											<option value="{$row['id']}">{$row['tname']}</option>
+											{/loop}
+										</select>
+									</div>
+								</td>
+								<td id="setSeatTd" class="setSeatTd">
+									<div class="setSeatBtn">
+										<span></span>
+										<input type="hidden" id="roomIndex" value="0">
+									</div>
+								</td>
+							</tr>
+							{/if}
+							</tbody>
+						</table>
+						<p class="tips tips1"></p>
+
+
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">&nbsp;</label>
+					<div class="col-sm-9">
+						<!-- 添加考场 -->
+						<div class="examRoomSet">
+							<p id="addRoom" class="addLine"><i class="plus"></i><span>添加考场</span></p>
+						</div>
+
+					</div>
+				</div>
+			</div>
+            <script>
+                window.onload=function(){
+                    fristSubjectFn();
+                }
+                //第一个默认科目
+                function fristSubjectFn(){
+                    var fristSubject =  $("#subjectId option:selected").text();
+                    $("#fristSubject").text("科目："+fristSubject);
+                }
+
+                $("#addTest").click(function(){
+
+                    var subjectIndex = parseInt($("#subjectIndex").val())+1;
+                    $("#subjectIndex").val(subjectIndex);
+                    var selectedSub = [];
+                    $(".testSubject").find("select").each(function(){
+                        selectedSub.push($(this).val());
+                    });
+                    var subjectHtml = $(".tips3").prev(".testSubject").clone();
+                    subjectHtml.find("#subjectId").attr('name', subjectIndex);
+                    subjectHtml.find("input[name=count_down]").attr('name', 'count_down'+subjectIndex);
+                    //subjectHtml.find(".Wdate").val("");
+                    if($(".testSubject").length=="1"){
+                        subjectHtml.find("#subjectId").after("<i class='minus testSub'>-</i>");
+                    }
+                    $(".tips3").before(subjectHtml);
+                    var testSubLen = $(".testSubject").length;
+                    for(var i=0; i<testSubLen; i++){
+                        $(".tips3").prev(".testSubject").find("option[value="+selectedSub[i]+"]").remove();
+
+                    }
+                    //validTime();//时间输入限制
+                    var teacherTh = "<th class='"+subjectIndex+"'>科目："+subjectHtml.find("option:eq(0)").text()+"</th>";
+                    $("#setSeatTh").before(teacherTh);
+                    var teacherTd =  "<td class='"+subjectIndex+"'>";
+					teacherTd +=$('#tid').parent().html();
+                    teacherTd += "</td>";
+                    $(".setSeatTd").each(function(){
+                        $(this).before(teacherTd);
+                    });
+                });
+                $("#testEdit").on("click",".testSub",function(){
+                    $("."+$(this).prev().attr('name')).remove();
+                    $(this).parent().parent().remove();
+                });
+			</script>
+            <script>
+                $("#addRoom").click(function(){//添加教室
+                    var addTr = $(".examRoom tr").eq($(".examRoom tr").length-1).clone();
+                    var roomIndex = parseInt(addTr.find("#roomIndex").val());
+                    addTr.find("#roomIndex").attr('value',roomIndex+1);
+                    addTr.find("input:text").val('');
+                    addTr.find(".random-block-wrap .random-block").each(function(){
+                        $(this).remove();
+                    });
+                    if(addTr.find(".noBorder").length <= 0){
+                        addTr.find("#setSeatTd").after("<td class='noBorder'><i class='minus roomRemove'>-</i></td>");
+                    }
+                    $(".examRoom").append(addTr);
+                });
+                $("#testEdit").on("click",".roomRemove",function(){
+                    $(this).parent().parent().remove();
+                })
+			</script>
+			<div class="form-group col-sm-12">
+				<button class="orange-btn btn btn-primary col-lg-1" id="postExaminationBtn" type="button">发布</button>
+				<input type="hidden" name="token" value="{$_W['token']}" />
+			</div>
+	</form>
+</div>
+<script>
+    $("#postExaminationBtn").click(function(){
+        var name = $("#exam_name").val();
+        if(name==""){
+            $("#exam_name").focus().addClass("Validform_error");
+            return false;
+        }
+        var exam_name_id = $("#exam_name_id").val();
+        //考试时间与科目
+        var time_length=$('.testSubject').length;
+        var data=[];
+        var suject_array=[];//科目数组
+		var has_empty=false;
+        $('.testSubject').each(function(index,el){
+           var date= $(el).find('dd:eq(0)').children("input[id=date]").val();
+            var startTime= $(el).find('dd:eq(0)').children("input[id=startTime]").val();
+            var endTime= $(el).find('dd:eq(0)').children("input[id=endTime]").val();
+            var subject= $(el).find('dd:eq(1)').children(".mright1").val();
+           // alert(date+'==='+startTime+"=="+endTime+"==="+subject);
+            data[index]=date+','+startTime+','+endTime+','+subject;
+            suject_array[index]=subject;
+            if(subject==''||subject==undefined||subject==null){
+                has_empty=true;
+            }
+		});
+        if(has_empty){
+            alert('考试科目不能为空！');
+            return;
+        }
+        if(isRepeat(suject_array)){
+            alert('考试科目不能重复！');
+            return;
+		}
+        var data1=[];
+        $('.examRoom tbody tr').each(function (index,em) {
+			var class_id=$(em).children('td:eq(0)').find('select').val();
+            var code=$(em).children('td:eq(1)').find('input').val();
+            var subject_id=$(em).children('td:eq(2)').find('select:eq(0)').val();
+            subject_id +="|"+$(em).children('td:eq(2)').find('select:eq(1)').val();
+            var subjects='';
+            for(i=0;  i<time_length-1;i++){
+                subjects +=$(em).children('td:eq('+(i+3)+')').find('select:eq(0)').val()+'|';
+                subjects +=$(em).children('td:eq('+(i+3)+')').find('select:eq(1)').val()+',';
+			}
+            data1[index]=class_id+','+code+','+subject_id+','+subjects;
+           // alert(class_id+'==='+code+"=="+subject_id+'|'+subject_id1+"==="+subjects);
+        });
+
+
+        $.post("{php echo $this->createWebUrl('classcardexam', array('op' => 'post1', 'schoolid' => $schoolid))}",
+			{param:data,exam_name:name,param1:data1,exam_name_id:exam_name_id},
+		  function (res) {
+
+             alert('更新成功！');
+             location.href="{php echo $this->createWebUrl('classcardexam', array('op' => 'display', 'schoolid' => $schoolid))}";
+           console.log(res);
+        });
+    });
+    function isRepeat(arr){
+        var hash = {};
+        for(var i in arr) {
+            if(hash[arr[i]])
+                return true;
+            hash[arr[i]] = true;
+        }
+        return false;
+    }
+</script>
+{/if}
+{template 'public/footer'}

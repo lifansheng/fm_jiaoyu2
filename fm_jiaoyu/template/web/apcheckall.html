@@ -1,0 +1,224 @@
+{template 'public/header'}
+{template 'public/comhead'}
+ <style>
+	.studiv{float:left;width:33%;padding:1px 5px;height:auto}
+	.studiv div{text-align:center;height:auto}
+	.labelStu{margin-top:5px;padding: 3px 6px; transform: scale(0.8);left: -7px;width:150%;position:relative;overflow: hidden;text-overflow: ellipsis; -o-text-overflow: ellipsis;white-space:nowrap;}
+	.viewBox{width:176px !important;height:auto !important;padding-bottom:10px !important;background-color:#F5EFEF;border-top-left-radius: 3%;border-top-right-radius: 3%;border-bottom-left-radius: 3%;border-bottom-right-radius: 3%;}
+	.bigss{width:100% !important;padding-right:0px;left: 6px !important;}
+	.stu_img{width:45px;height:45px;border-radius:50%;}
+	
+ </style>
+ 
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/web/css/main.css"/>
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<div class="panel panel-info">
+	<div class="panel-heading">
+		<input type="hidden" id="lasttime" value="{$time}">
+		<span id = "page_title">实时汇总</span>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a class="btn btn-default hide_img" style="display:none" onclick="hide_img(2);" id="hide_img2"><i class="fa fa-file-archive-o"></i> 进入精简模式</a>
+		<a class="btn btn-default show_img" style="display:none" onclick="show_img(2);"  id="show_img2" ><i class="fa fa-file-image-o"></i> 退出精简模式</a>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a class="btn btn-default" style="display:none" onclick="small_screen();" id="small_scc"><i class="fa fa-compress"></i> 退出大屏</a>
+	</div>
+	<div class="panel-body" id="choosediv">
+		<form action="./index.php" method="get" class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择楼栋</label>
+				<div class="col-sm-2 col-lg-2">
+					<select style="margin-right:15px;" name="apid" id="chooseapid" class="form-control">
+						{loop $apartmentlist $row}
+						<option value="{$row['id']}" {if $row['id'] == $apid} selected="selected"{/if}>{$row['name']}</option>
+						{/loop}
+					</select>
+				</div>
+
+				 <div class="col-sm-2 col-lg-2">
+					<a class="btn btn-default hide_img" onclick="hide_img(1);" id="hide_img1"><i class="fa fa-file-archive-o"></i> 进入精简模式</a>
+					<a class="btn btn-default show_img" style="display:none" onclick="show_img(1);"  id="show_img1" ><i class="fa fa-file-image-o"></i> 退出精简模式</a>
+				</div>
+				
+				<div class="col-sm-2 col-lg-2">
+					<a class="btn btn-default" onclick="big_screen();" id="big_scc"><i class="fa fa-expand"></i> 大屏模式</a>
+				</div>
+				<div class="col-sm-2 col-lg-2">
+					<a class="btn btn-default" href="{php echo $this->createWebUrl('newapcheckall',array('op'=>'display','schoolid'=>$schoolid,'apid'=>$apid))}" id="big_scc"><i class="fa fa-crop"></i> 切换至汇总模式</a>
+				</div>
+			</div>
+		</form>
+	</div>		
+</div>
+
+
+
+<div class="panel panel-info">
+<div class="cLine">
+    <div class="alert">
+    <p>示例：&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	<span class="label  label-primary" style="color:#59ace2;padding:2px 2px">....</span>  : 归寝&nbsp;&nbsp;&nbsp;
+	<span class="label  label-danger " style="color:#FF6C60;padding:2px 2px">....</span>  : 离寝&nbsp;&nbsp;&nbsp;
+	<span class="label  label-success" style="color:#a9d86e;padding:2px 2px">....</span>  : 请假&nbsp;&nbsp;&nbsp;
+	<span class="label  label-default" style="color:#a1a1a1;padding:2px 2px">....</span>  : 默认状态
+    </p>
+    </div>
+</div>
+
+	
+		
+</div>
+
+<div class="panel panel-default" >
+	<div class="table-responsive panel-body">
+		<div id="queue-setting-index-body">
+			<div class="viewList" >
+				{loop $roomlist $row}
+				<div class="viewBox" >
+					<div class="content" style="border-bottom:1px solid #c6c6c6;text-align:center;height:30px;font-size:16px">
+						<span style="text-align:center" >{$row['name']}</span>
+					</div>
+					{loop $row['students'] $row_s}
+					<div class="studiv">
+						<div data-toggle="tooltip" data-placement="bottom" title="" data-original-title="【{$row_s['nj_name']}-{$row_s['bj_name']}】  {$row_s['s_name']}" >
+							<img class="stu_img"  src="{php echo tomedia($row_s['icon'])}" width="50" /><br class="stu_img" >
+							{if $row_s['ap_type'] == 1 }
+							<span class="label labelStu label-primary" id="StuSpan{$row_s['id']}">{$row_s['s_name']}</span>
+							{elseif $row_s['ap_type'] == 2 }
+							<span class="label labelStu label-danger" id="StuSpan{$row_s['id']}">{$row_s['s_name']}</span>
+							{elseif $row_s['ap_type'] == 3 }
+							<span class="label labelStu label-success" id="StuSpan{$row_s['id']}">{$row_s['s_name']}</span>
+							{else}
+							<span class="label labelStu label-default" id="StuSpan{$row_s['id']}">{$row_s['s_name']}</span>
+							{/if}
+						</div>					
+					</div>
+					{/loop}
+				</div>
+				{/loop}
+
+			</div>
+		</div>
+	</div>
+</div>
+{$pager}
+<script>
+var hide_show = {$hide_show} ;
+var big_small = {$big_small} ;
+
+$(function () {
+	var this_apid = '{$apid}';
+	var lasttime = $("#lasttime").val();
+	checknewinfo(this_apid,lasttime);
+
+
+	setTimeout(function(){
+		location.href = "{php echo $this->createWebUrl('apcheckall',array('op'=>'display','schoolid'=>$schoolid,'apid'=>$apid))}"+"&hide_show="+hide_show+"&big_small="+big_small;
+	}, 3600000);
+
+	if (big_small == 1){
+		small_screen();
+	}else if (big_small == 2){
+		big_screen();
+	}
+	if(hide_show == 1){
+		hide_img(big_small);
+	}else if (hide_show == 0){
+		show_img(big_small);
+	}
+});
+function hide_img(id){
+	$(".stu_img").hide();
+	$("#hide_img"+id).hide();
+	$("#show_img"+id).show();
+	hide_show = 1;
+}
+
+function show_img(id){
+	$(".stu_img").show();
+	$("#show_img"+id).hide();
+	$("#hide_img"+id).show();
+	hide_show = 0;
+}
+
+function big_screen(){
+	big_small = 2;
+	$(".col-xs-12.col-sm-9.col-lg-10").addClass('bigss');
+	$("#page_title").html("&nbsp;&nbsp;&nbsp;&nbsp;当前楼栋：{$apname}");
+	$("#small_scc").show();
+	$("#big_scc").hide();
+	$("#choosediv").hide();
+	$(".header.white-bg").hide();
+	$(".col-xs-12.col-sm-3.col-lg-2.big-menu").hide();
+	$(".navbar.navbar-inverse.navbar-static-top").hide();
+	if(hide_show == 0 ){
+		$("#show_img2").hide();
+		$("#hide_img2").show();
+	}else if(hide_show == 1){
+		$("#show_img2").show();
+		$("#hide_img2").hide();
+	}
+}
+
+function small_screen(){
+	big_small = 1;
+	$(".col-xs-12.col-sm-9.col-lg-10").removeClass('bigss');
+	$("#page_title").html("实时汇总");
+	$("#small_scc").hide();
+	$("#big_scc").show();
+	$("#choosediv").show();
+	$(".header.white-bg").show();
+	$(".col-xs-12.col-sm-3.col-lg-2.big-menu").show();
+	$(".navbar.navbar-inverse.navbar-static-top").show();
+	$("#hide_img2").hide();
+	$("#show_img2").hide();
+	if(hide_show == 0 ){
+		$("#show_img1").hide();
+		$("#hide_img1").show();
+	}else if(hide_show == 1){
+		$("#show_img1").show();
+		$("#hide_img1").hide();
+	}
+}
+
+$('#chooseapid').change(function(){
+	var apid = $(this).val();
+	location.href = "{php echo $this->createWebUrl('apcheckall',array('op'=>'display','schoolid'=>$schoolid))}"+"&apid="+apid;
+});
+
+
+
+
+function checknewinfo(apid,lasttime){
+	$.ajax({
+		url: "{php echo $this->createwebUrl('apcheckall',array('op'=>'checknewinfo','schoolid'=>$schoolid))}",
+		data: {weid: "{$weid}",apid: apid,lasttime: lasttime,big_small:big_small,hide_show:hide_show},
+		type: "POST",
+		dataType: "json",
+		success: function (data) {
+			if(data.result){
+				 for(var item in data.back_data){
+					if(data.back_data[item].ap_type == 1){
+						$("#StuSpan"+data.back_data[item].sid).attr("class","label labelStu label-primary");
+					}else if(data.back_data[item].ap_type == 2){
+						$("#StuSpan"+data.back_data[item].sid).attr("class","label labelStu label-danger");
+					}else if(data.back_data[item].ap_type == 3){
+						$("#StuSpan"+data.back_data[item].sid).attr("class","label labelStu label-success");
+					}else{
+						$("#StuSpan"+data.back_data[item].sid).attr("class","label labelStu label-default");
+					}
+ 				 }
+				setTimeout(function(){checknewinfo(apid,data.lasttime)}, 2000);
+			}else{
+				setTimeout(function(){checknewinfo(apid,data.lasttime)}, 2000);
+			}	
+		},
+		error: function () {
+			setTimeout(function(){checknewinfo(apid,lasttime)}, 2000);
+		},
+	});		
+
+};
+
+
+</script>
+{template 'public/footer'}

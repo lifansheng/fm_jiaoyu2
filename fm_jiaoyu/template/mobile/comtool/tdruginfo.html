@@ -1,0 +1,73 @@
+<div class="poptitle">申请信息</div>
+    <div class="sectionContBox" >
+        <form class="form-order" novalidate="novalidate">
+            <div class="form-line">
+                <div class="input-wrapper">
+                    <span>申请人:</span>
+                    <span style="font-weight:bold;">{$data['sname']}</span>
+                </div>
+            </div>
+            <div class="form-line">
+                <div class="input-wrapper" style="border:none;">
+                    <span>开始时间:</span>
+                    <span style="font-weight:bold;">{php echo date("Y-m-d",$data['starttime'])}</span>
+                </div>
+            </div>
+            <div class="form-line">
+                <div class="input-wrapper" style="border:none;">
+                    <span>结束时间:</span>
+                    <span style="font-weight:bold;">{php echo date("Y-m-d",$data['endtime'])}</span>
+                </div>
+            </div>
+            <div class="form-line">
+                <div class="input-wrapper" style="border:none;">
+                    <span>喂药时段:</span>
+                    <span style="font-weight:bold;">{$data['datetime']}</span>
+                </div>
+            </div>
+            <div class="form-line">
+                <div class="input-wrapper" style="border:none;">
+                    <span>喂药说明:</span>
+                    <span style="font-weight:bold;">{$data['content']}</span>
+                </div>
+            </div>
+            <div class="form-line" id="showpic">
+                <div class="input-wrapper" style="border:none;">
+                    <span style="display: block;">药品图片:</span>
+                    <span style="margin-left: 20%; display: block;">
+                    {loop $data['headimg'] $row}
+                    <img class="needtoshow" src="{php echo tomedia($row)}" width="40px" height="40px;" onclick="wxImageShow(`{php echo tomedia($row)}`)">
+                    {/loop}
+                    </span>
+                </div>
+            </div>
+            {if $data['refuse']}
+            <div class="form-line">
+                <div class="input-wrapper" style="border:none;">
+                    <span>拒绝理由:</span>
+                    <span >{$data['refuse']}</span>
+                </div>
+            </div>
+            {/if}
+            <div class="form-line">
+                <div class="input-wrapper" style="border:none;"></div>
+            </div>
+            <div class="btnBox">
+                <div class="btnCancel">关闭</div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+$('.btnCancel').click(function() {
+    $('.popUpBox').hide();
+    $('html,body').removeClass('popNoscroll');
+});
+function needtoshow(){
+    srcList = [];
+    $("#showpic").find('img').each(function(){
+        srcList.push($(this).attr('src'))
+    })
+}
+</script>

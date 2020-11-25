@@ -1,0 +1,40 @@
+
+{if $ctype == 'record'}
+    {loop $students $row}
+    <li class="main1" time="{$row['location']}" id="hide_{$row['id']}" ctype="record"  style="position:relative;display: flex;align-items: center;justify-content: space-between;align-content: flex-start;" >
+        <img src="{php echo tomedia($row['icon'])}" style="border-radius:10px;width: 40px;height: 40px; margin-right: -50%;">
+        <div style="padding-left: 0.25rem;">
+            <div class="user_name_1 over_hidden">{$row['s_name']}</div>
+            <div class="user_name_2 over_hidden">{$nowbj['sname']}</div>
+        </div>
+        <div class="record_btn_1" student_id="{$row['id']}" student_name="{$row['sname']}" onclick="ShowAddModal(`{$row['id']}`)">记体温</div>
+    </li>
+    {/loop}
+{/if}
+
+{if $ctype == 'statistics'}
+    {loop $checkdata $row}
+    <li class="main1" time="{$row['location']}" ctype='statistics'>
+        <div class="time_til">
+            {if $row['istoday']}
+            <div class="time_til_day">
+                今天
+            </div>
+            {else}
+                <div class="time_til_day">
+                    {$row['day']}
+                </div>
+                    <div class="time_til_mounth">{$row['month']}</div>
+            {/if}
+        </div>
+        <div class="li_content">
+            {if !$row['istoday']}
+            <div class="tips_2" ><a href="{php echo $this->createMobileUrl('mclist', array('op' => 'display', 'schoolid' => $schoolid, 'bj_id'=> $bj_id, 'createdate'=>$row['createdate'], 'type' => 2))}">未检测<br><span class="f_pink"> {$row['ecount']} </span></a></div>
+            {else}
+            <div class="tips_2" id='gocheck'>未检测<br><span class="f_pink"> {$row['ecount']} </span></div>
+            {/if}
+            <div class="tips_1" ><a href="{php echo $this->createMobileUrl('mclist', array('op' => 'display', 'schoolid' => $schoolid, 'bj_id'=> $bj_id, 'createdate'=>$row['createdate'], 'type' => 1))}">已检测<br><span class="f_pink"> {$row['scount']} </span></a></div>
+        </div>
+    </li>
+    {/loop}
+{/if}

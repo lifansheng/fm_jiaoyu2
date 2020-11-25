@@ -1,0 +1,303 @@
+
+<input id="orgcode" type="hidden" value="10098" />
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mNewMsg.css?v=4.8" />	
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=4.81022"></script>
+{php include $this->template('port');}
+</head>
+<body>
+<div class="all">
+
+		<div class="msgBox">
+			<div class="campusBox">
+				<span class="l">申请人：</span>
+				<span class="c">{$teacher['tname']}</span>
+			</div>
+			{if is_showpf()}
+			<div class="campusBox">
+				<span class="l">联系电话：</span>
+				<span class="c">{$teacher['mobile']}</span>
+			</div>
+			<div class="timeBox">
+				<span class="l">任教科目：</span>
+				<span class="c">
+					<select name="select" id="classid" >
+						{loop $teacher_classlist $row}
+				         <option value="{$row['id']}">{$row['bj_name']} {$row['km_name']}</option>
+						{/loop} 
+				     </select>
+				</span>
+			</div>
+			{/if}
+			<div class="checkedBox">
+				<span class="l">审核人：</span>
+				<span class="c">                    
+					<select name="select" id="totid" >
+					     <option value="">选择审核人</option>
+						{loop $shlist $row}
+				         <option value="{$row['id']}">{$row['tname']}</option>
+						{/loop} 
+				     </select>
+			    </span>	
+			</div>
+			<div class="timeBox">
+				<span class="l">请假类型：</span>
+				<span class="c">
+                     <select name="select" id="type" >
+						<option value="">选择请假类型</option>
+						<option value="病假">病假</option>
+						<option value="事假">事假</option>
+						{if is_showpf()}
+						<option value="公差">公差</option>
+						{/if}
+						<option value="其他">其他</option>
+						
+				     </select>
+				</span>
+			</div>
+			{if (is_showgkk() || is_showpf())}
+			<div class="timeBox">
+				<span class="l">调课类型：</span>
+				<span class="c">
+                     <select name="tktype" id="tktype" >
+					     <option value="">选择调课类型</option>
+						 <option value="0">无课</option>
+				         <option value="1">自主调课</option>
+				         <option value="2">教务处调课</option>
+				     </select>
+				</span>
+			</div>
+			{else}
+				<input  type="hidden"   name="tktype" id="tktype" value="0"/>
+			{/if}
+			{if is_showpf()}
+			<div class="timeBox">
+				<span class="l">请假时长：</span>
+				<span class="c">
+                     <select name="MoreOrLess" id="MoreOrLess" >
+						 <option value="1">一天内</option>
+				         <option value="2">一天以上</option>
+				     </select>
+				</span>
+			</div>
+			<div class="timeBox moreThanoneDay" style="display:none">
+				<span class="l"  >开始日期：</span>
+				<span class="r">
+					<input class="start" type="date" placeholder="开始时间" name="startTime_more" id="startTime_more" value=""/>
+				</span>
+			</div>
+			<div class="timeBox moreThanoneDay" style="display:none">	
+				<span class="l">结束日期：</span>
+				<span class="r">
+					<input class="end" type="date" placeholder="结束时间" name="endTime_more" id="endTime_more" value=""/>
+				</span>				
+			</div>
+			<div class="timeBox lessThanoneDay" >
+				<span class="l"  >请假日期：</span>
+				<span class="r">
+					<input class="start" type="date" placeholder="开始时间" name="date_less" id="date_less"  value=""/>
+				</span>
+			</div>
+			<div class="timeBox lessThanoneDay">	
+				<span class="l">开始时间：</span>
+				<span class="r">
+					<input class="end" type="time" placeholder="结束时间" name="start_time_less" id="start_time_less" value=""/>
+				</span>				
+			</div>
+			<div class="timeBox lessThanoneDay">	
+				<span class="l">结束时间：</span>
+				<span class="r">
+					<input class="end" type="time" placeholder="结束时间" name="end_time_less" id="end_time_less" value=""/>
+				</span>				
+			</div>
+			<div class="timeBox lessThanoneDay">	
+				<span class="l">请假节数：</span>
+				<span class="r">
+					<input class="end" type="number" placeholder="请假节数" name="num_less" id="num_less" value=""/>
+				</span>				
+			</div>
+			{else}
+			<div class="timeBox " >
+				<span class="l"  >开始时间：</span>
+				<span class="r">
+					<input class="start" type="datetime-local" placeholder="开始时间" name="startTime" id="startTime" value=""/>
+				</span>
+			</div>
+			<div class="timeBox ">	
+				<span class="l">结束时间：</span>
+				<span class="r">
+					<input class="end" type="datetime-local" placeholder="结束时间" name="endTime" id="endTime" value=""/>
+				</span>				
+			</div>
+			{/if}
+			
+			
+			
+			<div class="textInfo">
+				<textarea rows="" cols="" id="content" placeholder="请输入请假详细理由...（200字以内）"></textarea>
+			</div>
+			<div class="msgSubmit">
+				<button class="mainColor" onclick="sendSubmitBtn();">发送</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+	}
+}, 100);
+ 
+</script>
+<script type="text/javascript">
+var PB = new PromptBox();
+
+
+$("#MoreOrLess").change(function(){
+	var moreless = $(this).val();
+	if(moreless == 1){
+		$(".moreThanoneDay").hide();
+		$(".lessThanoneDay").show();
+	}else if(moreless == 2){
+		$(".moreThanoneDay").show();
+		$(".lessThanoneDay").hide();
+	}
+
+
+});
+
+
+function sendSubmitBtn(){
+
+		if($("#type").val() == null || $("#type").val() == ""){
+			jTips("请假类型不能为空！");
+			return;
+		} 
+		if($("#content").val() == null || $("#content").val() == ""){
+			jTips("请输入详细请假原由！");
+			return;
+		}
+		if($("#totid").val() == null || $("#totid").val() == ""){
+			jTips("请选择审核人！");
+			return;
+		}
+		{if is_showgkk()}
+			 if($("#tktype").val() == null || $("#tktype").val() == ""){
+				jTips("调课类型不能为空！");
+				return;
+			}
+		{/if}
+		{if is_showpf()}
+			if($("#MoreOrLess").val() == 1){
+				if($("#date_less").val() == null || $("#date_less").val() == ""){
+					jTips("请选择请假日期！");
+					return;
+				} 
+				if($("#start_time_less").val() == null || $("#start_time_less").val() == ""){
+					jTips("请选择请假开始时间！");
+					return;
+				} 
+				if($("#end_time_less").val() == null || $("#end_time_less").val() == ""){
+					jTips("请选择请假结束时间！");
+					return;
+				} 
+				if($("#num_less").val() == null || $("#num_less").val() == "" || $("#num_less").val() == 0 ){
+					jTips("请填写请假节数！");
+					return;
+				}
+				var submitData = {
+					openid :"{$openid}",
+					schoolid :"{$schoolid}",
+					weid :"{$weid}",
+					tid :"{$teacher['id']}",
+					uid :"{$fan['uid']}",
+					type : $("#type").val(),
+					MoreOrLess:1,
+					qingjiaDate : $("#date_less").val(),
+					startTime : $("#start_time_less").val(),
+					endTime : $("#end_time_less").val(),
+					qingjiaNum :$("#num_less").val(),
+					content : $("#content").val(),
+					totid : $("#totid").val(),
+					tktype:$("#tktype").val(),
+					classid:$("#classid").val()
+				};	
+			}else if($("#MoreOrLess").val() == 2){
+				if($("#startTime_more").val() == null || $("#startTime_more").val() == ""){
+					jTips("请选择请假开始时间！");
+					return;
+				} 
+				if($("#endTime_more").val() == null || $("#endTime_more").val() == ""){
+					jTips("请选择请假结束时间！");
+					return;
+				} 
+				var submitData = {
+					openid :"{$openid}",
+					schoolid :"{$schoolid}",
+					weid :"{$weid}",
+					tid :"{$teacher['id']}",
+					uid :"{$fan['uid']}",
+					type : $("#type").val(),
+					MoreOrLess:2,
+					startTime : $("#startTime_more").val(),
+					endTime : $("#endTime_more").val(),
+					content : $("#content").val(),
+					totid : $("#totid").val(),
+					tktype:$("#tktype").val(),
+					classid:$("#classid").val()
+				};
+				
+			}
+				
+		{else}
+			if($("#startTime").val() == null || $("#startTime").val() == ""){
+				jTips("请填写请假起始时间！");
+				return;
+			} 
+			if($("#endTime").val() == null || $("#endTime").val() == ""){
+				jTips("请填写请假到校时间！");
+				return;
+			}
+			var submitData = {
+				openid :"{$openid}",
+				schoolid :"{$schoolid}",
+				weid :"{$weid}",
+				tid :"{$teacher['id']}",
+				uid :"{$fan['uid']}",
+				type : $("#type").val(),
+				startTime : $("#startTime").val(),
+				endTime : $("#endTime").val(),
+				content : $("#content").val(),
+				totid : $("#totid").val(),
+				is_njzr : {$is_njzr},
+				tktype:$("#tktype").val()
+			};
+
+		{/if}
+
+	jConfirm("确定发送请假申请?", "确定对话框", function (isConfirm) {
+		if(isConfirm){
+				$.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'qingjia'))}",submitData,function(data){
+				if(data.result){
+					jTips(data.msg);
+					window.location.href = "{php echo $this->createMobileUrl('leavelistforteacher', array('schoolid' => $schoolid), true)}"
+				}else{
+					jTips(data.msg);
+				}
+			},'json'); 
+		}
+	});
+}
+</script>
+{php include $this->template('newfooter');}
+</html>

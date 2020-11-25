@@ -1,0 +1,132 @@
+
+<style>
+    #Modal_Sb_Info .modal-body .form-group{
+        margin-bottom: 10px;
+    }
+</style>
+<!-- 6-万能app 1吉联 2讯贞 3优米 5护校通 11中保 12新师界 7充电桩 13智泊惠 14华瑞安-->
+
+<div class="form-group" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备位置</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" class="form-control" name="name" value="{$item['name']}" placeholder="填写考勤机位置">
+        <div class="help-block">前端显示考勤地点用</div>
+    </div>
+</div>
+{if $_W['isfounder'] || $_W['role'] == 'owner'}
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备品牌</label>
+    <input type="hidden" name='id' value="{$item['id']}">
+    <div class="col-sm-9 col-xs-12">
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="6" class="printer-type" name="macname"{if $item['macname'] == '6'}checked{/if} id="credit6" {if $item && $item['macname'] != 6}disabled{/if}> 万能APP
+            <span class="label label-danger">推荐</span>
+            <span class="label label-success">兼容所有考勤机</span>
+        </label>
+        {if getoauthurl() == 'www.anqinschool.com' || getoauthurl() == 'manger.weimeizhan.com'}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="1" class="printer-type" name="macname" {if $item['macname'] == '1'}checked{/if} id="credit1" {if $item && $item['macname'] != 1}disabled{/if}> 吉联
+        </label>
+        {/if}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="2" class="printer-type" name="macname" {if $item['macname'] == '2'}checked{/if} id="credit2" {if $item && $item['macname'] != 2}disabled{/if}> 迅贞
+            <span class="label label-success">推荐</span>
+        </label>
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="3" class="printer-type" name="macname"{if $item['macname'] == '3'}checked{/if} id="credit3" {if $item && $item['macname'] != 6}disabled{/if}> 优米
+            <span class="label label-success">推荐</span>
+        </label>
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="5" class="printer-type" name="macname"{if $item['macname'] == '5'}checked{/if} id="credit5" {if $item && $item['macname'] != 5}disabled{/if}>护校通
+            <span class="label label-success">推荐</span>
+        </label>
+        {if is_showZB()}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="11" class="printer-type" name="macname"{if $item['macname'] == '11'}checked{/if} id="createmac11" {if $item && $item['macname'] != 11}disabled{/if}>中保
+            <span class="label label-success">推荐</span>
+        </label>
+        {/if}
+        {if keep_wt() && CheckWtOn($schoolid)}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="12" class="printer-type" name="macname" {if $item['macname'] == '12'}checked{/if} id="creditmac12" {if $item && $item['macname'] != 12}disabled{/if}> {php echo IsShowWT()}
+        </label>
+        {/if}
+        {if is_showap()}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="7" class="printer-type" name="macname" {if $item['macname'] == '7'}checked{/if} id="credit7" {if $item && $item['macname'] != 7}disabled{/if}> 充电桩
+            <span class="label label-danger">需定制硬件</span>
+        </label>
+        {/if}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="13" class="printer-type" name="macname"{if $item['macname'] == '13'}checked{/if} {if $item && $item['macname'] != 13}disabled{/if}>智泊惠
+            <span class="label label-success">推荐</span>
+        </label>
+
+        {if keep_Bjq()}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="14" class="printer-type" name="macname" {if $item['macname'] == '14'}checked{/if} {if $item && $item['macname'] != 14}disabled{/if}>华瑞安
+            <span class="label label-success">推荐</span>
+        </label>
+        {/if}
+    </div>
+</div>
+{else}
+<input type="hidden" name="macname" value="{$item['macname']}" />
+<input type="hidden" name="id" value="{$item['id']}" />
+{/if}
+<div class="form-group" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>机器号/设备号</label>
+    <div class="col-sm-9 col-xs-12">
+        {if !$item}
+        <input type="text" class="form-control" name="macid" value="{$item['macid']}" placeholder="填写机器/设备号">
+        <div class="help-block">设备显示屏上获取/或设备背后</div>
+        {else}
+        <div class="help-block">{$item['macid']}不可修改</div>
+        <input type="hidden" name="macid_wt" value="{$item['macid']}">
+        {/if}
+    </div>
+</div>
+{if !empty($item) && keep_wt()}
+<div class="form-group">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>回调url</label>
+    <div class="col-sm-9 col-xs-12">
+        <div class="help-block">{php echo $_W['siteroot'] . 'app/index.php?i=' . $weid . '&c=entry&schoolid=' . $schoolid . '&do=checkwt&m=fm_jiaoyu&op=callbackurl'}</div>
+    </div>
+</div>
+{/if}
+<div class="allSbInfo"></div>
+<script>
+    $(function(){
+        $("input[name='macname']").click(function(){
+            $(".allSbInfo").html('');
+            let macname = $(this).val() //设备值
+            if(macname != 7 && macname != 14){
+                $.ajax({
+                    url: "{php echo $this->createWebUrl('check',array('op'=>'getShowHtml','schoolid'=>$schoolid))}",
+                    type: "post",
+                    dataType: "html",
+                    data:{macname:macname},
+                    success: function (html) {
+                        $(".allSbInfo").html(html);
+                    }
+                });
+            }
+            
+        });
+    })
+    if(`{$item}`){
+        let macname = `{$item['macname']}`;
+        let id = `{$item['id']}`;
+        $.ajax({
+            url: "{php echo $this->createWebUrl('check',array('op'=>'getShowHtml','schoolid'=>$schoolid))}",
+            type: "post",
+            dataType: "html",
+            data:{macname:macname,id:id},
+            success: function (html) {
+                $(".allSbInfo").html(html);
+                
+            }
+        });
+    }
+</script>
+    

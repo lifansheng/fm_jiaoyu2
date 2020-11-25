@@ -1,0 +1,47 @@
+{loop $list1 $item}
+		
+		<li class="main" time="{$item['createtime']}" id="{$item['id']}" style="display: block;margin: 1px 10px 1px 10px;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft1">
+					{if $item['type'] == 2}
+					{if $item['mcount'] < $item['max']}
+					<p class="notifyText1">完成</p>
+					{else}
+					<p class="notifyText1">积分+</p>
+					{/if}
+					{else if $item['type'] == 1 }
+					<p class="notifyText1">积分+</p>
+					{/if}
+					
+				</div>
+				<div class="notifyTopLeft">
+					{if $item['type'] == 2}
+					{if $item['mcount'] < $item['max']}
+					<p class="notifyText">{$item['mcount']}/{$item['max']}</p>
+					{else}
+					<p class="notifyText">{$item['Point']}</p>
+					{/if}
+					{else if $item['type'] == 1 }
+					
+					<p class="notifyText">{$item['Point']}</p>
+					{/if}
+					
+				</div>
+				<div class="notifyTopRight">
+					
+					<div class="notifyTopRightTopBox">
+						<span class="ActInfo">{$item['Name']}</span>
+							
+					</div>
+					{if $item['type'] == 2 }<p class="notifyTimeM">【任务】</p>
+					{else if $item['type'] == 1 }
+					<p class="notifyTime">{$item['Tdate']}</p>
+					{/if}
+					
+				</div>
+			</div>
+			
+		</li>
+
+{/loop}	

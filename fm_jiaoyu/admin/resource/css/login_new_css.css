@@ -1,0 +1,253 @@
+﻿
+/* 新版本的登录页面  comment on 2017-03-21*/
+    *{
+		margin: 0;
+		padding: 0;
+	}
+	html{
+		height:100%;
+	}
+	html,body{
+		width:100%;
+		height:100%;
+		overflow: hidden;
+		background-color: #02c493;
+		font-family:"微软雅黑";
+	
+	}
+
+	img{
+		vertical-align: top;
+		border:none;
+		outline: none;
+		-moz-user-select:none;/*火狐*/
+
+	    -webkit-user-select:none;/*webkit浏览器*/
+
+	    -ms-user-select:none;/*IE10*/
+
+	    -khtml-user-select:none;/*早期浏览器*/
+
+	    user-select:none;
+	}
+	a{
+		border:none;
+		outline: none;
+	}
+	
+
+	.user_info{
+		width:223px;
+
+		height:38px;
+		line-height: 38px;
+		border:1px solid #ccc;
+		border-radius: 3px;
+		padding-left: 40px;
+		margin-top: 20px;
+		font-size:12px;
+		cursor: pointer;
+	}
+	.input_wrap{
+		text-align: center;
+		width: 100%;
+	}
+	#account{
+		background:url(../images/user.png) no-repeat;
+		background-position:10px center;
+	}
+	#password{
+		background:url(../images/index_lock.png) no-repeat;
+		background-position:10px center;
+	}
+		input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+　　      color: #ccc;
+　　  }
+　　  input:-moz-placeholder, textarea:-moz-placeholder {
+　　      color:#ccc;
+　　  }
+　　  input::-moz-placeholder, textarea::-moz-placeholder {
+　　      color:#ccc;
+　　  }
+　　  input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+　　      color:#ccc;
+　　  }
+    .pull_left{
+	    float: left;
+    }
+    .pull_right{
+	    float: right;
+    }
+    .help{
+	    padding:20px 5px;font-size:12px;overflow: hidden;
+	    color:#222;
+    }
+    .submit_btn{
+	    width:250px;
+	    background-color: #02c493;
+	    outline: none;
+	    border:0;
+	    height:46px;
+	    text-align: center;
+	    color:#fff;
+	    font-size: 20px;
+	    border-radius: 8px;
+	    letter-spacing:10px;
+	    word-spacing: 10px;
+	    cursor: pointer;
+
+    }
+    .remeber{
+	    padding-left: 30px;
+	    position: relative;
+	    cursor: pointer;
+	    -moz-user-select:none;/*火狐*/
+
+	    -webkit-user-select:none;/*webkit浏览器*/
+
+	    -ms-user-select:none;/*IE10*/
+
+	    -khtml-user-select:none;/*早期浏览器*/
+
+	    user-select:none;
+    }
+    .remeber:before {
+	    content: "";
+	    width:16px;
+	    height:16px;
+	    border:1px solid #ccc;
+	    box-sizing: border-box;
+         -moz-box-sizing: border-box;  
+     -webkit-box-sizing: border-box; 
+     -o-box-sizing: border-box; 
+     -ms-box-sizing: border-box; 
+     box-sizing: border-box; 
+    box-sizing: border-box;
+	    position: absolute;
+	    left:7px;
+	    bottom:0;
+    }
+    .checked:before{
+	    content: "";
+	    width:16px;
+	    height:16px;
+	    border:1px solid #ccc;
+	    box-sizing: border-box;
+         -moz-box-sizing: border-box;  
+     -webkit-box-sizing: border-box; 
+     -o-box-sizing: border-box; 
+     -ms-box-sizing: border-box; 
+     box-sizing: border-box; 
+    box-sizing: border-box;
+	    position: absolute;
+	    left:7px;
+	    bottom:0;
+	    background: url(../images/index_check.png) no-repeat;
+	    background-position:center center;
+    }
+    .forget{
+	    cursor: pointer;
+	    color:#222;
+    }
+
+
+    #bg{
+	    height:100%;width:100%;position: absolute;
+	    top:0;
+	    left:0;
+	    /*display: none;*/
+    }
+    #bg i{
+	    position: absolute;
+	    bottom:15px;
+	    left:0;
+	    width:100%;
+	    text-align: center;
+	    color:#fff;
+	    font-style: normal;
+	    font-size: 12px;
+    }
+    #main_content{
+	    position: absolute;top:0;left:0;width:100%;height:100%;
+    }
+    #main_content_inner{
+	    width:1000px;margin:0 auto;position: relative;
+	    height:100%;
+    }
+    #icon{
+	    width:544px;height:523px;position:absolute;left:46px;top:50%;margin-top: -266.5px;
+    }
+    #login_wrap{
+	    width:318px;position: absolute;right:0;top:26%;
+    }
+    #login_bg{
+	    width:100%;height:550px;
+    }
+    #login_info_wrap{
+	    width:305px;position: absolute;left:0;top:0;padding-bottom:10px;background-color:#fff;border-radius:10px
+    }
+    #login_info_inner{
+	    padding:23px 20px 0;text-align:center;
+    }
+    .title{
+	    width:258px;margin-bottom:10px;
+    }
+    #line{
+	    height:10px;border-bottom:1px solid #f0f0f2;width: 305px;position: relative;left: -20px;margin-bottom: 10px;
+    }
+    #tips{
+	    font-size: 12px;color:#666666;margin-bottom: 10px;
+    }
+    .bower_wrap{
+	    text-align: center;margin-top: 10px;
+    }
+    .brower_wrap img{
+	    width:36px;
+	    height:36px;
+    }
+    .mr_35{
+	    margin-right: 35px;
+    }
+
+    .login_input.verification_input {
+        width:40%;
+        background-color: #F7F7F7;
+        padding-left:18px;
+        float: left;
+    }
+    .verification_box {
+        width:80px;
+        height: 40px;
+        background-color: #ff0;
+        float: right;
+        margin-top: 20px;
+    }
+    .verification_box img{
+	    height:40px;
+    }
+.error_info {
+    position:absolute;top:170px;
+    width:305px;
+    overflow:hidden;
+    font-size:12px;
+    color:#ff3535 ;
+    background-color:#fff;
+    left:0;
+    text-align:center;
+    display:none;
+
+    
+}
+.tab_list{width:100%;display:flex;text-align:center;height:48px;line-height:48px;cursor:pointer;}
+.left_box{ width: 50%; border-radius:10px 0 0 0; border-right: 1px solid #e5e9ed; color: #7a8a9a; background: #f8f9fb; border-bottom: 1px solid #e5e9ed; }
+.right_box{ width: 50%; border-radius:0 10px 0 0; border-right: 1px solid #e5e9ed; color: #7a8a9a; background: #f8f9fb; border-bottom: 1px solid #e5e9ed; }
+.active { background: #fff; color: #345; border-bottom: none; }
+.qr-code{height:220px;padding:15px}
+.qr-code img { display: block; width: 240px; padding: 6px; border: 1px solid #e5e9ed; background: #f8f9fb; margin: 0 auto 10px; border-radius: 3px; }
+.b-agreement { font-size: 12px; line-height: 12px; text-align: center; padding-top: 10px; display: block; }
+.qr-code p { text-align: center; margin-bottom: 0; font-size: 16px; color: #89a; }
+.refi_code{ text-align: center; margin-bottom: 0; font-size: 13px; color: blue; cursor:pointer; }
+
+
+
+

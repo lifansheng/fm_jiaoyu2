@@ -1,0 +1,50 @@
+{loop $kclist $row}
+<li class="pk_ks" onclick="gotokc({$row['id']})" time="{$row['extra']}">
+    <div class="pkbot_box">
+        <div class="botleft">
+            <div class="xqbox">
+                {if $row['is_tuijian'] == 1 || $row['is_hot'] == 1}<span class="tjtip">热门</span>{/if}
+                <img class="kcicon" src="{php echo tomedia($row['thumb'])}"/>
+                {if $row['hasvideo'] || $row['alive']}
+                <div class="alivebox">
+                    <img class="aliveicon" src="{OSSURL}public/mobile/img/video_play_icon3.png">
+                    <span> {if $row['alive']}正在直播{/if}{if $row['hasvideo']}有视频课{/if} </span>
+                </div>
+                {/if}
+            </div>
+        </div>
+        <div class="botmid">
+            <div class="kcname">{$row['name']}</div>
+            <div class="info_line">
+                {if $row['pingjia']}
+                <div class="starbox"> <img class="star" src="{MODULE_URL}public/mobile/img/star_comment_fill.png"><div class="starnub">{$row['pingjia']}</div></div>
+                {/if}
+                <div class="kcinfo" {if !$row['pingjia']} style="width:78%" {/if}>{$row['minge']}人班  {$row['yibao']}人正在学</div>
+                {if $row['fans_list']}
+                <div class="zhuliclass">
+                    {loop  $row['fans_list']  $fans}
+                    <img class="zlheader" src="{$fans['icon']}"/>
+                    {/loop}
+                </div>
+                {/if}
+            </div>
+            <div class="info_line">
+                <div class="pay_cose">
+                    <p class="costicon">￥</p>
+                    <p class="costnub">{$row['cose']}</p>
+                    <p class="costksnub">含{$row['FirstNum']}课时</p>
+                </div>
+                {if $row['is_try'] == 1 || $row['hastry']}<div class="online">免费试听</div>{/if}
+            </div>
+            <div class="info_line">
+                {if $row['kc_type'] ==1 }<span class="zuli">线上课</span>{/if}
+                {if $row['tuan']}<span>团购中</span>{/if}
+                {if $row['zhuli']}<span class="zuli">助力中</span>{/if}
+                {if $row['Point2Cost'] >0}<span>积分抵用</span>{/if}
+                <!-- <span>优惠券</span> -->
+                <!-- <span class="vip">会员价</span> -->
+            </div>
+        </div>
+    </div>
+</li>
+{/loop}

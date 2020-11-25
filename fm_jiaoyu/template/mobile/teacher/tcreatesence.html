@@ -1,0 +1,106 @@
+
+<input id="orgcode" type="hidden" value="10098" />
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mNewMsg.css?v=4.8" />	
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=4.81022"></script>
+{php include $this->template('port');}
+</head>
+<body>
+<div class="all">
+
+		<div class="msgBox">
+			<div class="campusBox">
+				<span class="l">权限部门：</span>
+				<span class="c" style="color:gray">{$fzinfo['sname']}</span>
+				<input  type="hidden" name="qxfzid" id="qxfzid" value="{$fzinfo['sid']}" />
+			</div>
+		
+			<div class="campusBox">
+				<span class="l">场景名称：</span>
+			</div>
+			<div class="textInfo" style="height:auto;">
+				<textarea rows="3" id="senceName" style="height:unset;padding:unset;resize: none;" placeholder="  请输入场景名称"></textarea>
+			</div>
+			<div class="timeBox">
+				<span class="l">场景日期：</span>
+				<span class="r">
+						<input class="start" type="date" placeholder="场景日期" name="senceDate" id="senceDate" value="{php echo date('Y-m-d',TIMESTAMP)}" />
+					</span>
+			</div>
+			<div class="msgSubmit">
+				<button class="mainColor" onclick="CreateSence();">创建场景</button>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+	}
+}, 100);
+ 
+</script>
+<script type="text/javascript">
+var PB = new PromptBox();
+
+
+$("#MoreOrLess").change(function(){
+	var moreless = $(this).val();
+	if(moreless == 1){
+		$(".moreThanoneDay").hide();
+		$(".lessThanoneDay").show();
+	}else if(moreless == 2){
+		$(".moreThanoneDay").show();
+		$(".lessThanoneDay").hide();
+	}
+
+
+});
+
+function CreateSence(){
+	var senceQxfzid = $("#qxfzid").val();
+	var senceName = $("#senceName").val();
+	var senceDate = $("#senceDate").val();
+	if(senceName == '' || senceName == null ){
+		jTips("请输入场景名称！");
+		return;
+	}
+
+	if(senceDate == '' || senceDate == null ){
+		jTips("请选择场景时间！");
+		return;
+	}
+	var submitData = {
+		schoolid :"{$schoolid}",
+		weid :"{$weid}",
+		senceQxfzid :senceQxfzid,
+		senceName :senceName,
+		senceDate : senceDate,
+	};
+
+	$.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'createsence'))}",submitData,function(data){
+		if(data.result){
+			jTips(data.msg);
+			window.location.href = "{php echo $this->createMobileUrl('tsencerecord', array('schoolid' => $schoolid), true)}"
+		}else{
+			jTips(data.msg);
+		}
+	},'json'); 
+	
+}
+
+
+
+</script>
+{php include $this->template('newfooter');}
+</html>

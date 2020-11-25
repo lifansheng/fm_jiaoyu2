@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="format-detection" content="telephone=no">
+<title>{$school['title']}</title>
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/common.css" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+</head>
+<body>
+<style>
+.mainColors{ width: 100%; color: #101010; height: 45px; line-height: 45px; background-color: #fff; display: flex; text-align: center; font-size: 15px; z-index: 3; }
+.headerContent{ width:100%; color: #444; height: 45px; line-height: 45px; display: flex; text-align: center;font-size: 14px;z-index:3}
+.select_last_left{ width:20% }
+.select_next_right{ width:20% }
+.ref_data{ width: 100%; height: auto; background-color: #ffffff; margin-top: 10px; }
+.ref_top{ margin-left: 21px; padding-top: 10px; font-size: 15px; font-weight: bold; }
+.ref_bot{ line-height: 40px; display: flex; width: 100%; color: #b1b0b0; }
+.ref_lfet{ left: 15px; width: 40%; margin-left: 35px; }
+.ref_right{ right: 10px; width: 46%; text-align: right; }
+.refclassL{ position: relative; }
+.refclassR{ position: relative; }
+.refclassL:before { content: ""; width: 16px; height: 16px; position: absolute; top: 0px; left: -18px; background: url({OSSURL}public/mobile/img/59ddef4d7a25b_70.png) no-repeat; background-position: center center; background-size: 16px 16px; }
+.refclassR:before { content: ""; width: 16px; height: 16px; position: absolute; top: 0px; left: -18px; background: url({OSSURL}public/mobile/img/59ddef4d7a25b_88.png) no-repeat; background-position: center center; background-size: 16px 16px; }
+.data_box{ position: relative;width: 90%; background-color: #d4e6ce;margin: 5%; height: auto;border-radius: 10px;}
+.data_box:last-child{margin-bottom:75px}
+.data_box_top{width: 90%;display: flex; padding-top: 10px; margin-left: 5%;}
+.box_top_left{width:50%;font-size: 30px;}
+.box_top_left span{margin-left:5%;margin-left: 13%;}
+.box_top_right{width:50%}
+.top_right_ul{ position: relative; display: flex;padding-bottom: 4px;}
+.top_right_ul ul{width:50%;text-align:center;overflow:hidden;white-space:nowrap;text-overflow: ellipsis;}
+.top_right_ul :nth-child(2){color:red}
+.data_box_mid{width: 90%; padding-top: 10px; margin-left: 5%;}
+.mid_top{width:100%}
+.mid_bot{width:100%}
+.mid_ul{ position: relative; display: flex;padding-bottom: 4px;}
+.mid_ul ul{width:25%;text-align:center;overflow:hidden;white-space:nowrap;text-overflow: ellipsis;}
+.data_box_bot{width: 90%;padding-top: 10px;padding-bottom: 10px;margin-left: 5%;}
+.box_bot_btn{font-size: 17px;line-height: 41px;border-radius: 13px;color: #ffffff;text-align: center;width: 90%;margin-left: 6%;height: 41px;background-color: #4fb74d;}
+
+.record_search_box {
+    width: 60%;
+    height: 20px;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #fff;
+    margin-top: 5px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 16px;
+}
+.record_search_box .time_box {
+    text-align: center;
+    width: 100%;
+    height: 1.6rem;
+    box-sizing: border-box;
+    background-color: #fff;
+    float: left;
+    border: none;
+    position: relative;
+}
+.record_search_box .time_box input {
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    -webkit-appearance: none;
+    border: none;
+    width: 100%;
+    text-align: center;
+    color: #666;
+}
+</style>
+<header class="mainColors">
+	<div class="headerContent">  
+		<div class="select_last_left" id="prev_day">
+			<div class="next_right" onclick="prev()">< 前一天</div>
+		</div>
+
+		<div class="record_search_box" style="position: relative;">
+			<div class="time_box" style="position: absolute;z-index: 2;opacity: 0;">
+				<input type="date" id="date" onchange="GetHealth(1)">
+			</div>
+			<div class="time_box">
+				<span id="dayhtml">{php echo date('Y-m-d',TIMESTAMP)}</span>
+			</div>
+		</div>
+		<div class="select_next_right" id="next_day">
+			<div class="next_right" onclick="next()">后一天 ></div>
+		</div>
+	</div>
+</header>
+<div class="ref_data">
+	<div class="ref_top">检测数据汇总</div>
+	<div class="ref_bot">
+		<div class="ref_lfet"><span class="refclassL" id="time">截至10:55:30<span></div>
+		<div class="ref_right" onclick="GetHealth()"><span class="refclassR" >点击刷新<span></div>
+	</div>
+</div>
+<div class="temp_data">
+	
+</div>
+<input id="nowtime" value="{php echo date('Y-m-d',TIMESTAMP)}" type="hidden">
+{php include $this->template('port');} 
+<script type="text/javascript">
+var selectday = 0;
+function prev(){
+	selectday --;
+	GetHealth()
+} 
+function next(){
+	selectday ++;
+	GetHealth()
+} 
+GetHealth();
+function GetHealth(istrue){
+	let date = $("#date").val()
+	ajax_start_loading("获取数据中")
+    $.post("{php echo $this->createMobileUrl('healthcenter', array('op' => 'GetHealth', 'schoolid' => $schoolid))}",{'date' : date,'selectday':selectday}, function(data){
+		selectday = 0; //对前后一天进行清0
+		$(".temp_data").html(data)
+		ajax_stop_loading()
+	},'html');
+}
+
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>
+{php include $this->template('newfooter');} 
+</body>
+</html>

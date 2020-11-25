@@ -1,0 +1,33 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-02-14 17:55:05
+ * @LastEditTime: 2020-02-27 17:55:41
+ -->
+
+{loop $checklist $row}
+<li class="main" time="{$row['location']}" onclick="gomcdetail(`{$row['sid']}`)">
+    <div class="user_img">
+        <img src="{php echo tomedia($student['icon'])}">
+    </div>
+    <div class="user_name">
+        <div class="user_name_1">
+            <span class="u_name">{$student['s_name']}&nbsp;&nbsp;</span>
+            <span class="u_class">{php echo date("Y年m月d日",$row['createdate'])}</span>
+
+        </div>
+            {if $row['tiwen'] < 35.5 || $row['tiwen'] >37.5}
+            <div class="user_name_2">
+                {$row['tiwen']}℃
+            </div>
+            {else}
+            <div>
+                {$row['tiwen']}℃
+            </div>
+            {/if}
+            <div class="user_name_3">
+                (正常体温参考值：35.5℃ - 37.5℃)
+            </div>
+    </div>
+</li>
+{/loop}

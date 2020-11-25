@@ -1,0 +1,26 @@
+{loop $sencelistall1 $v}
+	<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox" style="height:auto">
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox" style="margin-top: 5px;margin-bottom: 5px;">
+							
+						<span class="teacherInfo" style="font-size:16px;">{$v['name']}</span>	
+					</div>
+
+					<div class="notifyTopRightTopBox">
+						<span class="teacherInfo">场景时间：{php echo date("m月d日",$v['sencetime'])}</span>	
+						<span class="teacherInfo" style="float: right;right: 15px;position: absolute">权限部门：{$v['fzname']}</span>							
+					</div>
+					<div class="notifyTopRightTopBox">						
+							{if $v['has_up']}
+							<span class="teacherInfo" >上传时间：<span class="JobLeaderBox" style="display:unset;font-size: 12px;background-color:#65a3ff">{php echo date("Y-m-d H:i:s",$v['uptime'])}</span></span>	
+							{else}
+							<div class="JobLeaderBox">未上传</div>
+							<p class="notifyCreateTime"  onclick="upsence({$v['id']});" style="float: right;right: 15px;position: absolute">点击上传内容>></p>
+							{/if}
+					</div>
+				</div>
+			</div>
+		</li>
+{/loop}	

@@ -1,0 +1,245 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			{if IsHasQx($tid_global,1004301,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsmanager'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsmanager', array('op' => 'display', 'schoolid' => $schoolid))}">库存管理</a></li>
+			{/if}
+			{if IsHasQx($tid_global,1004311,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsuselog'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsuselog', array('op' => 'display', 'schoolid' => $schoolid))}">领用记录</a></li> 
+			{/if}
+			{if IsHasQx($tid_global,1004321,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsfixlog'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsfixlog', array('op' => 'display', 'schoolid' => $schoolid))}">维修记录</a></li>
+			{/if}
+		</ul>
+	</div>
+</div>
+
+{if $operation == 'display'}
+<div class="main">
+<style>
+	.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}	
+	.label-wait{background-color: rgb(244,162,60)}
+	.label-passed{background-color: rgb(59,189,246)}
+	.label-refuse{background-color: rgb(238,34,75)}
+	.label-return{background-color: rgb(86,226,86)}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">公物领用记录</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="assetsuselog"/>
+				<input type="hidden" name="op" value="display"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+			 
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">归还状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('assetsuselog', array('status' => '-1', 'schoolid' => $schoolid))}" class="btn {if $status == -1}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('assetsuselog', array('status' => '1', 'schoolid' => $schoolid))}"  class="btn {if $status == 1}btn-primary{else}btn-default{/if}">待审核</a>
+							<a href="{php echo $this->createWebUrl('assetsuselog', array('status' => '2', 'schoolid' => $schoolid))}"  class="btn {if $status == 2}btn-primary{else}btn-default{/if}">已通过</a>
+							<a href="{php echo $this->createWebUrl('assetsuselog', array('status' => '3', 'schoolid' => $schoolid))}"  class="btn {if $status == 3}btn-primary{else}btn-default{/if}">已拒绝</a>
+							<a href="{php echo $this->createWebUrl('assetsuselog', array('status' => '4', 'schoolid' => $schoolid))}"  class="btn {if $status == 4}btn-primary{else}btn-default{/if}">已归还</a>
+						</div>
+					</div>
+                </div>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按公物名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="assetsname" id="" type="text" value="{$_GPC['assetsname']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按教师名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="tname" id="" type="text" value="{$_GPC['tname']}">
+                    </div>		
+				</div>			
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">领用时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('borrowtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>	
+				
+				</div>
+			</form>
+		</div>		
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th class='with-checkbox' style="width: 20px;"><input type="checkbox" class="check_all" /></th>
+					<th style="width:14%">公物名称 </th>
+					<th style="width:10%">领用教师 </th>
+					<th style="width:10%">领用时间 </th>
+					<th style="width:10%">领用数量</th>
+					<th style="width:10%;">状态</th>
+					<th style="width:18%;">审核处理人</th>
+                    <th style="width:18%;">归还处理人</th>
+					<th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					<td>{$item['gwname']}</td>
+					<td>{$item['tname']}</td>
+					<td>{php echo date("Y-m-d",$item['createtime'])}</td>
+					<td>{$item['num']}</td>
+					<td> 
+						{if $item['status'] == 1}
+						<span class="label label-wait">待审核</span>
+						{elseif $item['status'] == 2}
+						<span class="label label-passed">已通过</span>
+						{elseif $item['status'] == 3}
+						<span class="label label-refuse">已拒绝</span>
+						{elseif $item['status'] == 4}
+						<span class="label label-return">已归还</span>
+						{/if}
+					</td>
+					<td>
+						{if $item['status'] == 1}
+						<span class="label label-wait">待审核</span>
+						{else}
+						 {$item['cltname']}<span style="color:gray;font-size: 12px;margin-left: 10px" > {php echo date("Y-m-d H:i",$item['cltime'])} </span>
+						{/if}
+					</td>
+					<td>
+						{if $item['gwtype'] == 1}
+							{if $item['status'] == 1 }
+							<span class="label label-wait">待审核</span>
+							{elseif $item['status'] == 2}
+							<span class="label label-primary">未归还</span>
+							{elseif $item['status'] == 3}
+							<span class="label label-refuse">已拒绝</span>							
+							{elseif $item['status'] == 4}
+								{$item['returntname']}<span style="color:gray;font-size: 12px;margin-left: 10px" > {php echo date("Y-m-d H:i",$item['returntime'])} </span>
+							{/if}
+						{else}
+						<span class="label label-info">消耗品</span>
+						{/if}
+					</td>
+					 	
+					<td class="qx_e_d" style="text-align:right;">
+							{if $item['status'] == 1}	
+							<a class="btn btn-default btn-sm qx_4312" href="{php echo $this->createWebUrl('assetsuselog', array('id' => $item['id'], 'op' => 'pass', 'schoolid' => $schoolid))}"   title="通过"><i class="fa fa-check"></i></a>
+							<a class="btn btn-default btn-sm qx_4312" href="{php echo $this->createWebUrl('assetsuselog', array('id' => $item['id'], 'op' => 'refuse', 'schoolid' => $schoolid))}"   title="拒绝"><i class="fa fa-minus-circle"></i></a>
+							&nbsp;&nbsp;
+							{/if}
+							{if $item['status'] == 2 && $item['gwtype'] == 1}	
+							<a class="btn btn-default btn-sm qx_4312" href="{php echo $this->createWebUrl('assetsuselog', array('id' => $item['id'], 'op' => 'return', 'schoolid' => $schoolid))}"   title="归还"><i class="fa fa-mail-reply"></i></a>
+							&nbsp;&nbsp;
+							{/if}
+							<a class="btn btn-default btn-sm qx_4313" href="{php echo $this->createWebUrl('assetsuselog', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+						</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+					<input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+$(function(){
+	 var e_d = 2 ;
+	 {if !(IsHasQx($tid_global,1004312,1,$schoolid))}
+		 $(".qx_4312").hide();
+		 e_d = e_d -1  ;
+	 {/if}
+	 {if !(IsHasQx($tid_global,1004313,1,$schoolid))}
+		 $(".qx_4313").hide();
+		 e_d = e_d -1  ;
+	 {/if}
+	 if(e_d == 0){
+		 $(".qx_e_d").hide();
+	 }
+});
+
+
+
+
+ $("#select_nj").change(function() {
+	var type = 4;
+	var cityId = $("#select_nj option:selected").attr('value');
+	changeGrade(cityId,type, function() {});
+});
+function changeGrade(gradeId, type, __result) {
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	//获取班次
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+		data       = JSON.parse(data);
+		classlevel = data.bjlist;
+		var html   = '';
+		
+		html += '<select id="bj"><option value="">请选择班级</option>';
+		if (classlevel != '') {
+			for (var i in classlevel) {
+				html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+			}
+		}
+		$('#bj').html(html);	
+	});
+}
+
+$("input[name=btndeleteall]").click(function(){
+	var check = $("input[type=checkbox][class!=check_all]:checked");
+	if(check.length < 1){
+		alert('请选择要删除的数据!');
+		return false;
+	}
+	if(confirm("确认要删除选择的数据?")){
+		var id = new Array();
+		check.each(function(i){
+			id[i] = $(this).val();
+		});
+		var url = "{php echo $this->createWebUrl('assetsuselog', array('op' => 'deleteall','schoolid' => $schoolid))}";
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "json",
+			data:{idArr:id},
+			success: function (res) {
+				alert(res.msg);
+				window.location.reload();
+			}
+		});
+	}
+});
+
+ 
+</script>
+ 
+{/if}
+{template 'public/footer'}

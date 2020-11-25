@@ -1,0 +1,412 @@
+
+<div class="form-group" style="width: 100%;{if !$brand['kqj'] && !$brand['xc']} display: none{/if}" >
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备类型</label>
+    <div class="col-sm-9 col-xs-12">
+        {if $brand['kqj']}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="1" class="printer-type " name="is_bobao" {if $item['is_bobao'] == '1' }checked{/if} {if $item && $item['is_bobao'] != 1}disabled{/if}>{$brand['kqj']}
+        </label>
+        {/if}
+        {if $brand['xc']}
+        <label class="radio-inline" style='margin-top: 11px;' >
+            <input type="radio" value="2" class="printer-type " name="is_bobao" {if $item['is_bobao'] == '2' }checked{/if} {if $item && $item['is_bobao'] != 2}disabled{/if}>{$brand['xc']}
+        </label>
+        {/if}
+        {if $brand['bp']}
+            <label class="radio-inline" style='margin-top: 11px;'>
+                <input type="radio" value="3" class="printer-type" name="is_bobao" {if $item['is_bobao'] == '3'}checked{/if} {if $item && $item['is_bobao'] != 3}disabled{/if}> {$brand['bp']}
+            </label>
+        {/if}
+        {if $brand['xfj']}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="10" class="printer-type" name="is_bobao" {if $item['is_bobao'] == '10'}checked{/if} {if $item && $item['is_bobao'] != 10}disabled{/if}> {$brand['xfj']}
+        </label>
+        {/if}
+        {if $brand['cwj']}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="13" class="printer-type" name="is_bobao" {if $item['is_bobao'] == '13'}checked{/if} {if $item && $item['is_bobao'] != 13}disabled{/if}> {$brand['cwj']}
+        </label>
+        {/if}
+
+        {if $brand['xd']}
+        <label class="radio-inline" style='margin-top: 11px;'>
+            <input type="radio" value="15" class="printer-type" name="is_bobao" {if $item['is_bobao'] == '15'}checked{/if} {if $item && $item['is_bobao'] != 15}disabled{/if}> {$brand['xd']}
+        </label>
+        {/if}
+
+    </div>
+</div>
+<div class="form-group hxbphide" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>限制刷卡次数</label>
+    <div class="col-sm-9 col-xs-12">
+        <div style="height: 34px;">
+            <label class="col-lg-2 control-label" style="width: 55px;">走读生：</label>
+            <div class="col-sm-2 col-lg-2">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="stu1" value="{$item['stu1']}" style="width: 70px;">
+                </div>
+            </div>
+            <label class="col-lg-2 control-label" style="width: 55px; margin-left: 50px;">住校生：</label>
+            <div class="col-sm-2 col-lg-2">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="stu2" value="{$item['stu2']}" style="width: 70px;">
+                </div>
+            </div>
+            <label class="col-lg-2 control-label" style="width: 55px; margin-left: 50px;">半通生：</label>
+            <div class="col-sm-2 col-lg-2">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="stu3" value="{$item['stu3']}" style="width: 70px;">
+                </div>
+            </div>
+        </div>
+        <div class="help-block">限制每天刷卡次数</div>
+    </div>
+</div>
+{if is_showap()}
+<div class="form-group hxbphide" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>是否楼栋考勤机</label>
+    <div class="col-sm-9 col-xs-12" style="margin-top: 12px;">
+        <label class="radio-inline">
+            <input type="radio" value="1" class="printer-type" name="is_apcheck" {if empty($item['apid'])}checked{/if} > 否
+        </label>
+        <label class="radio-inline">
+            <input type="radio" value="2" class="printer-type" name="is_apcheck" {if !empty($item['apid'])}checked{/if} > 是
+        </label>
+        <div class="help-block">若为楼栋考勤机，则进离校判断变更为进出宿舍楼栋判断，不设置进离判断则根据学生最近一次刷卡状态判断，不太准确</div>
+    </div>
+</div>
+
+<div class="form-group apset1 hxbphide" {if empty($item['apid'])}style="display:none;width:100%"{else}style="width:100%"{/if}>
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>归属楼栋</label>
+    <div class="col-sm-9 col-lg-3">
+        <select style="margin-right:15px;" name="ap_id" class="form-control">
+            <option value="0">请选择</option>
+            {loop $apartment $row}
+                <option value="{$row['id']}" {if $item['apid'] == $row['id'] } selected="selected"{/if}>{$row['name']}</option>
+            {/loop}
+        </select>
+        <div class="help-block">选择归属楼栋</div>
+    </div>
+</div>
+{/if}
+<div class="form-group hxbphide" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>进离校区分</label>
+    <div class="col-sm-9 col-xs-12">
+        <select style="margin-right:15px;" name="type" class="form-control">
+            <option value="0">请选择</option>
+            <option value="1" {if $item['type'] ==1} selected="selected"{/if}>进校设备</option>
+            <option value="2" {if $item['type'] ==2} selected="selected"{/if}>离校设备</option>
+        </select>
+        <div class="help-block">双机准确判断进校离校/此设置必须添加2台设备来判断/一台选择进校/台选择为离校/不选择则使用考勤设置里的时间来判断进离校，不太准确</div>
+    </div>
+</div>
+<div class="form-group" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">设备图片</label>
+    <div class="col-sm-9 col-xs-12">
+        {php echo tpl_form_field_image('sbimg', $item['sbimg'])} <span>推荐尺寸：296*140，比例2:1</span>
+    </div>
+</div>
+<!-- ************************************************通用考勤机显示内容**************************************************** -->
+<!-- <div class="kqjShowInfo" {if $item['is_bobao'] == 1 && $item['macname'] != 3} style="display: block;" {else} style="display: none;"{/if}>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>卡类型</label>
+        <div class="col-sm-2 col-lg-3">
+            <select style="margin-right:15px;" name="cardtype" class="form-control">
+                <option value="1" {if $item['cardtype'] ==1} selected="selected"{/if}>IC卡</option>
+                <option value="2" {if $item['cardtype'] ==2 || empty($item['cardtype'])} selected="selected"{/if}>ID卡</option>
+            </select>
+            <div class="help-block">无特殊情况此处选择ID卡</div>
+        </div>
+    </div>
+    
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告标题/广告语</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="pop" value="{$banner['pop']}" placeholder="广告标题">
+            <div class="help-block">广告标题/广告语</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>班级播报语音话术</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="voice" value="{$banner['voice']}" placeholder="变量名含义，名称：[name] 关系：[relationship]">
+            <div class="help-block">举例:小明妈妈来了,其中[name]是小明,[relationship]是妈妈</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>voice</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="newvoice" value="{$banner['newvoice']}" >
+            <div class="help-block">举例:小明妈妈来了,其中[name]是小明,[relationship]是妈妈</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>欢迎语</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="welcome" value="{$banner['welcome']}" placeholder="考勤机开机启动广告语">
+            <div class="help-block">考勤机开机启动时播放的广告话术</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>密码</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="password" value="{$banner['password']}" placeholder="考勤机进入设置页面的密码">
+            <div class="help-block">只能是数字或字母，区分大小写，空为不启用</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>开机时间</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_clock(starttime, $banner['starttime']?$banner['starttime']:'00:00');}
+        <div class="help-block">考勤机自动开机时间（在手机使用无效）</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>关机时间</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_clock(shutdowntime, $banner['shutdowntime']?$banner['shutdowntime']:'00:00');}
+            <div class="help-block">考勤机自动关机时间（在手机使用无效）</div>
+        </div>
+    </div>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">体温枪</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="twmac" value="{if $item['twmac'] != -1}{$item['twmac']}{/if}" placeholder="例如:A0:EA:DC:08:2M">
+            <div class="help-block">填写体温枪MAC，不填则不启用</div>
+        </div>
+    </div>
+    {if $isShow}
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频链接</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="video" value="{$banner['video']}" placeholder="视频链接">
+            <div class="help-block">设备上显示视频，必须为物理地址不支持代码</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片1</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic1', $banner['pic1'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片2</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic2', $banner['pic2'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片3</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic3', $banner['pic3'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片4</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic4', $banner['pic4'])}
+        </div>
+    </div>
+    {/if}
+</div> -->
+<!-- ************************************************通用考勤机显示内容**************************************************** -->
+<!-- ************************************************班牌显示内容**************************************************** -->
+
+<!-- <div class="bpShowInfo" {if $item['is_bobao'] == 3} style="display: block;" {else} style="display: none;"{/if}>
+    <div class="form-group" style="width:100%" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>卡类型</label>
+        <div class="col-sm-2 col-lg-3">
+            <select style="margin-right:15px;" name="cardtype" class="form-control">
+                <option value="1" {if $item['cardtype'] ==1} selected="selected"{/if}>IC卡</option>
+                <option value="2" {if $item['cardtype'] ==2 || empty($item['cardtype'])} selected="selected"{/if}>ID卡</option>
+            </select>
+            <div class="help-block">无特殊情况此处选择ID卡</div>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>城市名称</label>
+        <div class="col-sm-2 col-lg-3">
+            <input type="text" class="form-control" name="cityname" value="{$item['cityname']}" placeholder="输入城市名称">
+            <div class="help-block">输入城市，如：长沙</div>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>城市ID</label>
+        <div class="col-sm-2 col-lg-3">
+            <input type="text" class="form-control" name="areaid" value="{$item['areaid']}" placeholder="城市ID">
+            <div class="help-block">ID对照表，<a href="https://blog.csdn.net/wu9797/article/details/78768938">点击查看</a></div>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>模式选择</label>
+        <div class="col-sm-2 col-lg-3">
+            <select style="margin-right:15px;" name="model_type" class="form-control">
+                    <option value="1" {if $item['model_type'] ==1} selected="selected"{/if}>班级模式</option>
+                    <option value="2" {if $item['model_type'] ==2} selected="selected"{/if}>考试模式</option>
+                    <option value="3" {if $item['model_type'] ==3} selected="selected"{/if}>视频模式</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-3 control-label" style="color: red;font-size: 18px;right: -300px;">班级模式基础设置</label>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>{if $schooltype}绑定教室{else}绑定班级{/if}</label>
+        <div class="col-sm-2 col-lg-3">
+            {if $schooltype}
+            <select style="margin-right:15px;" name="js_id" class="form-control">
+            <option value="0">选择教室</option>
+                {loop $allroom $row}
+                    <option value="{$row['sid']}" {if $row['sid'] ==$item['js_id']} selected="selected"{/if}>{$row['sname']}</option>
+                {/loop}
+            </select>
+            {else}
+            <select style="margin-right:15px;" name="bj_id" class="form-control">
+            <option value="0">选择班级</option>
+                {loop $class $row}
+                    <option value="{$row['id']}" {if $row['id'] ==$item['bj_id']} selected="selected"{/if}>{$row['classes']}</option>
+                {/loop}
+            </select>
+            {/if}
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">班级封面</label>
+        <div class="col-sm-2 col-lg-9">
+            {php echo tpl_form_field_image('class_img', $banner['class_img'])}
+            <div class="help-block">宽高比例推荐，4:3</div>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-3 control-label" style="color: red;font-size: 18px;right: -300px;">考试模式基础设置</label>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>选择期号</label>
+        <div class="col-sm-2 col-lg-3">
+            <select style="margin-right:15px;" name="qh_id" class="form-control">
+                <option value="0">选择期号</option>
+                {loop $qh $row}
+                    <option value="{$row['sid']}" {if $row['sid'] ==$item['qh_id']} selected="selected"{/if}>{$row['sname']}</option>
+                {/loop}
+            </select>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>考场名称</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="exam_room_name" value="{$item['exam_room_name']}" placeholder="输入考场名称">
+            <div class="help-block">考场名称，如：第一考场</div>
+        </div>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-3 control-label" style="color: red;font-size: 18px;right: -300px;">公屏模式基础设置</label>
+    </div>
+    <div class="form-group" style="width:100%">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频地址</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="video_url" value="{$banner['video_url']}" placeholder="输入视频固定地址">
+            <div class="help-block">输入视频固定地址</div>
+        </div>
+    </div>
+</div> -->
+<!-- ************************************************班牌显示内容**************************************************** -->
+<!-- ************************************************优米考勤机显示内容**************************************************** -->
+<!-- <div class="ymkqjShowInfo" {if $item['is_bobao'] == 1 && $item['macname'] == 3} style="display: block;" {else} style="display: none;"{/if}>
+    <div class="form-group" style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>滚动公告</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="ym_pop" value="{$banner['pop']}" placeholder="滚动公告">
+            <div class="help-block">显示在待机界面</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>语音提示</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="VOICEPRE" value="{$banner['VOICEPRE']}" placeholder="例如：#name#,刷卡成功">
+            <div class="help-block">变量名含义，名称：#name# </div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频链接</label>
+        <div class="col-sm-9 col-xs-12">
+            <input type="text" class="form-control" name="video" value="{$banner['video']}" placeholder="视频链接">
+            <div class="help-block">设备上显示视频，必须为物理地址不支持代码</div>
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片1</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic1', $banner['pic1'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片2</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic2', $banner['pic2'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片3</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic3', $banner['pic3'])}
+        </div>
+    </div>
+    <div class="form-group " style="width: 100%;">
+        <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片4</label>
+        <div class="col-sm-9 col-xs-12">
+            {php echo tpl_form_field_image('pic4', $banner['pic4'])}
+        </div>
+    </div>
+</div> -->
+<!-- ************************************************优米考勤机显示内容**************************************************** -->
+<div id="needShowInfo">
+
+</div>
+<script>
+    $(function(){
+        if(`{$item['is_bobao']}` == 13 || `{$item['is_bobao']}` == 15){
+            $(".hxbphide").hide()
+        }
+    })
+//楼栋考勤机显示与否
+$("input[name=is_apcheck]").click(function(){
+    let is_apcheck = $(this).val();
+    if(is_apcheck == 2){
+        $(".apset1").show()
+    }else{
+        $(".apset1").hide()
+    }
+})
+//设备类型显示相关内容
+$("input[name='is_bobao']").click(function(){
+    
+    $('.hxbphide').show()
+    let check = $(this).val(); //1考勤机2校车3班牌4消费机
+    if(check == 13 || check == 15){
+        $('.hxbphide').hide()
+    }
+    let macname = $("input[name='macname']:checked").val(); //==3单独处理优米
+    $.ajax({
+        url: "{php echo $this->createWebUrl('check',array('op'=>'getShowInfo','schoolid'=>$schoolid))}",
+        type: "post",
+        dataType: "html",
+        data:{macname:macname,check:check},
+        success: function (html) {
+            $("#needShowInfo").html(html);
+        }
+    });
+});
+
+if(`{$item}`){
+    let id = `{$item['id']}`
+    $.ajax({
+        url: "{php echo $this->createWebUrl('check',array('op'=>'getShowInfo','schoolid'=>$schoolid))}",
+        type: "post",
+        dataType: "html",
+        data:{id:id},
+        success: function (html) {
+            $("#needShowInfo").html(html);
+        }
+    });
+}
+</script>

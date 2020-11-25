@@ -1,0 +1,777 @@
+<style></style>
+<div class="modal-header">                
+	<h4 class="modal-title" id="myModalLabel">{if $item['tname']}编辑-{$item['tname']} 老师{else}添加老师{/if}</h4>
+</div>
+<div class="modal-body" style="height:100%;overflow-y: scroll; max-height: 87%;">
+   <form id="tea_infobox">
+		<input type="hidden" name="id" value="{$item['id']}" />
+		<input type="hidden" name="nowtid" value="{$item['id']}" />
+		<input type="hidden" name="edittype" value="{if !empty($item)}old{else}new{/if}" />	
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+		<div class="panel panel-default">
+            <div class="panel-body" id="basic_info">
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">教师姓名</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="text" name="tname" class="form-control" value="{$item['tname']}"  required="required" oninvalid="setCustomValidity('教师姓名不能为空！！！');" oninput="setCustomValidity('');"/>
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">头像</label>
+                    <div class="col-sm-9">                
+                        {php echo tpl_form_field_image('thumb', $item['thumb'])}
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">前端是否显示</label>
+                    <div class="col-sm-9">
+                        <label  class="radio-inline"><input type="radio" name="is_show" value="1"  {if empty($item) || $item['is_show'] == 1}checked="true"{/if} /> 否</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label  class="radio-inline"><input type="radio" name="is_show" value="0"   {if !empty($item) && $item['is_show'] == 0}checked="true"{/if} /> 是</label>
+                        <span class="help-block">是否显示在首页教师风采列表中</span>
+                    </div>
+                </div>            
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择性别</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline"><input type="radio" name="sex" value="1"  {if empty($item) || $item['sex'] == 1}checked="true"{/if} /> 男</label>
+                        &nbsp;&nbsp;&nbsp;
+                        <label  class="radio-inline"><input type="radio" name="sex" value="0" {if !empty($item) && $item['sex'] == 0}checked="true"{/if} /> 女</label>
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+				{if keep_sk77()}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">是否参与销售</label>
+					<div class="col-sm-9">
+						<label class="radio-inline"><input type="radio" name="is_sell" value="0"  {if empty($item) || $item['is_sell'] == 0}checked="true"{/if} />不参与销售</label>
+						&nbsp;&nbsp;&nbsp;
+						<label  class="radio-inline"><input type="radio" name="is_sell" value="1" {if $item['is_sell'] == 1}checked="true"{/if} /> 经纪人</label>
+						&nbsp;&nbsp;&nbsp;
+						<label  class="radio-inline"><input type="radio" name="is_sell" value="2" {if $item['is_sell'] == 2}checked="true"{/if} /> 教务</label>
+						<span class="help-block">该老师是否参与销售</span>
+					</div>
+				</div>
+				{/if}
+				{if keep_MC()}
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择标签</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                        <select style="margin-right:15px;width:200px" name="tea_tagid" class="form-control">
+                            <option value="0">请选择标签</option>
+                            {loop $AllTag $it}
+                            <option value="{$it['sid']}" {if $it['sid'] == $item['tagid']} selected="selected"{/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                        </div>
+                    </div>
+                </div>
+				{/if}
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">身份证号码</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="idcard" class="form-control" value="{$item['idcard']}" {if is_showpf()}  required="required" oninvalid="setCustomValidity('身份证号码不能为空！！！');" oninput="setCustomValidity('');"{/if}/>
+						</div>
+					</div>
+                </div>
+				{if is_showZB()}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">车牌号</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="plate_num" class="form-control" value="{$item['plate_num']}" />
+						</div>
+					</div>
+				</div>
+				{/if}
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">籍贯</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="jiguan" class="form-control" value="{$item['jiguan']}" {if is_showpf()}  required="required" oninvalid="setCustomValidity('籍贯不能为空！！！');" oninput="setCustomValidity('');"{/if}/>
+						</div>
+					</div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">民族</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="minzu" class="form-control" value="{$item['minzu']}" {if is_showpf()}  required="required" oninvalid="setCustomValidity('民族不能为空！！！');" oninput="setCustomValidity('');"{/if}/>
+						</div>
+					</div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">政治面貌</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="zzmianmao" class="form-control" value="{$item['zzmianmao']}" {if is_showpf()}  required="required" oninvalid="setCustomValidity('民族不能为空！！！');" oninput="setCustomValidity('');"{/if}/>
+						</div>
+					</div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">现住址</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="address" class="form-control" value="{$item['address']}" />
+						</div>
+					</div>
+                </div>
+				<div class="form-group">
+                   <label class="col-xs-12 col-sm-3 col-md-2 control-label">出生日期</label>
+                   <div class="col-sm-9">
+					   <div class="input-group">
+						{if !empty($item['birthdate'])}{php echo tpl_form_field_date('birthdate', date('Y-m-d', $item['birthdate']))}{else}{php echo tpl_form_field_date('birthdate', date('Y-m-d', 516599001))}{/if}            
+					   </div>
+					</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">固定电话</label>
+                    <div class="col-sm-9">
+						<div class="input-group">
+							<input type="text" name="tel" class="form-control" value="{$item['tel']}" />
+						</div>
+					</div>
+                </div>            
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">手机号码</label>
+                    <div class="col-sm-9">
+                  <div class="input-group">
+                         <input type="text" name="mobile" class="form-control" value="{$item['mobile']}" />
+                       </div>
+                </div>
+                </div>
+				<div class="form-group">
+                   <label class="col-xs-12 col-sm-3 col-md-2 control-label">入职时间</label>
+                     <div class="col-sm-9"> 
+                    <div class="input-group">
+                 {if !empty($item['jiontime'])}{php echo tpl_form_field_date('jiontime', date('Y-m-d', $item['jiontime']))}{else}{php echo tpl_form_field_date('jiontime', date('Y-m-d', TIMESTAMP))}{/if}
+                        </div>
+                 </div>
+                </div>            
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">电子邮箱</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="text" name="email" class="form-control" value="{$item['email']}" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属分组</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                        <select style="margin-right:15px;" name="fz_id" class="form-control">
+                            <option value="0">请选择分组</option>
+                            {loop $fz $it}
+                            <option value="{$it['sid']}" {if $it['sid'] == $item['fz_id']} selected="selected"{/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                        </div>
+                    </div>
+                </div>				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">绑定码</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="text" name="code" class="form-control" value="{$item['code']}" />
+                        </div>
+                    </div>
+                </div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">是否校长</label>
+					<div class="col-sm-9">
+						<label class="radio-inline"><input type="radio" name="status" value="2"  {if !empty($item) && $item['status'] == 2}checked="true"{/if} {if !empty($item) && is_njzr($item['id']) != 0} disabled {/if} /> 是</label>
+						&nbsp;&nbsp;&nbsp;
+						<label class="radio-inline"><input type="radio" name="status" value="1"   {if empty($item) || $item['status'] == 1}checked="true"{/if}  {if !empty($item) && is_njzr($item['id']) != 0} disabled {/if}/> 否</label>
+						{if !empty($item) && is_njzr($item['id']) != 0}<span style ="color:red;" class="help-block">当前教师已经是年级主任，不可操作该项</span>
+						{else}<span style ="color:red;" class="help-block">您可以设置多个教师为校长身份</span>{/if}
+					</div>
+				</div>            
+          	</div>     
+            <div class="panel-body" id="teach_info" style="display:none">
+				<div id="custom-url">
+					{if !$_W['schooltype']}
+					{if $bjlists}
+					{loop $bjlists $row}
+						<input type="hidden" name="old[]" value="1111" />
+						<input type="hidden" name="thisid[]" value="{$row['id']}" />
+						<div class="form-group">
+							<label class="col-xs-2 col-sm-1 col-md-2 control-label">授课信息</label>
+							<div class="col-sm-3 ">
+								<div class="input-group">
+									<select style="margin-right:15px;" name="xq_id[]" id="xq_id{$row['id']}" class="form-control">
+										<option value="0">{NJNAME}</option>
+										{loop $xueqi $it}
+										<option value="{$it['sid']}" {if $it['sid'] == $row['xq_id']} selected="selected"{/if}>{$it['sname']}</option>
+										{/loop}
+									</select>
+								</div>	 
+							</div>
+							<div class="col-sm-3">
+								<div class="input-group">
+									<select style="margin-right:15px;" name="bj_id[]" id="bj_id{$row['id']}" class="form-control">
+										<option value="0">班级</option>
+										{loop $bj $it}
+										<option value="{$it['sid']}" {if $it['sid'] == $row['bj_id']} selected="selected"{/if}>{$it['sname']}</option>
+										{/loop}
+									</select>
+								</div>	
+							</div>   
+							<div class="col-sm-3 ">
+								<div class="input-group">
+									<select style="margin-right:15px;" name="km_id[]" class="form-control">
+										<option value="0">科目</option>
+										{loop $km $it}
+										<option value="{$it['sid']}" {if $it['sid'] == $row['km_id']} selected="selected"{/if}>{$it['sname']}</option>
+										{/loop}
+									</select>
+								</div>	
+							</div>
+							<div class="col-sm-1">
+								<a onclick="del('{$row['id']}')" class="custom-url"><i class="fa fa-times-circle"></i></a>
+							</div>					
+						</div>
+						<script type="text/javascript">
+						$(document).ready(function() {
+							$("#xq_id{$row['id']}").change(function() {
+								var cityId = $("#xq_id{$row['id']} option:selected").attr('value');
+								var type = 1;
+								changeGrade{$row['id']}(cityId, type, function() {
+								});
+							});		
+						});	
+						function changeGrade{$row['id']}(gradeId, type) {
+							//alert(cityId);
+							var schoolid = "{$schoolid}";
+							var classlevel = [];
+							//获取班次
+							$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+							
+								data = JSON.parse(data);
+								classlevel = data.bjlist;
+								
+								var htmls = '';
+								htmls += '<select id="bj_id{$row['id']}"><option value="">请选择班级</option>';		
+								if (classlevel != '') {
+									for (var i in classlevel) {
+										htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+									}
+								}
+								$('#bj_id{$row['id']}').html(htmls);		
+							});
+
+						}
+						</script>				
+					{/loop}
+					{else}
+						<input type="hidden" name="new[]" value="2222" />
+						<div class="form-group">
+							<label class="col-xs-2 col-sm-1 col-md-2 control-label">授课信息</label>
+							<div class="col-sm-3 col-lg-3">
+								<div class="input-group">
+									<select style="margin-right:15px;" name="xq_id_new[]" id="xq" class="form-control">
+										<option value="0">{NJNAME}</option>
+										{loop $xueqi $it}
+										<option value="{$it['sid']}" {if $it['sid'] == $row['xq_id']} selected="selected"{/if}>{$it['sname']}</option>
+										{/loop}
+									</select>
+								</div>	
+							</div>
+							<div class="col-sm-3 col-lg-3">
+								<div class="input-group">
+									<select style="" name="bj_id_new[]" id="bj" class="form-control">
+										<option value="0">班级</option>
+										{loop $bj $it}
+										<option value="{$it['sid']}" {if $it['sid'] == $row['bj_id']} selected="selected"{/if}>{$it['sname']}</option>
+										{/loop}
+									</select>
+								</div>	
+							</div>   
+							<div class="col-sm-3 col-lg-3">
+								<div class="input-group">
+									<select style="margin-right:15px;" name="km_id_new[]" class="form-control">
+										<option value="0">科目</option>
+										{loop $km $it}
+										<option value="{$it['sid']}" {if $it['sid'] == $row['km_id']} selected="selected"{/if}>{$it['sname']}</option>
+										{/loop}
+									</select>
+								</div>	
+							</div>
+							<div class="col-sm-1">
+								<a href="javascript:;" class="custom-url-del"><i class="fa fa-times-circle"></i></a>
+							</div>					
+						</div>			
+					{/if}
+					</div>
+					<div class="panel panel-default">  
+						<div class="clearfix template"> 
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+								<div class="col-sm-9 col-xs-12">
+									<a href="javascript:;" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加授课信息</a>
+									<span class="help-block">可添加多个授课信息</span>
+								</div>
+							</div>	
+						</div>	
+					</div>
+					{/if}
+				</div>
+			</div>
+			<div class="panel-body" id="jy_info" style="display:none">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">教学特点</label>
+					<div class="col-sm-9">
+						{php echo tpl_ueditor('headinfo', $item['headinfo']);}
+						<span class="help-block"></span>
+					</div>
+				</div>
+				<div class="form-group">
+					 <label class="col-xs-12 col-sm-3 col-md-2 control-label">教学成果</label>
+					<div class="col-sm-9">
+					   {php echo tpl_ueditor('info', $item['info']);}
+						<div class="help-block">教学成果</div>
+					</div>
+				</div>
+				 <div class="form-group">
+					 <label class="col-xs-12 col-sm-3 col-md-2 control-label">教学经验</label>
+					<div class="col-sm-9">
+					   {php echo tpl_ueditor('jinyan', $item['jinyan']);}
+						<div class="help-block">教学经验</div>
+					</div>
+				</div>
+			</div>	
+			{if is_showpf()}
+			<div class="panel-body" id="detail_info" style="display:none">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">第一学历</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="first_xl" class="form-control" value="{$item['otherinfo']['first_xl']}"   required="required" oninvalid="setCustomValidity('第一学历不能为空！！！');" oninput="setCustomValidity('');"/>
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">专业</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="first_zy" class="form-control" value="{$item['otherinfo']['first_zy']}"   required="required" oninvalid="setCustomValidity('专业不能为空！！！');" oninput="setCustomValidity('');"/>
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">毕业院校</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="first_yx" class="form-control" value="{$item['otherinfo']['first_yx']}"   required="required" oninvalid="setCustomValidity('毕业院校不能为空！！！');" oninput="setCustomValidity('');"/>
+						</div>	
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">毕业时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('first_bytime', $item['otherinfo']['first_bytime'])}	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">最高学历</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="top_xl" class="form-control" value="{$item['otherinfo']['top_xl']}"   required="required" oninvalid="setCustomValidity('最高学历不能为空！！！');" oninput="setCustomValidity('');"/>
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">专业</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="top_zy" class="form-control" value="{$item['otherinfo']['top_zy']}"   required="required" oninvalid="setCustomValidity('专业不能为空！！！');" oninput="setCustomValidity('');"/>
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">毕业院校</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="top_yx" class="form-control" value="{$item['otherinfo']['top_yx']}"   required="required" oninvalid="setCustomValidity('毕业院校不能为空！！！');" oninput="setCustomValidity('');"/>
+						</div>	
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">毕业时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('top_bytime',$item['otherinfo']['top_bytime'])}	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">主要学习简历</label>
+					<div class="col-sm-9">
+						{php echo tpl_ueditor('main_study_jl', $item['otherinfo']['main_study_jl']);}
+						<div class="help-block">主要学习简历</div>
+					</div>
+				 </div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">参加工作时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('time2work',$item['otherinfo']['time2work'])}	
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">任教学科</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="tea_subject" class="form-control" value="{$item['otherinfo']['tea_subject']}" />
+						</div>	
+					</div>   				
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">职称</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="zhicheng" class="form-control" value="{$item['otherinfo']['zhicheng']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">评审时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('zc_pstime',$item['otherinfo']['zc_pstime'])}		
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">聘任时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('zc_prtime',$item['otherinfo']['zc_prtime'])}	
+					</div> 					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">专业技术职务</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="zjzhiwu" class="form-control" value="{$item['otherinfo']['zjzhiwu']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">评审时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('zjzw_pstime',$item['otherinfo']['zjzw_pstime'])}	
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">聘任时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_date('zjzw_prtime',$item['otherinfo']['zjzw_prtime'])}	
+					</div> 					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">主要工作简历</label>
+					<div class="col-sm-9">
+						{php echo tpl_ueditor('main_work_jl', $item['otherinfo']['main_work_jl']);}
+						<div class="help-block">主要工作简历</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">教师资格种类</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="jszg_type" class="form-control" value="{$item['otherinfo']['jszg_type']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">证书编号</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="jszgzs_num" class="form-control" value="{$item['otherinfo']['jszgzs_num']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">普通话等级</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="pth_level" class="form-control" value="{$item['otherinfo']['pth_level']}" />
+						</div>	
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">证书编号</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="pthzs_num" class="form-control" value="{$item['otherinfo']['pthzs_num']}" />
+						</div>
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">业绩证书情况</label>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">优质课一：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="yzk1_level" class="form-control" value="{$item['otherinfo']['yzk1_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="yzk1_rank" class="form-control" value="{$item['otherinfo']['yzk1_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="yzk1_org" class="form-control" value="{$item['otherinfo']['yzk1_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">优质课二：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="yzk2_level" class="form-control" value="{$item['otherinfo']['yzk2_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="yzk2_rank" class="form-control" value="{$item['otherinfo']['yzk2_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="yzk2_org" class="form-control" value="{$item['otherinfo']['yzk2_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">综合表彰一：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="zhbz1_level" class="form-control" value="{$item['otherinfo']['zhbz1_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="zhbz1_rank" class="form-control" value="{$item['otherinfo']['zhbz1_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="zhbz1_org" class="form-control" value="{$item['otherinfo']['zhbz1_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">综合表彰二：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="zhbz2_level" class="form-control" value="{$item['otherinfo']['zhbz2_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="zhbz2_rank" class="form-control" value="{$item['otherinfo']['zhbz2_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="zhbz2_org" class="form-control" value="{$item['otherinfo']['zhbz2_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">教科研一：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="jky1_level" class="form-control" value="{$item['otherinfo']['jky1_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="jky1_rank" class="form-control" value="{$item['otherinfo']['jky1_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="jky1_org" class="form-control" value="{$item['otherinfo']['jky1_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">教科研二：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="jky2_level" class="form-control" value="{$item['otherinfo']['jky2_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="jky2_rank" class="form-control" value="{$item['otherinfo']['jky2_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="jky2_org" class="form-control" value="{$item['otherinfo']['jky2_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">其他证书（辅导、论文等）</label>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">证书一：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="qtzs1_level" class="form-control" value="{$item['otherinfo']['qtzs1_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="qtzs1_rank" class="form-control" value="{$item['otherinfo']['qtzs1_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="qtzs1_org" class="form-control" value="{$item['otherinfo']['qtzs1_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">证书二：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="qtzs2_level" class="form-control" value="{$item['otherinfo']['qtzs2_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="qtzs2_rank" class="form-control" value="{$item['otherinfo']['qtzs2_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="qtzs2_org" class="form-control" value="{$item['otherinfo']['qtzs2_org']}" />
+						</div>	
+					</div>					
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">证书三：级别</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="qtzs3_level" class="form-control" value="{$item['otherinfo']['qtzs3_level']}" />
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">等次</label>
+					<div class="col-sm-2 col-lg-2">
+						<div class="input-group">
+							<input type="text" name="qtzs3_rank" class="form-control" value="{$item['otherinfo']['qtzs3_rank']}" />
+						</div>	
+					</div>   
+					<label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">发证单位</label>
+					<div class="col-sm-2 col-lg-2" style="width:30%">
+						<div class="input-group" style="width:100%">
+							<input type="text" name="qtzs3_org" class="form-control" value="{$item['otherinfo']['qtzs3_org']}" />
+						</div>	
+					</div>					
+				</div>
+			</div>
+			{/if}
+        </div>	
+	</form>
+</div>
+<div class="modal-foot">
+	<a class="btn btn-primary" style="color: #fff;" onclick="add_tea();">提交</a>
+	<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+</div>
+<script type="text/javascript">
+var skid = {$lastids};
+var divids = skid + 12000;
+		$('#custom-url-add').click(function() {
+			divids++;
+			var html =  '<div class="form-group">'+
+						'	<input type="hidden" name="new[]" value="2222" />'+
+						'	<label class="col-xs-2 col-sm-1 col-md-2 control-label">授课信息</label>'+
+						'	<div class="col-sm-3 col-lg-3">'+
+						'		<div class="input-group">'+
+						'			<select style="margin-right:15px;" name="xq_id_new[]" id="xq_id'+divids+'" class="form-control">'+
+						'				<option value="0">{NJNAME}</option>'+
+										{loop $xueqi $it}
+						'					<option value="{$it['sid']}">{$it['sname']}</option>'+
+										{/loop}
+						'			</select>'+
+						'		</div>'+
+						'	</div>'+
+						'	<div class="col-sm-3 col-lg-3">'+
+						'		<div class="input-group">'+
+						'			<select style="margin-right:15px;" name="bj_id_new[]" id="bj_id'+divids+'" class="form-control">'+
+						'				<option value="0">班级</option>'+
+										{loop $bj $it}
+						'					<option value="{$it['sid']}">{$it['sname']}</option>'+
+										{/loop}
+						'			</select>'+
+						'		</div>'+
+						'	</div>'+
+						'	<div class="col-sm-3 col-lg-3">'+
+						'		<div class="input-group">'+
+						'			<select style="margin-right:15px;" name="km_id_new[]" id="bj_id" class="form-control">'+
+						'				<option value="0">科目</option>'+
+										{loop $km $it}
+						'					<option value="{$it['sid']}">{$it['sname']}</option>'+
+										{/loop}						
+						'			</select>'+
+						'		</div>'+	
+						'	</div>'+
+						'	<div class="col-sm-1">'+
+						'		<a href="javascript:;" class="custom-url-del"><i class="fa fa-times-circle"></i></a>'+
+						'	</div>'+					
+						'</div>';
+					;
+					
+			//if($('#custom-url .items').size() < 2) {
+			//	util.message('你至少一项评价规则', '', 'error');
+			//	return false;
+			//}
+			$('#custom-url').append(html);
+			$(document).ready(function() {
+				var thisid = "#xq_id"+divids;
+				$(thisid).change(function() {
+					var cityId = $(""+thisid+" option:selected").attr('value');
+					var type = 1;
+					//alert(thisid);
+					changeGradess(cityId, type, function() {
+					});
+				});
+				function changeGradess(gradeId, type) {
+					var thisid = "#bj_id"+divids;
+					var schoolid = "{$schoolid}";
+					var classlevel = [];
+					//获取班次
+					$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+					
+						data = JSON.parse(data);
+						classlevel = data.bjlist;
+						
+						var htmls = '';
+						htmls += '<select id="bj_id"><option value="">请选择班级</option>';		
+						if (classlevel != '') {
+							for (var i in classlevel) {
+								htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+							}
+						}
+						$(thisid).html(htmls);		
+					});
+
+				}	
+			});		
+		});
+		$(document).on('click', '.remind-reply-del, .comment-reply-del, .times-del, .custom-url-del', function(){
+			$(this).parent().parent().remove();
+			return false;
+		});		
+		function del(id) {
+			var id = id;
+			var truthBeTold = window.confirm('确认要删除已保存授课信息吗 ?'); 
+			var url = "{php echo $this->createWebUrl('assess',array('op'=>'delclass','schoolid' => $schoolid))}";
+			var submitData = {
+					id:id,
+					schoolid:"{$schoolid}",
+			};
+			if (truthBeTold) {
+				$.post(url, submitData, function(data) {
+						
+				},'json');
+				location.reload();
+			}
+		}		
+</script>

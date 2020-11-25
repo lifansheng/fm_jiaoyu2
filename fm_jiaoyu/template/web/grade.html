@@ -1,0 +1,129 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<ul class="nav nav-tabs">
+    <li {if $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('grade', array('op' => 'display', 'schoolid' => $schoolid))}">{$logo['shoucename']}</a></li>
+</ul>
+ <style>
+.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+.alert p {margin: 0 0 10px;display: block;}
+.alert .bold{font-weight:bold;}
+.form-control-excel { height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.42857143; color: #555; background-color: #fff; background-image: none; border: 1px solid #ccc; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075); box-shadow: inset 0 1px 1px rgba(0,0,0,.075); -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s; -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; }
+.schooltip { position: absolute; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+    
+ </style>
+ 
+{if $operation == 'display'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+                <form action="./index.php" method="get" class="form-horizontal" role="form">
+                    <input type="hidden" name="c" value="site">
+                    <input type="hidden" name="a" value="entry">
+                    <input type="hidden" name="m" value="fm_jiaoyu">
+                    <input type="hidden" name="do" value="grade"/>
+                    <input type="hidden" name="op" value="display"/>
+                    <input type="hidden" name="schoolid" value="{$schoolid}" />
+                                
+                    <div class="form-group clearfix">
+                        <label class="col-xs-12 col-sm-3 col-md-1 control-label">时间范围</label>
+                        <div class="col-sm-2 col-lg-2">
+                            {php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+                        </div>
+                        <div class="col-sm-2 col-lg-2" style="margin-left:50px">
+                            <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                        </div>
+                        <div class="col-sm-2 col-lg-2">
+                            <button class="btn btn-success qx_2702" name="out_putcode" value="out_putcode"><i class="fa fa-download"></i>导出评分记录</button>
+                        </div> 	
+    
+                    </div>
+                </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+						<th>学生姓名</th>
+						<th>所属课程</th>
+                        <th>老师姓名</th>
+                        {if is_TestFz()}
+						<th>评分项</th>
+                        <th style="width: 30%;">评语</th>
+                        {/if}
+						<th>创建时间</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $list $row}
+                    <tr>
+					    <td><div class="type-parent">{$row['s_name']}</div></td>
+						<td><div class="type-parent">{$row['kcname']}</div></td>
+                        <td><div class="type-parent">{$row['tname']}&nbsp;&nbsp;</div></td>
+                        {if is_TestFz()}
+						<td>
+                            {if !empty($row['pfxm'])}
+                            <div><span class="show_yulan_img" style="border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white">悬浮查看</span> </div>
+                            <div class="schooltip" style="padding:10px 10px;background-color:#1b1a1ab8;width:auto;max-width: 120px;color:white;">
+                            {loop $row['pfxm'] $item1}
+                                <span style="font-weight: bold;">{$item1['sname']}:{$item1['star']}</span> <br>
+                            {/loop}
+                            </div>
+                            {else}
+                                <span class="label label-danger">未评价</span>
+                            {/if}
+                        </td>
+						<td><div class="type-parent">{$row['content']}</div></td>
+                        {/if}
+						<td><div class="type-parent">{$row['createtime']}</div></td>
+                    </tr>
+                    {/loop}
+                    <!--tr>
+                        <td colspan="3">
+                            <input name="submit" type="submit" class="btn btn-primary" value="批量更新排序">
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                        </td>
+                    </tr-->
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+{/if}
+<script type="text/javascript">
+// {if (!(IsHasQx($tid_global,1001102,1,$schoolid)))}
+// 	$(function(){
+// 		$(".qx_1102").hide();
+// 	});
+// {/if}
+
+
+</script>
+{template 'public/footer'}
+
+<script>
+
+$(function(){
+    var x = -190;
+    var y = -60;
+    $(".show_yulan_img").mouseover(function (e) {
+        let NeedShow = $(this).parent().next();
+        $(NeedShow).show();
+        console.log(e.pageY);
+        $(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+    }).mouseout(function (e) {
+        let NeedShow = $(this).parent().next();
+        $(NeedShow).hide();
+    }).mousemove(function (e) {
+        let NeedShow = $(this).parent().next();
+        $(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});	
+    });
+})
+</script>

@@ -1,0 +1,7 @@
+{loop $list $item}
+<div class="article" onclick="ShowDetail({$item['id']})" time="{$item['location']}">
+    <div class="imgBackGround"  style="background-image: url('{php echo tomedia($item['thumb'])}');width:calc(50vw - 40px);height:calc(50vw - 40px);margin-left:10px;margin-top:10px" ></div>
+    <div class="over-ellip-muti"  >{$item['name']} </div>
+    <div class="over-ellip-muti"  >剩余数量：{$item['restnum']} {$item['danwei']} </div>
+</div>
+{/loop}

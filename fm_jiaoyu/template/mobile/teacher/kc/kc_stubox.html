@@ -1,0 +1,394 @@
+{if $optype == 'ksinfo'}
+		<div class="backdiv"><div><img src="{OSSURL}public/mobile/img/flot_back.png"></div></div>
+		<div class="topbox">
+			<div class="topbox_info">
+				<div class="left_div">
+					<div class="ksorder">
+						<div class="ordertitle">课节</div>
+						<div class="ordernub" id="ordernub">0</div>
+					</div>
+				</div>
+				<div class="mid_div">
+					<div class="kc_name">{$_GPC['kcname']}</div>
+					<div class="ks_info">{php echo date('Y.m.d',$ksinfo['date'])} {$sdinfo['sname']}</div>
+					<div class="ks_info">{if $PkUser}排课：{$PkUser}{/if}{if $zjteainfo}&nbsp;&nbsp;&nbsp;主讲：{$zjteainfo['tname']}{/if}</div>
+				</div>
+				<div class="mbl_div">
+					<div class="ksmbl" data-value="{$jindu}"></div>
+					<div class="mbltitle">满班率</div>
+				</div>
+			</div>
+		</div>
+		<div class="bot_box">
+			<div class="sut_box mb_marsk" onclick="open_teasignlist_pop({$ksid})">
+				<div class="box_left">
+					<div class="box_left_lab">授课</div>
+					<div class="box_left_title">{$fu_tea}人</div>
+				</div>
+				<div class="box_right" style="padding: 12px;line-height: 24px;overflow: hidden;text-overflow: ellipsis; white-space: nowrap;">
+					{loop $checksitid $row}
+						{$row['tname']}{if $fu_tea > 0}、{/if}
+					{/loop}
+				</div>
+				<div class="point"></div>
+			</div>
+			{if $kcinfo['allow_pl'] == 1}
+			<div class="pj_box myks mb_marsk" onclick="showpjlist({$ksid})">
+				<div class="box_left">
+					<div class="box_left_lab">评价</div>
+					<div class="box_left_title">{$allpj}条</div>
+				</div>
+				<div class="box_right" style="padding: 12px;">
+					<span class="starpj">
+						{$xingh5}
+					</span>
+				</div>
+				<div class="point"></div>
+			</div>
+			{/if}
+		</div>
+		<input type="hidden" id="movenub" value="{$nuber}"/>
+<script>
+circleart()
+let movenub = $('#movenub').val()
+move('ordernub',movenub)
+//返回按钮 点红叉 头部显示课程信息
+$('.backdiv').click(function() {
+	$('#ksinfobox').hide()
+	$('#kcinfobox').slideLeftShow()
+});
+</script>
+{/if}
+{if $optype == 'stulist'}
+		<div class="loading-layer" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="pk_header">
+			<div class="pk_title">签到情况</div>
+			<div class="pk_qdls">
+			{if $tidsignnub > 0}
+				{loop $checksitid $row}
+				{if $row['ismaster_tid'] ==1}
+				<img src="{$row['thumb']}"/ onclick="open_teasignlist_pop({$ksid})">
+				<div class="tnames" onclick="open_teasignlist_pop({$ksid})">{$row['tname']}</div>
+				<span><img src="{OSSURL}public/mobile/img/icon-checked.png"></span>
+				{/if}
+				{/loop}
+			{else}
+				<div class="mb_marsk tnames wyqd" onclick="checksign()" style="color:#2e72dc">我要签到+</div>
+			{/if}	
+			</div>
+		</div>
+		<div class="ks_stubox">
+			<div class="pk_tab">
+				<ul box="sign_box" class="act">已签({$signstu})</ul>
+				<ul box="unsign_box" class="">未签({$nosignstu})</ul>
+				<ul box="qj_box" class="">请假({$qjsignstu})</ul>
+				<ul box="qk_box" class="">缺课({$qksignstu})</ul>
+			</div>
+			<div class="stulistbox">
+				<div class="sign_box">
+					{if $qrsignstu > 0}
+						<div class="stu_line">
+							<div class="stu_line_title">待确认({$qrsignstu}人)</div>
+							<div class="dqrqx noact">全选</div>
+							<div class="mb_marsk wait_qr_btn" style="display:none">确认</div>
+						</div>
+						{loop $allstu $row}
+						{if $row['status'] == 1}
+						<div class="stu_box wait_qr noact" sid="{$row['sid']}">
+							<img src="{$row['icon']}"/>
+							<div class="stu_name">{$row['s_name']}</div>
+						</div>
+						{/if}	
+						{/loop}
+						<div class="stu_line">
+							<div class="stu_line_title">已确认({$yqrgnstu}人)</div>
+						</div>
+					{/if}
+					{loop $allstu $row}
+					{if $row['status'] == 2}
+						<div class="stu_box alread_qr" sid="{$row['sid']}">
+							<img src="{$row['icon']}"/>
+							<div class="stu_name">{$row['s_name']}</div>
+						</div>
+					{/if}	
+					{/loop}
+				</div>
+				<div class="unsign_box" style="display:none">
+					{loop $allstu $row}
+					{if $row['status'] == 5}
+						<div class="stu_box noact" sid="{$row['sid']}">
+							<img src="{$row['icon']}"/>
+							<div class="stu_name">{$row['s_name']}</div>
+						</div>
+					{/if}	
+					{/loop}
+				</div>
+				<div class="qj_box" style="display:none">
+					{loop $allstu $row}
+					{if $row['status'] == 3}
+						<div class="stu_box noact" sid="{$row['sid']}">
+							<img src="{$row['icon']}"/>
+							<div class="stu_name">{$row['s_name']}</div>
+						</div>
+					{/if}	
+					{/loop}
+				</div>
+				<div class="qk_box" style="display:none">
+					{loop $allstu $row}
+					{if $row['status'] == 0}
+						<div class="stu_box noact" sid="{$row['sid']}">
+							<img src="{$row['icon']}"/>
+							<div class="stu_name">{$row['s_name']}</div>
+						</div>
+					{/if}	
+					{/loop}
+				</div>
+			</div>
+		</div>
+		<input type="hidden" id="tea_edit_ks" value="{$signset['tea_edit_ks']}"/>
+<script>
+//确认签到
+var tea_change_stutype = $('#tea_change_stutype').val()
+var tea_edit_ks = $('#tea_edit_ks').val()
+//主动签到学生确认签到
+$('.sign_box .stu_line .wait_qr_btn').click(function() {
+	var sidarr =  [];
+	$(".sign_box .wait_qr").not(".noact").each(function () {
+		sidarr.push($(this).attr("sid"));
+	});
+	if(sidarr.length < 1){
+		jTips('请至少选择一位学生');
+	}else{
+		$('#chosestunub').val(sidarr.length)
+		if(tea_edit_ks == 1){
+			open_edit_kspop(sidarr,'queren')
+		}else{
+			stu_sign(sidarr,'queren')
+		}	
+	}
+});
+//未签到学生提交签到
+$('.unsign_box_bot .sign_tag').click(function() {
+	if(tea_change_stutype == 1){
+		var sidarr =  [];
+		$(".unsign_box .stu_box").not(".noact").each(function () {
+			sidarr.push($(this).attr("sid"));
+		});
+		if(sidarr.length < 1){
+			jTips('请至少选择一位学生');
+		}else{
+			$('#chosestunub').val(sidarr.length)
+			if(tea_edit_ks == 1){
+				open_edit_kspop(sidarr,'qiandao')
+			}else{
+				stu_sign(sidarr,'qiandao')
+			}
+		}
+	}else{
+		jTips('抱歉,本课禁止手机端代签');
+	}	
+});
+//未签到学生提交请假
+$('.unsign_box_bot .qj_tag').click(function() {
+	var sidarr =  [];
+	$(".unsign_box .stu_box").not(".noact").each(function () {
+		sidarr.push($(this).attr("sid"));
+	});
+	if(sidarr.length < 1){
+		jTips('请至少选择一位学生');
+	}else{
+		$('#chosestunub').val(sidarr.length)
+		stu_sign(sidarr,'qingjia')
+	}
+});
+//未签到学生提交缺课
+$('.unsign_box_bot .qk_tag').click(function() {
+	var sidarr =  [];
+	$(".unsign_box .stu_box").not(".noact").each(function () {
+		sidarr.push($(this).attr("sid"));
+	});
+	if(sidarr.length < 1){
+		jTips('请至少选择一位学生');
+	}else{
+		$('#chosestunub').val(sidarr.length)
+		stu_sign(sidarr,'queke')
+	}	
+});
+//请假学生学生签到
+$('.qj_box_bot .sign_tag').click(function() {
+	if(tea_change_stutype == 1){
+		var sidarr =  [];
+		$(".qj_box .stu_box").not(".noact").each(function () {
+			sidarr.push($(this).attr("sid"));
+		});
+		if(sidarr.length < 1){
+			jTips('请至少选择一位学生');
+		}else{
+			if(tea_edit_ks == 1){
+				open_edit_kspop(sidarr,'qiandao')
+			}else{
+				$('#chosestunub').val(sidarr.length)
+				stu_sign(sidarr,'qiandao')
+			}
+		}
+	}else{
+		jTips('抱歉,本课禁止手机端代签');
+	}	
+});
+//请假学生学生缺课
+$('.qj_box_bot .qk_tag').click(function() {
+	var sidarr =  [];
+	$(".qj_box .stu_box").not(".noact").each(function () {
+		sidarr.push($(this).attr("sid"));
+	});
+	if(sidarr.length < 1){
+		jTips('请至少选择一位学生');
+	}else{
+		$('#chosestunub').val(sidarr.length)
+		stu_sign(sidarr,'queke')
+	}
+});
+//缺课学生学生签到
+$('.qk_box_bot .sign_tag').click(function() {
+	if(tea_change_stutype == 1){
+		var sidarr =  [];
+		$(".qk_box .stu_box").not(".noact").each(function () {
+			sidarr.push($(this).attr("sid"));
+		});
+		if(sidarr.length < 1){
+			jTips('请至少选择一位学生');
+		}else{
+			if(tea_edit_ks == 1){
+				open_edit_kspop(sidarr,'qiandao')
+			}else{
+				$('#chosestunub').val(sidarr.length)
+				stu_sign(sidarr,'qiandao')
+			}
+		}
+	}else{
+		jTips('抱歉,本课禁止手机端代签');
+	}	
+});
+//缺课学生学生请假
+$('.qk_box_bot .qj_tag').click(function() {
+	var sidarr =  [];
+	$(".qk_box .stu_box").not(".noact").each(function () {
+		sidarr.push($(this).attr("sid"));
+	});
+	if(sidarr.length < 1){
+		jTips('请至少选择一位学生');
+	}else{
+		$('#chosestunub').val(sidarr.length)
+		stu_sign(sidarr,'qingjia')
+	}
+});
+//切换各状态学生列表
+$('.pk_tab ul').click(function() {
+	var ksid = $('#nowksid').val()
+	if(ksid  > 0){
+		$('.pk_tab ul').removeClass('act')
+		$(this).addClass('act');
+		$('.stulistbox').children().hide()
+		$('.foot_bot').children().hide()
+		let box = $(this).attr('box')
+		if(box == 'sign_box'){
+			$('.stulistbox .sign_box').show(200)
+			$('.foot_kc_bot').slideRightShow()
+		}
+		if(box == 'unsign_box'){
+			$('.stulistbox .unsign_box').show(200)
+			$('.unsign_box_bot').slideRightShow()
+		}
+		if(box == 'qj_box'){
+			$('.stulistbox .qj_box').show(200)
+			$('.qj_box_bot').slideRightShow()
+		}
+		if(box == 'qk_box'){
+			$('.stulistbox .qk_box').show(200)
+			$('.qk_box_bot').slideRightShow()
+		}
+	}else{
+		jTips('请从左侧选择一个课时')
+	}
+});
+
+//单选已签到待确认学生
+$('.sign_box .wait_qr').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.wait_qr_btn').slideRightShow()
+		if($(".sign_box .wait_qr.noact").length == 0){
+			//同时处理上面全选按钮为已勾选
+			if($('.dqrqx').hasClass('noact')){
+				$('.dqrqx').removeClass('noact');
+				$('.dqrqx').addClass('act');
+			}
+		}
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		//处理都未选择 隐藏确认按钮
+		if($(".sign_box .wait_qr.act").length == 0){
+			$('.wait_qr_btn').slideRightHide()
+		}
+		//同时处理上面全选按钮为未勾选
+		if($('.dqrqx').hasClass('act')){
+			$('.dqrqx').removeClass('act');
+			$('.dqrqx').addClass('noact');
+		}
+	}
+});
+
+//单选未签到学生
+$('.unsign_box .stu_box').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+	}
+});
+//单选已请假学生
+$('.qj_box .stu_box').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+	}
+});
+//单选缺课学生
+$('.qk_box .stu_box').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+	}
+});
+
+//全选已签列表待确认学生
+$('.sign_box .dqrqx').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.sign_box .wait_qr').removeClass('noact');
+		$('.sign_box .wait_qr').addClass('act');
+		$('.wait_qr_btn').slideRightShow()
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		$('.sign_box .wait_qr').addClass('noact');
+		$('.sign_box .wait_qr').removeClass('act');
+		$('.wait_qr_btn').slideRightHide()
+	}
+});
+$('.wyqd').click(function() {
+
+});
+</script>
+{/if}

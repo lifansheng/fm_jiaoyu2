@@ -1,0 +1,64 @@
+{if $operation == 'kslist'}
+{loop  $Data $event}
+{loop $event['data'] $row_event}
+{loop $row_event['data'] $key $event_data}
+<li class="pk_ks kc_{$event_data['kcid']} sd_{$event_data['sd_id']}" kcid="{$event_data['kcid']}" sdid="{$event_data['sd_id']}" onclick="gotokc({$event_data['kcid']},{$event_data['id']})">
+    <div class="pktop_box">
+        <div class="topleft">{$row_event['start_time']} — {$row_event['end_time']} {if $event_data['istoday']}<label>今天</label>{/if}</div>
+        <div class="topriht">签到人数</div>    
+    </div>
+    <div class="pkbot_box">
+        <div class="botleft">
+            <div class="xqbox">
+                <div class="xqboxtop">{$event['date']}</div>
+                <div class="xqboxbot">{$event['title']}</div>
+            </div>
+        </div>
+        <div class="botmid">
+            <div class="kcname">{$event_data['kcname']}({$event_data['ksname']})</div>
+            <div class="kcinfo">模式：{$event_data['type']} {$event_data['adrr']}</div>
+            <div class="kcinfo">签到：{$event_data['teaSign']}</div>
+        </div>
+        <div class="botright">{$event_data['signstu']}/{$event_data['bmstu']}</div>
+    </div>
+</li>
+{/loop}
+{/loop}
+{/loop}
+<script>
+$('.bot_header_left').text("课时数目:{$mykcnub}节")
+</script>
+{/if}
+{if $operation == 'sign_list'}
+{loop $signlist $row}
+<li class="pk_ks kc_{$row['kcid']} sd_{$row['sd_id']} status_{$row['status']}" kcid="{$row['kcid']}" sdid="{$row['sd_id']}">
+    <div class="pkbot_box">
+        <div class="botleft">
+            <div class="xqbox">
+                <div class="xqboxbot"><img src="{$row['icon']}"/></div>
+                <div class="xqboxtop">{$row['tname']}</div>	
+            </div>
+        </div>
+        <div class="botmid">
+            <div class="kcname">{$row['kcname']}({$row['ksname']})</div>
+            <div class="kcinfo">签到身份：{if $row['ismaster_tid'] ==2}助教{else}主讲{/if} {if $row['buqian']}<label class="buqian">补签</label>{/if}{if $row['tiqian']}<label class="tqq">提前签</label>{/if}</div>
+            <div class="kcinfo">签到时间：{$row['time']}</div>
+            <div class="kcinfo">本课:{$row['sdname']} &nbsp;{$row['addr']}</div>
+        </div>
+        <div class="botright">
+            {if $row['status'] == 1}
+            <div class="bot_top" onclick="qrqd({$row['id']},this)"><label >确认</label></div>
+            <div class="bot_bot" onclick="jujue({$row['id']},this)"><label>拒绝</label></div>
+            {/if}
+            {if $row['status'] == 2}
+            <div class="bot_top">已确认</div>
+            <div class="bot_bot">{if $row['qrtname']}{$row['qrtname']}{else}自动{/if}</div>
+            {/if}
+        </div>
+    </div>
+</li>
+{/loop}
+<script>
+    $('.bot_header_left').text("待确认:{$dqrnubs}条")
+</script>
+{/if}

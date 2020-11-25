@@ -1,0 +1,674 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+.right-content .we7-page-alert {margin-left:0px!important;margin-right:0px!important;}	
+</style>
+<div class="panel we7-panel">
+	<div class="panel-body we7-padding">
+		<form action="./index.php" method="get" class="we7-form" role="form">
+			<input type="hidden" name="c" value="site" />
+			<input type="hidden" name="a" value="entry" />
+			<input type="hidden" name="m" value="fm_jiaoyu" />
+			<input type="hidden" name="do" value="newschool" />
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+			<div class="form-group">
+				<label class="col-sm-2 control-label">关键字</label>
+				<div class="col-sm-2 col-lg-2" >
+					<input class="form-control" name="keyword" id="" type="text" value="{$_GPC['keyword']}">
+				</div>
+			</div>
+			<div class="form-group">
+			{if $city}
+				<label class="col-sm-2 control-label">按城市</label>
+				<div class="col-sm-2 col-lg-2" >
+					<select style="margin-right:15px;" name="city" id="city" class="form-control">
+						<option value="0">按城市</option>
+						{loop $city $row}
+						<option value="{$row['id']}" {if $row['id'] == $_GPC['city']} selected="selected"{/if}>{$row['name']}</option>
+						{/loop}
+					</select>
+				</div>
+			{/if}
+				<div class="col-sm-2 col-lg-2">
+					<select style="margin-right:15px;" name="areaid" id="areaid" class="form-control">
+						<option value="0">按区域</option>
+						{loop $area $row}
+						<option value="{$row['id']}" {if $row['id'] == $_GPC['areaid']} selected="selected"{/if}>{$row['name']}</option>
+						{/loop}
+					</select>
+				</div>					
+				<div class="col-sm-2 col-lg-2">
+					<select style="margin-right:15px;" name="typeid" class="form-control">
+						<option value="0">按类型</option>
+						{loop $schooltype $row}
+						<option value="{$row['id']}" {if $row['id'] == $_GPC['typeid']} selected="selected"{/if}>{$row['name']}</option>
+						{/loop}
+					</select>
+				</div>
+				<div class="pull-right col-sm-5">
+					<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					<a class="btn btn-primary" href="{php echo $this->createWebUrl('newschool', array('op' => 'post'))}"><i class="fa fa-plus"></i> 添加学校</a>
+					<!-- <a class="btn btn-primary" href="javascript:;" data-toggle="tooltip" data-placement="top" onclick="xxxz();"><i class="fa fa-anchor"></i> 学校限制</a> -->
+				</div>					
+			</div>
+		</form>		
+	</div>	
+	<div class="alert we7-page-alert">
+		<p><i class="wi wi-info-sign"></i> 当前接入学校总数:<strong class="text-danger">{$allxx}个</strong>。共绑定微信用户:<strong class="text-danger">{$allbd}人</strong>。昨日绑定:<strong class="text-danger">{$zrbd}人</strong>。今日绑定:<strong class="text-danger">{$jrbd}人</strong>。</p>
+		<p><i class="wi wi-info-sign"></i> 当前学生总数:<strong class="text-danger">{$allxs}人</strong>。当前教师总数:<strong class="text-danger">{$allls}人</strong>。当前考勤记录:<strong class="text-danger">{$allkq}次</strong>。昨日考勤:<strong class="text-danger">{$zrkq}次</strong>。今日考勤:<strong class="text-danger">{$jrkq}次</strong>。</p>
+	</div>	
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#city").change(function() {
+		var type = 1;
+		var cityId = $("#city option:selected").attr('value');
+		changeGrade(cityId,type, function() {
+		});
+	});	
+});	
+function changeGrade(cityId, type, __result) {	
+	var weid = "{$weid}";
+	var classlevel = [];
+	//获取班次
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getquyulist'))}", {'gradeId': cityId, 'weid': weid}, function(data) {
+	
+		data = JSON.parse(data);
+		classlevel = data.bjlist;
+		
+		var html = '';	
+		if (classlevel != '') {
+			for (var i in classlevel) {
+				html += '<option value="' + classlevel[i].id + '">' + classlevel[i].name + '</option>';
+			}
+		}
+		$('#areaid').html(html);	
+	});
+}
+</script>	
+<div class="panel panel-default">
+	<div class="table-responsive panel-body">
+		<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+				<tr>
+					<th style="width:4%;">顺序</th>
+					<th style="width:10%;">名称</th>
+					<th style="width:6%;">区域</th>
+					<th style="width:7%;">地址</th>
+					<th style="width:7%;">学校数据</th>
+					<th style="width:5%;">学校类型</th>
+					<th style="width:5%;">状态</th>
+					<th style="width:7%;">是否启用商城</th>
+					<th style="width:15%;text-align: right;">管理/编辑/删除</th>
+				</tr>
+				</thead>
+				<tbody>
+				{loop $schoollist $item}
+				<tr>
+					<td><input type="text" class="form-control" name="ssort[{$item['id']}]" value="{$item['ssort']}"></td>
+					<td><a href="{php echo $this->createWebUrl('start', array('id' => $item['id'], 'schoolid' =>  $item['id']))}" title="管理">
+						<img src="{php echo tomedia($item['logo'])}" onerror="this.src='./resource/images/nopic.jpg';" width="60px;" style="border-radius: 3px;">
+						<br/>{$item['title']}</a>
+					</td>
+					<td>{$item['city']}</br>{$item['qujian']}</td>
+					<td>
+					   {$item['address']}
+					   </br>
+					   {$item['tel']}
+					</td>
+					<td class="row-first row-hover" style="  word-wrap: break-word;"><a class="btn btn-default" href="javascript::;"  data-toggle="tooltip" data-placement="top" title="学校数据" onclick="sj('{$item['id']}', '{$item['xsrs']}人', '{$item['jsrs']}人','{$item['kcsm']}个','{$item['ybrs']}人');">学校数据</a></td>					
+					<td>
+					   {$item['leixing']}
+					</td>						
+					<td style="width:60px;">
+						{if $item['is_show']==1}
+						<span class="label" style="background:#56af45;">显示</span>
+						{else}
+						<span class="label" style="background:#f00;">隐藏</span>
+						{/if}
+						</br>
+						</br>
+						{if $item['is_cost']==1}
+						<span class="label" style="background:#56af45;">启用收费</span>
+						{/if}						
+					</td>
+					<td class="row-first row-hover" style="word-wrap: break-word;">
+						<a class="btn btn-default" href="javascript:;"  data-toggle="tooltip" data-placement="top" title="商城设置" onclick="setmall('{$item['id']}');">商城设置</a>
+					</td>	
+					<td style="max-width:60px;text-align: right;">
+						<a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('newschool', array('id' => $item['id'], 'schoolid' =>  $item['id'], 'op' => 'post'))}" title="编辑"><i class="fa fa-pencil"></i></a>
+						<a href="javascript::;"  data-toggle="tooltip" data-placement="top" onclick="copytip('{$item['id']}');" class="btn btn-default btn-sm" title="复制学校" data-toggle="tooltip" data-placement="top" >复制</a>
+						{if $_W['isfounder'] || $_W['role'] == 'owner'}
+						<a class="btn btn-default btn-sm" onclick="return confirm('确认删除吗？');return false;" href="{php echo $this->createWebUrl('newschool', array('id' => $item['id'], 'schoolid' =>  $item['id'], 'op' => 'delete'))}" title="删除"><i class="fa fa-times"></i></a>
+						{/if}
+						<a href="{php echo $this->createWebUrl('start', array('id' => $item['id'], 'schoolid' =>  $item['id']))}" class="btn btn-default btn-sm" title="管理学校" data-toggle="tooltip" data-placement="top"><i class="fa fa-cog fa-spin"> </i> 管理</a>							
+					</td>
+				</tr>
+				{/loop}
+				</tbody>
+				<tfoot>
+				<tr>
+					<td colspan="7">
+						<input name="submit" type="submit" class="btn btn-primary" value="批量修改排序">
+						<input type="hidden" name="token" value="{$_W['token']}" />
+					</td>
+				</tr>
+				</tfoot>
+			</table>
+		</form>
+		{$pager}
+	</div>
+</div>
+<input type="hidden" id="sid" value="">
+<div class="modal fade" style="min-width: 583px!important;" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content" style="border-radius: 20px;">
+			<div class="modal-header">
+				<h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;">选择复制内容</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">项目</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group text-info" style="width: 50%;float: left;">
+							<label for="beasic" class="checkbox-inline">
+								<input id="beasic" class="cehckd" type="checkbox" dataname="beasic" disabled checked value="beasic"/>基础设置
+							</label></br>
+							<label for="template" class="checkbox-inline">
+								<input id="template" class="cehckd" type="checkbox" dataname="template" value="template"/>前端模版
+							</label></br>
+						</div>
+						<div class="input-group text-info" style="width: 50%;float: left;">
+							<label for="classfiy" class="checkbox-inline">
+								<input id="classfiy" class="cehckd" type="checkbox" dataname="classfiy" value="classfiy"/>分类设置(年级、班级等)
+							</label></br>
+							<label for="banner" class="checkbox-inline">
+								<input id="banner" class="cehckd" type="checkbox" dataname="banner" value="banner"/>幻灯片
+							</label></br>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer" style="border-radius: 6px;">
+				<input type="submit" onclick="tijiao()" class="btn btn-success" value="确定选择">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="weid" value="{$weid}">
+<div class="modal fade" style="min-width: 583px!important;" id="Modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content" style="border-radius: 20px;">
+			<div class="modal-header">
+				<h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;">本公众号限制添加学校数量</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">数量</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group" style="width: 50%;float: left;">
+							<input class="form-control" id="xznumbers" type="text" value="{if $set['school_max']}{$set['school_max']}{else}{$set['school_max']}{/if}"/>
+						</div>
+						<div class="help-block">0则不限</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer" style="border-radius: 6px;">
+				<input type="submit" onclick="xztj()" class="btn btn-success" value="确定">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function xxxz(){
+	$('#Modal3').modal('toggle');
+}
+function xztj(){
+	var weid = $('#weid').val();
+	var xznumbers = $('#xznumbers').val();
+	$.ajax({
+		url: "{php echo $this->createWebUrl('newschool', array('op'=>'xznub'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			weid: weid,
+			xznumbers:xznumbers
+		},
+		success: function (data) {
+			if (data.result) {
+				$('#xznumbers').val(xznumbers);
+				alert(data.msg);
+			}else{
+				alert(data.msg);
+			}
+		}		
+	});
+	$('#Modal3').modal('toggle');
+}
+function copytip(id){
+	$('#Modal2').modal('toggle');
+	$('#sid').val(id);
+}
+
+function tijiao(){
+	var all_select_id = '';
+	$(".cehckd").each(function(i, dom) {
+		if($(this).is(':checked')){
+			all_select_id += $(this).val() + ',';
+		}
+	});
+	var all_select_id = all_select_id;
+	var sid = $('#sid').val();
+	//获取班次
+	window.open("{php echo $this->createWebUrl('newschool',array('op'=>'copy'))}"+'&sid='+sid+'&options='+all_select_id);  
+	$('#Modal2').modal('toggle');
+}
+</script>
+{if $_W['isfounder'] && getoauthurl() != 'b.yuntuijia.com'}
+	<div class="panel panel-default">
+		<div class="panel-heading">给开发者建议或留言</div>
+		<div class="panel-body">
+		<div class="row-fluid">
+			<div class="span8 control-group">
+				【本部分仅创始人可见，不必担心客户或其他管理员能看到】有何建议或BUG请直接提交  联系开发者QQ:<a href="tencent://message/?uin=332035136&Site=qq&Menu=yes">332035136</a> 工作日时间（周一 - 周六 13：00 - 21：00）请直接Q我!其他时间勿扰。
+			</div>
+		</div>
+		</div>
+	</div>
+{/if}
+<input type="hidden" name="rid" id="stylerid" value="" />
+<style>
+	.template .item{position:relative;display:block;float:left;border:1px #ddd solid;border-radius:5px;background-color:#fff;padding:5px;width:190px;margin:0 20px 20px 0; overflow:hidden;}
+	.template .title{margin:5px auto;line-height:2em;}
+	.template .title a{text-decoration:none;}
+	.template .item img{width:178px;height:270px; cursor:pointer;}
+	.template .active.item-style img, .template .item-style:hover img{width:178px;height:270px;border:3px #009cd6 solid;padding:1px; }
+	.template .title .fa{display:none}
+	.template .active .fa.fa-check{display:inline-block;position:absolute;bottom:33px;right:6px;color:#FFF;background:#009CD6;padding:5px;font-size:14px;border-radius:0 0 6px 0;}
+	.template .fa.fa-times{cursor:pointer;display:inline-block;position:absolute;top:10px;right:6px;color:#D9534F;background:#ffffff;padding:5px;font-size:14px;text-decoration:none;}
+	.template .fa.fa-times:hover{color:red;}
+	.template .item-bg{width:100%; height:342px; background:#000; position:absolute; z-index:1; opacity:0.5; margin:-5px 0 0 -5px;}
+	.template .item-build-div1{position:absolute; z-index:2; margin:-5px 10px 0 5px; width:168px;}
+	.template .item-build-div2{text-align:center; line-height:30px; padding-top:150px;}
+	@media screen and (min-width:992px){#ListStyle{width:890px; margin:100px auto;}}
+</style>
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title">学校数据</h4>
+			</div>
+			<style>.modal-body {width: 50%;float: left;  border-bottom: 1px solid #F1F3F5;border-right: 1px solid #F1F3F5;}</style>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-5 control-label">学生人数</label>
+					<div class="col-sm-3 col-xs-5">
+						<a  href="javascript::;"  target="_blank" class="label label-success user_ysh"></a>	
+					</div>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-5 control-label">教师人数</label>
+					<div class="col-sm-3 col-xs-5">
+						<a  href="javascript::;"  target="_blank" class="label label-success user_wsh"></a>	
+					</div>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-5 control-label">课程总数</label>
+					<div class="col-sm-3 col-xs-5">
+						<a href="javascript::;" target="_blank" class="label label-success user_tprc"></a>	
+					</div>
+				</div>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-5 control-label">绑定人数</label>
+					<div class="col-sm-3 col-xs-5">
+						<span class="label label-success user_cyrs"></span>	
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<!--<input type="submit" name="tijiao" id="tijiao" class="btn btn-success" value="开始上传">-->
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" style="min-width: 583px!important;" id="Modal_mall" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content" style="border-radius: 20px;">
+			<div class="modal-header" style='    margin-bottom: -15px;'>
+				<h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;">商城设置</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;" id="setmall">
+			
+			</div>
+			<div class="modal-footer" style="border-radius: 6px;">
+				<input type="submit" onclick="suresetmall()" class="btn btn-success" value="确定选择">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">		
+
+function suresetmall(){
+	var is_shangcheng = $("input[name=is_shangcheng]").val();
+	var mall_is_Auto = $("input[name=mall_is_Auto]").val();
+	var mallpayweid = $("#mallpayweid").val();
+	var schoolid = $("#schoolid").val();
+
+	$.ajax({
+		url: "{php echo $this->createWebUrl('newschool', array('op'=>'SetMall'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			is_shangcheng:is_shangcheng,
+			mall_is_Auto:mall_is_Auto,
+			mallpayweid:mallpayweid,
+			schoolid:schoolid
+		},
+		success: function (data) {
+			alert(data.msg);
+			window.location.reload()
+		}		
+	});
+
+}
+
+function sj(schoolid,user_ysh,user_wsh,user_tprc,user_cyrs){
+	 $('#Modal1').modal('toggle');
+	 $('.user_ysh').text(user_ysh);
+	 $('.user_wsh').text(user_wsh);
+	 $('.user_tprc').text(user_tprc);
+	 $('.user_cyrs').text(user_cyrs);
+}
+function setmall(schoolid){
+	$('#Modal_mall').modal('toggle');
+	$.ajax({
+		url: "{php echo $this->createWebUrl('newschool', array('op'=>'GetMall'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			schoolid:schoolid,
+		},
+		success: function (data) {
+			var payweid = data.payweid
+			var html   = '';
+			if(`${data.schoolset.is_shangcheng}` == 1){
+				var checked_is_shangcheng = 'checked'
+			}else{
+				var checked_is_shangcheng = ''
+			}
+			if(`${data.schoolset.mall_is_Auto}` == 1){
+				var checked_mall_is_Auto = 'checked'
+			}else{
+				var checked_mall_is_Auto = ''
+			}
+            html += `<div class="form-group" style="margin-bottom: 45px;">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 150px;">启用商城</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group text-info" style="width: 50%;float: left;">
+							<label for="beasic" class="checkbox-inline">
+								<input type="checkbox" value="${data.schoolset.is_shangcheng}" name="is_shangcheng" ${checked_is_shangcheng}>
+							</label>
+						</div>
+					</div>
+				</div>`;
+			html += `<div class="form-group" style="margin-bottom: 90px;">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 150px;">商城自动发货</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group text-info" style="width: 50%;float: left;">
+							<label for="beasic" class="checkbox-inline">
+								<input type="checkbox" value="${data.schoolset.mall_is_Auto}" name="mall_is_Auto" ${checked_mall_is_Auto}>
+							</label>
+						</div>
+					</div>
+				</div>`;
+				html += `<input type='hidden' id='schoolid' value='${schoolid}'>`;
+
+			html += `<div class="form-group" ><label class="col-xs-12 col-sm-2 col-md-3 col-lg-2 control-label" style="width: 150px;">商城费用支付至</label><div class="col-sm-9 col-xs-6"><div class="input-group text-info" style="width: 50%;float: left;"><label for="beasic" class="checkbox-inline"><select class="form-control" name="mallpayweid" id="mallpayweid" style="width: 150px;"><option value="0">请选择收款账户</option>`;
+            if (payweid != '') {
+                for (var i in payweid) {
+					if(`${data.schoolset.mallpayweid}` == `${payweid[i].uniacid}`){
+						var checked_mallpayweid = 'selected'
+					}else{
+						var checked_mallpayweid = ''
+					}
+                    html += `<option value="${payweid[i].uniacid}" ${checked_mallpayweid}>${payweid[i].name}</option>`;
+                }
+            }
+			html += `</select></label></div></div></div>`
+			console.log(html)
+			$('#setmall').html(html)
+			$(':checkbox[name="is_shangcheng"]').bootstrapSwitch();
+			$(':checkbox[name="is_shangcheng"]').on('switchChange.bootstrapSwitch', function(e, state){
+				var is_shangcheng = this.checked ? 1 : 2;
+				$("input[name=is_shangcheng]").val(is_shangcheng)
+				
+			});
+			$(':checkbox[name="mall_is_Auto"]').bootstrapSwitch();
+			$(':checkbox[name="mall_is_Auto"]').on('switchChange.bootstrapSwitch', function(e, state){
+				var mall_is_Auto = this.checked ? 1 : 2;
+				$("input[name=mall_is_Auto]").val(mall_is_Auto)
+			});	
+		}		
+	},'json');
+}
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+	
+})
+</script>
+{elseif $operation == 'post'}
+<link rel="stylesheet" type="text/css" href="../addons/fm_jiaoyu/public/web/css/clockpicker.css" media="all">
+<script type="text/javascript" src="../addons/fm_jiaoyu/public/web/js/clockpicker.js"></script>
+<link rel="stylesheet" type="text/css" href="../addons/fm_jiaoyu/public/web/css/standalone.css" media="all">
+<link rel="stylesheet" type="text/css" href="../addons/fm_jiaoyu/public/web/css/uploadify_t.css?v=4" media="all" />
+<style>
+    .item_box img{
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<script>
+    $(function(){
+        $('.clockpicker').clockpicker();
+    })
+</script>
+<a class="btn btn-primary" href="{php echo $this->createWebUrl('newschool', array('op' => 'display'))}"><i class="fa fa-tasks"></i> 返回学校列表</a>
+<div class="main">
+    <form action="" method="post" onsubmit="return check();" class="form-horizontal form" enctype="multipart/form-data">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                基本信息
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">学校名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="title" value="{$reply['title']}" id="title" class="form-control" />
+                    </div>
+                </div>				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">Logo</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image('logo', $reply['logo'])}
+						<div class="help-block">如果使用优米考勤机必须为PNG格式图片否则设备上无法显示</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">学校类型</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="type" id="type">
+                            <option value="0">请选择</option>
+                            {loop $schooltype $item}
+                            <option value="{$item['id']}" {if $reply['typeid']==$item['id']}selected{/if}>{$item['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+				{if $city}
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属城市</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="cityid" id="city">
+                            <option value="0">请选择</option>
+                            {loop $city $item}
+                            <option value="{$item['id']}" {if $reply['cityid']==$item['id']}selected{/if}>{$item['name']}</option>
+                            {/loop}
+							<input type="hidden" name='cityids[]' id='cityid' value='' >
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属区域</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="area" id="area">
+							{if $reply['areaid']}
+							<option value="{$reply['areaid']}" selected>{$quyu['name']}</option>						
+							{/if}
+                        </select>
+                    </div>
+                </div>
+				{else}	
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">所属区域</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="area" id="area">
+                            <option value="0">请选择</option>
+                            {loop $area $item}
+                            <option value="{$item['id']}" {if $reply['areaid']==$item['id']}selected{/if}>{$item['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+				{/if}
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">本校独立账户归属{if $_W['isfounder']}微擎{/if}用户组</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" name="wqgroupid" id="wqgroupid">
+                            <option value="0">请选择</option>
+							{loop $groups $row}
+							<option value="{$row['id']}" {if $row['id'] == $reply['wqgroupid']}selected="selected"{/if}>{$row['name']}</option>
+							{/loop}							
+                        </select>
+                    </div>
+                </div>								
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">启用学校</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline">
+                            <input type="radio" name="is_show" value="1" {if $reply['is_show']==1 || empty($reply)}checked{/if}>是
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="is_show" value="0" {if isset($reply['is_show']) && empty($reply['is_show'])}checked{/if}>否
+                        </label>
+						<div class="help-block">如不启用，手机端学校列表里则不显示本校</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否满员</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline">
+                            <input type="radio" name="is_hot" value="1" {if $reply['is_hot']==1 || empty($reply)}checked{/if}>是
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="is_hot" value="0" {if isset($reply['is_hot']) && empty($reply['is_hot'])}checked{/if}>否
+                        </label>
+                        <div class="help-block">本校招生是否满员</div>
+                    </div>
+                </div>							
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="ssort" value="{$reply['ssort']}" id="ssort" class="form-control" />
+                    </div>
+                </div>
+			</div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="保存设置" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#city").change(function() {
+		var type = 2;
+		var cityId = $("#city option:selected").attr('value');
+		changeGrade(cityId,type, function() {
+		});	
+		
+	});	
+});	
+function changeGrade(gradeId, type, __result) {
+	
+	//$('#njidid').val(gradeId);
+	
+	var weid = "{$weid}";
+	var classlevel = [];
+	//获取班次
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getquyulist'))}", {'gradeId': gradeId, 'weid': weid}, function(data) {
+	
+		data = JSON.parse(data);
+		classlevel = data.bjlist;
+		
+		var html = '';
+		html += '<select id="bj_id"><option value="">请选择区域</option>';
+		if (classlevel != '') {
+			for (var i in classlevel) {
+				html += '<option value="' + classlevel[i].id + '">' + classlevel[i].name + '</option>';
+			}
+		}
+		
+		$('#area').html(html);
+	});
+
+}
+</script>
+<script type="text/javascript">
+	var category = {php echo json_encode($children)};
+	$('#credit1').click(function(){
+		$('#credit-status1').show();
+	});
+	$('#credit0').click(function(){
+		$('#credit-status1').hide();
+	});
+	$('#credit3').click(function(){
+		$('#credit-status2').show();
+	});
+	$('#credit2').click(function(){
+		$('#credit-status2').hide();
+	});	
+</script>
+<script language='javascript'>
+    require(['jquery', 'util'], function ($, u) {
+        $(function () {
+            u.editor($('.richtext')[0]);
+        });
+    });
+</script>
+<script type="text/javascript">
+    function check() {
+        if($.trim($('#title').val()) == '') {
+            message('没有输入学校名称.', '', 'error');
+            return false;
+        }
+        return true;
+    }
+</script>
+{/if}
+{template 'common/footer'}

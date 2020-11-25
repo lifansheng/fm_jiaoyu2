@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<title>微信提现</title>
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/mNewMsg.css?v=1?v=1111" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-ui.js?v=4.8"></script>
+{php include $this->template('port');}
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+.order{width:100%;text-align:center;margin-top: 31%;}
+.order span{ font-size: 41px;}
+</style>
+<body class="auto_height">
+	{if !empty($order) || $order['status'] == 1}
+	<div class="order">
+		<p>提现金额</p>
+		<span>￥{$order['fee']}</span>
+	</div>
+	{else}
+	<div class="order">
+		<p>该申请订单不存在或者已提现，请前往提现中心查看详情</p>
+	</div>
+	{/if}
+	{if !empty($order) && $order['status'] == 1}
+	<div class="msgSubmit">
+		<button class="mainColor" style="background-color: #14c682;" onclick="sendSubmitBtn({$order['id']},this);">提现</button>
+	</div>
+	{/if}
+</body>
+{if !empty($order) && $order['status'] == 1}
+<script>
+function sendSubmitBtn(id,elm){
+	ajax_start_loading("提现操作中，请勿关闭本页面...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('getcash_wx', array('op' => 'getcash'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {orderid:id},
+		success: function(result) {
+			ajax_stop_loading();
+			jTips(result.msg);
+			if(result.result){
+				window.location = "{$_W['siteroot']}app/index.php?i={$order['weid']}&schoolid={$order['schoolid']}&c=entry&m=fm_jiaoyu&do=getcash"
+			}
+		},
+		error: function(e) {
+			ajax_stop_loading();
+			jTips('访问网络失败');
+		}
+	});	
+}
+</script>
+{/if}
+<script>
+$(function() {
+  WeixinJSHideAllNonBaseMenuItem();
+});
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem()
+		});
+	}
+}
+var WeixinApi = (function () {
+	return {
+		imagePreview:imagePreview
+    };
+    "use strict";
+    function imagePreview(curSrc,srcList) {
+        if(!curSrc || !srcList || srcList.length == 0) {
+            return;
+        }
+        WeixinJSBridge.invoke('imagePreview', {
+            'current' : curSrc,
+            'urls' : srcList
+        });
+    }
+    return {
+        version         :"2.5",
+        imagePreview    :imagePreview
+    };
+})();
+</script>
+</html>

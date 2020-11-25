@@ -1,0 +1,79 @@
+
+    <style>
+        .iw i{transition: all .3s;}
+        .iw.inh i{transform: rotate(180deg);}
+        .BHS_event{margin-bottom: 10px;}
+        .BHS_event_score{display: flex;}
+    </style>
+{if $bjcheck}
+<div>
+    <div style="font-size: 16px; font-weight: bold; color: rgb(78, 193, 184);line-height: 40px;display: flex;">
+        <div class="iw" onclick="SwiT(this)" style="width: 100px;"> 班级考核 <i class="fa  fa-angle-down"></i>  </div>    
+    </div>
+    <div class="bhc">
+        {loop $bjcheck $key $row}
+        <div class="BHS_event" >
+            <div class="BHS_event_order"> {php echo $key + 1}. </div>
+            <div class="BHS_event_content" >
+                <div style="font-weight: bold;">
+                {$row['title']}
+                {if $row['addition'] == 1}<label class="label label-success">(加分项)</label>{else}<label class="label label-danger">(减分项)</label>{/if}
+                </div>
+                <div class="BHS_event_score" >
+                    <span>次数：</span>
+                    <span style="width: 300px;">
+                        <input class="form-control" name="score[{$row['id']}]" type="number" value="{php echo $scoreLog[$row['id']]['score'] ? $scoreLog[$row['id']]['score'] : 0}">
+                    </span>
+                </div>
+                <div class="BHS_event_score" >
+                    <span>备注：</span>
+                    <span style="width: 300px;">
+                        <textarea class="form-control" name="remark[{$row['id']}]" style="resize: none;">{$scoreLog[$row['id']]['remark']}</textarea>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {/loop}
+    </div>
+    <div style="border-bottom: 1px dashed rgb(78, 193, 184);margin-bottom: 20px;"></div>
+</div>
+{/if}
+{if $teacheck}
+<div>
+    <div style="font-size: 16px; font-weight: bold; color: rgb(78, 193, 184);line-height: 40px;display: flex;">
+        <div class="iw" onclick="SwiT(this)" style="width: 100px;"> 班主任考核 <i class="fa  fa-angle-down"></i>  </div>    
+    </div>
+    <div class="bhc">
+        {loop $teacheck $key $row}
+        <div class="BHS_event">
+            <div class="BHS_event_order"> {php echo $key + 1}. </div>
+            <div class="BHS_event_content" >
+                <div style="font-weight: bold;">
+                {$row['title']}
+                {if $row['addition'] == 1}<label class="label label-success">(加分项)</label>{else}<label class="label label-danger">(减分项)</label>{/if}
+                </div>
+                <div class="BHS_event_score" >
+                    <span>次数：</span>
+                    <span style="width: 300px;">
+                        <input class="form-control" name="score[{$row['id']}]" type="number" value="{php echo $scoreLog[$row['id']]['score'] ? $scoreLog[$row['id']]['score'] : 0}">
+                    </span>
+                </div>
+                <div class="BHS_event_score" >
+                    <span>备注：</span>
+                    <span style="width: 300px;">
+                        <textarea class="form-control" name="remark[{$row['id']}]" style="resize: none;">{$scoreLog[$row['id']]['remark']}</textarea>
+                    </span>
+                </div>
+            </div>
+        </div>
+        {/loop}
+        </div>
+</div>
+
+{/if}
+
+<script>
+    function SwiT(e){
+        $(e).toggleClass("inh").parent().siblings(".bhc").slideToggle(300)
+    }
+</script>

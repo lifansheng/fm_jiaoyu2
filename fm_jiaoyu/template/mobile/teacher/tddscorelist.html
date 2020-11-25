@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+{php echo register_jssdks();}
+<style>
+    
+    *{box-sizing: border-box;}
+    .trans_select{width: calc(100% - 20px);position: relative;}
+    .trans_select>.selectbox{width: 100%;position: absolute;opacity: 0;}
+    .selectbox>select{width: 100%;height: 100%;}
+	.StuCountBox{width: 100%;background-color: white;margin:10px 0 0 0;display: flex;justify-content: space-around;padding:10px; border-bottom: 1px solid #dedede;}
+	.StuCountBox>div{display: flex;flex-direction: column;text-align: center;}
+	.StuCountBox .n{font-size: 20px;}
+</style>
+
+<title>班级考核</title>
+</head>
+<body>
+{php include $this->template('port');}
+<div style="width: 100%;z-index: 10;background-color: #f0f0f2;top:0">
+	
+	<div class="StuCountBox">
+		<div>
+			<div>班级总数</div>
+			<div class="n" style="color:#21b6bd">{$allbj}个</div>
+		</div>
+		<div>
+			<div>已评班级数</div>
+			<div class="n" style="color:#54b7e6">{$donenum}个</div>
+		</div>
+		<div>
+			<div>待评班级数</div>
+			<div class="n" style="color:#f39756">{$nodonenum}个</div>  
+		</div>
+	</div>
+</div>
+
+
+<style>
+	.njlist{padding:0 10px;}
+	.njlist .bjcell{width: 100%;border-radius: 5px;background-color: white;padding:10px;margin-bottom:10px}
+	.bjtitle{display: flex;margin-bottom: 10px;position: relative;}
+	.bjtitle:after{
+		content: '';
+    width: 90%;
+	margin-left: 5%;
+    height: 1px;
+    background-color: #e6e6e6;
+    position: absolute;
+	bottom: 0px;
+	}
+	.bjtitle .content{font-size: 16px;width: calc(100% - 20px);}
+	.bjtitle .lr{width: 20px;font-size: 20px;text-align: right;}
+	.bjcount{display: flex;justify-content: space-around;font-size: 16px;}
+	.bjcount>div{text-align: center;}
+</style>
+
+<div class="njlist" style="margin-top: 10px;">
+    {loop $njlist $item}
+    <div class="bjcell" onclick="GoToDetail(`{$item['sid']}`)">
+        <div class="bjtitle">
+            <div class="content">
+                {$item['sname']}(总数{$item['bjnum']})
+            </div>
+            <div class="lr">
+                <i class="fa fa-angle-right"></i>
+            </div>
+        </div>
+        <div class="bjcount">
+            <div>
+                <div class="n" style="color:#54b7e6">{$item['donenum']}个</div>
+                <div style="font-size: 14px;">已评班级数</div>
+            </div>
+            <div >
+                <div class="n" style="color:#f39756">{$item['nodonenum']}个</div>
+                <div style="font-size: 14px;">待评班级数</div>
+            </div>
+        </div>
+    </div>
+    {/loop}
+</div>
+<script>
+    function GoToDetail(id) {
+        window.location.href = "{php echo $this->createMobileUrl('tddscoredetail',array('schoolid'=>$schoolid))}"+`&njid=${id}`;
+    }
+</script>
+{php include $this->template('newfooter');} 

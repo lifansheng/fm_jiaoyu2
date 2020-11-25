@@ -1,0 +1,463 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			{if IsHasQx($tid_global,1004301,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsmanager'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsmanager', array('op' => 'display', 'schoolid' => $schoolid))}">库存管理</a></li>
+			{/if}
+			{if IsHasQx($tid_global,1004311,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsuselog'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsuselog', array('op' => 'display', 'schoolid' => $schoolid))}">领用记录</a></li> 
+			{/if}
+			{if IsHasQx($tid_global,1004321,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsfixlog'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsfixlog', array('op' => 'display', 'schoolid' => $schoolid))}">维修记录</a></li>
+			{/if}
+		</ul>
+	</div>
+</div>
+
+{if $operation == 'display'}
+<div class="main">
+<style>
+	.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}	
+	.label-wait{background-color: rgb(244,162,60)}
+	.label-fixed{background-color: rgb(176, 201, 66)}
+	.label-refuse{background-color: rgb(238,34,75)}
+	.label-waste{background-color: rgb(94, 83, 238)}
+	.label-startt{background-color: rgb(83, 194, 238)}
+
+	.tips_with_dot{height: 1px;width:100%;border-bottom: 1px dotted gray;margin-bottom: 10px;margin-top: 10px;}
+	.tips_with_dot div{height: 30px;line-height: 30px;top: -15px; position: relative;background-color: white;width:100px;font-size: 16px;text-align: center;margin-left: calc(50% - 50px)}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">公物维修记录</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="assetsfixlog"/>
+				<input type="hidden" name="op" value="display"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+			 
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">归还状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('assetsfixlog', array('status' => '-1', 'schoolid' => $schoolid))}" class="btn {if $status == -1}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('assetsfixlog', array('status' => '1', 'schoolid' => $schoolid))}"  class="btn {if $status == 1}btn-primary{else}btn-default{/if}">待审核</a>
+							<a href="{php echo $this->createWebUrl('assetsfixlog', array('status' => '2', 'schoolid' => $schoolid))}"  class="btn {if $status == 2}btn-primary{else}btn-default{/if}">已维修</a>
+							<a href="{php echo $this->createWebUrl('assetsfixlog', array('status' => '3', 'schoolid' => $schoolid))}"  class="btn {if $status == 3}btn-primary{else}btn-default{/if}">已拒绝</a>
+							<a href="{php echo $this->createWebUrl('assetsfixlog', array('status' => '4', 'schoolid' => $schoolid))}"  class="btn {if $status == 4}btn-primary{else}btn-default{/if}">已报废</a>
+						</div>
+					</div>
+                </div>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">公物名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="assetsname" id="" type="text" value="{$_GPC['assetsname']}">
+                    </div>
+		
+				</div>	
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">领用教师</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="sqtname" id="" type="text" value="{$_GPC['sqtname']}">
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">领用时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('shenqingtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+				</div>		
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">处理教师</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="cltname" id="" type="text" value="{$_GPC['cltname']}">
+                    </div>
+			 
+					 
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>	
+				
+				</div>
+			</form>
+		</div>		
+    </div>
+	<div class="panel panel-default">
+		<div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th class='with-checkbox' style="width: 20px;"><input type="checkbox" class="check_all" /></th>
+							<th style="width:20%">公物名称 </th>
+							<th style="width:11%">申请人 </th>
+							<th style="width:11%">申请时间 </th>
+							<th style="width:11%;">申请状态</th>
+							<th style="width:11%;">处理人</th>
+							<th style="width:11%;">处理状态</th>
+							<th style="width:11%;">处理时间</th>
+							<th class="qx_e_d" style="text-align:right; width:14%;">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td class="with-checkbox" style="width: auto;"><input type="checkbox" name="check" value="{$item['id']}"></td>
+							<td>{$item['gwname']}</td>
+							<td>{$item['tname']}</td>
+							<td>{php echo date("Y-m-d H:i",$item['createtime'])}</td>
+							<td>
+								{if $item['sq_type'] == 1}
+								申请维修
+								{else}
+								申请报废
+								{/if}
+							</td>
+							<td>
+								{if $item['status'] == 1}
+								<span class="label label-wait">待审核</span>
+								{else}
+								{$item['cltname']}
+								{/if}
+							</td>
+							<td>
+								{if $item['status'] == 1}
+								<span class="label label-wait">待审核</span>
+								{elseif $item['status'] == 2}
+								<span class="label label-fixed">已维修</span>
+								{elseif $item['status'] == 3}
+								<span class="label label-refuse">已拒绝</span>
+								{elseif $item['status'] == 4}
+								<span class="label label-waste">已报废</span>
+								{elseif $item['status'] == 5}
+								<span class="label label-startt">开始维修</span>
+								{/if}
+	
+							</td>
+							<td>
+								{if $item['status'] == 1}
+								<span class="label label-wait">待审核</span>
+								{else}
+								{php echo date("Y-m-d H:i",$item['cltime'])}
+								{/if}
+							</td>
+	
+							<td class="qx_e_d" style="text-align:right;">
+								{if $item['status'] == 1}
+								<a class="btn btn-default btn-sm qx_4322"
+									onclick="DealFix({$item['id']})" 
+									title="处理申请"><i class="fa fa-wrench"></i></a>
+								{elseif $item['status'] == 5}
+								<a class="btn btn-default btn-sm qx_4322"
+									onclick="FinishFix({$item['id']})" 
+									title="维修完成"><i class="fa fa-check"></i></a>
+								{/if}
+								<a class="btn btn-default btn-sm qx_4323"
+									href="{php echo $this->createWebUrl('assetsfixlog', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}"
+									onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i
+										class="fa fa-times"></i></a>
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+					<tr>
+						<td colspan="10">
+							<input name="token" type="hidden" value="{$_W['token']}" />
+							<input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+						</td>
+					</tr>
+				</table>
+				{$pager}
+			</form>
+		</div>
+	</div>
+</div>
+
+<style>
+	.ShenQingInfo_title{width:80px;color:#343434;float: left;height: 40px;line-height: 40px}
+	.ShenQingInfo_span{line-height: 40px;color:#343434}
+</style>
+
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;">
+	<div class="modal-dialog modal-lg" role="document">		
+		<div class="modal-content">			
+			<div class="modal-header" style="color: black;">					
+				<h4 class="modal-title" id="ModalTitle">处理申请</h4>	
+			</div>
+			<div class="modal-body">
+				 <div class="form-group">
+					<div class="col-sm-9 col-xs-6" style="width:100% !important">
+						<div class="tips_with_dot">
+							<div>申请信息</div>	
+						</div>
+						<div class="input-group text-info" style="width:100%">
+							<div class="ShenQingInfo_title">申请信息：</div> 
+							<div style="width:calc(100% - 80px);float: left;" >
+								<span id="sqinfo" class="ShenQingInfo_span">处理结果</span>
+							</div>
+						</div>
+						<div class="input-group text-info" style="width:100%">
+							<div class="ShenQingInfo_title">申请老师：</div> 
+							<div style="width:calc(100% - 80px);float: left;" >
+								<span id="sqtea" class="ShenQingInfo_span">处理结果</span>
+							</div>
+						</div>
+						<div class="tips_with_dot">
+							<div>处理信息</div>	
+						</div>
+						<div class="input-group text-info" style="width:100%;margin-bottom: 10px;margin-top: 10px">
+							<div class="ShenQingInfo_title">处理结果：</div> 
+							<div style="width:calc(100% - 80px);float: left;width:150px" >
+								<select id="dealtype" class="ShenQingInfo_span" >
+									<option value="3">拒绝维修</option>
+									<option value="4">报废处理</option>
+									<option value="5">开始维修</option>
+								</select>
+								<!-- <span id="deal_result" class="ShenQingInfo_span">处理结果</span> -->
+							</div>
+						</div>
+						<div style="min-height: 80px">
+							<div class="input-group text-info" id="dealword" style="width:100%; ">
+								<div style="width:80px;color:#343434;float: left;">处理描述：</div> 
+								<div style="width:calc(100% - 80px);float: left;" >
+									<textarea style="width:100%;resize: none;height: 80px" id="cltext"  ></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>			
+			</div>				
+			<div class="modal-footer">	
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit2"   onclick="setdeal()">确认处理</button>
+			</div>			
+		</div>	
+	</div>
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;">
+		<div class="modal-dialog modal-lg" role="document">		
+			<div class="modal-content">			
+				<div class="modal-header" style="color: black;">					
+					<h4 class="modal-title" id="ModalTitle">处理申请</h4>	
+				</div>
+				<div class="modal-body">
+					 <div class="form-group">
+						<div class="col-sm-9 col-xs-6" style="width:100% !important">
+							<div class="tips_with_dot">
+								<div>申请信息</div>	
+							</div>
+							<div class="input-group text-info" style="width:100%">
+								<div class="ShenQingInfo_title">申请信息：</div> 
+								<input type="hidden" id="FinishId" />
+								<div style="width:calc(100% - 80px);float: left;" >
+									<span id="sqinfo1" class="ShenQingInfo_span">处理结果</span>
+								</div>
+							</div>
+							<div class="input-group text-info" style="width:100%">
+								<div class="ShenQingInfo_title">申请老师：</div> 
+								<div style="width:calc(100% - 80px);float: left;" >
+									<span id="sqtea1" class="ShenQingInfo_span">处理结果</span>
+								</div>
+							</div>
+							<div class="tips_with_dot">
+								<div>处理信息</div>	
+							</div>
+							<div class="input-group text-info" style="width:100%;margin-bottom: 10px;margin-top: 10px">
+								<div class="ShenQingInfo_title">处理结果：</div> 
+								<div style="width:calc(100% - 80px);float: left;" >
+										<span id="sqinfo1" class="ShenQingInfo_span">维修完成</span>
+									</div>
+							</div>
+							<div style="min-height: 80px">
+								<div class="input-group text-info" id="dealword" style="width:100%; ">
+									<div style="width:80px;color:#343434;float: left;">处理描述：</div> 
+									<div style="width:calc(100% - 80px);float: left;" >
+										<textarea style="width:100%;resize: none;height: 80px" id="cltext1"  ></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>			
+				</div>				
+				<div class="modal-footer">	
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="submit3"   onclick="setdeal_FINISH()">确认处理</button>
+				</div>			
+			</div>	
+		</div>
+	</div>
+
+
+<script type="text/javascript">
+
+$("#dealtype").change(function() {
+	let type = $(this).val();
+	if(type == 5){
+		$("#dealword").hide();
+	}else{
+		$("#dealword").show();
+
+	}
+})
+
+$(function(){
+	 var e_d = 2 ;
+	 {if !(IsHasQx($tid_global,1004322,1,$schoolid))}
+		 $(".qx_4322").hide();
+		 e_d = e_d -1  ;
+	 {/if}
+	 {if !(IsHasQx($tid_global,1004323,1,$schoolid))}
+		 $(".qx_4323").hide();
+		 e_d = e_d -1  ;
+	 {/if}
+	 if(e_d == 0){
+		 $(".qx_e_d").hide();
+	 }
+});
+
+function FinishFix(id){
+	$("#FinishId").val(id);
+	$("#sqinfo1").html('');
+	$("#sqtea1").html('');
+	//$("#dealtype").val("2");
+	$.post("{php echo $this->createWebUrl('assetsfixlog',array('op'=>'GetSqInfo','schoolid'=>$schoolid))}", {'id': id }, function(data) {	
+		console.log(data);
+		let shenqinginfo = '';
+		let shenqingtea = '';
+		if(data.data.sq_type == '1'){
+			shenqinginfo = '【申请维修】';
+		}
+		if(data.data.sq_type == '2'){
+			shenqinginfo = '【申请报废】';
+		}
+		shenqinginfo = shenqinginfo + data.data.gwname ;
+		shenqingtea = data.data.tname + `<span style="color:gray;font-size:12px;margin-left:10px">${data.data.sqtime}</span>	`;
+		$("#sqinfo1").html(shenqinginfo);
+		$("#sqtea1").html(shenqingtea);
+		$('#Modal2').modal('toggle'); 
+	},'json');
+ }
+
+ var Dealid = 0 ;
+ function DealFix(id){
+	Dealid = id ;
+	$("#sqinfo").html('');
+	$("#sqtea").html('');
+	//$("#dealtype").val("2");
+	$.post("{php echo $this->createWebUrl('assetsfixlog',array('op'=>'GetSqInfo','schoolid'=>$schoolid))}", {'id': id }, function(data) {	
+		console.log(data);
+		let shenqinginfo = '';
+		let shenqingtea = '';
+		if(data.data.sq_type == '1'){
+			shenqinginfo = '【申请维修】';
+		}
+		if(data.data.sq_type == '2'){
+			shenqinginfo = '【申请报废】';
+		}
+		shenqinginfo = shenqinginfo + data.data.gwname ;
+		shenqingtea = data.data.tname + `<span style="color:gray;font-size:12px;margin-left:10px">${data.data.sqtime}</span>	`;
+		$("#sqinfo").html(shenqinginfo);
+		$("#sqtea").html(shenqingtea);
+		$('#Modal1').modal('toggle'); 
+	},'json');
+	
+ }
+ 
+
+ function setdeal_FINISH(){
+	let url = "{php echo $this->createWebUrl('assetsfixlog',array('op'=>'dealshenqing','schoolid'=>$schoolid))}";
+	let Dealtype = 2;
+	let cltext = $("#cltext1").val();
+	let finishid = $("#FinishId").val();
+	// console.log(cltext);
+	// return;
+	$.ajax({
+		url: url,
+		type: "post",
+		dataType: "json",
+		data:{
+			id : finishid,
+			dealtype : Dealtype,
+			cltext : cltext
+		},
+		success: function (res) {
+			alert(res.msg);
+			window.location.reload();
+			//$('#Modal1').modal('toggle'); 
+		}
+	});
+ }
+
+
+ function setdeal(){
+	let url = "{php echo $this->createWebUrl('assetsfixlog',array('op'=>'dealshenqing','schoolid'=>$schoolid))}";
+	let Dealtype = $("#dealtype").val();
+	let cltext = $("#cltext").val();
+	// console.log(cltext);
+	// return;
+	$.ajax({
+		url: url,
+		type: "post",
+		dataType: "json",
+		data:{
+			id : Dealid,
+			dealtype : Dealtype,
+			cltext : cltext
+		},
+		success: function (res) {
+			alert(res.msg);
+			window.location.reload();
+			//$('#Modal1').modal('toggle'); 
+		}
+	});
+ }
+ 
+
+
+$("input[name=btndeleteall]").click(function(){
+	var check = $("input[type=checkbox][class!=check_all]:checked");
+	if(check.length < 1){
+		alert('请选择要删除的数据!');
+		return false;
+	}
+	if(confirm("确认要删除选择的数据?")){
+		var id = new Array();
+		check.each(function(i){
+			id[i] = $(this).val();
+		});
+		var url = "{php echo $this->createWebUrl('assetsfixlog', array('op' => 'deleteall','schoolid' => $schoolid))}";
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "json",
+			data:{idArr:id},
+			success: function (res) {
+				alert(res.msg);
+				window.location.reload();
+			}
+		});
+	}
+});
+</script>
+ 
+{/if}
+{template 'public/footer'}

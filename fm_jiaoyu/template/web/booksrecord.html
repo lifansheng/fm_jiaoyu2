@@ -1,0 +1,246 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="panel panel-default">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li {if $_GPC['op'] == 'display'} class="active"  {/if}><a href="{php echo $this->createWebUrl('booksrecord', array('schoolid' => $schoolid,'op' => 'display'))}">借阅记录</a></li>
+			<li {if $_GPC['op'] == 'tongji'} class="active" {/if}><a href="{php echo $this->createWebUrl('booksrecord', array('op' => 'tongji', 'schoolid' => $schoolid))}">借阅统计</a></li>
+		</ul>
+	</div>
+</div>
+
+{if $operation == 'display'}
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}	
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">图书借阅记录</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="booksrecord"/>
+				<input type="hidden" name="op" value="display"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="is_return" value="{$_GPC['is_return']}"/>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">归还状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('booksrecord', array('is_return' => '-1', 'schoolid' => $schoolid))}" class="btn {if $is_return == -1}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('booksrecord', array('is_return' => '1', 'schoolid' => $schoolid))}" class="btn {if $is_return == 1}btn-primary{else}btn-default{/if}">未归还</a>
+							<a href="{php echo $this->createWebUrl('booksrecord', array('is_return' => '2', 'schoolid' => $schoolid))}" class="btn {if $is_return == 2}btn-primary{else}btn-default{/if}">已归还</a>
+						</div>
+					</div>
+				</div>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">选择年级</label>
+					<div class="col-sm-2 col-lg-2" >
+                        <select style="margin-right:15px;" name="njid" id="select_nj" class="form-control">
+                            <option value="0">请选择年级</option>
+                            {loop $xueqi $it}
+                            <option value="{$it['sid']}" {if $_GPC['njid'] == $it['sid']} selected="selected" {/if} >{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">选择班级</label>
+					<div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bjid" id="bj" class="form-control">
+                            <option value="0">请选择班级</option>
+                            {loop $bj $it}
+                            <option value="{$it['sid']}" {if $_GPC['bjid'] == $it['sid']} selected="selected" {/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>					
+				</div>	
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按书籍名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="BookName" id="" type="text" value="{$_GPC['BookName']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按学生名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="StuName" id="" type="text" value="{$_GPC['StuName']}">
+                    </div>		
+				</div>			
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">借阅时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('borrowtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>	
+				
+				</div>
+			</form>
+		</div>		
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:30%">图书名称 </th>
+					<th style="width:5%">图书价值 </th>
+					<th style="width:5%">学生 </th>
+					<th style="width:8%">班级/年级</th>
+					<th style="width:8%;">借阅时间</th>
+					<th style="width:5%;">状态</th>
+                    <th style="width:8%;">归还时间</th>
+					<th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+                   
+					<td>{$item['bookname']}</td>
+					<td><span class="label label-primary">￥{$item['worth']}</span></td>
+					<td>
+                        <img style="width:35px;height:35px;border-radius:50%;" src="{if !empty($item['stuicon'])}{php echo tomedia($item['stuicon'])}{else}{php echo tomedia($logo['spic'])}{/if}" width="50"  style="border-radius: 3px;" /></br>{$item['stuname']}				
+					</td>
+					<td>
+					<span class="label label-info">{$item['bj_name']}</span>
+					</br>
+					<span class="label label-info">{$item['nj_name']}</span>
+					</td>
+					<td><span class="label label-info">{php echo  date("Y-m-d H:i:s",$item['borrowtime'])}</span></td>
+					<td>
+					{if $item['status'] == 1}
+					<span class="label label-danger">暂未归还</span>
+					{elseif $item['status'] == 2}
+					<span class="label label-success">已归还</span>
+					{/if}
+					</td>
+					<td>
+					{if $item['returntime'] != 0 }
+					<span class="label label-success">{php  echo date("Y-m-d H:i:s",$item['returntime'])}</span>
+					{else}
+					<span class="label label-danger">暂未归还</span>
+					{/if}
+					</td>		
+					<td class="qx_e_d" style="text-align:right;">
+							{if $item['status'] == 1}	
+							<a class="btn btn-default btn-sm qx_902" href="{php echo $this->createWebUrl('booksrecord', array('id' => $item['id'], 'op' => 'returnbooks', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认归还？');return false;" title="归还图书"><i class="fa fa-check"></i></a>
+							&nbsp;&nbsp;
+							{/if}
+							<a class="btn btn-default btn-sm qx_904" href="{php echo $this->createWebUrl('booksrecord', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+						</td>
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+ $("#select_nj").change(function() {
+	var type = 4;
+	var cityId = $("#select_nj option:selected").attr('value');
+	changeGrade(cityId,type, function() {});
+});
+function changeGrade(gradeId, type, __result) {
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	//获取班次
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+		data       = JSON.parse(data);
+		classlevel = data.bjlist;
+		var html   = '';
+		
+		html += '<select id="bj"><option value="">请选择班级</option>';
+		if (classlevel != '') {
+			for (var i in classlevel) {
+				html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+			}
+		}
+		$('#bj').html(html);	
+	});
+}
+
+ 
+</script>
+
+{else if $operation == 'tongji'}
+<div class="panel panel-info">
+        <div class="panel-heading">图书借阅统计</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="booksrecord"/>
+				<input type="hidden" name="op" value="tongji"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="is_return" value="{$_GPC['is_return']}"/>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">书籍名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="BookName" id="" type="text" value="{$_GPC['BookName']}">
+                    </div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>	
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+							<button class="btn btn-success" name="OutExcel" value="OutExcel"><i class="fa fa-download"></i> 当前条件导出</button>
+						</div>
+				</div>
+			</form>
+		</div>		
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:30%">图书名称 </th>
+					<th style="width:5%">总借阅次数 </th>
+					<th style="width:8%">最近一次借阅时间</th>
+					<th style="width:5%">已归还次数 </th>
+					<th style="width:8%;">最近一次归还时间</th>
+					<th style="width:5%">未归还次数 </th>
+					
+				
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<td>{$item['bookname']}</td>
+					<td><span class="label label-primary">{$item['borrowcount']}次</span></td>
+					<td><span class="label label-primary">{php echo date("Y-m-d H:i",$item['NewestBoTime'])}</span></td>
+				
+					<td><span class="label label-success">{$item['returnCount']}次</span></td>
+					<td><span class="label label-success">{php echo date("Y-m-d H:i",$item['NewestReturnTime'])}</span></td> 
+					<td><span class="label label-info">{$item['NoCount']}次</span></td>
+					
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+{/if}
+{template 'public/footer'}

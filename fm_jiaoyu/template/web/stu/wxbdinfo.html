@@ -1,0 +1,132 @@
+<div class="modal-header">                
+	<h4 class="modal-title" id="myModalLabel">{$stuinfo['s_name']}的绑定情况</h4>
+</div>
+<div class="modal-body" style="height:100%;overflow-y: scroll;  max-height: 87%;">
+	<table class="table table-hover">
+		<thead class="navbar-inner">
+			<tr>
+				<th style="width:3%">姓名</th>
+				<th style="width:5%">手机</th>
+				<th style="width:5%;">发言</th>
+				{if keep_xdtx()}<th style="width:5%;">视频</th>{/if}
+				<th class="qx_e_d" style="text-align:right; width:10%;">解绑</th>
+			</tr>
+		</thead>
+		<tbody>
+			{loop $fanslist $item}
+			<tr id="user_{$item['id']}">
+				<td>
+					<img style="width:30px;height:30px;border-radius:50%;" src="{$item['avatar']}" width="30" style="border-radius: 3px;" />
+					</br><span style="width:100%;text-align:center;">{$item['realname']}</span>
+				</td>
+				<td><span class="label label-success">{$item['guanxi']}</span></br>{$item['mobile']}</br>{if $item['createtime']}{php echo date('Y.m.d',$item['createtime'])}绑定{/if}</td>
+				<td>
+					<span class="label {if $item['status']==0}label-success{else}label-danger{/if}" id="kc_type_word">{if $item['status']==0}允许{else}禁言{/if}</span>
+					<div class="input-group">
+						<input {if $item['status']==0}checked value="0"{else}value="0"{/if} name="allow_pl" class="weui_switch user_status" type="checkbox" userid="{$item['id']}"/>
+					</div>
+				</td>
+				{if keep_xdtx()}
+				<td>
+					<span class="label {if $item['is_allow_video']==2}label-success{else}label-danger{/if}" id="kc_type_word">{if $item['is_allow_video']==2}允许{else}禁止{/if}</span>
+					<div class="input-group">
+						<input {if $item['is_allow_video']==2}checked value="2"{else}value="1"{/if} name="is_allow_video" class="weui_switch user_video" type="checkbox" userid="{$item['id']}"/>
+					</div>
+				</td>
+				{/if}
+				<td style="text-align:right">
+					<div class="btn btn-default btn-xs" onclick="unbd({$item['id']},{$item['sid']})" data-original-title="解绑家长"><i  style="font-size:12px" class="fa fa-ban"></i></div>
+				</td>
+			</tr>
+			{/loop}
+		</tbody>
+	</table>
+</div>
+<div class="modal-foot">
+	<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+</div>
+<script type="text/javascript">
+$('.user_status').click(function(){//是否禁言
+	var status = $(this).prop('checked')?0:1;
+	var word = $(this).prop('checked')?"允许":"禁言"; 
+	var userid =  $(this).attr('userid');
+	$(this).val(status)
+	var infotip = $(this).parent().prev()
+	infotip.text(word);
+	if(infotip.hasClass("label-success")){
+		infotip.removeClass("label-success")
+		infotip.addClass("label-danger")
+	}else{
+		infotip.removeClass("label-danger")
+		infotip.addClass("label-success")
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'ChangeStatus', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			id:userid,
+			status:status
+		},
+		success: function(data) {
+
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+});
+$('.user_video').click(function(){//是否允许查看免费视频
+	var status = $(this).prop('checked')?2:1;
+	var word = $(this).prop('checked')?"允许":"禁止"; 
+	var userid =  $(this).attr('userid');
+	$(this).val(status)
+	var infotip = $(this).parent().prev()
+	infotip.text(word);
+	if(infotip.hasClass("label-success")){
+		infotip.removeClass("label-success")
+		infotip.addClass("label-danger")
+	}else{
+		infotip.removeClass("label-danger")
+		infotip.addClass("label-success")
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'ChangeVideo', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			id:userid,
+			status:status
+		},
+		success: function(data) {
+
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+});
+function unbd(userid,sid){
+	if(confirm("解绑后数据不可恢复，确认解绑这个微信？")){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('students', array('op' => 'unbd', 'schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				sid:sid,
+				userid:userid,
+			},
+			success: function(data) {
+				alert(data.msg);
+				if(data.result){
+					$('#user_'+userid).hide(200)
+					one_stu(sid,'old')
+				}
+			},
+			error: function(e) {
+				alert('访问网络失败');
+			}
+		});
+	}
+}
+</script>

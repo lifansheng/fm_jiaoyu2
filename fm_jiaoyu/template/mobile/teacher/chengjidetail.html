@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/kqtjCss.css?v=5.1"/>
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+    <link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/common.css" />
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+ 
+    {php echo register_jssdks();}
+    {php include $this->template('port');}
+    <style>
+        .component-panel {position: absolute;top: 0;left: 0;width: 100%;height: 100%;z-index: 12;background: rgba(0,0,0,.7);}
+        .component-dialog {position: absolute;top: 30%;left: 50%;-webkit-transform: translateX(-50%) translateY(-50%);transform: translateX(-50%) translateY(-50%);background: #fff;padding: 10px;width: 80%;border-radius: 10px;}
+        .dialog-order>.component-dialog-title {text-align: center;}
+        .component-dialog-body {padding: 10px 0 12px;}
+        .component-dialog-title {font-size: 16px;font-weight: 200;}
+        .arrange-detail>ol {box-sizing: border-box;}
+        .form-order>.form-line {margin-bottom: 5px;}
+        .form-order>.form-line {margin-bottom: 12px;margin-top: 12px;}
+        .btnthis {height: 30px;background-color: #7bb52d;font: 16px "黑体";text-align: center;color: #fff;cursor: pointer;border-radius:10px}
+        .div_closd{margin-left:13%; width:30%;color: #fff;background-color: #f1ad31;border-color: #f1ad31;float:left;line-height:30px}
+        .div_sure{margin-right:13%; width:30%;float:right;line-height:30px}
+        .ovfHiden{overflow:hidden}
+        .startdate{width: 60%;margin: 3px 0px;height: 30px;line-height: 30px;border: 1px solid #e1e1e1;border-radius: 3px;font-size: 14px;background-attachment: fixed;text-align: center;padding: 0;margin: 0;outline-style: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-appearance: none;}
+        .trhead{height:40px}
+        .thhead{background:white;float:left;height:40px;line-height:40px;text-align:center;font-size:16px;float:left;border-right:1px solid rgb(212, 210, 210)}
+        .td_mutirow{background:white;border-bottom:1px solid #EDEEF0;border-right:1px solid #EDEEF0;display: flex;flex-direction: column;text-align: center;justify-content: space-around}
+        .tdsinglerow{background:white;height:40px;line-height:40px;border-bottom:1px solid #EDEEF0;border-right: 1px solid rgb(212, 210, 210);float:left}
+        .SelectInRange{text-align:center;text-align-last:center;width:90%;margin:8px;height:30px;border-radius: 3px;}
+    </style>
+
+</head> 
+<body id="kqtjbody" style="width: 100%;height: 100%">
+<div style="width: 100%">
+<div id="attendance" style="margin-left: 3px;float:unset;box-shadow:2px 2px 10px #c1c1c1;border-radius: 5px;width:98%;height:80px">
+
+    <div class="l1" style="width:69%">
+        <a id="showhistory">
+            <div class="t">
+                <div class="t3">当前期号</div>
+                <div id="num3" style="font-size:16px">{$this_qhinfo['sname']}</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="r1" style="width:30%">
+        <div class="t">
+            <div class="t1">当前班级</div>
+            <div id="num1" style="font-size:16px">{$this_bjinfo['sname']}</div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+
+<div id="main_detail"  style="margin-left: 3px;float:unset;margin-left: 1%;width:98%">
+    <div  class="trhead scrollThis" style="width:calc(100% - 1px);">
+        <div class="thhead" style="width:calc(25% );border-radius: 5px 0px  0px 0px;border-bottom:1px solid #EDEEF0;float:left">学生</div>
+        <div class="scrolltop" style="width:75% ;float: left;">
+           
+                <div class="thhead" style="width:calc(50% - 2px);border-bottom:1px solid #EDEEF0;">科目/得分</div>
+          
+                <div class="thhead" style="width:calc(50% );border-bottom:1px solid #EDEEF0; ">班级/年级排名</div>
+          
+            
+        </div>
+    </div>
+
+    <div id="TopTitle" class="trhead scrollThis" style="width:calc(98% - 1px);display: none;position: fixed;top:0px">
+            <div class="thhead" style="width:calc(25% );border-radius: 5px 0px  0px 0px;border-bottom:1px solid #EDEEF0;float:left">学生</div>
+            <div class="scrolltop" style="width:75% ;float: left;">
+                    <div class="thhead" style="width:calc(50% - 2px);border-bottom:1px solid #EDEEF0;">科目/得分</div>
+                    <div class="thhead" style="width:calc(50% );border-bottom:1px solid #EDEEF0; ">班级/年级排名</div>
+            </div>
+        </div>
+
+
+    <div id="table_info" style="float:left;width:100%;margin-bottom: 60px">
+        <div id="studentBox" style="width:calc(25% - 1px);float: left;" >
+                {loop $back_result['data'] $item}
+                    <div class="td_mutirow" style="height:calc({$item['rowcount']}*40px);word-break:break-word;hyphens:auto;padding:0 5px" >{$item['s_name']}</div>
+                {/loop}
+        </div>
+        <div class="scrollinfo"  style="width:75% ;float: left;">
+            <div class="scrollinfoinner" style="float: left;width:100%">
+                <div id="scoreBox" style="width:100%;text-align:center;font-size:14px;display: flex;flex-direction: column;" cellspacing="0" cellpadding="0">
+                    {loop $back_result['data'] $item}
+                        {loop $item['data'] $row}
+                        <div style="display: flex"  >
+                            <div style="width:50% ;">
+                                <div class="tdsinglerow" style="width:calc(65% - 1px); {if $row['km_name'] == "总分" } background-color: #d4d4d4  {/if}">{$row['km_name']}</div>
+                                <div class="tdsinglerow" style="width:calc(35% - 1px); {if $row['km_name'] == "总分" } background-color: #d4d4d4  {/if}">{$row['score']}</div>
+                            </div>
+                            <div style="width:50% ;">
+                            <div class="tdsinglerow" style="width:calc(50% - 1px); {if $row['km_name'] == "总分" } background-color: #d4d4d4  {/if}"">{$row['rank']}</div>
+                            <div class="tdsinglerow" style="width:calc(50% - 1px); {if $row['km_name'] == "总分" } background-color: #d4d4d4  {/if}"">{$row['xq_rank']}</div>
+                            </div>
+                        </div>
+                        {/loop}
+                    {/loop}
+                </div> 
+
+            </div>
+        </div>  
+
+        <!-- <table border="0" style="width:100%;text-align:center;font-size:14px;" cellspacing="0" cellpadding="0">
+            {loop $back_result['data'] $item}
+            <tr>
+                <td class="td_mutirow" rowspan="{$item['rowcount']}" style="width:25%">{$item['s_name']}</td>
+
+            {loop $item['data'] $row}
+                <td class="tdsinglerow" style="width:25%">{$row['km_name']}</td>
+                <td class="tdsinglerow" style="width:25%">{$row['score']}</td>
+                <td class="tdsinglerow" style="width:25%">{$row['rank']}</td>
+            </tr>
+            <tr>
+            {/loop}
+            </tr>
+            {/loop}
+        </table> -->
+    </div>
+</div>
+<!--左边弹窗-->
+<div class="component-panel" id="date_range" style="display:none;">
+    <div class="mask"></div>
+    <div class="component-dialog dialog-order"  id="detail_range" style="box-sizing: border-box;display:none">
+        <div class="component-dialog-title">选择查看范围</div>
+        <div class="component-dialog-body">
+            <form class="form-order" novalidate="novalidate">
+                <div class="form-line">
+                    <div class="input-wrapper" style="border:none;">
+                        <span style="padding: 8px;">选择期号:</span></br>
+                        <select name="search_qh" id="search_qh"  class="SelectInRange" style="border: 1px solid #e1e1e1">
+                            {loop $qh $row_qh}
+                            <option value="{$row_qh['sid']}" {if $this_qhid == $row_qh['sid']}selected{/if}>{$row_qh['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-line">
+                    <div class="input-wrapper" style="border:none;">
+                        <span style="padding: 8px;">选择班级:</span></br>
+                        <select name="search_nj" id="search_nj"  class="SelectInRange" style="border: 1px solid #e1e1e1">
+                            {loop $bj $row_bj}
+                            <option value="{$row_bj['sid']}" {if $this_xqid == $row_xq['sid']}selected{/if}>{$row_bj['old_sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-line">
+                    <div class="input-wrapper" style="border:none;height:10px"></div>
+                </div>
+
+                <div class="component-dialog-footer">
+                    <div type="button" class="btn-default btnthis div_closd"  onclick="closed()" >取消</div>
+                    <div type="button" class="btn-primary btnthis div_sure"   data-opttype="yes" onclick="change_date_range()">确定</div>
+                </div>
+                <div class="form-line">
+                    <div class="input-wrapper" style="border:none;height:20px"></div>
+                </div>
+            </form>
+        </div>
+        <div class="component-dialog-footer"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+ $("body").append('<div id="common_progress" class="common_progress_bg" style=""><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>');
+
+function ajax_start_loading(text) {
+    $("#common_progress").css("display", "block");
+    $("body").css("position", "fixed");
+    $(".common_progress").css("margin-left", $(window).width() / 2 - 80);
+    if (text) {
+        $("#common_progress span").text(text);
+    }
+}
+// 关闭菊花转
+function ajax_stop_loading() {
+    $("#common_progress").hide();
+    $("body").css("position", "static");
+}
+
+$(window).scroll(function(){
+        b = $(this).scrollTop();   //页面滚动的高度
+        if(b > 146){
+           $('#TopTitle').slideDown(300)
+        }else if(b < 105){
+            $('#TopTitle').slideUp(300)
+        }
+    });
+
+
+
+    function closed(){
+        $('html,body').removeClass('ovfHiden');
+        $("#detail_range").slideUp(100);
+        $("#date_range").hide();
+
+    };
+
+    function change_date_range(){
+        ajax_start_loading("获取中，请稍候～");
+       
+        var this_qh = $("#search_qh").val();
+        var this_nj = $("#search_nj").val();
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('chengjidetail', array('op' => 'ajax_get'), true)}",
+            type: "post",
+            dataType: "json",
+            data: {
+                weid: {$weid},
+                schoolid:{$schoolid},
+                qhid:this_qh,
+                njid:this_nj,
+            },
+            success: function (data) {
+                console.log(data);
+                //jTips(data.msg);
+                if(data.status == true){
+                    var this_html = '';
+                    var this_html1 = '';
+                    for (var i=0;i<data.data.length;i++)
+                    {
+                        this_html1 += ` <div class="td_mutirow" style="height:calc(${data.data[i].rowcount}*40px)" >${data.data[i].s_name}</div>`;
+                      
+
+                        jQuery.each(data.data[i].data, function(ii, val){
+                            let content = '';
+                            if(val.km_name == "总分"){
+                                content = 'background-color: #d4d4d4';
+                            }
+                           
+                            this_html +=` <div style="display: flex"  >
+                                            <div class="tdsinglerow" style="width:calc(50% - 1px); ${content}">${val.km_name}：${val.score}</div>
+                                        
+                                            <div class="tdsinglerow" style="width:calc(50% - 1px); ${content}">${val.rank} / ${val.xq_rank}</div>
+                                  
+                                        </div>`;
+                        });
+                    }
+                    $("#studentBox").html(" ");
+                    $("#studentBox").html(this_html1);
+                    $("#scoreBox").html(" ");
+                    $("#scoreBox").html(this_html);
+                    var qhName = $("#search_qh").find("option:selected").text();
+                    var njName = $("#search_nj").find("option:selected").text();
+                    $("#num3").html(qhName);
+                    $("#num1").html(njName);
+                    closed();
+                }else if(data.status == false){
+                    alert("当前期号未设置考察");
+                    closed();
+                }
+                ajax_stop_loading();
+            }
+        });
+    };
+
+
+
+    setTimeout(function() {
+        if(window.__wxjs_environment === 'miniprogram'){
+            $("#titlebar").hide();
+            $("#titlebar_bg").hide();
+            $("#table-responsive").css("margin-top","0px");
+            document.title="职工考勤(当日)";
+        }
+    }, 100);
+
+    $(".choice_baby").on("click", function(e) {
+        e.stopPropagation();
+        $(".slide_left_menu_bg").addClass("show_menu_bg");
+    });
+    $(".slide_left_menu_bg").on("click", function() {
+        $(this).removeClass("show_menu_bg");
+    });
+    $(function ($) {
+        $("#showbjlist").on('click', function () {
+            $('#selectList').show();
+        });
+        $("#attendance").on('click', function () {
+            $('#date_range').show();
+            $("#detail_range").slideDown('fast');
+        });
+
+    });
+
+</script>
+{php include $this->template('newfooter');}
+</body>
+</html>

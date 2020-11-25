@@ -1,0 +1,71 @@
+{loop $list_back $key $item}
+	{if $item['OldOrNew'] == 1}
+	<li class="list_box_li {if $item['end'] <TIMESTAMP}class_over{/if}" time="{$item['localtion']}" ctype="{$Ctype}">
+		<div class="list_box_div">
+			<div class="list_left">
+				<img class="cImg_left" src="{if !empty($item['thumb'])}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}">
+			</div>
+			<div class="list_right">
+				<div class="kc_name" style="height: 15px;">
+					<p class="kc_name_content">{$item['name']}</p>
+				</div>
+				<div class="fans_box">
+					<span class="zhuliclass">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/iRJHJnR939C6YC8nrn4598Pnnh0n1J.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/MBeaDvXMtV8aOA8BXV4was878RvRmT.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/ZAyrZFSmdydMLsMGYRT5y77aL5IDF3.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/jFTNVvV1UvuR1AhAUTYUYRTyV11X5F.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/egW7zriT2d8qZQJWzI49itSDsj468J.jpg">
+					</span>
+					<p class="fans_text_title">{$item['minge']}人/班</p>
+				</div>
+				<div class="pay">
+					<p class="pay_cose">￥{$item['cose']}</p>/首购
+				</div>
+				{if $item['is_hot'] == 1}{if $item['end'] > TIMESTAMP}
+				<span style="background-color: #10b7a6;float: left;"class="label label-danger">精品课</span>
+				{/if}{/if}
+				{if $item['end'] > TIMESTAMP}{if !empty($item['course_type'])}
+				<span style="background-color: #2f6bb7;float: left;"class="label label-danger">{$item['course_type']}</span>
+				{/if}{/if}
+			</div>
+			{if $item['end'] <TIMESTAMP}<div class="class_over_tip marks text_center"><span></span></div>{/if}
+			<div class="mark_rush mark text_center"></div>
+		</div>
+	</li>
+	{elseif $item['OldOrNew'] == 0}
+	<li class="list_box_li {if $item['end'] <TIMESTAMP}class_over{/if}" time="{$item['localtion']}" ctype="{$Ctype}">
+		<div class="list_box_div">
+			<div class="list_left">
+				<img class="cImg_left" src="{if !empty($item['thumb'])}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}">
+			</div>
+			<div class="list_right">
+				<div class="kc_name" style="height: 15px;">
+					<p class="kc_name_content">{$item['name']}</p>
+				</div>
+				<div class="fans_box">
+					<span class="zhuliclass">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/iRJHJnR939C6YC8nrn4598Pnnh0n1J.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/MBeaDvXMtV8aOA8BXV4was878RvRmT.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/ZAyrZFSmdydMLsMGYRT5y77aL5IDF3.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/jFTNVvV1UvuR1AhAUTYUYRTyV11X5F.jpg">
+						<img class="zlheader" src="https://manger.weimeizhan.com/attachment/images/fm_jiaoyu/img/egW7zriT2d8qZQJWzI49itSDsj468J.jpg">
+					</span>
+					<p class="fans_text_title">{$item['minge']}人/班</p>
+				</div>
+				<div class="pay">
+					<p class="pay_cose">￥{$item['cose']}</p>
+					{if $item['is_hot'] == 1}{if $item['end'] > TIMESTAMP}
+					<span style="background-color: #10b7a6;float: left;"class="label label-danger">精品课</span>
+					{/if}{/if}
+					{if $item['end'] > TIMESTAMP}{if !empty($item['course_type'])}
+					<span style="background-color: #2f6bb7;float: left;"class="label label-danger">{$item['course_type']}</span>
+					{/if}{/if}
+				</div>
+			</div>
+			{if $item['end'] <TIMESTAMP}<div class="class_over_tip marks text_center"></div>{/if}
+			<div class="mark_group mark text_center"></div>
+		</div>
+	</li>
+	{/if}
+{/loop}

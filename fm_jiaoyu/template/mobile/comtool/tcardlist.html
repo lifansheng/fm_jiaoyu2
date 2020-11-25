@@ -1,0 +1,38 @@
+{loop $list $v}
+<li class="main" time="{$v['location']}" ctype="{$Ctype}" style="display: block;" id="hide_{$v['id']}"  >
+    <div class="cutting"></div>
+    <div class="notifyTopBox"  onclick="showUploadImg(this,`{$v['id']}`)">
+        <div class="notifyTopLeft">
+            <img src="{php echo tomedia($v['icon']) ? tomedia($v['icon']) : tomedia($school['spic'])}" class="teacherImgError">
+        </div>
+        <div class="notifyTopRight">
+            <div class="notifyTopRightTopBox">
+                <span class="JobTeacherBox" >姓名：{$v['s_name']}</span>
+                {if $v['sex'] == 1}
+                <span class="Tip_usertype">性别：男</span>
+                {else}
+                <span class="Tip_usertype" style="background-color: #ea4444;">性别：女</span>
+                {/if}
+            </div>
+            <div class="notifyTopRightTopBox" style="font-size: 12px;font-weight: inherit;color:gray">
+                {if $v['idcard']}
+                <span>卡号：{$v['idcard']}</span>
+                {else}
+                <span id="changeidcard_{$v['id']}">未绑定</span>
+                {/if}
+                <div class="CheckCardImg">查看人脸信息</div>    
+            </div>
+        </div>
+        
+    </div>
+    <input type="hidden" id="bigImage" name="bigImage"/>
+    
+    <div style="width: 100%; display: none;padding:5px 10px;overflow: hidden;margin-top: 10px;box-sizing: border-box;" id="showimg_{$v['id']}"  >
+        <img {if $v['spic']} src="{php echo tomedia($v['spic']) }" {else} src="{MODULE_URL}public/mobile/img/insertImage.png"{/if} onclick="uploadImg(this,`{$v['id']}`);"   style="width: 80px;height: 80px; float:left;margin-left: 30px; ">
+        <div class="ImgTips">
+            <div style="margin-bottom:5px;">点击图片即可上传人脸照片</div>
+            <div style="color:gray ;">请尽量上传光线充足、无强光直射、清晰的正面人脸照片</div>
+        </div>
+    </div>
+</li>
+{/loop}	

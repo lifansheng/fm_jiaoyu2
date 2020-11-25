@@ -1,0 +1,191 @@
+{if $list}
+<!-- 瀑布流样式开始 -->
+<div class="waterfull clearfloat" id="waterfull">
+	<ul>
+		{loop $list $row}
+		<li class="item cursor-pointer" onclick="show_rightboxs(`{$row['id']}`)" dataid="{$row['id']}">
+			{if $row['video'] || $row['picurl']}
+			<a href="####" class="a-img">
+				<img src="{$row['picurl']}" alt="">
+				{if $row['hasvideo']}
+				<div class="v_play_bg"><div class="v_play_icon"></div></div>
+				{/if}
+			</a>
+			{/if}
+			<p class="description mt-{if $row['video'] || $row['picurl']}1{else}2{/if}">{$row['content']}</p>
+			<div class="zhazhuai-tit-bottom cl">
+				<span class="view"><i class="reply fa fa-comment-o primary pr-1"></i><span class="reply_num">{$row['plnum']}</span></span>
+				<span class="hits cursor-pointer"><i class="fa fa-heart-o danger pr-1"></i>{$row['dznum']}</span>
+				{if $row['isopen'] == 1}
+				<span class="cursor-pointer"><i class="fa fa-eye-slash warning dark pr-1"></i>未审核</span>
+				{/if}
+			</div>
+			<div class="qianm justify-content-between clearfloat">
+				<div class="user-sta z">
+					<span class="user-sta-pic"><img src="{$row['avatar']}"/></span>
+					<!--圆点primary代表学生-->
+					<span class="name"><small class="text-muted">{$row['shername']}</small><span class="bullet {if $row['sf'] == 'tea'} bullet-primary {else} bullet-success {/if} bullet-sm"></span></span>                                        
+				</div>                    
+				<div class="time">{php echo date("Y-m-d",$row['createtime'])}</div>
+			</div>
+		</li>
+		{/loop}
+	</ul>
+</div>
+<!-- loading按钮自己通过样式调整 -->
+<div id="imloading" style="width:150px;height:30px;line-height:30px;font-size:16px;text-align:center;border-radius:3px;opacity:0.7;background:#000;margin:10px auto 30px;color:#fff;display:none">加载中...</div>
+<script src="{OSSURL}template/public/js/jQeasing.js?v=1" type="text/javascript"></script>
+<script src="{OSSURL}template/public/js/jquery.masonry.min.js?v=1" type="text/javascript"></script>	
+<script>
+icon_replace($(".description"));
+/*
+	抛开瀑布流布局各种乱七八糟的算法，基于masonry的瀑布流，很是简单的，而且通过扩展animate,能实现瀑布流布局的晃动、弹球等效果。
+	masonry还有很多参数我这里注解了常用的参数
+ */
+
+
+ var WIDC ;
+
+$(function(){
+	/*瀑布流开始*/
+	var container = WIDC = $('.waterfull ul');
+	var loading=$('#imloading');
+	// 初始化loading状态
+	loading.data("on",true);
+	/*判断瀑布流最大布局宽度，最大为1280*/
+	function tores(){
+		var tmpWid=$('.chat-content').width();
+		if(tmpWid>1280){
+			tmpWid=1280;
+		}else{
+			var column=Math.floor(tmpWid/300);
+			tmpWid=$('.chat-content').width();
+		}
+		$('.waterfull').width(tmpWid);
+	}
+	tores();
+	$(window).resize(function(){
+		tores();
+	});
+	container.imagesLoaded(function(){
+	  container.masonry({
+		columnWidth: 300,
+		itemSelector : '.item',
+		isFitWidth: true,//是否根据浏览器窗口大小自动适应默认false
+		isAnimated: true,//是否采用jquery动画进行重拍版
+		isRTL:false,//设置布局的排列方式，即：定位砖块时，是从左向右排列还是从右向左排列。默认值为false，即从左向右
+		isResizable: true,//是否自动布局默认true
+		animationOptions: {
+			duration: 800,
+			easing: 'easeInOutBack',//如果你引用了jQeasing这里就可以添加对应的动态动画效果，如果没引用删除这行，默认是匀速变化
+			queue: false//是否队列，从一点填充瀑布流
+		}
+	  });
+	});
+	/*模拟从后台获取到的数据*/
+	var AjaxisLock = false;
+	var sqlJson=[];
+	/*本应该通过ajax从后台请求过来类似sqljson的数据然后，便利，进行填充，这里我们用sqlJson来模拟一下数据*/
+	$('.chat-container').scroll(function(){
+		if(!loading.data("on")) return;
+		// 计算所有瀑布流块中距离顶部最大，进而在滚动条滚动时，来进行ajax请求，方法很多这里只列举最简单一种，最易理解一种
+		var itemNum=$('#waterfull').find('.item').length;
+		var itemArr=[];
+		itemArr[0]=$('#waterfull').find('.item').eq(itemNum-1).offset().top+$('#waterfull').find('.item').eq(itemNum-1)[0].offsetHeight;
+		itemArr[1]=$('#waterfull').find('.item').eq(itemNum-2).offset().top+$('#waterfull').find('.item').eq(itemNum-1)[0].offsetHeight;
+		itemArr[2]=$('#waterfull').find('.item').eq(itemNum-3).offset().top+$('#waterfull').find('.item').eq(itemNum-1)[0].offsetHeight;
+		var maxTop=Math.max.apply(null,itemArr);
+		if(maxTop<$('.chat-container').height()+$('.chat-container').scrollTop()){
+			//加载更多数据
+			loading.data("on",false).fadeIn(1000);
+				let dataid = $(".masonry li:last-child").attr('dataid')
+				let bjid = $('#nowbjid').val()
+				$.ajax({
+					url: "{php echo $this->createWebUrl('usercenter', array('op'=>'scroll_bjlist','schoolid' => $schoolid))}",
+					type: "post",
+					dataType: "json",
+					data:{dataid:dataid,bjid:bjid},
+					success: function (sqlJson) {
+						(function(sqlJson){
+							/*这里会根据后台返回的数据来判断是否你进行分页或者数据加载完毕这里假设大于30就不在加载数据*/
+							if(sqlJson.length <= 0){
+								loading.text('没有更多了！');
+								return
+							}else{
+								var html="";
+								for(var i in sqlJson){
+									html+="<li class='item cursor-pointer' onclick='show_rightboxs("+sqlJson[i].id+")' dataid="+sqlJson[i].id+">";
+									if(sqlJson[i].src){
+										if(sqlJson[i].hasvideo){
+											html+="<a href='####' class='a-img'><img src='"+sqlJson[i].src+"'><div class='v_play_bg'><div class='v_play_icon'></div></div></a>";
+										}else{
+											html+="<a href='####' class='a-img'><img src='"+sqlJson[i].src+"'></a>";
+										}
+										html+="<p class='description mt-1'>"+sqlJson[i].coment+"</p>";
+									}else{
+										html+="<p class='description mt-2'>"+sqlJson[i].coment+"</p>";
+									}
+									html+="<div class='zhazhuai-tit-bottom cl'>";
+									html+="<span><i class='reply fa fa-comment-o primary pr-1'></i><span class='reply_num'>"+sqlJson[i].reply+"</span></span>";
+									html+="<span class='hits cursor-pointer'><i class='fa fa-heart-o danger pr-1'></i> "+sqlJson[i].hits+"</span>";
+									if(!sqlJson[i].isopen){
+										html+="<span class='cursor-pointer'><i class='fa fa-eye-slash warning pl-2'></i> 未审核</span>";
+									}
+									html+="</div>";
+									html+="<div class='qianm justify-content-between clearfloat'>";
+									html+="<div class='user-sta z'>";
+									html+="<span class='user-sta-pic'><img src='"+sqlJson[i].avatar+"'/></span>";
+									html+="<span class='name'><small class='text-muted'>"+sqlJson[i].username+"</small> <span class='bullet bullet-"+sqlJson[i].tip+" bullet-sm'></span></span>   ";
+									html+="</div>";
+									html+="<div class='time'>"+sqlJson[i].times+"</div>";
+									html+="</div>";
+									html+="</li>";					
+								}
+								icon_replace($(".description"));
+								/*模拟ajax请求数据时延时800毫秒*/
+								var time=setTimeout(function(){
+									$(html).find('img').each(function(index){
+										loadImage($(this).attr('src'));
+									})
+									var $newElems = $(html).css({ opacity: 0}).appendTo(container);
+									$newElems.imagesLoaded(function(){
+										$newElems.animate({ opacity: 1},1000);
+										console.log(container)
+										container.masonry( 'appended', $newElems,true);
+										loading.data("on",true).fadeOut();
+										clearTimeout(time);
+									});
+								},800)
+							}
+						})(sqlJson);
+					},
+					error: function (jqXHR, textStatus, errorThrown){
+						console.log(jqXHR)
+						console.log(textStatus)
+						console.log(errorThrown)
+						//DoSomething
+					}
+				});
+			
+		}
+	});
+	function loadImage(url) {
+		 var img = new Image(); 
+		 //创建一个Image对象，实现图片的预下载
+		  img.src = url;
+		  if (img.complete) {
+			 return img.src;
+		  }
+		  img.onload = function () {
+			return img.src;
+		  };
+	 };
+	// loadImage('http://v.bootstrapmb.com/2020/7/akhot8348/app-assets/images/slider/09.png');
+})
+</script>
+{else}
+	<div class="chat-start">
+		<span class="fa fa-wechat chat-sidebar-toggle chat-start-icon font-large-3 p-3 mb-1"></span>
+		<h4 class="d-lg-block py-50 text-bold-500">{if $school['bjqstyle'] == 'new'}暂无校园动态哦{else}本班尚无班级圈内容哦{/if}</h4>
+	</div>
+{/if}

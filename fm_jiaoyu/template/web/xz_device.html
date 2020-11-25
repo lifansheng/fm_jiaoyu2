@@ -1,0 +1,883 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-default">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li {if $_GPC['do'] == 'check'} class="active"  {/if}><a href="{php echo $this->createWebUrl('check', array('schoolid' => $schoolid,'op' => 'newdisplay'))}">设备管理</a></li>
+			<li {if $_GPC['do'] == 'xz_device'} class="active" {/if}><a href="{php echo $this->createWebUrl('xz_device', array('id' => $item['id'], 'schoolid' => $schoolid))}">高级设置</a></li>
+			<li {if $_GPC['do'] == 'xz_group'} class="active" {/if}><a href="{php echo $this->createWebUrl('xz_group', array('schoolid' => $schoolid))}">设备分组</a></li>
+		</ul>
+	</div>
+</div>
+{if $operation == 'post'}
+<form class="form-horizontal form" id="form1" action="" method="post" enctype="multipart/form-data">
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">添加考勤设备</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>考勤机位置</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" class="form-control" name="name" value="{$item['name']}" placeholder="填写考勤机位置">
+						<div class="help-block">前端显示考勤地点用</div>
+					</div>
+				</div>
+				{if $_W['isfounder'] || $_W['role'] == 'owner'}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>考勤机类型</label>
+					<div class="col-sm-9 col-xs-12">
+						<label class="radio-inline">
+							<input type="radio" value="1" class="printer-type" name="macname"{if $item['macname'] == '1'}checked{/if} id="credit1"> 吉联考勤机
+						</label>
+						<label class="radio-inline">
+							<input type="radio" value="2" class="printer-type" name="macname" {if $item['macname'] == '2'}checked{/if} id="credit2"> 讯贞考勤机
+							<span class="label label-success">推荐</span>
+						</label>
+						<label class="radio-inline">
+							<input type="radio" value="3" class="printer-type" name="macname"{if $item['macname'] == '3'}checked{/if} id="credit3"> 优米考勤机
+							<span class="label label-success">推荐</span>
+						</label>
+						<label class="radio-inline">
+							<input type="radio" value="4" class="printer-type" name="macname"{if $item['macname'] == '4'}checked{/if} id="credit4"> 安宝贝考勤机
+							<span class="label label-success">推荐</span>
+						</label>	
+						<label class="radio-inline">
+							<input type="radio" value="5" class="printer-type" name="macname"{if $item['macname'] == '5'}checked{/if} id="credit5">护校通考勤机
+							<span class="label label-success">推荐</span>
+						</label>						
+					</div>
+				</div>
+				{else}
+				<input type="hidden" name="macname" value="{$item['macname']}" />
+				<input type="hidden" name="id" value="{$id}" />
+				{/if}
+				<div id="credit-status0" {if $item['macname'] == 1}style="display:block"{else}style="display:none"{/if}>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>机器号/设备号</label>
+						<div class="col-sm-9 col-xs-12">
+							{if !$item}
+							<input type="text" class="form-control" name="macid_jl" value="{$item['macid']}" placeholder="填写机器号">
+							<div class="help-block">考勤机显示屏上获取/或设备背后</div>
+							{else}	
+							<div class="help-block">{$item['macid']}   不可修改</div>	
+							<input type="hidden" name="macid_jl" value="{$item['macid']}">
+							{/if}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>进离校区分</label>
+						<div class="col-sm-9 col-xs-12">
+							<select style="margin-right:15px;" name="type_jl" class="form-control">
+								<option value="0">请选择</option>
+								<option value="1" {if $item['type'] ==1} selected="selected"{/if}>进校设备</option>
+								<option value="2" {if $item['type'] ==2} selected="selected"{/if}>离校设备</option>
+							</select>
+							<div class="help-block">双机准确判断进校离校/此设置必须添加2台设备来判断/一台选择进校/台选择为离校/不选择则使用考勤设置里的时间来判断进离校，不太准确</div>
+						</div>
+					</div>	
+				</div>	
+				<div id="credit-status1" {if $item['macname'] == 2 || $item['macname'] == 5}style="display:block"{else}style="display:none"{/if}>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>机器号/设备号</label>
+						<div class="col-sm-9 col-xs-12">
+							{if !$item}
+							<input type="text" class="form-control" name="macid_xz" value="{$item['macid']}" placeholder="填写机器号">
+							<div class="help-block">考勤机显示屏上获取/或设备背后</div>
+							{else}	
+							<div class="help-block">{$item['macid']}   不可修改</div>	
+							<input type="hidden" name="macid_xz" value="{$item['macid']}">
+							{/if}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>卡类型</label>
+						<div class="col-sm-9 col-xs-12">
+							<select style="margin-right:15px;" name="cardtype" class="form-control">
+								<option value="1" {if $item['cardtype'] ==1} selected="selected"{/if}>IC卡</option>
+								<option value="2" {if $item['cardtype'] ==2 || empty($item['cardtype'])} selected="selected"{/if}>ID卡</option>
+							</select>
+							<div class="help-block">无特殊情况此处选择ID卡</div>
+						</div>	
+					</div>					
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>进离校区分</label>
+						<div class="col-sm-9 col-xs-12">
+							<select style="margin-right:15px;" name="type_xz" class="form-control">
+								<option value="0">请选择</option>
+								<option value="1" {if $item['type'] ==1} selected="selected"{/if}>进校设备</option>
+								<option value="2" {if $item['type'] ==2} selected="selected"{/if}>离校设备</option>
+							</select>
+							<div class="help-block">双机准确判断进校离校/此设置必须添加2台设备来判断/一台选择进校/台选择为离校/不选择则使用考勤设置里的时间来判断进离校，不太准确</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告标题/广告语</label>
+						<div class="col-sm-9 col-xs-12">
+							<input type="text" class="form-control" name="pop" value="{$banner['pop']}" placeholder="广告标题">
+							<div class="help-block">广告标题/广告语</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">体温枪</label>
+						<div class="col-sm-9 col-xs-12">
+							<input type="text" class="form-control" name="twmac" value="{if $item['twmac'] != -1}{$item['twmac']}{/if}" placeholder="例如:A0:EA:DC:08:2M">
+							<div class="help-block">填写体温枪MAC，不填则不启用</div>
+						</div>
+					</div>					
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频链接</label>
+						<div class="col-sm-9 col-xs-12">
+							<input type="text" class="form-control" name="video" value="{$banner['video']}" placeholder="视频链接">
+							<div class="help-block">设备上显示视频，必须为物理地址不支持代码</div>
+						</div>
+					</div>					
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片1</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic1', $banner['pic1'])}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片2</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic2', $banner['pic2'])}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片3</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic3', $banner['pic3'])}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片4</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic4', $banner['pic4'])}
+						</div>
+					</div>					
+				</div>
+				<div id="credit-status2" {if $item['macname'] == 3}style="display:block"{else}style="display:none"{/if}>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>机器号/设备号</label>
+						<div class="col-sm-9 col-xs-12">
+							{if !$item}
+							<input type="text" class="form-control" name="macid_ym" value="{$item['macid']}" placeholder="填写机器号">
+							<div class="help-block">考勤机显示屏上获取/或设备背后</div>
+							{else}	
+							<div class="help-block">{$item['macid']}   不可修改</div>	
+							<input type="hidden" name="macid_ym" value="{$item['macid']}">
+							{/if}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>进离校区分</label>
+						<div class="col-sm-9 col-xs-12">
+							<select style="margin-right:15px;" name="type_ym" class="form-control">
+								<option value="0">请选择</option>
+								<option value="1" {if $item['type'] ==1} selected="selected"{/if}>进校设备</option>
+								<option value="2" {if $item['type'] ==2} selected="selected"{/if}>离校设备</option>
+							</select>
+							<div class="help-block">双机准确判断进校离校/此设置必须添加2台设备来判断/一台选择进校/台选择为离校/不选择则使用考勤设置里的时间来判断进离校，不太准确</div>
+						</div>
+					</div>				
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>滚动公告</label>
+						<div class="col-sm-9 col-xs-12">
+							<input type="text" class="form-control" name="pop1" value="{$banner['pop']}" placeholder="滚动公告">
+							<div class="help-block">显示在待机界面</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>语音提示</label>
+						<div class="col-sm-9 col-xs-12">
+							<input type="text" class="form-control" name="VOICEPRE1" value="{$banner['VOICEPRE']}" placeholder="例如：#name#,刷卡成功">
+							<div class="help-block">变量名含义，名称：#name# </div>
+						</div>
+					</div>					
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">视频文件</label>
+						<div class="col-sm-9 col-xs-12">
+							<input type="text" class="form-control" name="video1" value="{$banner['video']}" placeholder="只能填写视频文件名称">
+							<div class="help-block">设备上显示视频，必须为物理地址不支持代码，此处地址必须填写文件名，文件储存在{$urls}之下，请手动上传</div>
+						</div>
+					</div>					
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告图片1</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic11', $banner['pic1'])}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告图片2</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic21', $banner['pic2'])}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告图片3</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic31', $banner['pic3'])}
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>广告图片4</label>
+						<div class="col-sm-9 col-xs-12">
+							{php echo tpl_form_field_image('pic41', $banner['pic4'])}
+						</div>
+					</div>					
+				</div>
+				<div id="credit-status3" {if $item['macname'] == 4}style="display:block"{else}style="display:none"{/if}>
+					<link href="{MODULE_URL}public/web/css/app.css" rel="stylesheet">
+					<style>
+					.shopNav .app .app-preview:after {content: "";position: absolute;bottom: 20px;left: 190px;width: 60px;height: 60px;border: 1px solid #ddd;border-radius: 100%;}
+					.shopNav .app .app-content {border-bottom: 1px solid #c5c5c5;min-height: 787px;position: relative;background: #fff;overflow: hidden;}
+					</style>
+					<div class="shopNav ng-scope">
+						<div class="app clearfix">
+							<div class="app-preview">
+								<div class="app-header"></div>		
+								<div id="bg_img" class="app-content" style="background:url({if $banner['bgimg']}{php echo tomedia($banner['bgimg'])}{else}{MODULE_URL}public/mobile/img/background.jpg{/if}) no-repeat;background-size: 420px 787px;">
+									<div class="top" id="bgimg"style="padding-top:103px"></div>
+									<div class="top1" style="position:relative;cursor: move;width: 420px;padding-left: 6px;">
+										<a class="top1 left"><img width="200" height="246" id="top1" src ="{MODULE_URL}public/mobile/img/abbtop1.png"></a>
+										<a class="top1 right" style="padding-left: 2px;"><img width="200" height="246" id="top2" src ="{MODULE_URL}public/mobile/img/abbtop2.png"></a>
+									</div>	
+									<div class="center" style="position:relative;cursor: move;width: 420px;padding-left: 6px;margin-top:5px;">
+										<a class="top1 left"><img width="200" height="124" id="center_waether" src ="{MODULE_URL}public/mobile/img/abbcenter1.jpg"></a>
+										<a class="top1 right" style="padding-left: 2px;"><img id="center_qrcode"width="200" height="124" src ="{if $banner['qrcode']}{php echo tomedia($banner['qrcode'])}{else}{MODULE_URL}public/mobile/img/abbcenter2.jpg{/if}"></a>
+									</div>
+									<div class="center" style="position:relative;cursor: move;width: 420px;padding-left: 6px;margin-top:5px;">
+										<a class="top1 left"><img width="405" height="253" id="foot_banner" src ="{MODULE_URL}public/mobile/img/abbbot.png"></a>
+									</div>
+									<div class="center" style="position:relative;cursor: move;width: 410px;padding-left: 6px;margin-top:5px;">
+										<input type="text" class="form-control" name="foot_pop" value="{if $banner['pop']}{$banner['pop']}{else}{$logo['gonggao']}{/if}" placeholder="滚动公告">
+									</div>									
+								</div>	
+							</div>
+							<div class="app-side">
+								<div id="bgimg_editor" class="editor" style="border: 1px solid #eee;">
+									<div class="ng-scope">
+									<!--背景图-->
+										<div class="app-header-setting">
+											<div class="arrow-left"></div>
+											<div class="app-header-setting-inner">
+												<div class="panel panel-default">
+													<div class="panel-body form-horizontal">													
+														<div class="form-group">
+															<label class="col-xs-3 control-label"><span class="red">*</span>机器号/设备号</label>
+															<div class="col-xs-9">
+																{if !$item}
+																<input type="text" name="macid_abb" placeholder="填写机器号" value="{$item['macid']}" class="form-control ng-pristine ng-untouched ng-valid">
+																{else}	
+																<div class="help-block">{$item['macid']}   不可修改</div>	
+																<input type="hidden" name="macid_abb" value="{$item['macid']}">
+																{/if}															
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="col-xs-3 control-label"><span class="red">*</span>进离校区分</label>
+															<div class="col-xs-9">
+																<select style="margin-right:15px;" name="type_abb" class="form-control">
+																	<option value="0">请选择</option>
+																	<option value="1" {if $item['type'] ==1} selected="selected"{/if}>进校设备</option>
+																	<option value="2" {if $item['type'] ==2} selected="selected"{/if}>离校设备</option>
+																</select>
+																<div class="help-block">双机准确判断进校离校</br>此设置必须添加2台设备来判断</br>一台选择进校/台选择为离校</br>不选择则使用考勤设置里的时间来判断进离校，不太准确</div>
+															</div>
+														</div>														
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>考勤机背景图片</label>
+															<div class="col-xs-9">
+																{template 'public/imgeschoses'}
+																<div class="input-group ">
+																	<input type="text" name="bgimg" id="bgimg" value="{if $banner['bgimg']}{php echo tomedia($banner['bgimg'])}{else}{MODULE_URL}public/mobile/img/background.jpg{/if}" class="form-control" autocomplete="off" filename="" url="">
+																	<span class="input-group-btn">
+																		<button class="btn btn-default" type="button" onclick="showImageDialog_bgimg(this);">选择图片</button>
+																	</span>
+																</div>
+																<div class="input-group " style="margin-top:.5em;">
+																	<img src="{if $banner['bgimg']}{php echo tomedia($banner['bgimg'])}{else}{MODULE_URL}public/mobile/img/background.jpg{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+																	<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+																</div>
+																<span class="help-block">推荐尺寸1080*1920</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>		
+								</div>
+								<div id="top1_editor" class="editor" style="border: 1px solid #eee;top:100px">
+									<div class="ng-scope">
+									<!--摄像头设置-->
+										<div class="app-header-setting">
+											<div class="arrow-left"></div>
+											<div class="app-header-setting-inner">
+												<div class="panel panel-default">
+													<div class="panel-body form-horizontal">	
+														<span class="help-block"><span class="red">不启用则留空，则使用考勤机自带摄像头,如启用则必须设置阿里云OSS相关</span></span>
+														<div class="form-group">
+															<label class="col-xs-3 control-label"><span class="red">*</span>外置全景摄像头</label>
+															<div class="col-xs-9">
+																<input type="text" name="device_id" placeholder="设备ID" value="{$set['device_id']}" class="form-control ng-pristine ng-untouched ng-valid">
+															</div>
+														</div>	
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>用户名</label>
+															<div class="col-xs-9">
+																<input type="text" name="user_id" placeholder="用户名" value="{$set['user_id']}" class="form-control ng-pristine ng-untouched ng-valid">
+															</div>
+														</div>
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>密码</label>
+															<div class="col-xs-9">
+																<input type="text" name="pwd" placeholder="密码" value="{$set['pwd']}" class="form-control ng-pristine ng-untouched ng-valid">
+															</div>
+														</div>														
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>		
+								</div>
+								<div id="top2_editor" class="editor" style="border: 1px solid #eee;top:100px">
+									<div class="ng-scope">
+									<!--考勤设置-->
+										<div class="app-header-setting">
+											<div class="arrow-left"></div>
+											<div class="app-header-setting-inner">
+												<div class="panel panel-default">
+													<div class="panel-body form-horizontal">
+														<span class="help-block"><span class="red">启用外置摄像头必须启用oss储存,以加快考勤速度</span></span>
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>OSS地址</label>
+															<div class="col-xs-9">
+																<input type="text" name="rootUrl" placeholder="OSS地址" value="{$set['rootUrl']}" class="form-control ng-pristine ng-untouched ng-valid">
+																<span class="help-block">填写你绑定的OSS地址</span>
+															</div>
+														</div>	
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>OSS节点</label>
+															<div class="col-xs-9">
+																<input type="text" name="endpoint" placeholder="OSS节点" value="{$set['endpoint']}" class="form-control ng-pristine ng-untouched ng-valid">
+																<span class="help-block">如:http://oss-cn-shenzhen.aliyuncs.com/</span>
+															</div>
+														</div>
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>bucket</label>
+															<div class="col-xs-9">
+																<input type="text" name="bucket" placeholder="填写bucket名称" value="{$set['bucket']}" class="form-control ng-pristine ng-untouched ng-valid">
+																<span class="help-block">填写要储存到指定bucket的名称</span>
+															</div>
+														</div>														
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>accessKeyId</label>
+															<div class="col-xs-9">
+																<input type="text" name="accessKeyId" placeholder="accessKeyId" value="{$set['accessKeyId']}" class="form-control ng-pristine ng-untouched ng-valid">
+																<span class="help-block">填写阿里云accessKeyId</span>
+															</div>
+														</div>	
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>accessKeySecret</label>
+															<div class="col-xs-9">
+																<input type="text" name="accessKeySecret" placeholder="accessKeySecret" value="{$set['accessKeySecret']}" class="form-control ng-pristine ng-untouched ng-valid">
+																<span class="help-block">填写阿里云accessKeySecret</span>
+															</div>
+														</div>														
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>		
+								</div>								
+								<div id="weather_editor" class="editor" style="border: 1px solid #eee;top:370px">
+									<div class="ng-scope">
+									<!--天气-->
+										<div class="app-header-setting">
+											<div class="arrow-left"></div>
+											<div class="app-header-setting-inner">
+												<div class="panel panel-default">
+													<div class="panel-body form-horizontal">								
+														<div class="form-group">
+															<label class="col-xs-3 control-label"><span class="red">*</span>weather_id</label>
+															<div class="col-xs-9">
+																<input type="text" name="weather_id" placeholder="天气weather_id" value="{$set['weather_id']}" class="form-control ng-pristine ng-untouched ng-valid">
+															</div>
+														</div>	
+														<div class="form-group">	
+															<label class="col-xs-3 control-label"><span class="red">*</span>apikey</label>
+															<div class="col-xs-9">
+																<input type="text" name="apikey" placeholder="天气apikey" value="{$set['apikey']}" class="form-control ng-pristine ng-untouched ng-valid">
+															</div>
+														</div>
+														<span class="help-block"><a href="http://console.heweather.com/register" target="_blank">点此申请天气接口</a></span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>		
+								</div>
+								<div id="qrcode_editor" class="editor" style="border: 1px solid #eee;top:370px">
+									<div class="ng-scope">
+									<!--食谱、二维码-->
+										<div class="app-header-setting">
+											<div class="arrow-left"></div>
+											<div class="app-header-setting-inner">
+												<div class="panel panel-default">
+													<div class="panel-body form-horizontal">								
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>小图</label>
+															<div class="col-xs-9">
+																{template 'public/imgeschoses'}
+																<div class="input-group ">
+																	<input type="text" name="qrcode" id="qrcode" value="{if $banner['qrcode']}{php echo tomedia($banner['qrcode'])}{else}{MODULE_URL}public/mobile/img/abbcenter2.jpg{/if}" class="form-control" autocomplete="off" filename="" url="">
+																	<span class="input-group-btn">
+																		<button class="btn btn-default" type="button" onclick="showImageDialog_qrcode(this);">选择图片</button>
+																	</span>
+																</div>
+																<div class="input-group " style="margin-top:.5em;">
+																	<img src="{if $banner['qrcode']}{php echo tomedia($banner['qrcode'])}{else}{MODULE_URL}public/mobile/img/abbcenter2.jpg{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+																	<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+																</div>
+																<span class="help-block">推荐尺寸200*124(此处推荐显示二维码)</span>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>		
+								</div>
+								<div id="banner_editor" class="editor" style="border: 1px solid #eee;">
+									<div class="ng-scope">
+									<!--食谱、二维码-->
+										<div class="app-header-setting">
+											<div class="arrow-left" style="top: 520px;"></div>
+											<div class="app-header-setting-inner">
+												<div class="panel panel-default">
+													<div class="panel-body form-horizontal">								
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>大图幻灯片1</label>
+															<div class="col-xs-9">
+																{template 'public/imgeschoses'}
+																<div class="input-group ">
+																	<input type="text" name="pic1_abb" id="pic1" value="{if $banner['pic1']}{php echo tomedia($banner['pic1'])}{else}{MODULE_URL}public/mobile/img/abbbot.png{/if}" class="form-control" autocomplete="off" filename="" url="">
+																	<span class="input-group-btn">
+																		<button class="btn btn-default" type="button" onclick="showImageDialog_banner(this);">选择图片</button>
+																	</span>
+																</div>
+																<div class="input-group " style="margin-top:.5em;">
+																	<img src="{if $banner['pic1']}{php echo tomedia($banner['pic1'])}{else}{MODULE_URL}public/mobile/img/abbbot.png{/if}" onerror="" class="img-responsive img-thumbnail" width="150">
+																	<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片" onclick="deleteImage(this)">×</em>
+																</div>
+																<span class="help-block">推荐尺寸405*253</span>
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>大图幻灯片2</label>
+															<div class="col-xs-9">
+																{php echo tpl_form_field_image('pic2_abb', $banner['pic2'])}
+																<span class="help-block">推荐尺寸405*253</span>
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>大图幻灯片3</label>
+															<div class="col-xs-9">
+																{php echo tpl_form_field_image('pic3_abb', $banner['pic3'])}
+																<span class="help-block">推荐尺寸405*253</span>
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>大图幻灯片4</label>
+															<div class="col-xs-9">
+																{php echo tpl_form_field_image('pic4_abb', $banner['pic4'])}
+																<span class="help-block">推荐尺寸405*253</span>
+															</div>
+														</div>
+														<div class="form-group">
+															<label class="control-label col-xs-3"><span class="red">*</span>大图幻灯片5</label>
+															<div class="col-xs-9">
+																{php echo tpl_form_field_image('pic5_abb', $banner['pic5'])}
+																<span class="help-block">推荐尺寸405*253</span>
+															</div>
+														</div>														
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>		
+								</div>								
+							</div>							
+						</div>	
+					</div>
+				</div>
+				<script type="text/javascript">
+					$(document).ready(function() {
+						$("#top1_editor").hide();
+						$("#top2_editor").hide();
+						$("#weather_editor").hide();
+						$("#qrcode_editor").hide();
+						$("#banner_editor").hide();
+					});
+					$("#bgimg").click(function(){
+						$("#bgimg_editor").show();
+						$("#top1_editor").hide();
+						$("#top2_editor").hide();						
+						$("#weather_editor").hide();
+						$("#qrcode_editor").hide();
+						$("#banner_editor").hide();						
+					});
+					$("#top1").click(function(){
+						$("#bgimg_editor").hide();
+						$("#top1_editor").show();
+						$("#top2_editor").hide();						
+						$("#weather_editor").hide();
+						$("#qrcode_editor").hide();
+						$("#banner_editor").hide();						
+					});
+					$("#top2").click(function(){
+						$("#bgimg_editor").hide();
+						$("#top1_editor").hide();
+						$("#top2_editor").show();						
+						$("#weather_editor").hide();
+						$("#qrcode_editor").hide();
+						$("#banner_editor").hide();						
+					});					
+					$("#center_waether").click(function(){
+						$("#bgimg_editor").hide();
+						$("#top1_editor").hide();
+						$("#top2_editor").hide();						
+						$("#weather_editor").show();
+						$("#qrcode_editor").hide();
+						$("#banner_editor").hide();						
+					});	
+					$("#center_qrcode").click(function(){
+						$("#bgimg_editor").hide();
+						$("#top1_editor").hide();
+						$("#top2_editor").hide();						
+						$("#weather_editor").hide();
+						$("#qrcode_editor").show();
+						$("#banner_editor").hide();						
+					});	
+					$("#foot_banner").click(function(){
+						$("#bgimg_editor").hide();
+						$("#top1_editor").hide();
+						$("#top2_editor").hide();						
+						$("#weather_editor").hide();
+						$("#qrcode_editor").hide();
+						$("#banner_editor").show();						
+					});					
+				</script>
+				{if $_W['isfounder']}
+					{if !empty($item['macid'])}
+						{if $item['macname'] == 1}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<!-- <a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkjl&m=fm_jiaoyu'}</a> -->
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkjl&m=fm_jiaoyu'.'&macid=' . $item['macid'] . ' '}</a>
+									<label class="radio-inline">
+								</div>
+							</div>
+						{/if}
+						{if $item['macname'] == 2}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkxz&m=fm_jiaoyu'}</a>
+									</label>			
+								</div>
+							</div>
+						{/if}
+						{if $item['macname'] == 3}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkym&m=fm_jiaoyu'}</a>
+									</label>			
+								</div>
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>文件路径 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{$urls}</a>
+									</label>			
+								</div>								
+							</div>
+						{/if}
+						{if $item['macname'] == 4}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkabb&m=fm_jiaoyu'}</a>
+									</label>			
+								</div>							
+							</div>
+						{/if}						
+					{/if}
+				{/if}
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-9 col-xs-9 col-md-9">
+				<input type="hidden" name="token" value="{$_W['token']}">
+				<input name="submit" id="submit" type="submit" value="提交" class="btn btn-primary col-lg-1">
+			</div>	
+		</div>
+	</div>
+</form>
+<script>
+$(function(){
+	$('#credit1').click(function(){
+		$('#credit-status0').show();
+		$('#credit-status1').hide();
+		$('#credit-status2').hide();
+		$('#credit-status3').hide();
+	});
+	$('#credit2').click(function(){
+		$('#credit-status0').hide();
+		$('#credit-status1').show();
+		$('#credit-status2').hide();
+		$('#credit-status3').hide();
+	});
+	$('#credit3').click(function(){
+		$('#credit-status0').hide();
+		$('#credit-status2').show();
+		$('#credit-status1').hide();
+		$('#credit-status3').hide();
+	});	
+	$('#credit4').click(function(){
+		$('#credit-status0').hide();
+		$('#credit-status3').show();
+		$('#credit-status2').hide();
+		$('#credit-status1').hide();
+	});	
+	$('#credit5').click(function(){
+		$('#credit-status0').hide();
+		$('#credit-status1').show();
+		$('#credit-status2').hide();
+		$('#credit-status3').hide();
+	});	
+});
+</script>
+{elseif $operation == 'display'}
+<div class="clearfix">
+	<form class="form-horizontal" action="" method="post">
+		<div class="panel panel-default">
+			<div class="panel-body table-responsive">
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th>考勤机名称</th>
+							<th>机器号</th>
+							<th>设备状态</th>
+							<th>设备类型</th>
+							
+							<th style="text-align:right;">设备操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td>{$item['name']}</td>
+							<td>{$item['macid']}</td>
+							<td><input type="checkbox" value="{$item['is_on']}" name="is_on[]" data-id="{$item['id']}" {if $item['is_on'] == 1}checked{/if}></td>
+							<td>
+								讯贞智能考勤
+							</td>							
+							
+							<td style="text-align:right;">
+								<a href="javascript:;" data-tag="{$item['macid']}" class="btn btn-info btn-sm showqrcode"><i class="fa fa-qrcode"> 二维码</i></a>
+								
+                                <a href="javascript:;" class="btn btn-default btn-sm editconfig" data-id="{$item['id']}"><i class="fa fa-edit"> 参数配置</i></a>
+                                <a class="btn btn-info btn-sm resync" data-tag="{$item['macid']}" ><i class="fa fa-undo"> 立即同步</i></a>
+								<a class="btn btn-warning btn-sm restart" data-tag="{$item['macid']}" ><i class="fa fa-undo"> 重启设备</i></a>
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</form>
+</div> 
+<script src="{OSSURL}public/mobile/js/common.js?v=1717"></script>
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
+	<div class="modal-dialog modal-lg" role="document">		
+		<div class="modal-content">			
+		<form class="table-responsive form-inline bv-form" method="post" action="" id="form-credit" novalidate="novalidate">
+			<input type="hidden" name="id" />
+			<div class="modal-header">					
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>					
+				<h4 class="modal-title" id="myModalLabel">参数配置</h4>	
+			</div>
+			<div class="modal-body">
+				<table class="table table-hover table-bordered">						
+					<tbody>
+						<tr>
+							<th >摄像机位置</th>
+							<th width="200">摄像机IP</th>
+							<th width="100">端口</th>
+							<th width="150">用户名</th>
+							<th width="150">密码</th>
+						</tr>
+						<tr>	
+							<td>摄像机1出</td>
+							<td><input type="text" name="ip[]"/></td>
+							<td><input type="text" name="port[]" style="width: 100%;"/></td>
+							<td><input type="text" name="uname[]" style="width: 100%;"/></td>
+							<td><input type="text" name="pwd[]" style="width: 100%;"/></td>
+						</tr>
+						<tr>	
+							<td>摄像机1进</td>
+							<td><input type="text" name="ip[]"/></td>
+							<td><input type="text" name="port[]" style="width: 100%;"/></td>
+							<td><input type="text" name="uname[]" style="width: 100%;"/></td>
+							<td><input type="text" name="pwd[]" style="width: 100%;"/></td>
+						</tr>
+						<tr>	
+							<td>摄像机全景</td>
+							<td><input type="text" name="ip[]"/></td>
+							<td><input type="text" name="port[]" style="width: 100%;"/></td>
+							<td><input type="text" name="uname[]" style="width: 100%;"/></td>
+							<td><input type="text" name="pwd[]" style="width: 100%;"/></td>
+						</tr>
+					</tbody>
+				</table>				
+			</div>				
+			<div class="modal-footer">	
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="submit" class="btn btn-primary" name="submit" id="submit">提交</button>
+			</div>			
+		</form>		
+		</div>	
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	$(".restart").on('click',function(){
+
+        if(!confirm("重启设备期间设备无法使用，确定操作吗？")) return false;
+        var tag     = $(this).data('tag');
+        $.post("{php echo $this->createWebUrl('xz_device', array('op' => 'restart', 'schoolid' => $schoolid))}",{'tag':tag},function(data){
+            var msg = '设备重启失败';
+            if(data.msg){
+                msg = data.msg;
+            }
+            var modalobj = util.dialog('设备重启', '<div>'+msg+'</div>','<button type="button" class="btn btn-default" data-dismiss="modal">确定</button>', {});
+                modalobj.modal('show');
+        },'json');
+    });
+
+    $(".resync").on('click',function(){
+
+        if(!confirm("确定执行立即同步操作吗？")) return false;
+        var tag     = $(this).data('tag');
+        $.post("{php echo $this->createWebUrl('xz_device', array('op' => 'resync', 'schoolid' => $schoolid))}",{'tag':tag},function(data){
+            var msg = '同步失败';
+            if(data.msg){
+                msg = data.msg;
+            }
+            var modalobj = util.dialog('立即同步', '<div>'+msg+'</div>','<button type="button" class="btn btn-default" data-dismiss="modal">确定</button>', {});
+                modalobj.modal('show');
+        },'json');
+    });
+
+	$(".editconfig").on('click',function(){
+
+		$("#Modal1").modal('show');
+		loadconfig($(this).data('id'));
+	});
+	$(".showqrcode").on('click',function(){
+        var tag  = $(this).data('tag');
+
+        $.post("{php echo $this->createWebUrl('xz_device', array('op' => 'showqrcode', 'id' => $item['id'], 'schoolid' => $schoolid))}",{'tag':tag},function(data){
+            if(data.status == 'success'){
+                var content = '<div class="text-center clearfix"><div class="pull-left" style="width:50%;"><div>入口</div><a href="'+data.img_url+'" target="_blank"><img width="100%" src="'+data.img_url+'" /></a></div><div class="pull-left" style="width:50%;"><div>出口</div><a href="'+data.img_url2+'" target="_blank"><img width="100%" src="'+data.img_url2+'" /></a></div></div>';
+                var modalobj = util.dialog('二维码查看', content,'<button type="button" class="btn btn-default" data-dismiss="modal">确定</button>', {});
+                modalobj.modal('show');
+
+            }
+        },'json');
+
+        
+    });
+
+	var loadconfig = function(id){
+		$.getJSON("{php echo $this->createWebUrl('xz_device', array('op' => 'edit','schoolid' => $schoolid))}&id="+id,function(data){
+			$("[name='id']","#form-credit").val(id);
+			
+			if(data.status == 'success'){
+				var ipcs = data.data['ipc'];
+
+				for (var i = 0; i < 3; i++) {
+					if(ipcs.length<(i+1))break;
+
+					var ipc = ipcs[i];
+					for(var key in ipc){
+						$("[name='"+key+"[]']:eq("+i+")","#form-credit").val(ipc[key]);
+					}
+				}
+			}else{
+				var content = '<div class="text-center clearfix" style="font-size:30px;">'+(data.msg?data.msg:'数据载入错误')+'</div>';
+                var modalobj = util.dialog('错误', content,'<button type="button" class="btn btn-default" data-dismiss="modal">确定</button>', {});
+				modalobj.modal('show');
+			}
+		});
+	};
+	
+	$('#form-credit').on('submit',function(){
+
+		$.post("{php echo $this->createWebUrl('xz_device', array('op' => 'edit','schoolid' => $schoolid,'submit'=>1))}",$("#form-credit").serialize(), function(data){
+			if(data.status == 'success'){
+
+				$("#Modal1").modal('hide');
+
+				var content = '<div class="text-center clearfix" style="font-size:30px;">'+(data.msg?data.msg:'配置保存成功')+'</div>';
+                var modalobj = util.dialog('成功', content,'<button type="button" class="btn btn-default" data-dismiss="modal">确定</button>', {});
+                modalobj.modal('show');
+			}else{
+				var content = '<div class="text-center clearfix" style="font-size:30px;">'+(data.msg?data.msg:'配置保存失败')+'</div>';
+                var modalobj = util.dialog('错误', content,'<button type="button" class="btn btn-default" data-dismiss="modal">确定</button>', {});
+                modalobj.modal('show');
+			}
+		},'json');
+
+
+		return false;
+	});
+});	
+function checkorder(id){
+	ajax_start_loading("命令发送中......请不要关闭本页面");
+	var id = id;
+	$.post("{php echo $this->createWebUrl('indexajax', array('op' => 'checkorder'))}",{id: id}, function(data){
+		if(data.result){
+			ajax_stop_loading();
+			$('#Modal1').modal('toggle');
+			alert(data.msg);
+		}else{
+			setTimeout(checkorder(id), 5000);
+		}	
+	},'json');
+}
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+
+	$(':checkbox[name="is_on[]"]').bootstrapSwitch();
+	$(':checkbox[name="is_on[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+		var is_on = this.checked ? 1 : 2;
+		var id = $(this).data('id');
+		$.post("{php echo $this->createWebUrl('check', array('op' => 'change'))}", {is_on: is_on, id: id}, function(resp){
+			setTimeout(function(){
+				//location.reload();
+			}, 500)
+		});
+	});
+});
+</script>
+{/if}
+{template 'public/footer'}

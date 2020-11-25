@@ -1,0 +1,252 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li {if $_GPC['do']=='yqdkgather'}class="active"{/if}><a href="{php echo $this->createWebUrl('yqdkgather', array('op' => 'display', 'schoolid' => $schoolid))}">打卡统计</a></li>
+                <li {if $_GPC['do']=='yqdk'}class="active"{/if}><a href="{php echo $this->createWebUrl('yqdk', array('op' => 'display', 'schoolid' => $schoolid))}">打卡记录</a></li>
+            </ul>	
+        </div>
+    </div>
+    <style>
+    .form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">晨检管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="yqdk" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">按学生姓名搜索</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="s_name" id="" type="text" value="{$_GPC['s_name']}">
+                    </div>	
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按年级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="nj_id" id="nj_id" class="form-control">
+                            <option value="0">请选择年级</option>
+                            {loop $xueqi $it}
+                            <option value="{$it['sid']}" {if $_GPC['nj_id'] == $it['sid']}selected{/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" id="bj_id" class="form-control">
+                            <option value="0">请选择班级搜索</option>
+                            {loop $bj $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>	
+	
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">开始时间</label>
+					<div class="col-sm-2 col-lg-3">
+						{php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    <div class="col-sm-2 col-lg-2">						
+                        <a class="btn btn-success" onclick="showmodal()">疫情额外选项设置</a> 
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {template 'public/excel_input'}
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th style="width:5%">姓名</th>
+                            <th style="width:8%;">年级</th>
+                            <th style="width:8%;">班级</th>
+                            <th style="width:8%;">体温</th>
+                            <th style="width:20%;">其他项</th>
+                            <th style="width:5%;">检测时间</th>					
+                            <th class="qx_e_d" style="text-align:right; width:2%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                            <td>{$item['s_name']}</td>	
+                            <td>
+                                {$item['nj_name']}
+                            </td>
+                            <td>
+                                {$item['bj_name']}
+                            </td>	
+                            <td>
+                                {if $item['tiwen'] < 35.5 || $item['tiwen'] >37.5}
+                                    <span class="label label-danger">{$item['tiwen']}℃ <br><br><br> 不正常</span>
+                                {else}
+                                    <span class="label label-info">{$item['tiwen']}℃</span>
+                                {/if}
+                            </td>
+                            <td>
+                                {loop $item['content'] $key $row}
+                                    {php echo yqselect($key,'title')} <br>
+                                    {if is_array($row)}
+                                        <span class="label label-info" style="margin-left: 20px;">
+                                        {loop $row $row2}
+                                        {php echo yqselect($key,'data',$row2)}
+                                        {/loop}
+                                        </span>
+                                        <br>
+                                    {else}
+                                        <span class="label label-info" style="margin-left: 20px;">{php echo yqselect($key,'data',$row)}</span> <br>
+                                    {/if}
+                                {/loop}
+                            </td>
+                            <td>
+                                <span class="label label-success">{php echo date('Y-m-d',$item['createtime'])}</span>
+                            </td>
+                            <td class="qx_e_d" style="text-align:right;">
+                                &nbsp;&nbsp;<a class="btn btn-default btn-sm qx_804" href="{php echo $this->createWebUrl('yqdk', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                    <tr>
+                        <td colspan="10">
+                            <input name="token" type="hidden" value="{$_W['token']}" />
+                            <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+                        </td>
+                    </tr>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="EditModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">新增选择设置</h4>
+			</div>
+			<div class="modal-body" id="detail_checksen1d">
+				<form id="upsence_form" method="post" class="form-horizontal form">
+					<input type="hidden" name="schoolid" value="4">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+                                <label class="col-xs-12 col-lg-2 control-label" style="width: 100px;">选项设置</label>
+                                {php $yqdkset = yqselect();}
+                                {loop $yqdkset $key $uni}
+                                {if $yqset}
+                                {php $is = $this->uniarr($yqset,$key);}
+                                {/if}
+                                <label style="line-height: 35px;margin-left: 10px;">
+                                    <input id="uni_{$key}" type="checkbox" name="yqdkset" value="{$key}" {if ($is)}checked="checked"{/if}>{$uni['title']}
+                                </label>
+								{/loop}
+                            </div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="close_modal1" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit1" onclick="tijiao()">提交</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    //班级年级联动
+    $("#nj_id").change(function() {
+        var type = 4;
+        var cityId = $("#nj_id option:selected").attr('value');
+        changeGrade(cityId,type, function() {});
+    });
+    function changeGrade(gradeId, type, __result) {
+        var schoolid = "{$schoolid}";
+        var classlevel = [];
+        //获取班次
+        $.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+            data       = JSON.parse(data);
+            classlevel = data.bjlist;
+            var html   = '';
+            html += '<select id="bj_kcbuy"><option value="">请选择班级</option>';
+            if (classlevel != '') {
+                for (var i in classlevel) {
+                    html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+                }
+            }
+            $('#bj_id').html(html);
+        });
+    }
+    $(function(){
+        $(".check_all").click(function(){
+            var checked = $(this).get(0).checked;
+            $("input[type=checkbox]").attr("checked",checked);
+        });
+        $("input[name=btndeleteall]").click(function(){
+            var check = $("input[type=checkbox][class!=check_all]:checked");
+            if(check.length < 1){
+                alert('请选择要删除的数据!');
+                return false;
+            }
+            if(confirm("确认要删除选择的数据?")){
+                var id = new Array();
+                check.each(function(i){
+                    id[i] = $(this).val();
+                });
+                var url = "{php echo $this->createWebUrl('yqdk', array('op' => 'deleteall','schoolid' => $schoolid))}";
+                $.post(
+                    url,
+                    {idArr:id},
+                    function(data){
+                        if(data.result){
+                            alert(data.msg);
+                            location.reload();
+                        }else{
+                            alert(data.msg);
+                        }
+                    },'json'
+                );
+            }
+        });
+
+    });
+
+    //展示修改modal
+    function showmodal(id){
+        $('#EditModal').modal('toggle');
+    }
+    //提交数据
+    function tijiao(){
+        let yqdkset = []
+        $('input:checkbox[name=yqdkset]:checked').each(function(i){
+            yqdkset[i] =  $(this).val() ;
+        })
+        let data = {
+            'yqdkset' : yqdkset,
+            'schoolid' : `{$schoolid}`,
+        }
+        $.post("{php echo $this->createWebUrl('yqdk',array('op'=>'AddOtherSet'))}", data, function(data) {
+            alert(data.msg);
+            location.reload()
+        },'json');
+    }
+</script>	
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,181 @@
+{template 'public/header'}
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.flot.js?v=2.1.4"></script>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/mc_yqdk.js"></script>	
+<style>
+    *{box-sizing: border-box;}
+</style>
+<!-- <div class="clearfix" style="background-color: #fff;">
+    <div class="row">
+        <div class="col-md-8" >
+            <div class="panel panel-default">
+                <div class="chart-title  ng-binding" style="padding: 13px 10px;font-size: 16px;">全校14天内疫情打卡情况</div>
+               
+                <div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;">
+                    <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                    <div class="echarts" id="echarts-pie-chart-dknum"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+<div class="clearfix" style="margin-top: 20px">
+    <div class="row">
+        {loop $questionList $key $row}
+            <!-- 单选用饼状图 -->
+            {if $row['type'] == '1'}
+            <div class="col-md-4">
+                <div class="form-horizontal form panel panel-default" style="padding-left: 15px;padding-top: 60px;">
+                    <div class="panel-body text-center" style="padding: 1px;height: 370px;position: relative;">
+                        <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                        <div class="echarts" id="echarts-pie-chart-{$row['id']}"></div>
+                    </div>
+                </div>
+            </div>   
+            {/if}
+            <!-- 多选用柱状图 -->
+            {if $row['type'] == '2'}
+            <div class="col-md-4">
+                <div class="form-horizontal form panel panel-default" style="padding-left: 15px;padding-top: 60px;">
+                    <div class="panel-body text-center" style="padding: 1px;height: 370px;position: relative;">
+                        <div class="global-loading-layer"> <div> <img src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                        <div class="echarts" id="echarts-pie-chart-{$row['id']}"></div>
+                    </div>
+                </div>
+            </div>   
+            {/if}
+        {/loop}
+    </div>
+</div>
+{template 'public/footer'}
+<script src=" https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+
+<script type="text/javascript">
+
+$(function(){
+    GetComPieData(`{$row['zyid']}`,'GetComPieData',)
+    GetComColData(`{$row['zyid']}`,'GetComColData')
+})
+// //获取打卡数据
+// function GetDkNumData() {
+//     let bj_id = $("#bj_id option:selected").attr('value');
+// 	GetChartDataDefault('dknum',{bj_id:bj_id},true,function(data, type){
+// 		let datas = $.parseJSON(data);
+//         let ds = PieOption[type];
+// 		ds.xAxis [0].data = datas.createdate;
+// 		ds.series[0].data = datas.dkcount;
+// 		ds.series[1].data = datas.nodkcount;
+// 		var myChart = echarts.init($('#echarts-pie-chart-dknum')[0]);
+// 		myChart.setOption(ds);
+// 		$(window).resize(myChart.resize);
+
+// 	});
+// }
+
+
+var BarOp = {
+    title: {
+        text: '',
+        left:'center'
+    },
+    xAxis: {
+        type: 'category',
+        axisTick:{
+            show:false //不显示刻度线
+        },
+        // data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    yAxis: {
+        type: 'value',
+        offset:5,
+        scale:true,
+        axisTick:{ //不显示刻度线
+            show:false
+        },
+        splitLine:{ //网格线样式
+            show:true,
+            lineStyle:{
+                color:['#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb',"#fff","#fff","#fff","#fff","#fff","#fff"],
+                type:'dashed'
+            }
+        },
+    },
+    series: [{
+        data: [120, 200, 150, 80, 70, 110, 130],
+        type: 'bar',
+        itemStyle:{
+            normal:{
+                color:'#529CD9'
+            }
+        }
+    }]
+};
+
+//获取多选数据
+function GetComColData(zyid,type) {
+    GetChartDataDefault(zyid,type,pieNum =null,true,function(data, pieNum){
+        let datas = $.parseJSON(data);
+        let ds = BarOp;
+        let datass = datas.data;
+        for(let i in datass){
+            // ds.legend.data = datass[i].legend;
+            console.log(datass[i].legend)
+            ds.title.text = datass[i].title;
+
+            ds.xAxis.data = datass[i].dataTitle;
+            ds.series[0].data = datass[i].dataValue;
+            var myChart2 = echarts.init($('#echarts-pie-chart-'+datass[i].pieNum)[0]);
+            myChart2.setOption(ds);
+            $(window).resize(myChart2.resize);
+            $('#echarts-pie-chart-'+datass[i].pieNum).prev().hide()
+        }
+        
+    });
+}
+//获取单选数据
+function GetComPieData(zyid,type) {
+    GetChartDataDefault(zyid,type,pieNum =null,true,function(data, pieNum){
+        let datas = $.parseJSON(data);
+        let ds = PieOption['a'];
+        let datass = datas.data;
+        for(let i in datass){
+            ds.title.text = datass[i].title;
+            ds.legend.data = datass[i].legend;
+            ds.series[0].data = datass[i].data;
+            ds.series[0].name = datass[i].title;
+            var myChart = echarts.init($('#echarts-pie-chart-'+datass[i].pieNum)[0]);
+            myChart.setOption(ds);
+            $(window).resize(myChart.resize);
+            $('#echarts-pie-chart-'+datass[i].pieNum).prev().hide()
+        }
+        
+    });
+}
+//根据类型获取数据
+function GetChartDataDefault(zyid,type,pieNum,IsDfFunc = false,callback){
+    $(`#echarts-pie-chart-${pieNum}`).prev().show()
+    var schoolid = "{$schoolid}";
+    var url = "{php echo $this->createWebUrl('quesformecharts');}";
+    var stat_params = {
+        'op' : type,
+        'zyid' : zyid,
+        'schoolid' : schoolid
+    };
+    let params = $.extend(false, {}, pieNum, stat_params);
+  
+    $.post(url, params, function(data){
+        if(IsDfFunc === false){
+            var data = $.parseJSON(data);
+            var ds = PieOption[pieNum];
+            ds.series[0].data = data.message.message;
+            var pieChart = echarts.init($(`#echarts-pie-chart-${pieNum}`)[0]);
+            pieChart.setOption(ds);
+            $(window).resize(pieChart.resize);
+        }else{
+            callback(data,pieNum);
+        }
+        $(`#echarts-pie-chart-${pieNum}`).prev().hide()
+    });
+}
+
+</script>
+

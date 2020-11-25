@@ -1,0 +1,194 @@
+<div class="col-xs-12">
+<div class="loading-layer" id="left_bigload" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+	<div class="app-content content">
+		<div class="content-area-wrapper">
+			<div class="sidebar-left">
+				<div class="sidebar">
+					<!-- 左侧弹框 -->
+					<div class="chat-user-profile bjqinfo">
+
+					</div>
+					<!-- 左侧弹框 ends -->
+					
+					<!-- 左侧列表 -->
+					<div class="chat-sidebar card" style="box-shadow: none;">
+						{if $school['bjqstyle'] == 'new' && !$_W['schooltype']}
+						<span class="chat-sidebar-close"><i class="bx bx-x"></i></span>
+						<div class="chat-sidebar-search">
+							<div class="d-flex align-items-center" onclick="show_leftboxs()">
+								<div class="chat-sidebar-profile-toggle">
+									<div class="avatar"><img src="{php echo tomedia($school['logo'])}" alt="user_avatar" height="36" width="36"></div>
+								</div>
+								<fieldset class="form-group position-relative has-icon-left chat-sidebar-profile-toggle cursor-pointer mx-75 mt-2 bjtitle">{$nowbjname}</fieldset>
+							</div>
+						</div>
+						<div class="chat-sidebar-list-wrapper pt-2 ps ps--active-y">
+							<h5 class="px-2 pb-25 mb-1">班级列表</h5>
+							<ul class="chat-sidebar-list" style="max-height:100%;overflow-y:scroll">
+								{loop $bjlists $row}
+								<li {if $row['sid'] == $bj_id} class="active" {/if} onclick="set_bj(`{$row['sid']}`,this)"><h6 class="mb-0">{$row['sname']}{if $row['is_over'] == 2}(已结业){/if}</h6></li>
+								{/loop}
+
+							</ul>
+							<div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div>
+							<div class="ps__rail-y" style="top: 0px; height: 742px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 645px;"></div></div>
+						</div>
+						{else}
+						<span class="chat-sidebar-close"><i class="bx bx-x"></i></span>
+						<div class="chat-sidebar-search">
+							<div class="d-flex align-items-center">
+								<div class="chat-sidebar-profile-toggle">
+									<div class="avatar"><img src="{php echo tomedia($school['logo'])}" alt="user_avatar" height="36" width="36"></div>
+								</div>
+								<fieldset class="form-group position-relative has-icon-left chat-sidebar-profile-toggle cursor-pointer mx-75 mt-2 bjtitle">班级圈</fieldset>
+							</div>
+						</div>
+						<div class="chat-sidebar-list-wrapper pt-2 ps ps--active-y">
+							<h5 class="px-2 pb-25 mb-1">校园动态</h5>
+						</div>
+						{/if}
+					</div>
+					<!-- 左侧列表 ends -->
+				</div>
+			</div>
+			<div class="content-right">
+				<div class="content-overlay"></div>
+				<div class="content-wrapper">
+					<div class="content-header row"></div>
+					<div class="content-body">
+						<!-- app chat overlay -->
+						<div class="chat-overlay"></div>
+						<!-- 右侧班级圈内容 start -->
+						<section class="chat-window-wrapper">
+							<div class="chat-start d-none">
+								<span class="fa fa-wechat chat-sidebar-toggle chat-start-icon font-large-3 p-3 mb-1"></span>
+								<h4 class="d-lg-block py-50 text-bold-500">抱歉!你没有管理任何班级</h4>
+							</div>
+							<div class="chat-area">
+								<div class="chat-header" style="background: #fff;">
+									<header class="d-flex justify-content-between align-items-center border-bottom px-1 py-75">
+										<div class="d-flex align-items-center">
+										<h5 class="chat-profile-toggle mb-0 bjtitle">{$nowbjname}</h5>
+										</div>
+										<div class="chat-header-icons">
+											<span class="chat-icon-favorite mr-1"><span class="bullet bullet-success bullet-sm"></span> 学生发布</span>
+											<span class="chat-icon-favorite"><span class="bullet bullet-primary bullet-sm"></span> 老师发布</span>
+										</div>
+									</header>
+								</div>							
+								<!-- 班级圈瀑布流 start -->
+								<div class="card chat-wrapper shadow-none" style="box-shadow: none;">
+									<div class="loading-layer" id="bjqlist_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+									<div class="card-content">
+										<div class="card-body chat-container" style="max-height:100%;overflow-y:scroll">
+											<div class="chat-content bjqlist" style="min-width:700px;max-width:1408px">
+
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- 班级圈瀑布流 ends -->
+							</div>
+						</section>
+						<!-- 右侧班级圈内容 ends -->
+						<!-- 右侧动态详情弹框 start -->
+						<section class="chat-profile">
+							<div class="loading-layer" id="bjqdetail_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+							<div class="card shadow-none bjqdetail mb-0 p-0">
+	
+							</div>
+						</section>
+						<!--右侧弹框 ends -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="nowbjid" value="{$bj_id}"/>					
+<script type="text/javascript">
+show_list()
+function set_bj(bj_id,elm){
+	var bjtitle = $(elm).children().text()
+	$(elm).parent().children("li").removeClass('active')
+	$(elm).addClass('active')
+	$('#nowbjid').val(bj_id)
+	if(bj_id>0){
+		$('.bjtitle').text(bjtitle+" 班级圈")
+	}else{
+		$('.bjtitle').text("校园动态")
+	}
+	show_list()
+}
+function show_list(){
+    $("#bjqlist_load").show();
+	$('.bjqlist').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'bjqlist','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			tid:"{$nowtid}",
+			bjid:$('#nowbjid').val()
+		},
+		success: function (result) {
+			if (result) {
+				$('.bjqlist').html(result)
+				$('#bjqlist_load').hide()
+			}
+		}
+	});
+}
+function show_leftboxs(){
+    $(".chat-user-profile").addClass("show");
+    $(".chat-overlay").addClass("show");
+	$('.bjqinfo').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'bjqinfo','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			tid:"{$nowtid}",
+			bjid:$('#nowbjid').val()
+		},
+		success: function (result) {
+			if (result) {
+				$('.bjqinfo').html(result)
+			}
+		}
+	});
+}
+function show_rightboxs(dataid){
+    $(".chat-profile").addClass("show");
+    $(".chat-overlay").addClass("show");
+	$("#bjqdetail_load").show();
+	$('.bjqdetail').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'bjqdetail','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			tid:"{$nowtid}",
+			dataid:dataid
+		},
+		success: function (result) {
+			if (result) {
+				$("#bjqdetail_load").hide()
+				$('.bjqdetail').html(result)
+			}else{
+				$("#bjqdetail_load").hide()
+			}
+		}
+	});
+}
+//关闭左右滑块弹框
+$(".chat-profile-close, .chat-overlay, .close-icon").on("click", function () {
+	$(".chat-user-profile").removeClass("show");
+	$(".chat-profile").removeClass("show");
+	$(".chat-user-profile").removeClass("show");
+	if (!$(".chat-sidebar").hasClass("show")) {
+	   $(".chat-overlay").removeClass("show");
+	}
+});
+
+</script>

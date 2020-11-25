@@ -1,0 +1,83 @@
+{if $showType == 'get'}
+    {if $nowdaylist}
+        <div class="block-box today">
+            <div  class="block-title">今日会议 ({php echo count($nowdaylist)}) </div>
+            <div class="block-content">
+                {loop $nowdaylist $row}
+                <div class="meeting-item">
+                    <div class="meeting-info">
+                        <div class="thumb">
+                            <img
+                                src="https://manger.weimeizhan.com/attachment/images/3/2017/08/Vsc9zv6J07Cf3J6V37c6v66kj3c0Kv.png">
+                        </div>
+                        <div class="text">
+                            <div class="text-item">{$row['title']}</div>
+                            <div class="text-item">发起人：{$row['tname']} <span class="meeting-type type-2">{if $row['type'] == 1}教师会议{else}家长会议{/if}</span> </div>
+                            <div class="text-item" style="color:gray">{php echo date("Y-m-d H:i",$row['starttime'])} 到 {php echo date("Y-m-d H:i",$row['endtime'])}</div>
+                        </div>
+                    </div>
+                    <div class="meeting-action">
+                        {if !$row['hassign']}
+                        <span class="action-btn" onclick="signMeeting(`{$row['id']}`)" style="background-color: #4c9ade;">立即签到</span>
+                        {/if}
+                        <span class="action-btn" onclick="getInfo(this,`{$row['id']}`)" style="background-color: #4c9ade;">查看详情</span>
+                    </div>
+                    <div style="display: none; width: 100%;padding:5px;background-color: #e2e2e2;margin-top: 10px;"></div>
+                </div>
+                {/loop}
+            </div>
+        </div>
+    {/if}
+    {if $list}
+        <div class="block-box list">
+            <div  class="block-title"> 会议列表 </div>
+            <div class="block-content">
+                {loop $list $key $row}
+                <div class="meeting-item {if $nowtime > $row['endtime']}overtime{/if}" ctype="{$type}" time="{$key}">
+                    <div class="meeting-info">
+                        <div class="thumb">
+                            <img src="https://manger.weimeizhan.com/attachment/images/3/2017/08/Vsc9zv6J07Cf3J6V37c6v66kj3c0Kv.png">
+                        </div>
+                        <div class="text">
+                            <div class="text-item">{$row['title']}</div>
+                            <div class="text-item">发起人：{$row['tname']} <span class="meeting-type type-2">{if $row['type'] == 1}教师会议{else}家长会议{/if}</span> </div>
+                            <div class="text-item" style="color:gray">{php echo date("Y-m-d H:i",$row['starttime'])} 到 {php echo date("Y-m-d H:i",$row['endtime'])}</div>
+                        </div>
+                    </div>
+                    <div class="meeting-action">
+                        {if !$row['hassign']}
+                        <span class="action-btn" onclick="signMeeting(`{$row['id']}`)" style="background-color: #4c9ade;">立即签到</span>
+                        {/if}
+                        <span class="action-btn" onclick="getInfo(this,`{$row['id']}`)" style="background-color: #4c9ade;">查看详情</span>
+                    </div>
+                    <div style="display: none; width: 100%;padding:5px;background-color: #e2e2e2;margin-top: 10px;"></div>
+                </div>
+                {/loop}
+            </div>
+        </div>
+    {/if}
+{/if}
+
+{if $showType == 'scroll'}
+    {loop $list $key $row}
+    <div class="meeting-item {if $nowtime > $row['endtime']}overtime{/if}" ctype="{$type}" time="{$row['location']}">
+        <div class="meeting-info">
+            <div class="thumb">
+                <img src="https://manger.weimeizhan.com/attachment/images/3/2017/08/Vsc9zv6J07Cf3J6V37c6v66kj3c0Kv.png">
+            </div>
+            <div class="text">
+                <div class="text-item">{$row['title']}</div>
+                <div class="text-item">发起人：{$row['tname']} <span class="meeting-type type-2">{if $row['type'] == 1}教师会议{else}家长会议{/if}</span> </div>
+                <div class="text-item" style="color:gray">{php echo date("Y-m-d H:i",$row['starttime'])} 到 {php echo date("Y-m-d H:i",$row['endtime'])}</div>
+            </div>
+        </div>
+        <div class="meeting-action">
+            {if !$row['hassign']}
+            <span class="action-btn" onclick="signMeeting(`{$row['id']}`)" style="background-color: #4c9ade;">立即签到</span>
+            {/if}
+            <span class="action-btn" onclick="getInfo(this,`{$row['id']}`)" style="background-color: #4c9ade;">查看详情</span>
+        </div>
+        <div style="display: none; width: 100%;padding:5px;background-color: #e2e2e2;margin-top: 10px;"></div>
+    </div>
+    {/loop}
+{/if}

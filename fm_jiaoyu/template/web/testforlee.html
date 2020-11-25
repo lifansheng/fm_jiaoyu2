@@ -1,0 +1,51 @@
+{template 'public/header'}
+{template 'public/comhead'}
+ <style>
+	.studiv{float:left;width:33%;padding:1px 5px;height:auto}
+	.studiv div{text-align:center;height:auto}
+	.labelStu{margin-top:5px;padding: 3px 6px; transform: scale(0.8);left: -7px;width:150%;position:relative;overflow: hidden;text-overflow: ellipsis; -o-text-overflow: ellipsis;white-space:nowrap;}
+	.viewBox{width:176px !important;height:auto !important;padding-bottom:10px !important;background-color:#F5EFEF;border-top-left-radius: 3%;border-top-right-radius: 3%;border-bottom-left-radius: 3%;border-bottom-right-radius: 3%;}
+	.bigss{width:100% !important;padding-right:0px}
+	.stu_img{width:45px;height:45px;border-radius:50%;}
+	
+ </style>
+ 
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/web/css/main.css"/>
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<div class="panel panel-info">
+	<div class="panel-heading">
+	
+
+		<a class="btn btn-default"  onclick="testxz();" id="small_scc"><i class="fa fa-compress"></i> 退出大屏</a>
+		
+		
+	</div>
+	
+</div>
+
+
+
+
+<script>
+	function testxz(){
+
+		
+		$.ajax({ 
+			url: "https://manger.daren007.com/app/index.php?i=3&c=entry&schoolid=4&do=checkxz&m=fm_jiaoyu&op=offlineflow&macid=5b9afc08cadc74332233&cardID=3659885006",
+			type: "post",
+			dataType: "json",
+			data: {
+				terminalId:'5b9afc08cadc74332233',
+				data:'{$data_final}',
+			},
+			success: function (data) {
+				console.log(data);
+			}
+		});
+		
+	
+	}
+
+
+</script>
+{template 'public/footer'}

@@ -1,0 +1,85 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-02-02 21:06:26
+ * @LastEditTime : 2020-02-05 18:20:26
+ -->
+
+<style>
+    #CT-Box{
+        display: grid;
+        grid-template-columns: 33.33% 33.33% 33.33%;
+    }
+    #CT-Box .ticon{
+      
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+    #CT-Box .CT-Cell{
+        height: calc(100% - 37px);width:100%;padding:10px;
+       display: flex;flex-direction: row;border-bottom: 1px solid #e8e8e8;
+    }
+   .CT-Cdiv{
+    border:1px solid #e8e8e8;
+    min-height: 120px;width: 270px;margin:5px 10px;background-color: white;
+    transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1); 
+   }
+
+   .CT-Cdiv:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);border:solid 1px rgba(0, 0, 0, 0.2);} 
+    .CT_Tname{
+       color:black;
+      font-size: 16px;
+        font-weight: bold;
+    }
+    .Left-imgB{
+       
+        width: 50px;
+    }
+    .Right-textB{
+        flex:1;
+        padding-left: 10px;
+    }
+    .Right-textB>div{
+        margin-bottom:2px
+    }
+    .CT-BAct{
+        height: 37px;
+        width: 100%;
+        background-color: #fafafa;
+        text-align: center;
+    }
+
+    .ActA{
+        margin-top: 8px;
+        display: inline-block;
+        color: #2fb1de;
+        cursor: pointer;
+    }
+
+    .ActA:hover{color:#06c1ae !important;transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);}
+</style>
+<div id="CT-Box">
+    {loop $AllTea $row_a}
+    <div class="CT-Cdiv">
+        <div class="CT-Cell">
+            <div class="Left-imgB">
+                <img class="ticon" src="{php echo tomedia($row_a['thumb'])}"  onerror="this.src='{php echo tomedia($tpic['tpic'])}'" alt="">
+            </div>
+            <div class="Right-textB">
+               <div class="CT_Tname">{$row_a['tname']}</div> 
+               <div>教师标签：{$row_a['tagname']}</div>
+               <div >
+                   <div style="float: left;">授课科目：</div>
+                   <div  style="float: left;">{$row_a['sub']}</div>
+               </div>
+            </div>
+        </div>
+        <div class="CT-BAct">
+            <span class="ActA" onclick="ChangeTag('{$row_a['tid']}','{$bj_id}','{$row_a['tagid']}','{$row_a['tname']}')">变更标签</span>
+        </div>
+    </div>
+   
+{/loop}
+</div>
+        

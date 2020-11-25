@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/kqtjCss.css?v=5.1"/>
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+    {php echo register_jssdks();}
+    <style>
+        .slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;/* animation-fill-mode: both; */}
+        .slide_left_menu_bg_other.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;/* animation-fill-mode: both; */}
+        .slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+        .slide_left_menu_bg_other {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;
+            z-index: 1000;overflow-y: scroll;display: none;}
+        .slide_left_menu {width: 50%!important;right: 0;background-color: #fff;z-index: 999;min-height: 100%;position: absolute;}
+        .slide_left_menu_ul_other {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+        .slide_left_menu_ul_other li {height: 50px;line-height: 50px;border-bottom: 1px solid #ccc;font-size: 16px;width: 100%;box-sizing: border-box;padding: 0 10px 0 10px;overflow: hidden;
+            position: relative;}
+        .slide_left_menu_ul_other li.act {background: url({OSSURL}public/mobile/img/be_choose_icon.png) right center no-repeat;background-size: 16px;background-origin: content-box;-moz-background-origin: content-box;-webkit-background-origin: content-box;}
+        .slide_left_menu_ul li.act {background: url({OSSURL}public/mobile/img/be_choose_icon_02.png) right center no-repeat;background-size: 16px;background-origin: content-box;-moz-background-origin: content-box;-webkit-background-origin: content-box;}
+        .slide_left_menu_ul_other li:last-of-type {border-bottom: none;}
+        .slide_left_menu_ul_other li .user_img {width: 50px;height: 50px;position: absolute;left: -5px;top: 0;box-sizing: border-box;padding: 10px;}
+        .slide_left_menu_ul_other li .user_img img {width: 100%;height: 100%;border-radius: 50%;}
+        .slide_left_menu_ul_other li .change_user {width: 40px;height: 100%;position: absolute;right: 0;top: 0;background: url({OSSURL}public/mobile/img/be_choose_icon.png) center no-repeat;background-size: 30px;}
+        .slide_left_menu_til {height: 40px;line-height: 40px;box-sizing: border-box;padding: 0 40px 0 15px;position: relative;font-size: 16px;}
+        .slide_left_menu_ul {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+        .slide_left_menu_ul li {height: 50px;line-height: 50px;/*border-bottom: 1px solid #ccc;*/font-size: 16px;width: 100%;box-sizing: border-box;padding: 0 10px 0 50px;overflow: hidden;
+            position: relative;}
+        .hederRightBox {width: 21px;height: 100%;display: inline-block;position: absolute;right: 20px;}
+        .hederRightBox a {width: 100%;height: 21px;display: inline-block;position: absolute;top: 50%;transform: translateY(-50%);-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);}
+        #attendance .r1, .l1 {width: 50%;}
+        .li1{width:calc(31% - 2px);}
+        .li2{width:calc(23% - 2px);border-left:1px solid #d0c8cc;}
+        #table-responsive .li, .thead, .tbody, .tfoot {
+            width:calc(100% - 2px);margin-left: 1px;margin-right: 1px;
+        }
+        #attendance{margin-left: 1px;margin-right: 1px;    margin-bottom: 5px;width:calc(100% - 2px);}
+        #table-responsive{margin-top: 1px;padding-bottom: 5px}
+
+
+        .trhead{height:30px}
+        .thhead{background:white;float:left;height:40px;line-height:40px;text-align:center;font-size:16px;border-bottom:1px solid #EDEEF0;}
+        .td_mutirow{background:white;border-bottom:1px solid #EDEEF0;border-right:1px solid #EDEEF0;}
+        .tdsinglerow{height:30px;line-height:30px;border-bottom:1px solid #EDEEF0;}
+        .SelectInRange{text-align:center;text-align-last:center;width:90%;margin:8px;height:30px;border-radius: 3px;}
+        .weektr{background: #f9fafb;}
+        .monthtr{background-color: #e0e0e0}
+        .xueqitr{background-color: #cecece;}
+        .daytr{background: white;}
+        .afix{position:fixed;top:0px;}
+        .fix{ padding-top: 40px;}
+
+    </style>
+</head>
+
+
+
+
+
+
+
+
+
+<body id="kqtjbody">
+
+<div id="attendance">
+    <div class="r1" style="width:40%">
+        <div class="t">
+            <div class="t1">班级总数</div>
+            <div id="num1">{$bjcount}</div>
+        </div>
+    </div>
+
+    <div class="l1" style="width:60%">
+        <a id="showhistory">
+            <div class="t">
+                <div class="t3">日期</div>
+                <div id="num3">{php echo date('Y年m月d日',$scoretime)}</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<div id="main_detail"  style="margin-left: 3px;float:unset;margin-left: 1%;width:98%">
+    <div class="trhead" style="width:calc(100% - 1px); z-index:100;">
+        <div class="thhead" style="width:25%;border-radius: 5px 0px  0px 0px;">班级</div>
+        <div class="thhead" style="width:25%;">类别</div>
+        <div class="thhead" style="width:25%">得分</div>
+        <div class="thhead" style="width:25%;border-radius:  0px 5px 0px 0px;">排名</div>
+    </div>
+
+    <div class="trhead needshow" style="width:calc(100% - 1px); z-index:100;top:0px;position: fixed;display:none">
+        <div class="thhead" style="width:25%;border-radius: 5px 0px  0px 0px;">班级</div>
+        <div class="thhead" style="width:25%;">类别</div>
+        <div class="thhead" style="width:25%">得分</div>
+        <div class="thhead" style="width:25%;border-radius:  0px 5px 0px 0px;">排名</div>
+    </div>
+    <div id="table_info">
+        <table id="teble_content" border="0" style="width:100%;text-align:center;font-size:14px;" cellspacing="0" cellpadding="0">
+            {loop $result  $item}
+            <tr class="daytr">
+                <td class="td_mutirow" rowspan="4" style="width:25%">{$item['bj_name']}</td>
+
+                <td class="tdsinglerow" style="width:25%">当天</td>
+                <td class="tdsinglerow" style="width:25%">{$item['score']}</td>
+                <td class="tdsinglerow" style="width:25%">{$item['date_rank']}</td>
+            </tr>
+            <tr class="weektr">
+                <td class="tdsinglerow" style="width:25%">当周</td>
+                <td class="tdsinglerow" style="width:25%">{$item['week_score']}</td>
+                <td class="tdsinglerow" style="width:25%">{$item['week_rank']}</td>
+            </tr>
+            <tr class="monthtr">
+                <td class="tdsinglerow" style="width:25%">当月</td>
+                <td class="tdsinglerow" style="width:25%">{$item['month_score']}</td>
+                <td class="tdsinglerow" style="width:25%">{$item['month_rank']}</td>
+            </tr>
+            <tr class="xueqitr">
+                <td class="tdsinglerow" style="width:25%">学期</td>
+                <td class="tdsinglerow" style="width:25%">{$item['xueqi_score']}</td>
+                <td class="tdsinglerow" style="width:25%">{$item['xueqi_rank']}</td>
+
+            </tr>
+            {/loop}
+        </table>
+    </div>
+</div>
+
+<template id="table_temp">
+    <tr class="daytr">
+        <td class="td_mutirow" rowspan="4" style="width:25%">{$item['bj_name']}</td>
+        <td class="tdsinglerow" style="width:25%">当天</td>
+        <td class="tdsinglerow" style="width:25%">{$item['score']}</td>
+        <td class="tdsinglerow" style="width:25%">{$item['date_rank']}</td>
+    </tr>
+    <tr class="weektr">
+        <td class="tdsinglerow" style="width:25%">当周</td>
+        <td class="tdsinglerow" style="width:25%">{$item['week_score']}</td>
+        <td class="tdsinglerow" style="width:25%">{$item['week_rank']}</td>
+    </tr>
+    <tr class="monthtr">
+        <td class="tdsinglerow" style="width:25%">当月</td>
+        <td class="tdsinglerow" style="width:25%">{$item['month_score']}</td>
+        <td class="tdsinglerow" style="width:25%">{$item['month_rank']}</td>
+    </tr>
+    <tr class="xueqitr">
+        <td class="tdsinglerow" style="width:25%">学期</td>
+        <td class="tdsinglerow" style="width:25%">{$item['xueqi_score']}</td>
+        <td class="tdsinglerow" style="width:25%">{$item['xueqi_rank']}</td>
+    </tr>
+</template>
+
+<div class="user_info" id="user_info" style="display:none;z-index:9990">
+    <div>
+        <ul>
+            <p>查看历史记录</p>
+            <li class="user_name">
+                选择日期
+                <input type="date" name ="time" id="time" value="">
+            </li>
+            <div class="btn" id="bdax" onclick="getnew();">提交</div>
+        </ul>
+        <span id="clos">×</span>
+    </div>
+</div>
+
+{php include $this->template('port');}
+<script type="text/javascript">
+    var contentWidth = $(".trhead")[0].offsetWidth;  //内容高度
+    $('.trhead').css("width",contentWidth);
+$(document).scroll(function() {
+    var scroH = $(document).scrollTop();  //滚动高度
+
+    $('.needshow').css("width",contentWidth);
+    console.log(contentWidth);
+    if(scroH >115){  //距离顶部大于100px时
+        $('.needshow').slideDown(100);
+        /*$('.trhead').addClass("afix");
+        $('.trhead').css("width",contentWidth);
+       $('#teble_content').addClass("fix");*/
+    }else{
+        $('.needshow').hide();
+      /* $('.trhead').removeClass("afix");
+       $('#teble_content').removeClass("fix");*/
+    }
+});
+
+    function ajax_start_loading_NoFix(text) {
+        $("#common_progress").css("display", "block");
+       // $("body").css("position", "fixed");
+        $(".common_progress").css("margin-left", $(window).width() / 2 - 80);
+        if (text) {
+            $("#common_progress span").text(text);
+        }
+    }
+    // 关闭菊花转
+    function ajax_stop_loading_NoFix() {
+        $("#common_progress").hide();
+    }
+
+    setTimeout(function() {
+        if(window.__wxjs_environment === 'miniprogram'){
+            $("#titlebar").hide();
+            $("#titlebar_bg").hide();
+            $("#table-responsive").css("margin-top","0px");
+            document.title="职工考勤(当日)";
+        }
+    }, 100);
+
+    $(".choice_baby").on("click", function(e) {
+        e.stopPropagation();
+        $(".slide_left_menu_bg").addClass("show_menu_bg");
+    });
+    $(".slide_left_menu_bg").on("click", function() {
+        $(this).removeClass("show_menu_bg");
+    });
+    $(function ($) {
+        $("#showbjlist").on('click', function () {
+            $('#selectList').show();
+        });
+        $("#showhistory").on('click', function () {
+            $('#user_info').show();
+        });
+        $("#clos").on('click', function () {
+            $('#user_info').hide();
+        });
+        $("#BlackBg").on('click', function () {
+            $('#user_info').hide();
+            $('#selectList').hide();
+        });
+
+    });
+
+
+    function getnew(){
+        var time = $("#time").val();
+        if (time == "" || time == undefined || time == null) {
+            jTips('请选择日期！');
+            return false;
+        }
+
+        ajax_start_loading_NoFix("查询中。。。");
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('tbjscore', array('op' => 'ajax_get'), true)}",
+            type: "post",
+            dataType: "json",
+            data: {
+                weid: {$weid},
+                schoolid:{$schoolid},
+                out_scoretime:time,
+            },
+            success: function (data) {
+                console.log(data);
+                if(data.status == true){
+                    for (let value of data.data)
+                    {
+                        let t = document.querySelector('#table_temp'),
+                            td = t.content.querySelectorAll("td");
+                        td[0].textContent = value.bj_name;
+                        td[2].textContent = value.score;
+                        td[3].textContent = value.date_rank   ;
+                        td[5].textContent = value.week_score  ;
+                        td[6].textContent = value.week_rank   ;
+                        td[8].textContent = value.month_score ;
+                        td[9].textContent = value.month_rank  ;
+                        td[11].textContent= value.xueqi_score ;
+                        td[12].textContent= value.xueqi_rank  ;
+
+                        // 克隆新行并将其插入表中
+                        let tb =$(`#teble_content`);
+                        tb.html();
+                        let clone = document.importNode(t.content, true);
+                        tb[0].appendChild(clone);
+                    }
+                    ajax_stop_loading_NoFix();
+                    $("#num3").html(data.date);
+                    $("#num1").html(data.bjcount);
+                    $("#clos").click();
+                }else if(data.status == false){
+                    ajax_stop_loading_NoFix();
+                    jTips("当前时间未上传班级量化积分");
+                }
+            }
+        });
+    }
+</script>
+{php include $this->template('newfooter');}
+</body>
+</html>

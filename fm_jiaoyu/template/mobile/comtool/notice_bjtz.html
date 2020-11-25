@@ -1,0 +1,50 @@
+{if $usertype == 'send_class'}
+	<div class="option_title">全选</div>
+	<ul class="option_list_ul option_list_ul_class">
+		<?php $bjlistsss = array();?>
+		{loop $list $row}
+			{if !in_array($row['sid'], $bjlistsss)}
+			<?php $bjlistsss[] = $row['sid'];?>
+				<li u_id="{$row['sid']}" class="show">
+					<div class="name">{$row['sname']}{if $row['info']}<span style="color:red;">{$row['info']}</span>{/if}</div>
+				</li>
+			{/if}
+		{/loop}	
+	</ul>
+	<div class="F_div sure_btn3">
+		<div class="F_div_text">确定</div>
+	</div>
+{/if}
+{if $usertype == 'student'}
+	<div class="option_title2">全选</div>
+	<ul class="option_list_ul1">
+		<?php $bjlistsss = array();?>
+		{loop $list $row}
+		{if !in_array($row['sid'], $bjlistsss)}
+		<?php $bjlistsss[] = $row['sid'];?>
+		<li class_id="{$row['sid']}" class="jiantou show list">
+			<div class="name">{$row['sname']}{if $row['info']}<span style="color:red;">{$row['info']}</span>{/if}</div>
+			<div class="clear1"></div>
+			<div class="sec_ul_box">
+				<div class="option_title2">全选</div>
+				<ul class="option_list_ul2">
+				{loop $row['allstu'] $r}
+					<li u_id="{$r['id']}" class="show">
+						<div class="itemOtherBox">
+							<div class="user_img_box">
+								<img src="{$r['icon']}" class="studentImgError">
+							</div>
+							<div class="name name2">{$r['s_name']}</div>
+						</div>
+					</li>
+				{/loop}
+				</ul>
+			</div>
+		</li>
+		{/if}
+		{/loop}		
+	</ul>
+	<div class="F_div sure_btn2">
+		<div class="F_div_text">确定</div>
+	</div>
+{/if}

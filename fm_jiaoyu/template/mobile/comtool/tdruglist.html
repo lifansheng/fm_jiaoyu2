@@ -1,0 +1,43 @@
+{loop $list $v}
+<li class="main" time="{$v['location']}" ctype="{$ctype}" id="{$v['id']}" style="display: block;" >
+    <div class="cutting"></div>
+    <div class="notifyTopBox" style="height:90px;border-bottom: 1px solid #eee;">
+        <div class="notifyTopLeft">
+            <img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+        </div>			
+        <div class="notifyTopRight">
+            <div class="notifyTopRightTopBox">					
+                <span class="teacherInfo">{$v['sname']}</span>		
+                {if $v['status'] ==0}
+                <span class="pard3">待审核</span>
+                {else if $v['status'] ==1}
+                <span class="pard4">审核通过</span>
+                {else if $v['status'] ==2}
+                <span class="pard5">已拒绝</span>
+                {/if}
+            </div>
+            <p class="notifyCreateTime">开始时间：{$v['starttime']}</p>
+            <p class="notifyCreateTime">结束时间：{$v['endtime']}</p>
+            <p class="notifyCreateTime">喂药时段：{$v['datetime']}</p>
+            
+        </div>
+    </div>
+    <div style="height: 30px; position: relative;">
+        <div class="btnDeleteBox" onclick="CheckInfo(`{$v['id']}`)" style="width: 88px;">
+            <div class="deal-btn" style="background-color: #53c2ee;border: #53c2ee;height: 22px; line-height: 22px;">查看详情</div>
+        </div>
+        {if $v['status'] ==0}
+        <div class="btnDeleteBox" onclick="argee(this,`{$v['id']}`);return false;" style="width: 70px;margin-right: 30%; ">
+            <div class="deal-btn">同意</div>
+        </div>	
+        <div style="margin-right: 18%; width: 70px; " class="btnDeleteBox" onclick="refuse(this,`{$v['id']}`);return false;">
+            <div class="deal-btn" style="background: #ee224b; border: #ee224b 1px solid;">拒绝</div>
+        </div>
+        {else if $v['status'] ==1}
+        <div class="btnDeleteBox" onclick="GetDurgLogInfo(`{$v['id']}`)" style="width: 88px;margin-right: 22%; ">
+            <div class="deal-btn" style="background-color: #56e256;border: #56e256;height: 22px; line-height: 22px;">查看记录</div>
+        </div>
+        {/if}
+    </div>
+</li>
+{/loop}	

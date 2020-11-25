@@ -1,0 +1,191 @@
+{template 'public/header'}
+{template 'public/comhead'}
+ <style>
+	.studiv{float:left;width:15%;padding:1px 5px;height:auto}
+	.studiv div{text-align:center;height:auto}
+	.labelStu{margin-top:5px;padding: 3px 6px; transform: scale(0.8);left: -7px;width:150%;position:relative;overflow: hidden;text-overflow: ellipsis; -o-text-overflow: ellipsis;white-space:nowrap;}
+	.viewBox{width:176px !important;height:auto !important;padding-bottom:10px !important;background-color:#F5EFEF;border-top-left-radius: 3%;border-top-right-radius: 3%;border-bottom-left-radius: 3%;border-bottom-right-radius: 3%;}
+	.bigss{width:100% !important;padding-right:0px;left:6px}
+	.stu_img{width:45px;height:45px;border-radius:50%;}
+	.demodiv{height:90px;width:16%;float:left;margin-left: 30px;border-radius:10px;}
+	.demoword{color:white;font-size:3rem;line-height:90px;padding-left:20px}
+	.floor{text-align: center;height: 100%;float: left;width: 10%;display: -webkit-flex;display: flex;justify-content: center;align-items: center;}
+	.room{float: left;display: inline;position: relative;width: 90%;}
+	.this_floor{padding:10px}
+	.studiv{float:left;width:10%;padding:1px 5px;height:60px}
+	.floorn{margin: 0 auto;}
+	.roomdetail{margin:5px 8px;line-height:40px;background-color: #59ace2; border-radius: 5px;font-weight: bold;color: white;}
+	.floorheader{display:block;display: flex;justify-content: center;align-items: center;border-bottom:5px solid #7e97b5;}
+	.roomdetail_notall{margin:5px 8px;line-height:40px;background-color: #7e97b5; border-radius: 5px;font-weight: bold;color: white;}
+	.red_sp{padding-left: 15px;color:red}
+	.normal_sp{padding-left: 15px;}
+</style>
+
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/web/css/main.css"/>
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<div class="panel panel-info">
+	<div class="panel-heading">
+		<input type="hidden" id="lasttime" value="{$time}">
+		<span id = "page_title">实时汇总</span>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<a class="btn btn-default" style="display:none" onclick="small_screen();" id="small_scc"><i class="fa fa-compress"></i> 退出大屏</a>
+	</div>
+	<div class="panel-body" id="choosediv">
+		<form action="./index.php" method="get" class="form-horizontal" role="form">
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择楼栋</label>
+				<div class="col-sm-2 col-lg-2">
+					<select style="margin-right:15px;" name="apid" id="chooseapid" class="form-control">
+						{loop $apartmentlist $row}
+						<option value="{$row['id']}" {if $row['id'] == $apid} selected="selected"{/if}>{$row['name']}</option>
+						{/loop}
+					</select>
+				</div>
+				<div class="col-sm-2 col-lg-2">
+					<a class="btn btn-default" onclick="big_screen();" id="big_scc"><i class="fa fa-expand"></i> 大屏模式</a>
+				</div>
+				<div class="col-sm-2 col-lg-2">
+					<a class="btn btn-default" href="{php echo $this->createWebUrl('apcheckall',array('op'=>'display','schoolid'=>$schoolid,'apid'=>$apid))}" id="big_scc"><i class="fa fa-crop"></i> 切换至详情模式</a>
+				</div>
+			</div>
+		</form>
+	</div>		
+</div>
+
+<div class="panel panel-info" style="padding: 10px 30px;overflow:hidden">
+	<div class="demodiv"  style="background-color:#E2A678">
+		<span class="demoword">总人数：</span><span class="demoword">{$all_num}</span>
+	</div>
+	<div class="demodiv"  style="background-color:#59ace2">
+		<span class="demoword">归寝人数：</span><span class="demoword" id="in_num">{$all_in}</span>
+	</div>
+	<div class="demodiv"  style="background-color:#FF6C60">
+		<span class="demoword">离寝人数：</span><span class="demoword" id="out_num">{$all_out}</span>
+	</div>
+	<div class="demodiv"  style="background-color:#6ed8d8;width:16%">
+		<span class="demoword">归寝率：</span><span class="demoword" id="in_percent">{$in_percent}</span><span class="demoword" style="padding-left:0px" >%</span>
+	</div>
+	<div class="demodiv"  style="background-color:#a9d86e">
+		<span class="demoword">请假人数：</span><span class="demoword">{$all_leave}</span>
+	</div>
+</div>
+
+<div class="panel panel-default" >
+	<div class="table-responsive panel-body">
+		{loop $floorlist $row}
+		<div class="floorheader">
+			<div class="floor">
+				<span class="floorn" style="text-align:center; font-size: 60px;" >{$row['floornum']}F</span>
+			</div>
+			<div class="room">
+			{loop $row['foomlist'] $row_r}
+			
+			<div class="studiv ">
+				<div class=" {if $row_r['stu_out'] != 0} roomdetail_notall{else} roomdetail  {/if} "  id="roomdiv{$row_r['id']}" >
+				<span>{$row_r['name']}</span>
+				
+				
+				<span class=" {if $row_r['stu_out'] != 0} red_sp {else} normal_sp {/if}" id="roomspan{$row_r['id']}">{$row_r['stu_out']}</span>
+				</div>					
+			</div>
+			{/loop}
+			</div>
+		</div>
+		{/loop}
+	</div>
+</div>
+{$pager}
+<script>
+var big_small = {$big_small} ;
+
+$(function () {
+	var this_apid = '{$apid}';
+	var lasttime = $("#lasttime").val();
+	checknewinfo(this_apid,lasttime);
+	setTimeout(function(){
+		location.href = "{php echo $this->createWebUrl('apcheckall',array('op'=>'display','schoolid'=>$schoolid,'apid'=>$apid))}"+"&big_small="+big_small;
+	}, 3600000);
+	if (big_small == 1){
+		small_screen();
+	}else if (big_small == 2){
+		big_screen();
+	}
+});
+
+function big_screen(){
+	big_small = 2;
+	$(".col-xs-12.col-sm-9.col-lg-10").addClass('bigss');
+	$("#page_title").html("&nbsp;&nbsp;&nbsp;&nbsp;当前楼栋：{$apname}");
+	$("#small_scc").show();
+	$("#big_scc").hide();
+	$("#choosediv").hide();
+	$(".header.white-bg").hide();
+	$(".col-xs-12.col-sm-3.col-lg-2.big-menu").hide();
+	$(".navbar.navbar-inverse.navbar-static-top").hide();
+}
+
+function small_screen(){
+	big_small = 1;
+	$(".col-xs-12.col-sm-9.col-lg-10").removeClass('bigss');
+	$("#page_title").html("实时汇总");
+	$("#small_scc").hide();
+	$("#big_scc").show();
+	$("#choosediv").show();
+	$(".header.white-bg").show();
+	$(".col-xs-12.col-sm-3.col-lg-2.big-menu").show();
+	$(".navbar.navbar-inverse.navbar-static-top").show();
+	$("#hide_img2").hide();
+	$("#show_img2").hide();
+}
+
+$('#chooseapid').change(function(){
+	var apid = $(this).val();
+	location.href = "{php echo $this->createWebUrl('newapcheckall',array('op'=>'display','schoolid'=>$schoolid))}"+"&apid="+apid;
+});
+
+function checknewinfo(apid,lasttime){
+	var in_num = $("#in_num").html(); 
+	var out_num = $("#out_num").html(); 
+	var err_num = $("#err_num").html(); 
+	$.ajax({
+		url: "{php echo $this->createwebUrl('newapcheckall',array('op'=>'checknewinfo','schoolid'=>$schoolid,'all_num'=>$all_num))}",
+		data: {weid: "{$weid}",apid: apid,lasttime: lasttime,in_num:in_num,out_num:out_num,err_num:err_num},
+		type: "POST",
+		dataType: "json",
+		success: function (data) {
+		console.log(data);
+			if(data.result ){
+				 for(var item in data.back_data){
+				 console.log(data.back_data[item])
+					var this_roomid = data.back_data[item].roomid;
+					 var this_room_outnum = Number($("#roomspan"+this_roomid).html());
+					 var this_in_num = Number(data.back_data[item].in_num);
+					 var this_out_num = Number(data.back_data[item].out_num);
+					 var now_room_num = this_room_outnum - this_in_num + this_out_num ;
+					 $("#roomspan"+this_roomid).html(now_room_num);
+					 if(now_room_num != 0 ){
+						$("#roomspan"+this_roomid).attr("class","red_sp");
+						$("#roomdiv"+this_roomid).attr("class","roomdetail_notall");
+					 }else if(now_room_num == 0 ){
+						$("#roomspan"+this_roomid).attr("class","normal_sp");
+						$("#roomdiv"+this_roomid).attr("class","roomdetail");
+					 }
+ 				 }
+				$("#in_num").html(data.in_num);
+				$("#out_num").html(data.out_num);
+				$("#err_num").html(data.err_num);
+				$("#in_percent").html(data.in_percent);
+				setTimeout(function(){checknewinfo(apid,data.lasttime)}, 2000);
+			}else{
+				setTimeout(function(){checknewinfo(apid,data.lasttime)}, 2000);
+			}	
+		},
+		error: function () {
+			setTimeout(function(){checknewinfo(apid,lasttime)}, 2000);
+		},
+	});		
+
+};
+
+</script>
+{template 'public/footer'}

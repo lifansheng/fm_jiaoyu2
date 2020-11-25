@@ -1,0 +1,397 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+            <li {if $_GPC['do']=='behaviorscore'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviorscore', array('op' => 'display', 'schoolid' => $schoolid))}">评测打分</a></li>
+            <li {if $_GPC['do']=='behaviorlog'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviorlog', array('op' => 'display', 'schoolid' => $schoolid))}">打分记录</a></li>
+            <li {if $_GPC['do']=='behaviormanager'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviormanager', array('op' => 'display', 'schoolid' => $schoolid))}">分类管理</a></li>
+		</ul>
+	</div>
+</div> 
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">行为评测打分管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="behaviorlog" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按期号</label>				
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="qh_id" class="form-control">
+                            <option value="0"> 请选择期号</option>
+                            {loop $qh $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['qh_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>				
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" class="form-control">
+                            <option value="0"> 请选择班级</option>
+                            {loop $bjlist $row_b}
+                            <option value="{$row_b['sid']}" {if $row_b['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row_b['old_sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                   
+                </div>					
+				<div class="form-group ">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="sname" type="text" value="{$_GPC['sname']}">
+                    </div>	
+					<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+		
+				</div>
+
+            </form>
+        </div>
+    </div> 
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+                    <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+					<th style="width:5%">学生姓名</th>
+                    <th style="width:5%;">学生班级</th>
+                    <th style="width:10%;">期号名称</th>
+                    <th style="width:10%;">分类名称</th>
+					<th style="width:5%;">评分</th>
+                    <th >评语</th>
+                    <th style="width:8%;">评价人</th>	
+					<th style="width:8%;">时间</th>		
+					<th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					<td>{$item['s_name']}</td>	
+                    <td>{$item['bjname']}</td>	
+					<td>{$item['qhname']}</td>	
+					<td>{$item['bhsname']}</td>	
+					<td>{$item['score']}分</td>	
+					<td>{$item['word']}</td>	
+					<td>{$item['tname']}</td>	
+					<td>{php echo date("Y-m-d H:i",$item['createtime']) }</td>	
+					 				
+					<td class="qx_e_d" style="text-align:right;">
+						<a class="btn btn-default btn-sm qx_3102" href="{php echo $this->createWebUrl('behaviorlog', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_3103" href="{php echo $this->createWebUrl('behaviorlog', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的评分!');
+            return false;
+        }
+        if(confirm("确认要删除选择的评分?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('behaviorlog', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+</script>
+{elseif $operation == 'post'}
+<style>
+        input[type="range"] {
+    /*-webkit-box-shadow: 0 1px 0 0px #424242, 0 1px 0 #060607 inset, 0px 2px 10px 0px black inset, 1px 0px 2px rgba(0, 0, 0, 0.4) inset, 0 0px 1px rgba(0, 0, 0, 0.6) inset;*/
+        -webkit-appearance: none; /*去除默认样式*/
+        margin-top: 5px;
+        background-color: #ebeff4;
+        /*border-radius: 15px;*/
+        -webkit-appearance: none;
+        height:4px;
+        padding:0 ;
+        border: none;
+        margin-left: 10px;
+        margin-right: 10px;
+    /*input的长度为80%，margin-left的长度为10%*/
+    }
+    input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;/*去除默认样式*/
+    cursor: default;
+    top: 0;
+    height: 16px;
+    width: 16px;
+    transform: translateY(0px);
+    /*background: none repeat scroll 0 0 #5891f5;*/
+    background: #fff;
+    border-radius: 15px;
+    border: 5px solid #41cac0;
+    /*-webkit-box-shadow: 0 -1px 1px #fc7701 inset;*/
+    }
+    textarea.BHS_word{width: calc(100% - 40px);resize: none;height: 80px;border-radius: 3px;border:1px solid #b3b3b3}
+
+    .BHSW_event:after{
+        content:'';
+        height: 1px;
+        width: 80%;
+        background-color: #eaeaea;
+        position: absolute;
+        bottom: 0;
+        margin-left: 10%;
+    }
+    .BHSW_event{
+        display: flex;min-height: 35px;line-height: 24px;position: relative;padding: 6px 0px;
+    }
+    .restyleSpan{margin-left: 20px;padding:3px 12px;font-size: 10px;margin-bottom: 6px;}
+    .BHSW_event .BHSW_order{text-align: right;margin-right: 10px;width: 40px;}
+
+</style>
+<div class="panel panel-info">
+   <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回</a></div>
+</div>
+<div class="main">
+<form action="" method="post"  class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$item['id']}" />
+		<input type="hidden" name="tid" value="{$tid_global}" />	
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                修改评分
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">学生:</label>
+                    <div class="col-sm-2" >
+                       <span class="form-control" style="border:unset">{$student['s_name']}</span>
+                    </div>
+                
+                    <label class="col-xs-3 col-sm-1   control-label">班级:</label>
+                    <div class="col-sm-2" >
+                       <span class="form-control" style="border:unset">{$bj['sname']}</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评分老师:</label>
+                    <div class="col-sm-2">
+                      <span class="form-control" style=" border:unset">
+						{$tname}
+						 
+					  </span>
+                    </div>
+                
+                    <label class="col-xs-12 col-sm-1  control-label">评分时间:</label>
+                    <div class="col-sm-2" >
+                      <span class="form-control" style="border:unset"> {php echo date("Y-m",$item['createtime'])}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">期号:</label>
+                    <div class="col-sm-9" >
+                       <span class="form-control" style="border:unset">{$qh['sname']}</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分类:</label>
+                    <div class="col-sm-9" >
+                       <span class="form-control" style="border:unset">{$bhs['sname']}</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评价分数</label>
+                    <div class="col-sm-4">
+                        <div class="BHS_event_score"  style="    line-height: 35px; font-size: 14px;">
+                            <span>设置得分 : </span>
+                            <span style="width: 300px;">
+                                0分<input  name="score" type="range" class="score_range" min='0' max='5' step="0.5" value="{$item['score']}">5分
+                             </span>
+                    
+                             <span style="margin-left: 40px;">已设得分 : </span>
+                             <span class="score_value" style="width: 20px;text-align: right;margin-right: 3px;display: inline-block;">
+                                {$item['score']}
+                              </span>分
+                        </div>
+                    </div>
+                </div>	
+                
+                
+
+                <div class="form-group" style="margin-bottom: unset;">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择项目</label>
+                    <div class="col-sm-6">
+                        <span class="btn btn-primary Default_Word" onclick="GetDefaultWord({$item['bhsid']})" >快速评价</span>
+                    </div>
+                </div>
+                <div class="form-group" data-id="{$item['bhsid']}">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label"> </label>
+                    <div class="col-sm-6">
+                        <textarea name="word"  class="BHS_word" style="margin-top: 10px;"> {$item['word']}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>	
+
+<div class="modal fade" style="min-width: 400px!important;" id="ReModal_Word" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"   >
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-header">
+                <h4 class="modal-title">选择评语</h4>
+            </div>
+            <div class="modal-body BHS_content" style="width: 100%;"> </div>
+            <div class="modal-footer" style="border-radius: 6px;">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    $("input[name=score]").bind('input',function(){
+        $(".score_value").text($(this).val())
+    })
+})
+
+
+//定义预设评语对象
+function dfWord(modalID){
+    if(modalID == null){
+        console.error("dfWord Object Need param");
+       return 
+    }
+    this._actBHSid = 0
+    this._actDiv = ''
+    this._actModal = $(modalID)
+    
+}
+
+//获取评语
+dfWord.prototype.GetWord = function(id){
+    if(typeof(id) !== 'number' ){
+        console.error('dfWord.GetWord param1 need number')
+        return
+    }
+    console.log()
+    this._actDiv = `div[data-id=${id}]`
+    let ActModal = this._actModal
+    $.ajax({
+        url: "{php echo $this->createWebUrl('behaviorscore', array('op' => 'getBHSword','schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data:{
+            BHSid:id
+        },
+        success: function (res) {
+            let html = ''
+            for(let i in res){
+                html += `<div  class="BHSW_event" >
+                    <div  class="BHSW_order">
+                        ${ Number(i) + Number(1)}.
+                    </div>
+                    <div style="flex:1;" class="BHS_word_content">${res[i]}</div>
+                    <div>
+                        <span class="btn btn-primary restyleSpan"  onclick="AddWord(this)"><i class="fa fa-plus" style="font-size: 14px;"></i> 添加</span>
+                    </div>
+                </div> `;
+            }
+            console.log(ActModal)
+            ActModal.find('.BHS_content').html(html)
+            $(ActModal).modal('toggle');
+        }
+    });
+}
+
+//设置评语
+dfWord.prototype.SetWord = function(word){
+    const NewPt = new RegExp(/[\,\.\?\!\，\。\？\！\;\；]/)
+    let Oldtext =  $(this._actDiv).find('textarea').val()
+    let _RegTest = NewPt.test(Oldtext.substr(Oldtext.length-1,1))
+    if(Oldtext != '' && _RegTest !== true ){
+        Oldtext = Oldtext +'。' + word
+    }else{
+        Oldtext = Oldtext + word
+    }
+    $(this._actDiv).find('textarea').val(Oldtext)
+    $(this._actModal).modal('toggle');
+}
+var GdfWord = new dfWord('#ReModal_Word')
+//添加评语 function
+function AddWord(e){
+    const text = $(e).parent().siblings('.BHS_word_content').text()
+    GdfWord.SetWord(text)
+}
+//显示评语 function
+function GetDefaultWord(id){
+    GdfWord.GetWord(id)
+}
+
+
+
+console.log(GdfWord)
+</script>
+{/if}
+{template 'public/footer'}

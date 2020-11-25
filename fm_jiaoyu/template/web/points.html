@@ -1,0 +1,386 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+ <style>
+.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+.alert p {margin: 0 0 10px;display: block;}
+.alert .bold{font-weight:bold;}
+ </style>
+ 
+{if $operation == 'display'}
+ <ul class="nav nav-tabs">
+    <li class="qx_2801 {if $operation == 'post'}active{/if}"><a href="{php echo $this->createWebUrl('points', array('op' => 'post', 'schoolid' => $schoolid))}">积分详情</a></li>
+    <li class="qx_2811 {if $operation == 'display'}active{/if}"><a href="{php echo $this->createWebUrl('points', array('op' => 'display', 'schoolid' => $schoolid))}">积分规则</a></li>
+</ul>
+<style>
+/*公共菊花转*/
+.popover{left: 950px !important;z-index:100000 !important;}
+.common_progress_bg{display: none;position: fixed;top: 0;left: 0;height: 100%;width: 100%;background: rgba(0, 0, 0, 0.6);z-index: 9998;}
+.common_progress{position: fixed;top: 40%;background: #000;height: 80px;width: 160px;border-radius: 12px;line-height: 20px;text-align: center;padding-top: 30px;z-index: 9999;}
+.common_progress > img{width: 27px;height: 27px;padding-top: 30px;}
+.common_progress > .common_loading{width: 30px;height: 30px;display: inline-block;vertical-align: middle;background: url({OSSURL}public/mobile/img/load.png) no-repeat;background-size: 30px;-webkit-animation: loading1 2s linear infinite;}
+@-webkit-keyframes loading1{0%{-webkit-transform: rotate(0deg);}33%{-webkit-transform: rotate(120deg);}66%{-webkit-transform: rotate(240deg);}
+100%{-webkit-transform: rotate(360deg);}}
+.common_progress > span{margin: 0 0 0 8px;color: #fff;}
+</style>
+<script src="{OSSURL}public/mobile/js/common.js?v=1717"></script>
+
+
+
+
+<div class="main">
+	<div class="cLine">
+    	<div class="alert">
+    		<p><span class="bold">使用方法：</span> 设置积分动作，每日操作次数以及每次增加积分 </br>   
+   			<strong><font color='red'>特别提醒:请谨慎操作!以免丢失数据!!</font></strong></br></p>
+    	</div>
+	</div>
+   	<div class="form-group">
+		<a style="margin-left:40px;" class="btn btn-primary qx_2812" href="{php echo $this->createWebUrl('points', array('op' => 'posta', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i> 添加规则</a>
+	</div>
+	
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+					    <th style="width:100px;">序号</th>
+                        <th>规则名称</th>
+                        <th>类型</th>
+                    	<th>状态</th>
+                    	<th>关联动作</th>
+                    	<th>每日次数</th>
+						<th>增加积分</th>
+                        <th class="qx_e_d_11" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $allact $row}
+                    <tr>
+					    <td><div class="type-parent">{$row['id']}</div></td>
+						<td>{$row['name']}</td>
+						<td>{if $row['type'] == 1 }<span class="label label-success">积分规则</span>{else if $row['type'] == 2 }<span class="label label-danger">积分任务</span>{/if}</td>
+                        <td><input type="checkbox" value="{$row['is_on']}" name="is_on[]" data-id="{$row['id']}" {if $row['is_on'] == 1}checked{/if}></td>
+                        <td>{if $row['op'] == 'bjtz'} 班级通知 {else if $row['op'] == 'xyqf'} 校园群发 {else if $row['op'] == 'fbzy'} 发布作业 {else if $row['op'] == 'fbbjq'} 发布班级圈 {else if $row['op'] == 'scxc'} 上传相册 {else if $row['op'] == 'hf'} 回复 {else if $row['op'] == 'dz'} 点赞 {else if $row['op'] == 'shbjq'} 审核班级圈 {else if $row['op'] == 'bjzx'} 设置班级之星 {else if $row['op'] == 'shzgqj'} 审核职工请假  {else if $row['op'] == 'shxsqj'} 审核学生请假 {else if $row['op'] == 'bqxs'} 补签学生{else if $row['op'] == 'qdqr'} 签到确认{else if $row['op'] == 'sczjh'}上传周计划 {else if $row['op'] == 'xspy'}学生评语 {else if $row['op'] == 'yjfx'}一键放学 {/if}</td>
+                        <td><div class="type-parent">{$row['dailytime']}</div></td>
+						<td><div class="type-parent">{$row['adpoint']}</div></td>
+                        <td class="qx_e_d_11" style="text-align:right;"><a data-toggle="tooltip" data-placement="top" title="编辑" onclick="show_order({$item['id']});" class="btn btn-default btn-sm qx_2812" href="{php echo $this->createWebUrl('points', array('op' => 'posta', 'actid' => $row['id'], 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_2813" href="{php echo $this->createWebUrl('points', array('op' => 'delete', 'actid' => $row['id'], 'schoolid' => $schoolid))}" onclick="return confirm('确认删除该动作？');return false;" data-toggle="tooltip" data-placement="top" title="删除"><i class="fa fa-times"></i></a></td>
+                    </tr>
+                    
+                    {/loop}
+                    </tbody>
+                </table>
+            </div>
+            {$pager}
+        </form>
+    </div>
+    
+</div>
+
+<script>
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+	
+
+	$(':checkbox[name="is_on[]"]').bootstrapSwitch();
+	$(':checkbox[name="is_on[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+
+		var is_on = this.checked ? 1 : 2;
+		
+		var id = $(this).data('id');
+		
+		$.post("{php echo $this->createWebUrl('points', array('op' => 'change', 'schoolid' => $schoolid))}", {is_on: is_on, id: id}, function(resp){
+			setTimeout(function(){
+				//location.reload();
+			}, 500)
+		});
+	});
+});
+</script>
+{elseif $operation == 'posta'}
+<div class="panel panel-info">
+    <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回积分管理</a></div>
+</div>
+<div class="main">
+	<form action="" method="post" class="form-horizontal form"	enctype="multipart/form-data">
+		<div class="panel panel-default">
+			<div class="panel-body" >
+				{if empty($actid)}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>选择动作</label>
+					<div class="col-sm-9 col-lg-2" style="width: 30%">
+						<select style="margin-right:15px;" name="chooseOP" class="form-control">
+								<option value="0">选择动作</option>
+								
+									<option value="bjtz" {if $act['op'] == 'bjtz'} selected="selected"{/if}>班级通知</option>
+									<option value="xyqf"  {if $act['op'] == 'xyqf'} selected="selected"{/if}>校园群发</option>
+									<option value="fbzy"  {if $act['op'] == 'fbzy'} selected="selected"{/if}>发布作业</option>
+									<option value="fbbjq" {if $act['op'] == 'fbbjq'} selected="selected"{/if}>发布班级圈</option>
+									<option value="scxc" {if $act['op'] == 'scxc'} selected="selected"{/if}>上传相册</option>
+									<option value="hf" {if $act['op'] == 'hf'} selected="selected"{/if}>回复</option>
+									<option value="dz" {if $act['op'] == 'dz'} selected="selected"{/if}>点赞</option>
+									<option value="shbjq" {if $act['op'] == 'shbjq'} selected="selected"{/if}>审核班级圈</option>
+									<option value="bjzx" {if $act['op'] == 'bjzx'} selected="selected"{/if}>设置班级之星</option>
+									<option value="shzgqj" {if $act['op'] == 'shzgqj'} selected="selected"{/if}>审核职工请假</option>
+									<option value="shxsqj" {if $act['op'] == 'shxsqj'} selected="selected"{/if}>审核学生请假</option>
+									<option value="bqxs" {if $act['op'] == 'bqxs'} selected="selected"{/if}>补签学生</option>
+									<option value="qdqr" {if $act['op'] == 'qdqr'} selected="selected"{/if}>签到确认</option>
+									<option value="sczjh" {if $act['op'] == 'sczjh'} selected="selected"{/if}>上传周计划</option>
+									<option value="xspy" {if $act['op'] == 'xspy'} selected="selected"{/if}>学生评语</option>
+									<option value="yjfx" {if $act['op'] == 'yjfx'} selected="selected"{/if}>一键放学</option>			
+								
+							</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>选择类型</label>
+					<div class="col-sm-9 col-lg-2" style="width: 30%">
+						<select style="margin-right:15px;" name="chooseType" class="form-control">
+								<option value="0">选择类型</option>
+								
+									<option value="1" >积分规则</option>
+									<option value="2"  >积分任务</option>
+											
+								
+							</select>
+					</div>
+				</div>
+				{elseif !empty($actid)}
+<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>当前动作:</label>
+					 <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+						<input type="hidden" name="chooseOP" class="form-control" value="{$act['op']}" />
+						<input type="text" name="showOP" class="form-control" value="{if $act['op'] == 'bjtz'} 班级通知 {else if $act['op'] == 'xyqf'} 校园群发 {else if $act['op'] == 'fbzy'} 发布作业 {else if $act['op'] == 'fbbjq'} 发布班级圈 {else if $act['op'] == 'scxc'} 上传相册 {else if $act['op'] == 'hf'} 回复 {else if $act['op'] == 'dz'} 点赞 {else if $act['op'] == 'shbjq'} 审核班级圈 {else if $act['op'] == 'bjzx'} 设置班级之星 {else if $act['op'] == 'shzgqj'} 审核职工请假  {else if $act['op'] == 'shxsqj'} 审核学生请假 {else if $act['op'] == 'bqxs'} 补签学生{else if $act['op'] == 'qdqr'} 签到确认{else if $act['op'] == 'sczjh'}上传周计划 {else if $act['op'] == 'xspy'}学生评语 {else if $act['op'] == 'yjfx'}一键放学 {/if}" disabled>
+						 
+                        </div>
+                       
+				     </div>
+                  
+                  
+				     </div>
+				     <div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>动作类型:</label>
+					 <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+						<input type="hidden" name="chooseOP" class="form-control" value="{$act['op']}" />
+						<input type="text" name="showType" class="form-control" value="{if $act['type'] == '1'} 积分规则 {else if $act['type'] == '2'} 积分任务  {/if}" disabled>
+						 
+                        </div>
+                       
+				     </div>
+                  
+                  
+				     </div>
+				{/if}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>规则名称:</label>
+                  
+                     <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+						<input type="text" name="opname" class="form-control" maxlength="6" value="{$act['name']}"  required="请填写规则名称" oninvalid="setCustomValidity('规则名称不能为空')" title="请填写规则名称" oninput="setCustomValidity('')"  />
+						<span>最多可输入6个中英字符或数字</span>
+                        </div>
+                        
+				     </div>
+				     </div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>次数:</label>
+                  
+                     <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+						<input type="number" name="dailytime" class="form-control" value="{$act['dailytime']}"  required required oninvalid="setCustomValidity('每日次数不能为空')" title="请输入每日次数" oninput="setCustomValidity('')"/>
+						<span>规则类对应每日次数，任务类则为总次数</span>
+                        </div>
+				     </div>
+				     </div>
+				     <div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>增加积分:</label>
+                  
+                     <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+						<input type="number" name="adpoints" class="form-control" value="{$act['adpoint']}" required required oninvalid="setCustomValidity('增加积分不能为空')"  title="请输入增加积分" oninput="setCustomValidity('')"/>
+                        </div>
+				     </div>
+				     </div>
+				
+				   				 
+                </div>
+				
+
+			</div>
+		
+		<div class="form-group col-sm-12">
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+		</div>
+	</form>
+</div>
+
+<script type="text/javascript">
+$(".check_all").click(function(){
+	var checked = $(this).get(0).checked;
+	$("input[type=checkbox]").attr("checked",checked);
+});
+</script>
+{elseif $operation == 'post'}
+<ul class="nav nav-tabs">
+ 	<li class="qx_2801 {if $operation == 'post'}active{/if}"><a href="{php echo $this->createWebUrl('points', array('op' => 'post', 'schoolid' => $schoolid))}">积分详情</a></li>
+    <li class="qx_2811 {if $operation == 'display'}active{/if}"><a href="{php echo $this->createWebUrl('points', array('op' => 'display', 'schoolid' => $schoolid))}">积分规则</a></li>
+</ul>
+<div class="main">
+	<div class="panel panel-info">
+        <div class="panel-heading">积分记录</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="points"/>
+				<input type="hidden" name="op" value="post"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按教师姓名搜索</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="keyword" id="" type="text" value="{$_GPC['keyword']}">
+                    </div>						
+				</div>
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按规则名称搜索</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="receive" id="" type="text" value="{$_GPC['receive']}">
+                    </div>						
+				</div>					
+							
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">操作时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('optime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>	
+
+				</div>
+			</form>
+		</div>		
+    </div>
+<div class="panel panel-default">
+<form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+	                     <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+					    <th style="width:100px;">序号</th>
+                        <th>规则名称</th>
+                        <th>规则类型</th>
+                        <th>任务进度</th>
+                    	<th>教师名称</th>
+						<th>增加积分</th>
+                        <th >操作时间</th>
+                        <th class="qx_2802" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $allact $row}
+                    <tr>
+	                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$row['id']}"></td>
+					    <td><div class="type-parent">{$row['id']}</div></td>
+						<td>{$row['name']}</td>
+						<td>{if $row['type'] == 1 }<span class="label label-success">积分规则</span>{elseif $row['type'] == 2}<span class="label label-danger">积分任务</span> {/if}</td>
+						<td>{if $row['type'] == 1 } -- {elseif $row['type'] == 2} {if $row['mcount'] < $row['max']} {$row['mcount']}/{$row['max']}{elseif $row['mcount'] == $row['max'] } 已完成 {/if} {/if}</td>
+                        <td>{$row['tname']}</td>
+						<td><div class="type-parent">{$row['adpoint']}</div></td>
+                        <td><div class="type-parent">{$row['time']}</div></td>
+                        <td class="qx_2802" style="text-align:right;">
+	<a class="btn btn-default btn-sm " href="{php echo $this->createWebUrl('points', array('op' => 'deletere', 'actid' => $row['id'], 'schoolid' => $schoolid))}" onclick="return confirm('确认删除该记录？');return false;" title="删除"><i class="fa fa-times"></i></a>
+</td>
+                    </tr>
+                    
+                    {/loop}
+                    </tbody>
+                    <tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+					<!--<input type="button" class="btn btn-success" name="btnsendall" value="批量发货" />
+					<input type="button" class="btn btn-success" name="btnfinishall" value="批量完成" />-->
+				</td>
+			</tr>
+                </table>
+            </div>
+        </form>
+          </div>
+    {$pager}
+</div>
+<script type="text/javascript">
+$(function(){
+	
+ 	$(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的记录!');
+            return false;
+        }
+        if(confirm("确认要删除选择的记录?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('points', array('op' => 'deleteall', 'schoolid' => $schoolid))}";
+				$.post(
+					url,
+					{idArr:id},
+					function(data){
+						if(data.result){
+							alert(data.msg);
+							location.reload();
+						}else{
+							alert(data.msg);
+						}
+					},'json'
+				);
+        }
+    });
+
+});
+
+
+</script>
+{/if}
+<script type="text/javascript">
+	$(function(){
+	var e_d_11 = 2 ;
+	{if (!(IsHasQx($tid_global,1002812,1,$schoolid)))}
+		$(".qx_2812").hide();
+		e_d_11 = e_d_11 - 1 ;
+	{/if}
+	{if (!(IsHasQx($tid_global,1002813,1,$schoolid)))}
+		$(".qx_2813").hide();
+		e_d_11 = e_d_11 - 1 ;
+	{/if}
+	{if (!(IsHasQx($tid_global,1002801,1,$schoolid)))}
+		$(".qx_2801").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1002811,1,$schoolid)))}
+		$(".qx_2811").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1002802,1,$schoolid)))}
+		$(".qx_2802").hide();
+	{/if}
+	if(e_d_11 == 0){
+		$(".qx_e_d_11").hide();
+	}
+});
+</script>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html style="font-size: 50px;">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <link href="{OSSURL}public/mobile/css/collection_address.css?v=0622" rel="stylesheet">
+    <link href="{OSSURL}public/mobile/css/reset.css?v=0622" rel="stylesheet">
+    <meta name="HandheldFriendly" content="true">
+    <script src="https://hm.baidu.com/hm.js?e6c44a88bd78113bfe161250284d9863"></script><script>
+	    var _hmt = _hmt || [];
+	    (function () {
+	        var hm = document.createElement("script");
+	        hm.src = "https://hm.baidu.com/hm.js?e6c44a88bd78113bfe161250284d9863";
+	        var s = document.getElementsByTagName("script")[0];
+	        s.parentNode.insertBefore(hm, s);
+	    })();
+	</script>
+
+	<script type="text/javascript">
+	    // *** 防止广告劫持 Start ***
+	    var global_old_write = document.write;
+	    document.write = function (string) {
+	        // 允许youanbao, 百度地图     --条件可再优化
+	        if (string.indexOf('youanbao') > -1 || string.indexOf('api.map.baidu.com') > -1) {
+	            //alert(script);
+	            // 调用原始接口
+	            global_old_write.apply(document, arguments);
+	        }
+	        else
+	            return false;
+	    }
+	    // *** 防止广告劫持 End ***
+	</script>
+
+	<script src="{MODULE_URL}public/mobile/js/jquery-1.10.2.min.js?v=0622"></script>	
+    <script type="text/javascript" src="{OSSURL}public/mobile/js/hb.js?v=0622"></script>
+    <link href="{OSSURL}public/mobile/css/j_alert.css?v=062220161108" rel="stylesheet">
+    <link href="{OSSURL}public/mobile/css/new_yab.css?v=062220161108" rel="stylesheet">
+    <title>填写个人信息</title>
+</head>
+
+<body class="auto_height" id="auto_height" style="">
+    <div class="All" style="height: 100%;">
+		<section>
+		    <form id="frmAddress" action="{php echo $this->createMobileUrl('goodsdetail',array('schoolid' => $schoolid,'id' => $userid['id']), true)}" method="POST">
+		        <p class="pageInfo">填写个人信息</p>
+		        <!--收货姓名-->
+		        <div class="name">
+		            <label class="titleDescribe" for="username" style="width:70px !important">收货人:</label>
+		            <input type="text" name="name" id="username" value="{$MyAddress['name']}" placeholder="请填写你的名字">
+		        </div>
+		        
+		        <!--收货电话号码-->
+		        <div class="phone_number">
+		            <label class="titleDescribe" for="phone_number" style="width:70px !important">联系电话:</label>
+		            <input type="text" maxlength="11" oninput="value=value.replace(/[^\d]/g,'')" name="phone" placeholder="请填写你的联系方式" id="phone_number" value="{$MyAddress['phone']}">
+		        </div>
+
+		        <!--收货地址-->
+		        <div class="address">
+		            <label class="titleDescribe" for="phone_number" style="width:70px !important">所在地区:</label>
+		            <select id="province" class="stu_info_text" data-index="{$MyAddress['province']}"><option value="">省份</option></select>
+		            <select id="city" class="stu_info_text" data-index="{$MyAddress['city']}"><option value="">城市</option></select>
+		            <select id="county" class="stu_info_text" data-index="{$MyAddress['county']}"><option value="">地区</option></select>
+
+		            <input type="hidden" name="province" id="hidden_province">
+		            <input type="hidden" name="city" id="hidden_city">
+		            <input type="hidden" name="country" id="hidden_country">
+		            <input type="hidden" name="default_address" id="hidden_default_address">
+		        </div>
+		        <div class="addressDetails">
+	           		<label class="titleDescribe" for="phone_number" style="width:80px !important">详细地址:</label> <input type="text" name="address" id="address" value="{$MyAddress['address']} " placeholder="请填写你的收货地址">
+		        </div>
+		    </form>
+		    <a href="javascript:sumbit()">确定</a>
+		</section>
+    	<div class="clear"></div>
+    </div>
+
+	<script src="{OSSURL}public/mobile/js/j_alert.js?v=062220160929"></script>
+	<script src="{OSSURL}public/mobile/js/common.js?v=0622"></script><div id="common_progress" class="common_progress_bg">
+	<div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>
+	<script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+
+
+<script>
+    var ROOT_URL = "/";
+
+    function change_class(val, redictUrl) {
+        $.ajax({
+            type: 'POST',
+            url: "Home/ChangeClass",
+            data: { classid: val },
+            dataType: 'json',
+            success: function (data) {
+                if (data.status == '1') {
+                    if (typeof (getRedictUrl()) == 'undefined') {
+                        window.location.reload();
+                    } else {
+                        window.location.href = getRedictUrl();
+                    }
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
+
+    function setRedictUrl(url) {
+        $(".slideup_div").data('RedictUrl', url);
+    }
+
+    function getRedictUrl() {
+        return $(".slideup_div").data('RedictUrl');
+    }
+
+    //跳转
+    function linkpage(url) {
+        window.location.href = url;
+    }
+
+    function aa() {
+        var a = $("#slidedown").attr("zhong");
+        var b = $("#slidedown_1").attr("zhong");
+
+        a = 0;
+        b = 0;
+        $("#slidedown").attr("zhong", a);
+        $("#slidedown_1").attr("zhong", b);
+
+        $("#slide_div").hide();
+        $("#slide_div_1").hide();
+    }
+
+    
+    //跳转回首页
+    function gobackhome_fun() {
+        if (sessionStorage.getItem('gobackhome_url') != null && sessionStorage.getItem('gobackhome_url') != '') {
+            window.location.href = sessionStorage.getItem('gobackhome_url');
+        } else {
+            window.location.href = '/1046';
+        }
+    }
+</script>
+
+     <script src="{OSSURL}public/mobile/js/region_data.js?v=0622"></script>
+    <script src="{OSSURL}public/mobile/js/region_inc.js?v=0622"></script>
+    <script>
+        function sumbit() {
+            if ($("#username").val() == "") { jTips("请输入姓名"); return; }
+            var pattern_phone = /^1\d{10}$/; //定义正则表达式
+            if ($("#phone_number").val() == "") {
+                jTips("请输入联系方式");
+                return;
+            }
+            //else if ($("#phone_number").val().trim().length != 11) {
+            //    jTips("请输入有效的手机号码");
+            //    return;
+            //}
+            else if (!pattern_phone.test($("#phone_number").val().trim())) {
+                jTips("请输入有效的手机号码");
+                return;
+            }
+            var AddName = $("#username").val();
+            var AddPhone = $("#phone_number").val();
+            var province = $("#province").val();
+            var city = $("#city").val();
+            var country = $("#county").val();
+            if (province == "") {
+                jTips("请选择省份");
+                return;
+            }
+            if (city == "") { jTips("请选择市区"); return; }
+
+            $("#hidden_province").val(province);
+            $("#hidden_city").val(city);
+            $("#hidden_country").val(country);
+            //var 
+            if ($("#address").val() == "") {
+                jTips("请输入详细地址"); return;
+            }
+            var detailAdd = $("#address").val();
+            var default_address = province + city + country + $("#address").val(); // 详细地址
+            $("#hidden_default_address").val(default_address);
+
+            {if !empty($addressid)}
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'xgdz'))}",{"addressid":{$addressid}, "name":AddName,"phone":AddPhone, "schoolid":{$schoolid}, "province":province,"city":city,"county":country,"address":detailAdd},function(data){
+					if(data.result){
+						jTips(data.info);
+						window.history.back();
+					}else{
+						jTips(data.info);
+						window.history.back();  
+					}
+		},'json');
+		{elseif empty($addressid)}
+		  $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'xgdz'))}",{"name":AddName,"phone":AddPhone, "schoolid":{$schoolid}, "province":province,"city":city,"county":country,"address":detailAdd},function(data){
+					if(data.result){
+						jTips(data.info);
+						window.history.back();
+					}else{
+						jTips(data.info);
+						window.history.back();  
+					}
+		},'json');
+		{/if}
+         
+        }
+      
+        //省市区
+        if ($('#province').attr("data-index") != "" && $('#city').attr("data-index") != "" && $('#county').attr("data-index") != "") {
+            init_region($('#province').attr("data-index"), $('#city').attr("data-index"), $('#county').attr("data-index"));
+        } else {
+            init_region("", "", "");
+        }
+        function init_region(p, c, d) {
+            $('#province').html("<option value=''>省份</option>");
+            $('#city').html("<option value=''>城市</option>");
+            $('#county').html("<option value=''>区/县</option>");
+            var PID = $('#province').attr("data-index");
+            var CID = $('#city').attr("data-index");
+            var AID = $('#county').attr("data-index");
+            var oRegion = new Region(R_Province, R_City, R_District, { optionValue: 'name' });
+            oRegion.initRegion_V2($('#province')[0], $('#city')[0], $('#county')[0], p, c, d);
+
+
+
+            $("#province").change(function () {
+                oRegion.selectCity();
+            });
+            $("#city").change(function () {
+                oRegion.selectDistrict();
+            });
+        }
+    </script>
+
+
+</body></html>

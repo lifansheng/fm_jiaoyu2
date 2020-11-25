@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/kqtjCss.css?v=5.1"/>
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/vue.min.js"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery.reveal.js"></script>
+{php include $this->template('port');}
+<style>
+    .arrange-detail>ol {box-sizing: border-box;}
+    .form-order>.form-line {margin-bottom: 5px;}
+    .form-order>.form-line {margin-bottom: 12px;margin-top: 12px;}
+    .btnthis {height: 30px;background-color: #7bb52d;font: 16px "黑体";text-align: center;color: #fff;cursor: pointer;border-radius:10px}
+    .div_closd{margin-left:13%; width:30%;color: #fff;background-color: #f1ad31;border-color: #f1ad31;float:left;line-height:30px}
+    .div_sure{margin-right:13%; width:30%;float:right;line-height:30px}
+    .ovfHiden{overflow:hidden}
+    .startdate{width: 60%;margin: 3px 0px;height: 30px;line-height: 30px;border: 1px solid #e1e1e1;border-radius: 3px;font-size: 14px;background-attachment: fixed;text-align: center;padding: 0;margin: 0;outline-style: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-appearance: none;}
+    .trhead{height:30px}
+    .thhead{background:white;float:left;height:40px;line-height:40px;text-align:center;font-size:16px;}
+    .td_mutirow{background:white;border-bottom:1px solid #EDEEF0;border-right:1px solid #EDEEF0;}
+    .tdsinglerow{background:white;height:30px;line-height:30px;border-bottom:1px solid #EDEEF0;}
+    .SelectInRange{text-align:center;text-align-last:center;width:90%;margin:8px;height:30px;border-radius: 3px;}
+    .reveal-modal-bg {position: fixed;height: 100%;width: 100%;background: rgba(0,0,0,0.25);z-index: 105;display: none;top: 0;left: 0; }
+    .reveal-modal {top:50px !important;visibility: hidden; background: #fff ;position: fixed;z-index: 101;padding: 25px 18px 38px;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; -moz-box-shadow: 0 0 10px rgba(0,0,0,.4);-webkit-box-shadow: 0 0 10px rgba(0,0,0,.4);-box-shadow: 0 0 10px rgba(0,0,0,.4);}
+    .Select-event{display: inline-block;height: 32px;border:1px solid #D7d7d7;font-size: 12px;line-height: 32px;width:72px;border-radius:4px;margin-right:8px;text-align:center}
+    .CheckTypes{width:25%;margin-right: 5%;}
+    .EVENT-SELECT{background-color: rgba(38, 123, 255, 0.2);border-color:#0885ff !important }
+    .CheckObj{padding:1px 3px;border-radius: 5px;font-size: 12px}
+    #attendance{margin-left: 3px;box-shadow:2px 2px 10px #c1c1c1;border-radius: 5px;width:98%;height:160px;padding-top:10px;float: unset}
+    .CheckLog{width:100%;height: 60px;border-top: 1px solid #e6e6e6;background-color: white}
+    .CheckMoreBtn{border:1px solid #1b90d4;border-radius: 5px;padding:1px 3px}
+</style>
+</head>
+<body id="kqtjbody">
+
+	<div id="main_detail"  style="margin-left: 3px;float:unset;margin-left: 1%;width:98%;background-color: white;border-radius: 8px 8px 0px 0px;overflow: hidden;">
+		<div class="trhead" style="width:calc(100% - 1px);height: 40px;">
+			<div class="thhead" style="width:30%;border-radius: 0px 5px 0px 0px;">学生</div>
+			<div class="thhead" style="width:50%;">标题</div>
+			<div class="thhead" style="width:20%;border-radius: 0px 5px 0px 0px;">报告详情</div>
+		</div>
+		<div id="table_info" style="font-size: 12px">
+			{loop $list $key_l $item}
+			<li class="CheckLog" time="{$key_l}">
+				<div class="thhead" style="width:30%;font-size: 12px;height: 60px;line-height: 20px">
+					<div style="height: 40px;width:100%">
+					<img src="{php echo tomedia($item['icon'])}" style="height: 37px;width:37px;border-radius: 50%;;margin-top: 2px">
+					</div>
+					<span>{$item['s_name']}</span>
+				</div>
+				<div class="thhead" style="width:50%;font-size: 12px;;text-align: center;height: 50px;line-height: 25px;padding:5px 0">
+					<span>{$item['title']}</span> 
+				</div>
+				<div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 60px">
+					<span class="CheckMoreBtn" onclick="ChaKanXiangQing(`{$item['id']}`,`{$item['type']}`)">查看详情</span>
+				</div>
+			</li>
+			{/loop}
+		</div>
+	</div>
+	<div style="position: fixed;bottom: 70px;right: 10px;height: 50px;width: 50px;" onclick="backToTOP()">
+		<img src="{MODULE_URL}public/mobile/img/backtotop_icon.png" style="height: 40px;width:40px;border-radius: 50%;">
+    </div>	
+    <div style="position: fixed; position: fixed; bottom: 80px; right: 70px;" onclick="backToTOP()">
+        <div style="font-size: 12px;border: 1px solid #1b90d4; border-radius: 50%; width: 30px; height: 30px; text-align: center; padding: 3px 4px 6px 4px; color: #1b90d4;">
+            <span onclick="getReport()">获取报告</span>
+        </div>
+    </div>	
+    <script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+    <script language="javascript">
+
+        function backToTOP(){
+            $('html,body').animate({
+                    'scrollTop':0
+                },100)
+        }
+
+        $("body").append('<div id="common_progress" class="common_progress_bg" style=""><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>');
+
+        function ajax_start_loading(text) {
+            $("#common_progress").css("display", "block");
+            $("body").css("position", "fixed");
+            $(".common_progress").css("margin-left", $(window).width() / 2 - 80);
+            if (text) {
+                $("#common_progress span").text(text);
+            }
+        }
+        // 关闭菊花转
+
+
+
+        function ajax_stop_loading() {
+            $("#common_progress").hide();
+            $("body").css("position", "static");
+        }
+
+        var scroll_load_obj = null;
+
+        //重名函数 后面的覆盖前面的，这个地方对scroll_fun 重新定义了下
+        function scroll_fun() {
+            // var bottom = $(".has_show_over");
+            var winHeight = window.innerHeight || document.documentElement.clientHeight,
+                scrollTop = document.body.scrollTop || document.documentElement.scrollTop,
+                documentHeight = $(document).height();
+            //将当前的浏览器滚动的高度存在浏览器缓存变量scroll_top
+            // sessionStorage.setItem('scroll_top' + scroll_load_obj.page_name, scrollTop);
+            //判断是否滚到差不多浏览器底部
+            if (parseInt(winHeight) + parseInt(scrollTop) + 5 > parseInt(documentHeight)) {
+                var self = scroll_load_obj;
+                $(window).off("scroll", scroll_fun);
+                //console.log(self.ajax_switch);
+                if (self.ajax_switch) {
+                    //这里做ajax
+                    self.ajax_switch = false;  //把ajax锁关了防止不断ajax
+                    var datanumb = $(self.ul_box).children('li').length;
+                    if(datanumb >= 1){
+                        $('.has_show_over').show();
+                        $('.has_show_over').animate({height:"45px"});
+                        $(".jzz").removeClass('jzz_over');
+                        $('.jzz_text').text('加载中');
+                        console.log("!!!");
+                    }
+                    var search_type='';
+                    var search_content='';
+                    if($('#search_input').length>0){
+                        typesearch_content = $.trim($('#search_input').val());
+                        $('.type_item.checked').each(function () {
+                            if (search_type != '') {
+                                search_type += ',' + $(this).attr('type');
+                            } else {
+                                search_type += $(this).attr('type');
+                            }
+                        })
+                    }
+                    if (index_type_item != '') {
+                        search_type = index_type_item;
+                    }
+
+                    var GetLiData = {};
+                    for(let item of self.param){
+                        //$(self.ul_box).children('li').eq($(self.ul_box).children('li').length-1)
+                        //GetLiData[item] = $(param.li_item).eq($(param.li_item).length-1).attr(`${item}`) || -1 ;
+                        GetLiData[item] = $(self.ul_box).children(`${self.li_item}`).eq($(self.ul_box).children(`${self.li_item}`).length-1).attr(`${item}`) || -1 ;
+                        console.log($(self.ul_box))
+                    }
+                
+
+                //TODO: 要传的数据
+                    var post_data = { 
+                        limit: $(self.ul_box).children('li').eq($(self.ul_box).children('li').length-1).attr('time'),
+                        noticeytpe: $("#noticeytpe").val(),
+                        LiData : GetLiData,
+                        limit_org:self.limit_org,
+                        content: search_content,
+                        //这个地方将一些其他参数加上去
+                    };
+                    $('.has_show_over').show();
+
+
+                    //TODO: 实际执行的ajax
+                    $.ajax({
+                        type: 'POST',
+                        url: self.ajax_url,
+                        data: post_data,
+                        dataType: "html",
+                        success: function (data) {
+                            //载入更多内容
+                            if ($.trim(data)) {
+                                $(self.ul_box).append(data);
+                                // sessionStorage.setItem('cache_html' + self.page_name, $(self.ul_box).html());
+                                //self.limit = $(self.ul_box).children('li').eq($(self.ul_box).children('li').length-1).attr('time');
+                                // sessionStorage.setItem('limit' + self.page_name, self.limit);
+                                if (typeof (self.after_ajax) != 'undefined') {
+                                    self.after_ajax();
+                                }
+                                $(window).on("scroll", scroll_fun);
+                                self.ajax_switch = true;
+                            } else {
+                                $('.has_show_over').show();
+                                console.log("show");
+                                $('.jzz_text').text('数据已加载完毕');
+                                $(".jzz").addClass('jzz_over');
+                                $(window).off("scroll", scroll_fun);
+                                $('.has_show_over').animate({height:"0"});
+
+                            }
+                        },
+                        error: function () {
+                            jTips('加载失败！');
+                            $(window).on("scroll", scroll_fun);
+                            self.ajax_switch = true;
+                        }
+                    }) //ajax结束
+                }
+            }
+        }
+        
+        function ChaKanXiangQing(id,type){
+            if(type == 1){
+                location.href = "{php echo $this->createMobileUrl('mcreportinfo', array('schoolid' => $schoolid,'op'=>'display' ))}&id="+id;
+            }else if(type == 2){
+                location.href = "{php echo $this->createMobileUrl('mcreportinfoxq', array('schoolid' => $schoolid,'op'=>'display' ))}&id="+id;
+            }else if(type == 3){
+                location.href = "{php echo $this->createMobileUrl('mcreportinfoyear', array('schoolid' => $schoolid,'op'=>'display' ))}&id="+id;
+            }
+        }
+        function getReport(){
+            ajax_start_loading("获取数据中")
+            let sid = `{$student['id']}`
+            // 获取报表
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('smcreportlist', array('schoolid' => $schoolid,'op'=>'getStudentReport' ))}",
+                type: "post",
+                dataType: "json",
+                data:{sid:sid},
+                success: function (res) {
+                    setTimeout(function () {
+                        jTips(res.msg)
+                        ajax_stop_loading()
+                    }, 3000);
+                }
+            });
+        }
+        new Scroll_load({
+                "limit"      : "0",
+                "ajax_switch": true,
+                "ul_box"     : "#table_info",
+                "li_item"    : ".CheckLog",
+                "param"      : ["time"],
+                "ajax_url"   : "{php echo $this->createMobileUrl('smcreportlist', array('schoolid' => $schoolid,'op'=>'More_Data' ), true)}",
+                "page_name"  : "teacher_notify",
+                "after_ajax": function () {
+                }
+            }).load_init();
+        
+    </script>	
+{php include $this->template('footer');}
+</body>
+</html>

@@ -1,0 +1,16 @@
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>绑定班级</label>
+    <div class="col-sm-2 col-lg-3">
+        <select style="margin-right:15px;" name="bj_id" class="form-control">
+        <option value="0">选择班级</option>
+            {loop $class $row}
+                <option value="{$row['id']}" {if $row['id'] ==$item['bj_id']} selected="selected"{/if}>{$row['classes']}</option>
+            {/loop}
+        </select>
+    </div>
+</div>
+<script>
+    $(function(){
+        $('.hxbphide').hide()
+    })
+</script>

@@ -1,0 +1,1105 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li class="{if $operation == 'display'}active{/if}"><a href="{php echo $this->createWebUrl('cardlist', array('op' => 'display', 'schoolid' => $schoolid))}">卡库</a></li>
+			<li class="{if $operation == 'recording'}active{/if}"><a href="{php echo $this->createWebUrl('cardlist', array('op' => 'recording', 'schoolid' => $schoolid))}">录卡</a></li>
+		</ul>
+	</div>
+</div>
+{if $operation == 'recording'}
+<div class="main">
+	<style>
+		.form-control-excel { height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none; border: 1px solid #ccc;border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+		.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+		.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+		.alert p {margin: 0 0 10px;display: block;}
+		.alert .bold{font-weight:bold;}
+	</style>
+	<div class="panel panel-info">
+		<div class="panel-heading">快速录卡-条件设置</div>
+		<div class="panel-body">
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+				<div class="col-sm-2 col-lg-2">
+					<select style="margin-right:15px;" name="bj_id" id="chosebj" class="form-control">
+						<option value="0">请选择班级搜索</option>
+						{loop $allbjlist $row}
+						<option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}{$row['info']}</option>
+						{/loop}
+					</select>
+				</div>
+				{if $logo['is_cardlist'] != 1 || $_W['isfounder'] || $_W['role'] == 'owner' || $logo['is_cardpay'] != 1}
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">到期时间</label>
+				<div class="col-sm-2 col-lg-2" id="sever">
+					{php echo tpl_form_field_date('severend', date('Y-m-d'))}
+					<div class="help-block">统一到期时间</div>
+				</div>
+				{/if}
+				{if $logo['is_cardlist'] != 1 || $_W['isfounder'] || $_W['role'] == 'owner'}
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">导入空卡</label>
+				<div class="col-sm-2 col-lg-2">
+					<div class="input-group">
+						<input class="form-control inupt_empty" id="card_empty" placeholder="刷卡" onpropertychange="OnPropChanged(event)" type="text" value="" />
+					</div>
+					<div class="help-block">注意:已经绑定的卡在此处刷卡将会删除绑定信息</div>
+				</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+	<div class="cLine">
+		<div class="alert">
+			<p id="empty_cardlist"></p>
+		</div>
+	</div>
+	<div class="cLine">
+		<div class="alert">
+			<p><span class="bold">提示：</span>请连接读卡器使用快速录卡功能</br>
+				{if $_W['isfounder'] || $_W['role'] == 'owner'}<strong><font color='red'>特别提醒: 要让此卡片库生效必须由管理员在学校考勤设置里设置启用状态!----此句只限管理员查看，其他人看不到</font></strong></br>
+				<font color='red'>录卡说明: 管理员身份在本页可任意录制卡考给学生，如果不限制学校卡库，学校也可以在此页面任意录制卡号，否则校方只能录入由管理员提供的空卡，且管理已提前录入到本校卡库中</font></strong></br><font color='red'>时间提示: 如本校已经启用考勤卡付费设置、顶部的统一时间将无效，以本校考勤卡付费设置的时间为准</font></strong></br><font color='red'>温馨提示: 如果本校尚未启用考勤卡付费和卡库功能：新卡绑定卡的到期时间以顶部设置为准，如卡已在系统空卡库中，则以空卡设置的服务到期时间为准</font></strong>{/if}
+			</p>
+		</div>
+	</div>
+	<div class="panel panel-default" style="width:50%">
+		<div class="table-responsive panel-body">
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+				<tr>
+					<th style="width:2%">学生/老师姓名</th>
+					<th style="width:3%">班级</th>
+					<th style="width:10%">已绑卡</th>
+					<th style="width:4%">输入持卡人</th>
+					<th style="width:4%">选择关系</th>
+					<th style="text-align:right; width:8%;">录入新卡</th>
+				</tr>
+				</thead>
+				<tbody>
+				{if $stulist}
+				{loop $stulist $index $item}
+				<tr id="stu{$item['id']}">
+					<td>
+						<img style="width:35px;height:35px;border-radius:50%;" src="{$item['icon']}" width="50"  style="border-radius: 3px;" /></br>{$item['s_name']}
+					</td>
+					<td>{$nowbj['sname']}</td>
+					<td id="cardlist{$item['id']}">
+						{if $item['cards']}
+						{loop $item['cards'] $row}
+						卡号:{$row['idcard']},持卡人:{$row['pname']}({php echo getpardforkqj($row['pard'])})
+						{if $row['severend'] > TIMESTAMP}
+						<span class="label label-success">服务中</span>
+						{else}
+						<span class="label label-danger">已过期</span>
+						{/if}
+						</br>
+						{/loop}
+						{/if}
+					</td>
+					<td><div class="input-group"><input placeholder="输入持卡人姓名" type="text" id="pname{$item['id']}" class="form-control" value="{$item['s_name']}" /></div></td>
+					<td>
+						<select style="margin-right:15px;" name="pard" id="pard{$item['id']}" class="form-control">
+							{loop $allguanxi $key $row}
+							<option value="{$key}">{$row}</option>
+							{/loop}
+						</select>
+					</td>
+					<td style="text-align:right;float:right">
+						<div class="input-group">
+							<input class="form-control inupt_val" id="card{$index}" placeholder="刷卡" data_sid="{$item['id']}" data_key="{$index}" onpropertychange="OnPropChanged(event)" type="text" value="" />
+						</div>
+					</td>
+				</tr>
+				{/loop}
+				{/if}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(function(){
+		$(".inupt_empty").bind("input propertychange",function(event){
+			var idcard = $(this).val();
+			var severend = $("#sever").find('input[name="severend"]').val();
+			if(idcard.length >= 10){
+				$.ajax({
+					url: "{php echo $this->createWebUrl('cardlist', array('schoolid' => $schoolid))}",
+					type: "post",
+					dataType: "json",
+					data: {
+						op:"writecard",
+						severend,severend,
+						idcard:idcard
+					},
+					success: function (data) {
+						if (data.result) {
+							alert(data.msg);
+							var html = "卡号:"+idcard+"<span class='label label-success'>到期:"+severend+"</span></br>";
+							$("#empty_cardlist").append(html);
+							$("#card_empty").val("");
+							$("#card_empty").focus();
+						}else{
+							alert(data.msg);
+							$("#card_empty").val("");
+							$("#card_empty").focus();
+						}
+					}
+				});
+
+			}
+		});
+		$(".inupt_val").bind("input propertychange",function(event){
+			var idcard = $(this).val();
+			var severend = $("#sever").find('input[name="severend"]').val();
+			if(idcard.length >= 10){
+				var sid = $(this).attr('data_sid');
+				var key = $(this).attr('data_key');
+				var nextkey = key*1+1;
+				var pname = $("#pname"+sid).val();
+				var pard = $("#pard"+sid).val();
+				$.ajax({
+					url: "{php echo $this->createWebUrl('cardlist', array('schoolid' => $schoolid))}",
+					type: "post",
+					dataType: "json",
+					data: {
+						op:"getcardinfo",
+						sid: sid,
+						pname:pname,
+						pard:pard,
+						severend,severend,
+						idcard:idcard,
+						bj_id:"{$bj_id}"
+					},
+					success: function (data) {
+						if (data.result) {
+							var html = "卡号:"+idcard+"持卡人:"+pname+"<span class='label label-success'>服务中</span></br>";
+							$("#cardlist"+sid).append(html);
+							$(this).val("");
+							alert(data.msg);
+							$("#card"+nextkey).focus();
+						}else{
+							alert(data.msg);
+							$("#card"+key).val("");
+						}
+					}
+				});
+			}
+		});
+		$(document).ready(function() {
+			$("#chosebj").change(function() {
+				var BjId = $("#chosebj option:selected").attr('value');
+				if(BjId != 0){
+					window.location.href="{php echo $this->createWebUrl('cardlist', array('op' => 'recording','schoolid' => $schoolid))}"+'&bj_id='+BjId;
+				}
+			});
+		});
+	});
+</script>
+{elseif $operation == 'display'}
+<div class="main">
+	<style>
+		.form-control-excel { height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none; border: 1px solid #ccc;border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+		.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+		.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+		.alert p {margin: 0 0 10px;display: block;}
+		.alert .bold{font-weight:bold;}
+	</style>
+	<div class="panel panel-info">
+		<div class="panel-heading">考勤卡管理</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site" />
+				<input type="hidden" name="a" value="entry" />
+				<input type="hidden" name="m" value="fm_jiaoyu" />
+				<input type="hidden" name="do" value="cardlist" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按卡号</label>
+					<div class="col-sm-2 col-lg-2">
+						<input class="form-control" name="idcard" id="" type="text" value="{$_GPC['idcard']}">
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按学生名</label>
+					<div class="col-sm-2 col-lg-2">
+						<input class="form-control" name="s_name" id="" type="text" value="{$_GPC['s_name']}">
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按老师名</label>
+					<div class="col-sm-2 col-lg-2">
+						<input class="form-control" name="tname" id="" type="text" value="{$_GPC['tname']}">
+					</div>
+					{if $_W['isfounder'] || $_W['role'] == 'owner'}
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">卡库状态</label>
+					<div class="col-sm-2 col-lg-2">
+						{if $logo['is_cardlist'] == 1}
+						<a class="btn btn-primary">启用中 <i class="fa fa-spinner fa-spin"></i></a>
+						{else}
+						<a class="btn btn-primary">未启用<i class="fa fa-circle-o-notch"></i></a>
+						{/if}
+					</div>
+					{/if}
+					<a class="btn btn-primary" onclick="repair()">修复卡</a>
+					{if keep_Ls()}
+					<a class="btn btn-primary" onclick="$('#ModalKqk').modal('toggle');">设置卡到期时间</a>
+					{/if}
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按身份</label>
+					<div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="type" class="form-control">
+							<option value="0">不限</option>
+							<option value="1" {if $_GPC['type'] == 1} selected="selected"{/if}>学生</option>
+							<option value="2" {if $_GPC['type'] == 2} selected="selected"{/if}>老师</option>
+							<option value="3" {if $_GPC['type'] == 3} selected="selected"{/if}>未绑定</option>
+						</select>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+					<div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="bj_id" class="form-control">
+							<option value="0">请选择班级搜索</option>
+							{loop $bj $row}
+							<option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+							{/loop}
+						</select>
+					</div>
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default"><i class="fa fa-search"></i>搜索</button>
+					</div>
+					<div class="col-sm-2 col-lg-2">
+						{if $_W['isfounder'] || $_W['role'] == 'owner' || $logo['is_cardlist'] == 2}<a class="btn btn-success" href="javascript:;" onclick="$('.file-container').slideToggle()">批量导卡{if $_W['isfounder'] || $_W['role'] == 'owner'}(管理员专用){/if}</a>{/if}
+						{if $_W['isfounder'] || $_W['role'] == 'owner'}<div class="help-block">卡库功能未启用状态学校可直接添加卡</div>{/if}
+					</div>
+					{if $_W['isfounder'] || $_W['role'] == 'owner' || $logo['is_cardlist'] == 1}
+					<div class="col-sm-2 col-lg-2">
+						<a class="btn btn-success qx_2503" href="javascript:;" onclick="$('.file-container1').slideToggle()">批量导卡{if $_W['isfounder'] || $_W['role'] == 'owner'}(学校专用){/if}</a>
+						{if $_W['isfounder'] || $_W['role'] == 'owner'}<div class="help-block">卡库功能启用中时学校只能下载空卡库然后导入卡</div>{/if}
+					</div>
+					{/if}
+					<div class="col-sm-2 col-lg-2">
+						<a class="btn btn-success qx_2503" href="javascript:;" onclick=" $('#Modal2').modal('toggle');">班级绑卡</a>
+					</div>
+					{if keep_wt() && CheckWtOn($schoolid)}
+					<div class="col-sm-2 col-lg-2">
+						<a class="btn btn-success qx_2503" href="{php echo $this->createWebUrl('cardlist', array('op' => 'OneKeyUpCard', 'schoolid' => $schoolid))}" >一键同步卡信息</a>
+					</div>
+					{/if}
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-success" name="out_putExcel" value="out_putExcel"><i class="fa fa-download"></i>导出所有考勤卡</button>
+					</div>
+				</div>
+				{if CheckXZF($schoolid)}
+
+				<div class="form-group" >
+					<div class="col-sm-2 col-lg-2">
+						<span class="btn btn-success" name="out_putExcel" onclick="UpToXZF()"><i class="fa fa-cloud-upload"></i>同步信息至校智付</span>
+					</div>
+				</div>
+				{/if}
+
+			</form>
+			<div class="alert we7-page-alert">
+				{if $_GPC['bj_id']}
+				<p><i class="wi wi-info-sign"></i> 本班绑卡:<strong class="text-danger">{$total}张</strong>.</p>
+				{else}
+				<p><i class="wi wi-info-sign"></i> 共计卡片数:<strong class="text-danger">{$total}张</strong>.学生绑卡数:<strong class="text-danger">{$xskshl}张</strong>.老师绑卡数:<strong class="text-danger">{$jskshl}张</strong>.空卡数:<strong class="text-danger">{$kksm}张</strong></p>
+				{/if}
+			</div>
+		</div>
+	</div>
+	<div class="cLine">
+		<div class="alert">
+			<p><span class="bold">提示：</span>所有卡号只能是由本库提供，未被包含在本库的卡号将无法在本平台微信端绑定和使用</br>
+				{if $_W['isfounder'] || $_W['role'] == 'owner'}<strong><font color='red'>特别提醒: 要让此卡片库生效必须由管理员在学校考勤设置里设置启用状态!----此句只限管理员查看，其他人看不到</font></strong></br>{/if}
+			</p>
+		</div>
+	</div>
+	<div class="panel panel-default file-container" style="display:none;">
+		<div class="panel-body">
+			<form id="form">
+				<input name="viewfile" id="viewfile" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+				<a class="btn btn-primary"><label for="unload" style="margin: 0px;padding: 0px;">上传...</label></a>
+				<input type="file" class="pull-left btn-primary span3" name="file" id="unload" style="display: none;"
+					   onchange="document.getElementById('viewfile').value=this.value;this.style.display='none';">
+				<a class="btn btn-primary" onclick="submits('input_card','form');">导入数据</a>
+				<a class="btn btn-info" href="../addons/fm_jiaoyu/public/example/example_cardlist.xls"><i class="fa fa-download"></i>下载导入模板</a>
+			</form>
+		</div>
+	</div>
+	<div class="panel panel-default file-container1" style="display:none;">
+		<div class="panel-body">
+			<form id="form1">
+				<input name="viewfile1" id="viewfile1" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+				<a class="btn btn-warning"><label for="unload1" style="margin: 0px;padding: 0px;">上传...</label></a>
+				<input type="file" class="pull-left btn-primary span3" name="file1" id="unload1" style="display: none;" onchange="document.getElementById('viewfile1').value=this.value;this.style.display='none';">
+				<a class="btn btn-danger" onclick="submits('input_cardschool','form1');">导入数据</a>
+				<a class="btn btn-primary" href="../addons/fm_jiaoyu/public/example/example_cardlist1.xls">下载导入模板</a>
+				<a class="btn btn-info" href="{php echo $this->createWebUrl('cardlist', array('out_put' => 'out_put', 'schoolid' => $schoolid))}"><i class="fa fa-download"></i>下载空卡库</a>
+			</form>
+		</div>
+	</div>
+	{template 'public/excel_input'}
+	<div class="panel panel-default">
+		<div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+					<tr>
+						<th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+						<th style="width:5%">卡号</th>
+						<th style="width:5%">持卡人</th>
+						<th style="width:5%">学生</th>
+						<th style="width:5%">老师</th>
+						<th style="width:4%;">绑定关系</th>
+						<th style="width:4%;">班级</th>
+						<th style="width:8%;">使用总计</th>
+						<th style="width:8%;">绑定时间</th>
+						<th style="width:8%;">服务截至时间</th>
+						<th class="qx_2504" style="width:5%;"></th>
+						<th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+					</tr>
+					</thead>
+					<tbody>
+					{loop $list $item}
+					<tr>
+						<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+						<td>
+							<span class="label label-info">{$item['idcard']}</span>
+						</td>
+						<td>
+							{if !empty($item['tid']) || !empty($item['sid'])}
+							<img style="width:35px;height:35px;border-radius:50%;" src="{if $item['scardicon']}{$item['scardicon']}{/if}{if $item['tcardicon']}{$item['tcardicon']}{/if}" onerror="this.src='./resource/images/nopic.jpg';" width="50"  style="border-radius: 3px;" /></br>{$item['pname']}
+							{/if}
+							
+							{if $item['cardtype'] == 2}
+							<span class="label label-info">班级卡</span>
+							{/if}
+						</td>
+						<td>{if $item['s_name']}<img style="width:35px;height:35px;border-radius:50%;" src="{if $item['sid']}{$item['sicon']}{/if}" width="50"  style="border-radius: 3px;" /></br>{$item['s_name']}{/if} {if $item['cardtype'] == 2}
+							<span class="label label-info">班级卡</span>
+							{/if}</td>
+						<td>{if $item['tname']}<img style="width:35px;height:35px;border-radius:50%;" src="{if $item['tid']}{$item['ticon']}{/if}" width="50"  style="border-radius: 3px;" /></br>{$item['tname']}{/if} {if $item['cardtype'] == 2}
+							<span class="label label-info">班级卡</span>
+							{/if}</td>
+						<td>
+							{if !empty($item['pard'])}
+							<span class="label label-success">
+								{if $item['pard'] ==1}本人{/if}
+								{if $item['pard'] ==2}母亲{/if}
+								{if $item['pard'] ==3}父亲{/if}
+								{if $item['pard'] ==4}爷爷{/if}
+								{if $item['pard'] ==5}奶奶{/if}
+								{if $item['pard'] ==6}外公{/if}
+								{if $item['pard'] ==7}外婆{/if}
+								{if $item['pard'] ==8}叔叔{/if}
+								{if $item['pard'] ==9}阿姨{/if}
+								{if $item['pard'] ==10}其他{/if}
+						</span>
+							{/if}
+							{if $item['cardtype'] == 2}
+							<span class="label label-info">班级卡</span>
+							{/if}
+						</td>
+						<td>{if $item['sid']}{$item['bjname']}{/if}</td>
+						<td>
+							{if (empty($item['sid']) && empty($item['tid']) && $item['cardtype'] == 1) || ($item['cardtype'] == 2 && empty($item['bj_id']))}<span class="label label-danger">未绑定</span>{else}<a href="javascript:;" title="查看" onclick="ShowCheckTimes('{$item['idcard']}',this)"><i class="fa fa-eye"></i></a><span class="label label-success" style="display:none">0次</span>{/if}
+						</td>
+						<td>
+							{if !empty($item['createtime'])}{php echo date('Y-m-d', $item['createtime'])}{else}<span class="label label-danger">未绑定</span>{/if}
+						</td>
+						<td>
+							{if !empty($item['severend'])}
+							{if TIMESTAMP>$item['severend']}<span class="label label-danger">服务到期</span>{else}{php echo date('Y-m-d', $item['severend'])}{/if}
+							{else}
+							<span class="label label-danger">未设置</span>
+							{/if}
+						</td>
+						<td class="qx_2504">
+							{if (empty($item['sid']) && empty($item['tid']) && $item['cardtype'] == 1) || ($item['cardtype'] == 2 && empty($item['bj_id']))}<span class="label label-danger">未绑定</span>{else}
+							{if $item['cardtype'] != 2}
+							<a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('cardlist', array('id' => $item['id'], 'op' => 'jiebang', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认解绑？');return false;" title="解绑"><i class="fa fa-times"></i>&nbsp;解绑</a>{else}<span class="label label-default">班级卡禁止解绑</span>{/if}
+							{/if}
+						</td>
+						<td class="qx_e_d" style="text-align:right;">
+							{if $item['cardtype'] != 2}
+							<a class="btn btn-default btn-sm qx_2502" href="{php echo $this->createWebUrl('cardlist', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;{/if}<a class="btn btn-default btn-sm qx_2505" href="{php echo $this->createWebUrl('cardlist', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+						</td>
+					</tr>
+					{/loop}
+					</tbody>
+					<tr>
+						<td colspan="10">
+							{if $_W['isfounder'] || $_W['role'] == 'owner' || $logo['is_cardlist'] == 2}
+							<div class="col-sm-2 col-lg-2" style="width:20%">
+								{php echo tpl_form_field_date('setendtime', date('Y-m-d'))}
+								{if $_W['isfounder'] || $_W['role'] == 'owner'}<div class="help-block">卡库未启用情况下学校有权自主修改</div>{/if}
+							</div>
+							<input type="button" class="btn btn-primary" name="change_endtime" value="修改到期时间" />
+							{/if}
+							<input name="token" type="hidden" value="{$_W['token']}" />
+							<input type="button" class="btn btn-primary qx_2505" name="btndeleteall" value="批量删除" />
+							{if keep_wt() && CheckWtOn($schoolid)}
+							<input name="token" type="hidden" value="{$_W['token']}" />
+							<input type="button" class="btn btn-primary qx_2505" name="ForceSync" value="批量强制同步">
+							{/if}
+						</td>
+					</tr>
+				</table>
+				{$pager}
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">绑定班级卡</h4>
+			</div>
+			<div class="modal-body" id="detail_checksen1d">
+				<form id="upsence_form" method="post" class="form-horizontal form">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择年级</label>
+								<div class="col-sm-12 col-lg-3">
+									<select style="margin-right:15px;" name="nj_id" id="xq" class="form-control">
+										<option value="">请选择年级</option>
+										{loop $nj $row}
+										<option value="{$row['sid']}"  >{$row['sname']}</option>
+										{/loop}
+									</select>
+								</div>
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择班级</label>
+								<div class="col-sm-12 col-lg-3">
+									<select style="margin-right:15px;" name="bj_id" id="bj" class="form-control">
+										<option value="">请选择班级</option>
+										{loop $bj $row}
+										<option value="{$row['sid']}"  >{$row['sname']}</option>
+										{/loop}
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">录入卡</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" name="keyword" id="cardId" type="text" value="">
+								</div>
+
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">到期时间</label>
+								<div class="col-sm-2 col-lg-3">
+									{php echo tpl_form_field_date('serverend', date('Y-m-d'))}
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="close_modal1" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit1" onclick="bjcardBD()">确定绑定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="ModalKqk" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content" style="margin-top:60px;">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title">批量设置考勤卡到期时间</h4>
+			</div>
+			<div class="modal-body">
+				<form id="setKqkInfo" method="post" class="form-horizontal form">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">请选择类型</label>
+								<div class="col-sm-2 col-lg-3">
+									<label class="checkbox-inline" style="margin-left: 10px"><input type="checkbox"  name="setType[]" value="stu">学生(未过期)</label>
+								</div>
+								<div class="col-sm-2 col-lg-3">
+									<label class="checkbox-inline" style="margin-left: 10px"><input type="checkbox"  name="setType[]" value="stuover">学生(已过期)</label>
+								</div>
+								<div class="col-sm-2 col-lg-3">
+									<label class="checkbox-inline" style="margin-left: 10px"><input type="checkbox"  name="setType[]" value="tea">老师(全部)</label>
+								</div>
+								<div class="col-sm-2 col-lg-3">
+									<label class="checkbox-inline" style="margin-left: 10px"><input type="checkbox"  name="setType[]" value="emptycard">空卡(未过期)</label>
+								</div>
+								<div class="col-sm-2 col-lg-3">
+									<label class="checkbox-inline" style="margin-left: 10px"><input type="checkbox"  name="setType[]" value="emptycardover">空卡(已过期)</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">到期时间</label>
+								<div class="col-sm-2 col-lg-3">
+									{php echo tpl_form_field_date('severend', $severend)}
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="close_modal1" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit1" onclick="batchSet()">确定修改</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="SynchronizeLoading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);height: 200px;width:600px;margin-top:60px; background-color: #fff;">
+		<div class="modal-content"  >
+			<div class="loading-layer">
+				<div> <img src="{OSSURL}public/web/images/blue_four_round.png"> </div>
+				<div id="tbhtml">修改中。。。</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="UpToXZFModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);width:600px;margin-top:60px;">
+		<div class="modal-content" style="border-radius: 5px;overflow: hidden;max-height: 300px;padding:40px 80px" >
+			<div style="overflow-y: auto;max-height: 100%;">
+				<div style="font-size: 120%;padding:0 10px;line-height: 26px;" id="StuSyncDoneWord">
+					
+				</div>
+				<div style="font-size: 120%;background-color: #b2ece8;padding:0 10px;border-radius: 5px;line-height: 26px;" >
+					<span id="StuSyncingWord" ></span> <i id="RSF" class="fa fa-refresh fa-spin" style="font-size: 80%;line-height: 120%;"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+
+var word = "";
+function UpToXZF(){
+	$("#RSF").show()
+	$("#UpToXZFModal").modal("show")
+	$("#StuSyncDoneWord").html('')
+	 word = "正在计算考勤卡数据";
+	$("#StuSyncingWord").text(word)
+	setTimeout(() => {
+		AddAndBottom("正在连接校智付服务")
+		setTimeout(() => {
+		AddAndBottom("开始同步考勤卡")
+		syncstuinfo(-1,1)
+
+
+		}, 1000);
+		
+	}, 1000);
+	// $.ajax({
+	// 	url: "{php echo $this->createWebUrl('theclass',array('schoolid'=>$schoolid,'op'=>'syncclass'))}",
+	// 	type: "post",
+	// 	dataType: "json",
+	// 	success: function (res) {
+	// 		$("#synctbhtml").text(res.msg)
+	// 		setTimeout(() => {
+	// 			$("#UpToXZFModal").modal("hide")
+	// 		}, 1000);
+	// 	},
+	// 	error: function (jqXHR, textStatus, errorThrown){
+	// 		console.log(jqXHR)
+	// 		console.log(textStatus)
+	// 		console.log(errorThrown)
+	// 		//DoSomething
+	// 	}
+	// });
+}
+
+function AddAndBottom(newword,type = 'normal'){
+	let A = '';
+	$("#RSF").show()
+
+	
+	$("#StuSyncDoneWord").append(`<div >${word}</div>`);
+	let ele = $("#StuSyncDoneWord").parent()[0];
+	ele.scrollTop = ele.scrollHeight;
+	word = newword
+
+	if(type === 'success'){
+		$("#RSF").hide()
+		A = `<span style="color:#6d97e6">同步成功：</span>`
+		word =  A + newword
+		$("#StuSyncingWord").html(word)
+		setTimeout(() => {
+			AddAndBottom('3秒后自动退出，或点击背景空白处退出','finish')
+		}, 1000);
+		return
+	}
+
+	if(type === 'error'){
+		$("#RSF").hide()
+		A = `<span style="color:red">同步失败：</span>`
+		word =  A + newword
+		console.log(word)
+		$("#StuSyncingWord").html(word)
+		setTimeout(() => {
+			AddAndBottom('3秒后自动退出，或点击背景空白处退出','finish')
+		}, 1000);
+		return
+	}
+
+	if(type === 'finish'){
+		$("#RSF").hide()
+		$("#StuSyncingWord").html( word)
+		setTimeout(() => {
+			$("#UpToXZFModal").modal("hide")
+		}, 3000);
+		return
+	}
+
+	$("#StuSyncingWord").html(word)
+
+}
+
+function syncstuinfo(total,pageindex){
+	let url = "{php echo $this->createWebUrl('cardlist', array('schoolid' => $schoolid,'op'=>'synccardinfo'))}";
+	$.ajax({
+		url: url,
+		type: "post",
+		dataType: "json",
+		data:{
+			total:total,
+			page:pageindex
+		},
+		success: function (res) {
+			if(res.status === true){ //同步成功
+				let pageindex = res.page
+				let total = res.total
+				let Ap = Math.ceil(total/200)
+				let Pers = Math.ceil((pageindex -1)/Ap * 100)
+				console.log(Pers)
+				AddAndBottom(`已同步${Pers}%`)
+				if(pageindex >= Ap){
+					AddAndBottom(`所有考勤卡均已同步完成`,'success')
+					return
+				}
+
+				syncstuinfo(total,pageindex)
+			}else{
+				AddAndBottom(res.msg,'error')
+
+			}
+		},
+		error: function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR)
+			console.log(textStatus)
+			console.log(errorThrown)
+			//DoSomething
+		}
+	});
+}
+
+
+</script>
+
+<script type="text/javascript">
+	function batchSet(){
+		let data = $("#setKqkInfo").serializeArray();
+		if($("input[name='setType[]']").is(':checked') === false){
+			alert('请选择分类')
+			return
+		}
+		var timestamp = parseInt(new Date().getTime()/1000) //当前时间
+		var selectdate = new Date($("input[name='severend']").val())
+		var selecttime = selectdate.getTime()/1000;  //选择的时间
+		if(selecttime < timestamp){
+			alert('过期时间不能小于今天')
+			return
+		}
+		$('#SynchronizeLoading').modal('toggle')
+		$('#ModalKqk').modal('hide')
+		$.ajax({
+			url: `{php echo $this->createWebUrl('cardlist', array('op' => 'batchSetOverTime','schoolid' => $schoolid))}`,
+			type: "post",
+			dataType: "json",
+			data:data,
+			success: function (res) {
+				setTimeout(function(){
+					$("#tbhtml").html(`${res.msg}`)
+				},500)
+				setTimeout(function(){
+					$('#SynchronizeLoading').modal('toggle')
+					location.reload()
+				},1500)
+			},
+			error: function (jqXHR, textStatus, errorThrown){
+				console.log(jqXHR)
+				console.log(textStatus)
+				console.log(errorThrown)
+			}
+		});
+	}
+	function ShowCheckTimes(idcard,elm){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('cardlist',array('op'=>'jxlog','schoolid'=>$schoolid))}",
+			type: "POST",
+			dataType: "json",
+			data:{
+				idcard : idcard,
+			},
+			success: function (res) {
+				if(res.result == true){
+					$(elm).next().show()
+					$(elm).next().text(res.jxlog+'次')
+					$(elm).hide()
+				}
+			},
+			error:function (res) {
+				console.log(res);
+			}
+		});
+
+	};
+	$(function(){
+		var e_d = 2 ;
+		{if (!(IsHasQx($tid_global,1002502,1,$schoolid)))}
+		$(".qx_2502").hide();
+		e_d = e_d - 1 ;
+		{/if}
+			{if (!(IsHasQx($tid_global,1002503,1,$schoolid)))}
+			$(".qx_2503").hide();
+			{/if}
+				{if (!(IsHasQx($tid_global,1002504,1,$schoolid)))}
+				$(".qx_2504").hide();
+				{/if}
+					{if (!(IsHasQx($tid_global,1002505,1,$schoolid)))}
+					$(".qx_2505").hide();
+					e_d = e_d - 1 ;
+					{/if}
+						if(e_d == 0){
+							$(".qx_e_d").hide();
+						}
+
+
+
+
+
+						$("#xq").change(function() {
+							var cityId = $("#xq option:selected").attr('value');
+							var type = 1;
+							changeGrade(cityId, type, function() {
+							});
+						});
+
+						function changeGrade(gradeId, type) {
+							//alert(cityId);
+							var schoolid = "{$schoolid}";
+							var classlevel = [];
+							//获取班次
+							$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+								data = JSON.parse(data);
+								classlevel = data.bjlist;
+								var htmls = '';
+								htmls += '<select id="bj_id"><option value="">请选择班级</option>';
+								if (classlevel != '') {
+									for (var i in classlevel) {
+										htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+									}
+								}
+								$('#bj').html(htmls);
+							});
+						};
+
+
+
+
+
+
+
+						$(".check_all").click(function(){
+							var checked = $(this).get(0).checked;
+							$("input[type=checkbox]").attr("checked",checked);
+						});
+
+						$("input[name=ForceSync]").click(function () {
+							var check = $("input[type=checkbox][class!=check_all]:checked");
+							if(check.length < 1){
+								alert('请选择要强制同步的卡号!');
+								return false;
+							}
+							if(confirm("确认要强制同步选中卡号，覆盖之前的人员信息?")){
+								var id = new Array();
+								check.each(function(i){
+									id[i] = $(this).val();
+								});
+								var url = "{php echo $this->createWebUrl('cardlist', array('op' => 'FOrceSync','schoolid' => $schoolid))}";
+								$.post(
+										url,
+										{idArr:id},
+										function(data){
+											if(data.result){
+												alert(data.msg);
+												location.reload();
+											}else{
+												alert(data.msg);
+											}
+										},'json'
+								);
+							}
+						})
+
+						$("input[name=btndeleteall]").click(function(){
+							var check = $("input[type=checkbox][class!=check_all]:checked");
+							if(check.length < 1){
+								alert('请选择要删除的卡号!');
+								return false;
+							}
+							if(confirm("确认要删除选择的卡号?")){
+								var id = new Array();
+								check.each(function(i){
+									id[i] = $(this).val();
+								});
+								var url = "{php echo $this->createWebUrl('cardlist', array('op' => 'deleteall','schoolid' => $schoolid))}";
+								$.post(
+										url,
+										{idArr:id},
+										function(data){
+											if(data.result){
+												alert(data.msg);
+												location.reload();
+											}else{
+												alert(data.msg);
+											}
+										},'json'
+								);
+							}
+						});
+						$("input[name=change_endtime]").click(function(){
+							var check = $("input[type=checkbox][class!=check_all]:checked");
+							if(check.length < 1){
+								alert('请选择要修改的卡号!');
+								return false;
+							}
+							var setendtime = $("input[name=setendtime]").val();
+							if(setendtime == null || setendtime == 0 || setendtime == ""){
+								alert('请设置到期时间!');
+								return false;
+							}
+							if(confirm("您确认要修改选中卡的到期时间吗？")){
+								var id = new Array();
+								check.each(function(i){
+									id[i] = $(this).val();
+								});
+								var url = "{php echo $this->createWebUrl('cardlist', array('op' => 'change_endtime', 'schoolid' => $schoolid))}";
+								$.post(
+										url,
+										{idArr:id,setendtime:setendtime},
+										function(data){
+											if(data.result){
+												alert(data.msg);
+												location.reload();
+											}else{
+												alert(data.msg);
+											}
+										},'json'
+								);
+							}
+						});
+					});
+
+
+	function bjcardBD(){
+		let BJid = $("#bj").val();
+		let CardId =$("#cardId").val();
+		let serverendtime = $("input[name=serverend]").val();
+		$.ajax({
+			url: "{php echo $this->createWebUrl('cardlist',array('op'=>'bjcardbd','schoolid'=>$schoolid))}",
+			type: "POST",
+			dataType: "json",
+			data:{
+				bj_id : BJid,
+				CardId : CardId,
+				serverendtime:serverendtime,
+			},
+			success: function (res) {
+				console.log(res);
+
+				alert(res.msg);
+				if(res.result == true){
+					$("#cardId").val("");
+				}
+
+
+			},
+			error:function (res) {
+				console.log(res);
+			}
+		});
+
+	};
+
+	//修复卡
+	function repair(){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('cardlist',array('op'=>'repair','schoolid'=>$schoolid))}",
+			type: "get",
+			dataType: "json",
+			success: function (res) {
+				alert(res.msg);
+			},
+			error: function (jqXHR, textStatus, errorThrown){
+				console.log(jqXHR)
+				console.log(textStatus)
+				console.log(errorThrown)
+				//DoSomething
+			}
+		});
+	}
+	
+</script>
+{elseif $operation == 'post'}
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="id" value="{$item['id']}" />
+		<input type="hidden" name="sid" value="{$item['sid']}" />
+		<input type="hidden" name="bj" value="{$item['bj_id']}" />
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				修改卡信息
+			</div>
+			<div class="panel-body">
+				<div class="alert alert-info">
+					注意：修改卡号，原卡会作废，如要继续使用原卡，需要重新联系管理员启用该卡
+					{if $_W['isfounder'] || $_W['role'] == 'owner'}</br>如因修改卡号导致原来的卡作废，废卡可自行导入卡库再次使用-------此句仅限管理员查看{/if}
+				</div>
+				{if !empty($item['sid']) || !empty($item['tid'])}
+				{if !empty($item['sid'])}
+				<div class="form-group">
+					<label class="col-sm-3 col-md-2 control-label">学生姓名:</label>
+					<label class="radio-inline" style="color:red;">
+						{$student['s_name']}
+					</label>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 col-md-2 control-label">持卡人姓名:</label>
+					<div class="col-sm-2">
+						<input type="text" name="pname" value="{$CardPname}" class="form-control" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 col-md-2 control-label">持卡人头像:</label>
+					<div class="col-sm-2">
+						{php echo tpl_form_field_image('spic', $item['spic'])}
+						<div class="help-block">注意，修改头像只支持全新上传</div>
+					</div>
+				</div>
+				{/if}
+				{if !empty($item['tid'])}
+				<div class="form-group">
+					<label class="col-sm-3 col-md-2 control-label">教师姓名:</label>
+					<input type="hidden" name="pname" value="{$teacher['tname']}" />
+					<div class="radio-inline" style="color:red;">
+						{$teacher['tname']}
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 col-md-2 control-label">持卡人头像:</label>
+					<div class="col-sm-2">
+						{php echo tpl_form_field_image('tpic', $item['tpic'])}
+						<div class="help-block">注意，修改头像只支持全新上传,修改教师卡头像将会同时修改教师头像</div>
+					</div>
+				</div>
+				{/if}
+				{/if}
+				{if !empty($item['bj_id']) && !empty($item['sid'])}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">所在班级:</label>
+					<label class="radio-inline" style="color:red;">
+						{$bj['sname']}
+					</label>
+				</div>
+				{/if}
+				{if $_W['isfounder'] || $_W['role'] == 'owner' || is_showap()}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">卡号来源</label>
+					<div class="col-sm-3">
+						<label class="radio-inline">
+							<input type="radio" name="card_from" value="1" id="credit1">卡库
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="card_from" value="2" id="credit2">手动
+						</label>
+						<div class="help-block">卡库：从已导入的卡库中选择空卡更换</br>手动：手动输入卡号（不可与本卡库中卡号重复）</br>学校操作员只能从卡库中选择更换卡号</div>
+					</div>
+				</div>
+				<div id="credit-status1" style="display:block">
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">卡号</label>
+						<div class="col-sm-2 col-lg-2">
+							<select class="form-control" name="idcard_kk">
+								{loop $allcard_no $row}
+								<option value="{$row['id']}" >{$row['idcard']}</option>
+								{/loop}
+							</select>
+							<div class="help-block">从考勤卡库选择空卡更换</div>
+						</div>
+					</div>
+				</div>
+				<div id="credit-status2" style="display:none">
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label">卡号</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="idcard_sd" value="{$reply['title']}" id="idcard" class="form-control" />
+							<div class="help-block">输入卡号，不可与卡库中已导入的卡号重复</div>
+						</div>
+					</div>
+				</div>
+				{else}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">卡号</label>
+					<div class="col-sm-2 col-lg-2">
+						<select class="form-control" name="idcard_kk">
+							{loop $allcard_no $row}
+							<option value="{$row['id']}" >{$row['idcard']}</option>
+							{/loop}
+						</select>
+						<div class="help-block">从考勤卡库选择</div>
+					</div>
+				</div>
+				{/if}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">服务截至时间</label>
+					<div class="col-sm-9">
+						<div class="input-group">
+							{if !empty($item['severend'])}{php echo tpl_form_field_date('severend', date('Y-m-d', $item['severend']))}{else}{php echo tpl_form_field_date('severend', date('Y-m-d', TIMESTAMP))}{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+			<input class="btn btn-primary col-lg-1" value="返回" onclick="javascript :history.back(-1);" />
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+	$('#credit1').click(function(){
+		$('#credit-status1').show();
+		$('#credit-status2').hide();
+		$("#credit1").attr("checked","checked" );
+		$("#credit2").removeAttr("checked");
+	});
+	$('#credit2').click(function(){
+		$('#credit-status2').show();
+		$('#credit-status1').hide();
+		$("#credit2").attr("checked","checked" );
+		$("#credit1").removeAttr("checked");
+	});
+</script>
+{/if}
+{template 'public/footer'}

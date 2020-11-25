@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="format-detection" content="telephone=no">
+<title>{$school['title']}</title>
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/common.css" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+</head>
+<body>
+<style>
+.mainColors{ width: 100%; color: #444; height: 45px; line-height: 45px; background-color: #fff; display: flex; text-align: center; font-size: 14px; z-index: 3; }
+.headerContent{ width: 100%; color: #444; height: 45px; line-height: 45px; display: flex; text-align: center; background: #fff; font-size: 15px; margin-top: 10px; z-index: 3; }
+.select_last_left{ width:20% }
+.select_date{ width:60% }
+.select_next_right{ width:20% }
+.ref_data{ width: 100%; height: auto; background-color: #ffffff; margin-top: 10px; }
+.ref_top{ margin-left: 21px; padding-top: 10px; font-size: 15px; font-weight: bold; }
+.ref_bot{ line-height: 40px; display: flex; width: 100%; color: #b1b0b0; }
+.ref_lfet{ left: 15px; width: 40%; margin-left: 35px; }
+.ref_right{ right: 10px; width: 46%; text-align: right; }
+.refclassL{ position: relative; }
+.refclassR{ position: relative; }
+.refclassL:before { content: ""; width: 16px; height: 16px; position: absolute; top: 0px; left: -18px; background: url({OSSURL}public/mobile/img/59ddef4d7a25b_70.png) no-repeat; background-position: center center; background-size: 16px 16px; }
+.refclassR:before { content: ""; width: 16px; height: 16px; position: absolute; top: 0px; left: -18px; background: url({OSSURL}public/mobile/img/59ddef4d7a25b_88.png) no-repeat; background-position: center center; background-size: 16px 16px; }
+
+.data_bot{ line-height: 26px; display: flex; width: 100%;}
+.data_lfet{ left: 15px; width: 40%; margin-left: 35px; }
+.data_right{ width: 46%; text-align: left; margin-left: 35px;}
+.temp_data{ width: 100%; background-color: #ffffff; height: auto; margin-top: 15px; min-height: 200px; padding-bottom: 19px;margin-bottom: 15px;}
+.temp_data2{ width: 100vw; background-color: #ffffff; height: auto;  min-height: 270px;}
+
+/**滑动切换特效**/
+.slide_li::before { content: ""; position: absolute; top: 0; left: 100%; width: 0; height: 100%; border-bottom: 3px solid {$school['headcolor']}; transition: 0.1s all linear; }
+.slide_li.act::before { width: 25%; top: 0; left: 0; margin-left:38%; transition-delay: 0.1s; border-bottom-color: {$school['headcolor']};}
+.slide_li.act ~ .slide_li::before { left: 0; }
+/**顶部切换**/
+.headers{ background-color: #fff; width: 100%; height: auto; position: fixed; top: 0px; z-index: 2;box-shadow: 0px 1px 0px rgba(136, 136, 136, 0.43);} 
+.op_boxs{position: relative; width: 100%; display: inline-flex; text-align: center; height: 40px;} 
+.op_boxs .opt_btn{ list-style: none; width: 33.33%;  font-size: 17px;line-height: 40px; display: inline-block; text-decoration: none; color: #333; position: relative; margin-bottom: 4px;}
+.op_boxs .act{color: {$school['headcolor']};} 
+
+.record_search_box {
+    width: 60%;
+    height: 20px;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #fff;
+    margin-top: 5px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 16px;
+}
+.record_search_box .time_box {
+    text-align: center;
+    width: 100%;
+    height: 1.6rem;
+    box-sizing: border-box;
+    background-color: #fff;
+    float: left;
+    border: none;
+    position: relative;
+}
+.record_search_box .time_box input {
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    -webkit-appearance: none;
+    border: none;
+    width: 100%;
+    text-align: center;
+    color: #666;
+}
+.checkact{
+	background: #56c454;
+    color: #fff;
+    padding: 0px 10px;
+}
+.zzfbqkdiv{
+	display: flex; width: 260px; justify-content: space-around; border: 1px solid #56c454; border-radius: 5px; color: #56c454; margin: 10px 0px 0px 20px;
+}
+.zzfbqkdiv div{
+	border-right: 1px solid #56c454;
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+.zzfbqkdiv div:last-child{
+	border-right: none;
+}
+.TrendDiv{
+	display: flex; width: 260px; justify-content: space-around; border: 1px solid #56c454; border-radius: 5px; color: #56c454; margin: 10px 0px 0px 20px;
+}
+.TrendDiv div{
+	border-right: 1px solid #56c454;
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+.TrendDiv div:last-child{
+	border-right: none;
+}
+.TeaSick{
+	display: flex; width: 260px; justify-content: space-around; border: 1px solid #56c454; border-radius: 5px; color: #56c454; margin: 10px 0px 0px 20px;
+}
+.TeaSick div{
+	border-right: 1px solid #56c454;
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+.TeaSick div:last-child{
+	border-right: none;
+}
+</style>
+<header class="mainColors">
+	<div class="op_boxs">
+		<li class="opt_btn slide_li act" onclick="top_change(1,this)">每日概览</li>
+		<li class="opt_btn slide_li " onclick="top_change(2,this)">症状趋势</li>
+		<li class="opt_btn slide_li " onclick="top_change(3,this)">请假报表</li>
+	</div>
+</header>
+<div class="databoxs" id="everyday">
+	<div class="headerContent">  
+		<div class="select_last_left" id="prev_day">
+			<div class="next_right" onclick="prev()">< 前一天</div>
+		</div>
+		<div class="record_search_box" style="position: relative;">
+			<div class="time_box" style="position: absolute;z-index: 2;opacity: 0;">
+				<input type="date" id="date" onchange="GetHealth()">
+			</div>
+			<div class="time_box">
+				<span id="dayhtml">{php echo date('Y-m-d',TIMESTAMP)}</span>
+			</div>
+		</div>
+		<div class="select_next_right" id="next_day">
+			<div class="next_right" onclick="next()">后一天 ></div>
+		</div>
+	</div>
+	<div class="ref_data">
+		<div class="ref_bot">
+			<div class="ref_lfet"><span class="refclassL" id="time">截至10:55:30<span></div>
+			<div class="ref_right" onclick="GetHealth()"><span class="refclassR">点击刷新<span></div>
+		</div>
+	</div>
+	<div id="datapanel">
+
+	</div>
+	
+</div>
+<div class="databoxs" id="health" style="display:none">
+	<div class="temp_data" style="padding-bottom: 0px;">
+		<div class="ref_top">症状分布情况</div>
+		<div id="ajax_datas" class="ajax_datas">
+			<div class="zzfbqkdiv">
+				<div onclick="CheckDay(0,this)">今日</div>
+				<div onclick="CheckDay(2,this)">三日</div>
+				<div onclick="CheckDay(6,this)" id="act6">七日</div>
+				<div onclick="CheckDay(14,this)">十五日</div>
+				<div onclick="CheckDay(29,this)">三十日</div>
+			</div>
+			<div id="echarts-pie-chart-zzfb" style="width: 100vw;height:200px; margin-top: 10px;"></div>
+		</div>
+	</div>
+	<div class="temp_data2">
+		<div class="ref_top">症状趋势情况</div>
+		<div id="ajax_datas" class="ajax_datas">
+			<div class="TrendDiv">
+				<div onclick="TrendDay(0,this)">今日</div>
+				<div onclick="TrendDay(2,this)">三日</div>
+				<div onclick="TrendDay(6,this)" id="Trend6">七日</div>
+				<div onclick="TrendDay(15,this)">十五日</div>
+				<div onclick="TrendDay(30,this)">三十日</div>
+			</div>
+			<div id="echarts-pie-chart-trend" style="width: 100vw;height:200px; margin-top: 10px;"></div>
+		</div>
+	</div>
+</div>
+<div class="databoxs" id="qjdata" style="display:none">
+	<div class="temp_data" style="padding-bottom: 0px;">
+		<div class="ref_top">学生-事病假趋势</div>
+		<div id="ajax_datas" class="ajax_datas">
+			<div class="TrendDiv">
+				<div onclick="SickDay(2,this)">三日</div>
+				<div onclick="SickDay(4,this)">五日</div>
+				<div onclick="SickDay(6,this)" id="SickDay6">七日</div>
+				<div onclick="SickDay(15,this)">十五日</div>
+				<div onclick="SickDay(30,this)">三十日</div>
+			</div>
+			<div id="echarts-pie-chart-Sick" style="width: 100vw;height:200px; margin-top: 10px;"></div>
+		</div>
+	</div>
+	<div class="temp_data" style="padding-bottom: 0px;">
+		<div class="ref_top">老师-事病假趋势</div>
+		<div id="ajax_datas2" class="ajax_datas">
+			<div class="TeaSick">
+				<div onclick="TeaSickDay(2,this)">三日</div>
+				<div onclick="TeaSickDay(4,this)">五日</div>
+				<div onclick="TeaSickDay(6,this)" id="TeaSickDay6">七日</div>
+				<div onclick="TeaSickDay(15,this)">十五日</div>
+				<div onclick="TeaSickDay(30,this)">三十日</div>
+			</div>
+			<div id="echarts-pie-chart-TeaSick" style="width: 100vw;height:200px; margin-top: 10px;"></div>
+		</div>
+	</div>
+</div>
+
+<input id="nowtime" value="{php echo date('Y-m-d',TIMESTAMP)}" type="hidden">
+{php include $this->template('port');} 
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/mc_yqdk.js"></script>	
+<script src=" https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+<script type="text/javascript">
+
+
+
+function top_change(type,elm){
+	if(type == 2){
+		CheckDay(6,'#act6')
+	TrendDay(6,'#Trend6')
+	}
+	if(type == 3){
+		SickDay(6,'#SickDay6')
+		TeaSickDay(6,'#TeaSickDay6')
+	}
+	$(".opt_btn").removeClass("act");
+	$(elm).addClass("act");
+	$('.databoxs').hide()
+	if(type==1){
+		$('#everyday').show(200)
+	}
+	if(type==2){
+		$('#health').show(200)
+	}
+	if(type==3){
+		$('#qjdata').show(200)
+	}
+}
+/***********症状趋势-症状分布情况***********/
+
+//症状分布图
+function CheckDay(day,elm){
+	$(".zzfbqkdiv div").removeClass("checkact");
+	$(elm).addClass("checkact");
+	ajax_start_loading("获取数据中")
+	$.ajax({
+			url: "{php echo $this->createMobileUrl('healthdatas',array('op'=>'GetSymptom','schoolid'=>$schoolid))}",
+			type: "POST",
+			data: {day:day},
+			dataType: "json",
+			success: function (datas) {
+				ajax_stop_loading()
+				let zzfb = PieOption['zzfb'];
+				zzfb.legend.data = datas.title;
+				zzfb.series[0].data = datas.data;
+				var myChart2 = echarts.init($('#echarts-pie-chart-zzfb')[0]);
+				myChart2.setOption(zzfb);
+				$(window).resize(myChart2.resize);
+			}
+		});
+}
+
+//症状趋势图
+function TrendDay(day,elm){
+	$(".TrendDiv div").removeClass("checkact");
+	$(elm).addClass("checkact");
+	ajax_start_loading("获取数据中")
+	$.ajax({
+			url: "{php echo $this->createMobileUrl('healthdatas',array('op'=>'GetTrend','schoolid'=>$schoolid))}",
+			type: "POST",
+			data: {day:day},
+			dataType: "json",
+			success: function (datas) {
+				ajax_stop_loading()
+				let trend = PieOption['trend'];
+				trend.xAxis[0].data = datas.createtime;
+				trend.legend.data = ['咳嗽','呕吐','外伤','腹泻','感冒','头痛','口腔'];
+                trend.series[0].data = datas.cough;
+				trend.series[0].name = '咳嗽';
+				
+                trend.series[1].data = datas.vomit;
+				trend.series[1].name = '呕吐';
+
+				trend.series[2].data = datas.trauma;
+				trend.series[2].name = '外伤';
+
+				trend.series[3].data = datas.diarrhea;
+				trend.series[3].name = '腹泻';
+
+				trend.series[4].data = datas.cold;
+				trend.series[4].name = '感冒';
+
+				trend.series[5].data = datas.headache;
+				trend.series[5].name = '头痛';
+
+				trend.series[6].data = datas.mouth;
+				trend.series[6].name = '口腔';
+				var myChart3 = echarts.init($('#echarts-pie-chart-trend')[0]);
+				myChart3.setOption(trend);
+				$(window).resize(myChart3.resize);
+			}
+		});
+}
+/***********症状趋势-症状分布情况***********/
+
+/***********每日概览***********/
+var selectday = 0;
+function prev(){
+	selectday --;
+	GetHealth()
+} 
+function next(){
+	selectday ++;
+	GetHealth()
+} 
+GetHealth();
+function GetHealth(){
+	let date = $("#date").val()
+	ajax_start_loading("获取数据中")
+    $.post("{php echo $this->createMobileUrl('healthdatas', array('op' => 'GetHealth', 'schoolid' => $schoolid))}",{'date' : date,'selectday':selectday}, function(data){
+		selectday = 0; //对前后一天进行清0
+		$("#datapanel").html(data)
+		ajax_stop_loading()
+	},'html');
+	
+}
+/***********每日概览***********/
+/***********学生-事病假趋势***********/
+function SickDay(day,elm){
+	$(".TrendDiv div").removeClass("checkact");
+	$(elm).addClass("checkact");
+	ajax_start_loading("获取数据中")
+	$.ajax({
+			url: "{php echo $this->createMobileUrl('healthdatas',array('op'=>'GetSick','schoolid'=>$schoolid))}",
+			type: "POST",
+			data: {day:day},
+			dataType: "json",
+			success: function (datas) {
+				ajax_stop_loading()
+				let Sick = PieOption['trend'];
+				Sick.xAxis[0].data = datas.createtime;
+				Sick.legend.data = ['事假','病假'];
+                Sick.series[0].data = datas.sj;
+				Sick.series[0].name = '事假';
+				
+                Sick.series[1].data = datas.bj;
+				Sick.series[1].name = '病假';
+
+				var myChart4 = echarts.init($('#echarts-pie-chart-Sick')[0]);
+				myChart4.setOption(Sick);
+				$(window).resize(myChart4.resize);
+			}
+		});
+}
+/***********学生-事病假趋势***********/
+
+/***********学生-事病假趋势***********/
+function TeaSickDay(day,elm){
+	$(".TeaSick div").removeClass("checkact");
+	$(elm).addClass("checkact");
+	ajax_start_loading("获取数据中")
+	$.ajax({
+			url: "{php echo $this->createMobileUrl('healthdatas',array('op'=>'GetTeaSick','schoolid'=>$schoolid))}",
+			type: "POST",
+			data: {day:day},
+			dataType: "json",
+			success: function (datas) {
+				ajax_stop_loading()
+				let TeaSick = PieOption['trend'];
+				TeaSick.xAxis[0].data = datas.createtime;
+				TeaSick.legend.data = ['事假','病假'];
+                TeaSick.series[0].data = datas.sj;
+				TeaSick.series[0].name = '事假';
+				
+                TeaSick.series[1].data = datas.bj;
+				TeaSick.series[1].name = '病假';
+
+				var myChart5 = echarts.init($('#echarts-pie-chart-TeaSick')[0]);
+				myChart5.setOption(TeaSick);
+				$(window).resize(myChart5.resize);
+			}
+		});
+}
+/***********学生-事病假趋势***********/
+
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>
+{php include $this->template('newfooter');} 
+</body>
+</html>

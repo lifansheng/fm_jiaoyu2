@@ -1,0 +1,19 @@
+
+{loop $allpl $row1}
+<li class="main_li" time="{$row1['location']}" {if $row1['userid'] == $it['id']}is_mine="true"{else}is_mine="false"{/if} comment_id="{$row1['id']}">
+	<a>
+		<div class="user_img">
+				<img src="{php echo tomedia($row1['icon'])}" class="teacherImgError" />
+			<div class="clear"></div>
+		</div>
+		<div class="text" style="min-height: 40px;">
+			<div class="user_name">{$row1['name']}</div>
+			<div class="comment_time">{$row1['time']}前</div>
+			<div class="clear1"></div>
+			<div class="comment_text">{$row1['conet']}</div>
+			<div class="clear"></div>
+		</div>
+	</a>
+	<div class="clear"></div>
+</li>
+{/loop}

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+<meta charset="utf-8">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta content="telephone=no" name="format-detection" />
+<style>
+	body > a:first-child,body > a:first-child img{ width: 0px !important; height: 0px !important; overflow: hidden; position: absolute}
+	body{padding-bottom: 0 !important;}
+</style>
+<meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<title>订单支付</title>
+<link rel="stylesheet" href="{OSSURL}public/mobile/css/reset.css">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link href="{MODULE_URL}public/mobile/css/bootstrap.min.css" rel="stylesheet">
+<style>
+#bodyhidden {position: fixed;z-index: 10000;top: 0;width: 100%;height: 100%;background: rgba(0, 0, 0, .15);display: -webkit-box;display: -webkit-flex;display: -ms-flexbox;display: flex;-webkit-box-orient: vertical;-webkit-flex-flow: column;-webkit-flex-direction: column;-ms-flex-direction: column;flex-direction: column;-webkit-transition-property: opacity;-webkit-transition-duration: 100ms;-webkit-backface-visibility: hidden;background: rgba(0, 0, 0, 0.7);}
+</style>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+<script src="{MODULE_URL}public/mobile/js/bootstrap.min.js"></script>
+{php echo register_jssdks();}
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=4.80309"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/mui.js?v=3"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/newutil.js?v=4"></script>
+<script src="{$_W['siteroot']}payment/alipay/ap.js"></script>
+{php include $this->template('port');}
+
+<style>
+.black_overlay{
+z-index:1001;
+}
+</style>
+</head>
+<body>
+    <div id="wrap" class="user_cost">
+        <!-- 修改开始 -->
+        <section id="cost_list">
+            <section class="uncost select">
+			       {if !empty($kc1)}
+
+                        {if $kc1['type'] ==6}
+                        <div class="quan_box click">
+                            <a href="#" style="display:block">
+                                <dl class="quan_list">
+                                    <dt><div style="background-image:url({php echo tomedia($imgarr[0]);})"></div></dt>
+                                    <dd class="order-title">{$good['title']}</dd>
+
+                                    <dd>￥{$kc1['cose']}</dd>
+                                    <dd>数量：{$morder['count']}</dd>
+
+                                </dl>
+                            </a>
+                        </div>
+						{/if}
+                   	{/if}
+                <article style="z-index:99;margin-top:100px;" id = "gao">
+                    <header>
+                        <h3>应付费总计</h3>
+                    </header>
+                    <ul>
+					    {php $cose = $kc1['cose']+$kc2['cose']+$kc3['cose']+$kc4['cose']+$kc5['cose'];}
+                        <li>应付金额：<span class='orange' id="lastPrice">￥{$cose}</span></li>
+                    </ul>
+                    <footer>
+                        <p>
+                            <input type="checkbox" id="ensure" class="check_ok" checked="checked">
+                            <a href="">同意在线收费协议</a>
+                        </p>
+						<p style="padding-bottom:10px;"></p>
+                        <div onclick="zhifu();" id="gopay"><a style="text-decoration:none;color:#fff;">立即支付</a></div>
+                    </footer>
+                </article>
+            </section>
+        </section>
+    </div>
+	<div class="modal fade" id="pay" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;    z-index: 11111;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">支付方式</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<div class="panel">
+							<div class="clearfix" style="padding-top:10px;font-size: 100%;">
+								<p style="font-size: 16px;">订单编号 :<span class="pull-right">{$od1}</span></p>
+								<p style="font-size: 16px;">收款学校 :<span class="pull-right">{$school['title']}</span></p>
+								<p style="font-size: 16px;"><strong style="color:red">支付金额 :<span class="pull-right" id="votefee">￥{$kc1['cose']} 元</span></strong></p>
+
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="" style="text-align: center;">
+							{if !empty($setting['payment']['wechat']['switch'])}
+							<div class="pay-btn wxpaybox" id="wechat-panel">
+                                <span class="btn btn-success  wechat_pay btn-block col-sm-12"  >微信支付(加载失败,请刷新本页)</span>
+							</div>
+							{/if}
+							{if !empty($setting['payment']['alipay']['switch']) || !empty($setting['payment']['alipay']['pay_switch'])}
+							<div class="pay-btn" id="alipay-panel">
+                                <button class="btn btn-warning btn-block col-sm-12" onclick="dopayOpt('alipay')">支付宝支付</button>
+							</div>
+							{/if}
+
+							{if $setting['payment']['unionpay']['switch']}
+							<div class="pay-btn" id="unionpay-panel">
+                                <button class="btn btn-default btn-block col-sm-12"  onclick="dopayOpt('unionpay')">银联支付</button>
+							</div>
+							{/if}
+
+							{if $setting['payment']['baifubao']['switch']}
+							<div class="pay-btn" id="baifubao-panel">
+                                <button class="btn btn-danger btn-block col-sm-12"  name="baifubao" onclick="dopayOpt('baifubao')">百度钱包支付</button>
+							</div>
+							{/if}
+
+
+							{if $school['is_chongzhi'] == 1 && $kc1['type'] != 8}
+								<div class="pay-btn" id="yuE_zhifu" style="margin-top: 10px;">
+                                {if $students['chongzhi'] < $cose}
+                                <span class="btn btn-primary btn-block col-sm-12" style="background-color:gray;border-color: gray;">余额不足 （当前余额 {$students['chongzhi']}元)</span>
+                                {elseif  $students['chongzhi'] >= $cose}
+                                <button class="btn btn-primary btn-block col-sm-12" onclick="yuezhifu()" >余额支付 （当前余额 {$students['chongzhi']}元)</button>
+                                {/if}
+							</div>
+							{/if}
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+	<div class="modal fade bs-example-modal-sm" id="subsribe" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title">本订单您已付费</h4>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-warning text-center" role="alert">已付费订单请勿重复付费<img src="../addons/fm_jiaoyu/public/mobile/img/sucess.png" class="img-rounded" style="width:100%;" /></div>
+					<div class="alert alert-info" role="alert"><a href="{php echo $this->createMobileUrl('order', array('schoolid' => $schoolid), true)}" class="btn btn-info" style='color:#fff;width:100%'>返回订单</a></div>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+</body>
+<!--微信支付相关-->
+<div id="bodyhidden" style="display: none;"></div>
+<input id="flag" value="{$flag}" type="hidden">
+<script>
+
+
+
+var jumpurl = '{php echo $_W['siteroot'] . 'app/index.php?i=' . $weid. '&c=entry&schoolid=' . $schoolid. '&do=getorder&m=fm_jiaoyu'}'
+//余额支付
+function yuezhifu(){
+    console.log(123)
+	jConfirm("确认使用余额支付吗？", "确定对话框", function (isConfirm) {
+		if(isConfirm){
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('payajax', array('op'=>'yuepayRemaster'))}",
+				dataType: 'json',
+				data:{
+					weid:"{$weid}",
+					schoolid:"{$schoolid}",
+					payMethod:'credit',
+					userid:'{$userinfo['id']}',
+                    usertype:'stu',
+                    openid:"{$openid}",
+                    orderid:'{$od1}',
+                    uid:"{$_W['member']['uid']}",
+                    cose:'{$cose}',
+                    wxpayid:'{$wxpay_id}'
+				},
+				success:function(data){
+					console.log(data)
+					alert(data.msg);
+					if(data.result){
+						// var jumpurl = decodeURIComponent(data.jumpurl)
+						 location.href = jumpurl
+					}
+				}
+			});
+		}
+	});
+}
+
+//百度钱包和其它支付则无浏览器组件要求，可直接使用
+function dopayOpt(type) {
+    let coseStr = '{$cose}', cose = Number(coseStr),ordertitle = $(".order-title").text();
+    newutil.pay({
+        orderFee : coseStr,
+        payMethod : type,
+        orderTitle :$(".order-title").text(),
+        orderTid : Number('{$wxpay_id}'),
+        payweid :NowWeid,
+        orderid : '{$od1}',
+        module : 'fm_jiaoyu',
+        success : function(result) {
+            alert('支付成功');
+            window.location.href = jumpurl
+        },
+        fail : function(result) {
+            alert('支付失败');
+            alert('fail : ' + result.message);
+        },
+        complete : function(result) {
+            console.log(result)
+            if(result.errno != 0){
+                location.reload();
+            }
+        }
+    });
+	return;
+}
+
+
+//发起微信支付，微信支付依赖于 WeixinJSBridge 组件，所以发起时应该在ready事件中进行 非借用支付
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	$('.wxpaybox').show();
+	$('.wechat_pay').text('微信支付');
+	$('.wechat_pay').click(function(){
+		$('.wechat_pay').hide()
+        jTips("正在唤起微信支付");
+        var NowWeid = '{$_W['uniacid']}';
+            let payweid = '{$uniacid}';
+		 let data = {};
+        let coseStr = '{$cose}', cose = Number(coseStr),ordertitle = $(".order-title").text();
+
+        if(window.__wxjs_environment === 'miniprogram'){
+            wx.miniProgram.navigateTo({url: '../payment/payment?orderid={$od1}&cose={$cose}&nowweid={$weid}&schoolid={$schoolid}&do={$dos}&userid={$userinfo["id"]}'})
+        }else{
+            if(Number(NowWeid) == Number(payweid)){
+                newutil.pay({
+                    orderFee : coseStr,
+                    payMethod : 'wechat',
+                    orderTitle :$(".order-title").text(),
+                    orderTid : Number('{$wxpay_id}'),
+                    payweid :NowWeid,
+                    orderid : '{$od1}',
+                    module : 'fm_jiaoyu',
+                    success : function(result) {
+                        alert('支付成功');
+                        window.location.href = jumpurl
+                    },
+                    fail : function(result) {
+                        alert('支付失败');
+                        alert('fail : ' + result.message);
+                    },
+                    complete : function(result) {
+                        console.log(result)
+                        if(result.errno != 0){
+                            location.reload();
+                        }
+                    }
+                });
+            }else{
+                // window.location.href="./index.php?i="+payweid+"&c=entry&do=common_newpay&delorder=not&m=fm_jiaoyu&ordertid={$wxpay_id}&payweid={$payweid}&fee="+cose+"&title="+ordertitle+"&orderid={{$orderid}}&jumpurl="+jumpurl;
+                window.location.href="./index.php?i="+payweid+"&c=entry&do=common_newpay&delorder=not&m=fm_jiaoyu&ordertid={$wxpay_id}&payweid="+payweid+"&fee="+cose+"&title="+ordertitle+"&orderid={$od1}&jumpurl="+ encodeURIComponent(jumpurl);
+            }
+        }
+	});
+});
+
+
+
+
+var PB = new PromptBox();
+$(function ($) {
+
+	var flag = $("#flag").val();
+	if (flag == 2) {
+            alert("当前订单已缴费，请勿重复缴费")
+            window.location.href = jumpurl;
+	}
+});
+WeixinJSHideAllNonBaseMenuItem();
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideMenuItems({
+				menuList: ['menuItem:share:appMessage','menuItem:share:timeline','menuItem:share:qq','menuItem:share:weiboApp','menuItem:favorite','menuItem:share:QZone']
+			});
+		});
+	}
+}
+function zhifu() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		wx.miniProgram.navigateTo({url: '../payment/payment?orderid={$od1}&cose={$cose}&nowweid={$weid}&schoolid={$schoolid}&do=getorder'})
+	}else{
+		$('#pay').modal('show');
+		$("#bodyhidden").show();
+	}
+}
+$("#pay").click(function(){
+	$("#bodyhidden").hide();
+});
+
+
+</script>
+</html>

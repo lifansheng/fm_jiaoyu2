@@ -1,0 +1,44 @@
+{loop $kcpingjia $key_l $item}
+<div class="manual_visible_box loopcell" time="{$item['location']}" kcid="{$kcid}">
+    <div class="manual_main_box2" style="margin-bottom: -15%;">
+        <div class="head_til" style="border-bottom: unset;">
+            <div id="wrap" class="count_inf" style="min-width:unset;">
+                <dl id="main">
+                    <dd class="count_inf">
+                        <ul>
+                            <li>
+                                <label>评价人：</label>
+                                {$item['s_name']}
+                            </li>
+                            <li>
+                                <label>评分时间：</label>
+                                {$item['createtime']}
+                            </li>
+                            {loop $item['pfxm'] $row}
+                            <div style='width: 100%;height: 20px;'>
+                                <div style="float: left;padding-right:10px;">{$row['sname']}</div>
+                                <div id="bg_star" >
+                                    <div id="over_star" style="width:{php echo $row['star'] *12}px"></div>
+                                </div>
+                                <label style="font-size:15px;font-weight: normal;">&nbsp;{$row['star']}分</label>
+                            </div>
+                            {/loop}
+                            <div style="padding: 10px; border: 1px dashed #c9c9c9; box-sizing: border-box;">
+                                <span style="font-size: 15px;color:#6363d4;font-weight:bold">课程评价:</span></br>
+                                <span>{$item['content']}</span>
+                            </div>
+                            
+                        </ul>            
+                        <div style="clear:both"></div>
+                    </dd> 
+                
+                </dl>
+            </div>
+        </div>
+        
+        <div class="blank"></div>
+        <div class="small_blank"></div>
+    </div>
+</div>
+
+{/loop} 

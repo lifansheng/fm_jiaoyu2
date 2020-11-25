@@ -1,0 +1,34 @@
+<style>
+.daterangepicker .ranges li.active, .daterangepicker .ranges li:hover {background: rgb(64, 158, 255);border: 1px solid rgb(64, 158, 255);color: #fff;}
+.daterangepicker td.active, .daterangepicker td.active:hover {background-color: #d9534f;border-color: #ffffff;color: #fff;}
+.text-info {color: #23c6c8;}
+.font-bold {font-weight: 600;}
+.stat-percent {float: right;}
+.modal-dialog .modal-content, .we7-modal-dialog .modal-content {max-height: unset}
+</style>
+{if IMS_VERSION >=0.99}
+{if $_GPC['do'] == 'banners' || $_GPC['do'] == 'comad' || $_GPC['do'] == 'comload' || $_GPC['do'] == 'guid' || $_GPC['do'] == 'basic' || $_GPC['do'] == 'fenzu' || $_GPC['do'] == 'manager' || $_GPC['do'] == 'loginctrl' || $_GPC['do'] == 'sms' || $_GPC['do'] == 'upgrade' || $_GPC['do'] == 'binding' || $_GPC['do'] == 'school' || $_GPC['do'] == 'refund'}
+{else}
+<style>
+{if $_GPC['do'] != 'manger_apps'}
+.we7-modal-dialog, .modal-dialog {min-width: 720px!important;position: absolute;left: 25%;top: 10%;}
+{/if}
+/**右侧滑入模态框**/
+.modal.left .modal-dialog,
+.modal.right .modal-dialog { position: fixed; margin: auto; width: 420px; height: 100%; -webkit-transform: translate3d(0%, 0, 0); -ms-transform: translate3d(0%, 0, 0); -o-transform: translate3d(0%, 0, 0); transform: translate3d(0%, 0, 0); }
+.myModalleft { min-width: 420px !important; position: absolute; left: unset !important; right: 0; top: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; }
+.modal.left .modal-content,.modal.right .modal-content { height: 100%; overflow-y: auto; }
+.modal.left .modal-body, .modal.right .modal-body { padding: 15px 15px 80px; }
+.modal.right.fade .modal-dialog { right: -420px; -webkit-transition: opacity 0.3s linear, right 0.3s ease-out; -moz-transition: opacity 0.3s linear, right 0.3s ease-out; -o-transition: opacity 0.3s linear, right 0.3s ease-out; transition: opacity 0.3s linear, right 0.3s ease-out; }
+.modal.right.fade.in .modal-dialog { right: 0; }
+.modal-content { border-radius: 0; border: none; }
+.modal-header { border-bottom-color: #EEEEEE; background-color: #FAFAFA; }
+.modal-foot {bottom:0;position:fixed;width:100%;text-align: center;background-color: #f4f5f9;border-bottom: 0;-webkit-border-radius: 5px 5px 0 0;min-height: 16.428571429px;padding: 15px;}
+{if !empty($_GPC['schoolid'])}
+/**多层模态框层级控制**/
+.modal-backdrop { z-index: 1040 !important; }
+.modal-backdrop ~.modal-backdrop{ z-index: 1055 !important; }
+{/if}
+</style>
+{/if}
+{/if}

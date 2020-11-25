@@ -1,0 +1,64 @@
+	{loop $loglist1 $item}
+		<li class="main" time="{$NowPage}" id="{$item['id']}" style="display: block;margin: 1px 10px 1px 10px;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft1">
+					{if $item['cost_type'] == 2}
+					 <p class="notifyText1" style="color:red">-</p>
+					{elseif $item['cost_type'] == 1}
+					 <p class="notifyText1" style="color:green">+</p>
+					{/if}
+				</div>
+				<div class="notifyTopLeft">
+				{if $item['cost_type'] == 2}
+				 <p class="notifyText" style="color:red">{if $item['yue_type'] == 3}{php echo intval($item['cost'])} 次{else}{$item['cost']}{/if}</p>
+				{elseif $item['cost_type'] == 1}
+				 <p class="notifyText" style="color:green">{if $item['yue_type'] == 3}{php echo intval($item['cost'])} 次{else}{$item['cost']}{/if}</p>
+				{/if}
+				</div>
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox">
+						<span class="ActInfo">
+						{if $item['pushtype'] == -1}
+							{if $item['on_offline'] == 1}
+							线上
+							{elseif $item['on_offline'] == 2}
+							线下
+							{/if}
+							{if $item['cost_type'] == 1}
+							充值
+							{elseif $item['cost_type'] == 2}
+							消费
+							{/if}
+
+							-
+							{if $item['yue_type'] == 1}
+							补助余额
+							{elseif $item['yue_type'] == 2}
+							普通余额
+							{elseif $item['yue_type'] == 3}
+							充电桩
+							{/if}
+						{else}
+							{if $item['pushtype'] == 63}
+								电子校园卡 - 充值
+							{/if}
+							{if $item['pushtype'] == 65}
+								电子校园卡 - 消费 
+							{/if}
+							{if $item['pushtype'] == 66}
+								微信代扣
+							{/if}
+							{if $item['pushtype'] == 69}
+								消费系统信用金
+							{/if}
+						{/if}
+						
+						
+						</span>
+					</div>
+					<p class="notifyTime">{php echo date("Y-m-d H:i:s",$item['costtime'])}</p>
+				</div>
+			</div>
+		</li>
+	{/loop}

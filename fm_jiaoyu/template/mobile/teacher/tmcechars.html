@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbum.css?v=5.00716" />	
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+    <link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+
+    {php include $this->template('port');}
+</head>
+<style type="text/css">
+    .act{border-bottom: 2px solid #30c6e1;}
+    .photos_header { width: calc(100vw - 20px); height: 38px; line-height: 38px; background-color: #fff;  margin: 10px 10px; padding: 0px 10px;}
+
+    .photos_header > a { display: inline-block; width: 50%; color: #30c6e1; text-align: center; height: 33px;}
+    .record_search_box {
+        width: 100%;
+        height: 35px;
+        line-height: 35px;
+        box-sizing: border-box;
+        padding: 0.06rem 0.9rem 0.06rem 0;
+        background-color: #fff;
+        border-radius: 0.1rem 0.1rem 0.1rem 0.1rem;
+        margin-bottom: 5px;
+        text-align: center;
+      
+    }
+    .comst>div:not(:last-child):after{
+        content: '';
+        width: 80%;
+        height: 1px;
+        background-color: #f1f0f0;
+        position: absolute;
+        left: 10%;
+        bottom: -17px;
+    }
+    .comst>div{position: relative;margin-bottom: 36px;}
+    .comst{
+        height: calc(100vh - 165px);
+        overflow-y: auto;
+    }
+</style>
+<body>
+<div class="all">
+    <div class="header mainColor" style="z-index: 10;">
+		<div class="m"><span style="font-size: 18px">{$nowbj['sname']} - 图表</span></div>
+		<div class="r">
+		
+		</div>
+    </div>
+	<span class="photos_header" style="position: fixed;top:50px;background-color: white;z-index: 10;" >
+        <a class="act" id="record">身高/体重/视力</a><a id='statistics'>体温/口腔</a>
+    </span>
+    <div id="recordlist" class="comst" style="margin:0 10px  0 10px;margin-top: 107px;">
+        <span class="record_search_box" style="display: flex;padding: 0 5px">
+            <div style="width: 80px;">
+                当前学期:
+            </div>
+            <div style="flex:1;position:relative; ">
+                <select name="qh_id" id="qh_id" style="    font-size: 16px; border: none; width: 100%; opacity: 0; z-index: 4; position: absolute; top: 0; left: 0; height: 100%;" onchange="search()">
+                    {loop $qh $row}
+                        <option value="{$row['sid']}">{$row['sname']}</option>
+                    {/loop}
+                </select>
+                <div style="position: absolute;top:0;width: 100%;">
+                   <span id="qh_id_name" style="width: calc(100% - 20px);display: inline-block;">第二学期</span>
+                   <i class="fas fa-caret-down" ></i>
+                </div>
+            </div>
+           
+        </span>
+        <div style="width: 100%;background-color: white;margin-bottom: 0;">
+            <div>
+                <div class="chart-title  ng-binding" style="padding: 4px 10px;text-align: center;"><b>{$nowbj['sname']}身高图表</b></div>
+                <div id="echarts-pie-chart-tmc" style="width: 100%;height:200px; margin-top: 10px;"></div>
+            </div>
+          
+            <div>
+                <div class="chart-title  ng-binding" style="padding: 4px 10px;text-align: center;"><b>{$nowbj['sname']}体重图表</b></div>
+                <div id="echarts-pie-chart-tweightmc" style="width: 100%;height:200px; margin-top: 10px;"></div>
+            </div>
+           
+            <div>
+                <div class="chart-title  ng-binding" style="padding: 4px 10px;text-align: center;"><b>{$nowbj['sname']}视力图表</b></div>
+                <div id="echarts-pie-chart-eye" style="width: 100%;height:200px; margin-top: 10px;"></div>
+            </div>
+        </div>
+
+       
+    </div>
+    <div id="statisticslist" style="display: none;margin: 107px 10px 0px;background-color: white;" class="comst">
+        <div>
+            <div class="chart-title ng-binding" style="padding: 4px 10px;text-align: center;"><b>14天内正常体温图表(人数)</b></div>
+            <div id="echarts-pie-chart-tiwennormal" style="width: calc(100vw - 20px);height:200px;"></div>
+        </div>
+        <div>
+            <div class="chart-title ng-binding" style="padding: 4px 10px;text-align: center;"><b>14天内异常常体温图表(人数)</b></div>
+            <div id="echarts-pie-chart-tiwennonormal" style="width: calc(100vw - 20px);height:200px;"></div>
+        </div>
+        <div>
+            <div class="chart-title ng-binding" style="padding: 4px 10px;text-align: center;"><b>14天内口腔检测图表(人数)</b></div>
+            <div id="echarts-pie-chart-mouth" style="width: calc(100vw - 20px);height:200px;"></div>
+        </div>
+    </div>
+</div>
+</body>
+<!-- <script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/echarts-all.js?v=2.1.4"></script>	 -->
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>	
+<script src=" https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+{php include $this->template('newfooter');}
+</html>
+<script>
+/*记录与统计切换*/
+$("#record").click(function () {
+	$("#statisticslist").hide();
+	$("#statistics").removeClass('act');
+	$("#record").addClass('act'); 
+	$("#recordlist").show();
+}); 
+$("#statistics").click(function () {
+	$("#recordlist").hide();
+    $("#record").removeClass('act'); 
+	$("#statistics").addClass('act');
+	$("#statisticslist").show();
+});
+
+
+$(function(){
+    search()
+})
+function search(){
+    var bj_id = `{$_GPC['bj_id']}`
+    var qh_id = $("#qh_id").val()
+    $("#qh_id_name").text($("#qh_id option:selected").text())
+    $.ajax({
+        url: "{php echo $this->createMobileUrl('tmcechars',array('op'=>'GetStuMcData','schoolid'=>$schoolid))}",
+        type: "POST",
+        data: {qh_id:qh_id,bj_id:bj_id},
+        dataType: "json",
+        success: function (datas) {
+            // 身高图表
+            let tmc = PieOption['tmc'];
+            console.log(tmc)
+            tmc.xAxis[0].data = datas.h_title;
+            tmc.series[0].data = datas.h_num;
+            var myChart = echarts.init($('#echarts-pie-chart-tmc')[0]);
+            myChart.setOption(tmc);
+
+
+            $(window).resize(myChart.resize);
+            // 体重图表
+            let tweightmc = PieOption['tmc'];
+            tweightmc.xAxis [0].data = datas.w_title;
+            tweightmc.series[0].data = datas.w_num;
+            var myChart2 = echarts.init($('#echarts-pie-chart-tweightmc')[0]);
+            myChart2.setOption(tweightmc);
+            $(window).resize(myChart2.resize);
+            // 视力图表
+            let eye = PieOption['eye'];
+            eye.xAxis [0].data = datas.e_title;
+            eye.series[0].data = datas.l_num;
+            eye.series[1].data = datas.r_num;
+            var myChart3 = echarts.init($('#echarts-pie-chart-eye')[0]);
+            myChart3.setOption(eye);
+            $(window).resize(myChart3.resize);
+            
+            // 正常体温图表
+            let tiwennormal = PieOption['tiwennormal'];
+            tiwennormal.xAxis.data = datas.createdate;
+            tiwennormal.series[0].data = datas.tiwennormal;
+            var myChart4 = echarts.init($('#echarts-pie-chart-tiwennormal')[0]);
+            myChart4.setOption(tiwennormal);
+            $(window).resize(myChart4.resize);
+
+            // 异常体温图表
+            let tiwennonormal = PieOption['tiwennonormal'];
+            tiwennonormal.xAxis.data = datas.createdate;
+            tiwennonormal.series[0].data = datas.tiwennonormal;
+            var myChart5 = echarts.init($('#echarts-pie-chart-tiwennonormal')[0]);
+            myChart5.setOption(tiwennonormal);
+            $(window).resize(myChart5.resize);
+
+            // 口腔图表
+            let mouth = PieOption['mouth'];
+            mouth.xAxis.data = datas.createdate;
+            console.log(mouth.xAxis.data)
+            mouth.series[0].data = datas.mouthnormal;
+            mouth.series[1].data = datas.mouthnonormal;
+            mouth.series[2].data = datas.mouthnoexamine;
+            var myChart6 = echarts.init($('#echarts-pie-chart-mouth')[0]);
+            myChart6.setOption(mouth);
+            $(window).resize(myChart6.resize);
+        }
+    });
+}
+</script>

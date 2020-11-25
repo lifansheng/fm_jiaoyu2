@@ -1,0 +1,179 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-06-05 16:34:50
+ * @LastEditTime: 2020-06-05 18:15:51
+--> 
+<style>
+    .jiantou{
+        background-position-y: 20px;
+        background-position-x: 97%;
+    }
+    .jiantou2{
+        background-position-y: 20px !important;
+        background-position-x: 97% !important;
+    }
+</style>
+{if $usertype == 'send_class'}
+    <ul class="option_list_ul1" style="padding: 10px;">
+        <?php $bjlistsss = array();?>
+        {loop $list $row}
+        {if !in_array($row['sid'], $bjlistsss)}
+        <?php $bjlistsss[] = $row['sid'];?>
+        <li class_id="{$row['sid']}" class="jiantou show list" style=" font-size: 16px; padding-bottom: 10px; background-position-x: 95%;">
+            <div class="name">{$row['sname']}</div>
+            <div class="clear1"></div>
+            <div class="sec_ul_box">
+                <div class="option_title2" style="background-position-x: 97%; font-size: 15px; padding-left: 10px;padding-top: 15px;">全选</div>
+                <ul class="option_list_ul2">
+                {loop $row['stulist'] $r}
+                    {if $r['bjname']}
+                    <li u_id="{$r['bjid']}" class="show">
+                        <div class="itemOtherBox">
+                            <div class="name2">{$r['bjname']}({$r['count']}人)</div>
+                        </div>
+                    </li>
+                    {/if}
+                {/loop}
+                </ul>
+            </div>
+        </li>
+        {/if}
+        {/loop}		
+    </ul>
+    <div class="F_div sure_btn2">
+        <div class="F_div_text">确定</div>
+    </div>
+
+{/if}
+{if $usertype == 'student'}
+	<ul class="option_list_ul1">
+		<?php $bjlistsss = array();?>
+		{loop $list $row}
+		{if !in_array($row['sid'], $bjlistsss)}
+		<?php $bjlistsss[] = $row['sid'];?>
+		<li class_id="{$row['sid']}" class="jiantou show list">
+			<div class="name">{$row['sname']}</div>
+			<div class="clear1"></div>
+			<div class="sec_ul_box">
+                <ul  class="option_list_ul1_inner" style="margin-left: 10px;padding-left: 10px;margin-top: 0;background-color: #f1f1f1;">
+                    {loop $row['stulist'] $rs}
+                    <div class_id="{$row['sid']}" class="jiantou show list inner">
+                        <div class="name">{$rs['bjname']}({$rs['count']}人)</div>
+                        <div class="clear1"></div>
+                        <div class="sec_ul_box">
+                            <div class="option_title2">全选</div>
+                            <ul class="option_list_ul2">
+                            
+                            {loop $rs['sid'] $r}
+                                <li u_id="{$r['sid']}" class="show">
+                                    <div class="itemOtherBox">
+                                        <div class="user_img_box">
+                                            <img src="{if $r['avatar']}{$r['avatar']}{else}{php echo tomedia($school['spic'])}{/if}" class="studentImgError">
+                                        </div>
+                                        <div class="name name2">{$r['realname']}</div>
+                                    </div>
+                                </li>
+                            {/loop}
+                            </ul>
+                        </div>
+                    </div>
+                    {/loop}
+
+                </ul> 
+			</div>
+		</li>
+		{/if}
+		{/loop}		
+	</ul>
+	<div class="F_div sure_btn2">
+		<div class="F_div_text">确定</div>
+    </div>
+{/if}
+<script>
+    $(function(){
+        $(".option_list_ul1").on("click",".option_list_ul1_inner .list", function(e) {
+            console.log("BB")
+    
+            e.stopPropagation()
+            e.preventDefault();
+    
+            if ($(this).hasClass("jiantou")) {
+                $(this).removeClass("jiantou");
+                    $(this).addClass("jiantou2");
+            }else{
+                $(this).removeClass("jiantou2");
+                    $(this).addClass("jiantou");
+            }
+    
+            $(this).siblings("li").children(".sec_ul_box").removeClass("show");
+            if ($(this).children(".sec_ul_box").hasClass("show")) {
+                $(this).children(".sec_ul_box").removeClass("show");
+            } else {
+                $(this).children(".sec_ul_box").addClass("show");
+            }
+        });
+    
+        $(".option_list_ul1").on("click",".option_list_ul1_inner .option_list_ul2 li", function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log("AA")
+            if ($(this).hasClass("check")) {
+                $(this).removeClass("check");
+            } else {
+                $(this).addClass("check");
+            }
+        });
+    
+        $(".new_diary_list6 .option_title2").off('click')
+        $(".new_diary_list6 .option_title2").on("click", function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if ($(this).hasClass("check_all")) {
+                $(this).removeClass("check_all");
+                $(this).next("ul").find(".show").removeClass("check");
+            } else {
+                $(this).addClass("check_all");
+                $(this).next("ul").find(".show").addClass("check");
+            }
+        });
+    })
+    
+</script>
+  
+<script>
+    $(function(){
+        $(".new_diary_list6 .sure_btn2").off("click")
+            $(".new_diary_list6 .sure_btn2").on("click",function() {
+				var data_send = new Object();
+                var all_select_text = '';
+                var all_select_id = '';
+				var classid = '';
+                $(".option_list_ul2 li.check").each(function(index) {
+                    all_select_text += $(this).find(".name2").text() + ';';
+					classid = $(this).parent().parent().parent().attr("class_id");
+					if( data_send && data_send.hasOwnProperty(classid) ){	
+					}else{
+						data_send[classid] = '';
+					}
+					data_send[classid] += $(this).attr("u_id") + ',';
+                });
+				all_select_id =  JSON.stringify(data_send);
+                if (all_select_id != "") {
+                    $("#feedback_title").attr("select_id", all_select_id).text(all_select_text);
+                    //@通知对象---获取选择全校文本内容
+                    if (window.localStorage) {
+                        localStorage.setItem("yab_leader_notify_recipient_select_id", all_select_id);
+                        localStorage.setItem("yab_leader_notify_recipient_text", all_select_text);
+                    }
+                }
+                $("#select_option_box").hide();
+				if(window.__wxjs_environment === 'miniprogram'){
+					$(".header").hide();
+				}else{
+					$(".header").show();
+				}
+            });
+    })
+</script>
+  

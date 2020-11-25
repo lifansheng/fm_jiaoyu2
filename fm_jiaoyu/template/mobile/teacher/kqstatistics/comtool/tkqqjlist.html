@@ -1,0 +1,55 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-06-05 15:06:33
+ * @LastEditTime: 2020-06-10 10:03:38
+--> 
+<style>
+    .datas_ul.blackUI:nth-of-type(even){
+        background-color: #fff;
+    }
+    .datas_ul.blackUI:nth-of-type(odd){
+        background-color: #f5f4f4;
+    }
+    .datas_ul ul:nth-child(4){color: unset}
+.datas_ul ul:nth-child(5){color: unset}
+</style>
+<div class="datas_ul wihtUI">
+    <ul>学生姓名</ul>
+    <ul>年级</ul>
+    <ul>班级</ul>
+    <ul style="width: 40%;">请假时间</ul>
+</div>
+
+<div id="ajax_datas">
+    {loop $list $row}
+        <div class="datas_ul blackUI" >
+            <ul>{$row['s_name']}</ul>
+            <ul>{$Njlist[$row['xq_id']]['sname']}</ul>
+            <ul>{$Bjlist[$row['bj_id']]['sname']}</ul>
+            <ul style="width: 40%;padding:5px 0">
+                <div style="line-height: 15px;">
+                    {php echo date('n月d日 H:i',$row['startime1'])}
+                </div>  
+                <div  style="line-height: 15px;">
+                    至
+                </div> 
+                <div  style="line-height: 15px;">
+                    {php echo date('n月d日 H:i',$row['endtime1'])}
+                </div>   </ul>
+        </div>
+    {/loop}
+</div>
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#date").val(`{$date}`)
+    $("#time").html(`{$time}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+
+</script>

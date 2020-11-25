@@ -1,0 +1,244 @@
+{loop $leave1 $row}
+				<section class="vacationRecord_section" time="{$row['acttime']}">
+					<div class="vacationItem">
+						<span class="vacation_title">发布者:</span><span class="vacation_mom vacation_left">{$row['tname']}【{$row['is_xz']}】</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem">
+						<span class="vacation_title">任务名称:</span><span class="vacation_title vacation_left">{$row['todoname']}</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">具体内容:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">{$row['content']}</span>
+					</div>
+					{if !empty($row['photoarray']) || !empty($row['audio']) || !empty($row['video'])}
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">附件:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						{loop $row['photoarray'] $v_p}
+						<li style="height: auto;">
+							<img style="height:40px;width:40px" img_path="{php echo tomedia($v_p)}" src="{php echo tomedia($v_p)}">
+						</li>
+						{/loop}
+						{if !empty($row['audio'])}
+						<li class="no_image_tag3" style="height:auto;">
+							<div class="li_radio3" style="background-image:url({php echo tomedia($row['avatar'])});">
+								<div class="icon_1"></div>
+								<audio class="sound1" width="320" height="240" src="{php echo tomedia($row['audio'])}" diary_id="{$row['id']}" style="display: none; opacity: 0;">
+									<source src="{php echo tomedia($row['audio'])}" type="video/mp4" id="{$row['id']}">
+									亲，你的手机不支持微信语音播放，这个真没办法！
+								</audio>
+							</div>
+						</li>				
+						{/if}
+						{if !empty($row['video'])}
+						<li class="no_image_tag3" style="height:auto;">
+							<div class="li_video3" video_url="{php echo tomedia($row['video'])}" isreport="N" style="background-image:url({OSSURL}public/mobile/img/videoicon.png);">
+								<div class="icon_1"></div>
+							</div>					
+						</li>					
+						{/if}	
+					</div>
+					{/if}
+					{if !empty($row['zjbeizhu'])}
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">转交备注:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">{$row['zjbeizhu']}</span>
+					</div>
+					{/if}
+					{if !empty($row['jjbeizhu1'])}
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">拒绝备注:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">{$row['jjbeizhu1']}</span>
+					</div>
+					{/if}
+					{if !empty($row['jjbeizhu2'])}
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">转交拒绝备注:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">{$row['jjbeizhu2']}</span>
+					</div>
+					{/if}
+					<!--第一人-->
+					<div class="teachReplyBox" >
+						<div class="teachReplyToptBox">
+							<div class="teachReplyLeftBox">
+								<img src="{if $row['jsicon']}{php echo tomedia($row['jsicon'])}{else}{php echo tomedia($schol['tpic'])}{/if}" class="img-responsive">
+							</div>
+							<div class="teachReplyRightTitle">
+								<span class="teachReplyName">
+									接收者：{$row['jstname']}
+									{if $row['status'] == 3 }
+										<span style="color: red;">【完成】</span>
+									{/if}
+								</span>
+							</div>
+						</div>
+						<div class="left_teachReply"></div>
+						<div class="teachReplyLeftLine"></div>
+						<div class="teachReplyLeftCircle"></div>
+					</div>
+					<!--被转发者-->
+					{if !empty($row['zjtname'])}
+					<div class="teachReplyBox" >
+						<div class="teachReplyToptBox">
+							<div class="teachReplyLeftBox">
+								<img src="{if $row['zjicon']}{php echo tomedia($row['zjicon'])}{else}{php echo tomedia($schol['tpic'])}{/if}" class="img-responsive">
+							</div>
+							<div class="teachReplyRightTitle">
+								<span class="teachReplyName">
+									转交至：{$row['zjtname']}
+									{if $row['status'] == 6 }
+										<span style="color: red;">【完成】</span>
+									{/if}
+								</span>
+							</div>
+						</div>
+						<div class="left_teachReply"></div>
+						<div class="teachReplyLeftLine"></div>
+						<div class="teachReplyLeftCircle"></div>
+					</div>
+					{/if}
+
+					<div class="teachReplyBox">
+						<div class="teachReplyBottom">
+							<span class="vacation_time otherTime">申请时间:</span><span class="vacation_time vacation_left otherTime">{php echo date('Y-m-d H:i:s',$row['createtime'])}</span>
+						</div>
+					</div>
+					<!--状态显示-->
+					<div class="statusTip">	
+					<!--初始状态-->
+					{if $row['status'] == 0}
+						<div class="statusTipTop statusTipTop_wait">待接受</div>
+						<div class="tip_approve_down tip_approve_down__wait"></div>
+					<!--第一人拒绝-->
+					{elseif $row['status'] == 1 }
+						<div class="statusTipTop statusTipTop_disapprove">已拒绝</div>
+						<div class="tip_approve_down tip_approve_down__disapprove"></div>
+					<!--第一人接受-->
+					{elseif $row['status'] == 2 }
+						{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_approve">已接受</div>
+						<div class="tip_approve_down tip_approve_down__approve"></div>
+						{elseif  ($it['tid'] != $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_indeal">进行中</div>
+						<div class="tip_approve_down tip_approve_down__indeal"></div>
+						{/if}
+					<!--第一人接受并已完成-->
+					{elseif $row['status'] == 3 }
+						{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_finish">已完成</div>
+						<div class="tip_approve_down tip_approve_down__finish"></div>
+						{elseif ($it['tid'] != $row['jsid']) && ($it['tid'] == $row['zjid'])}
+						<div class="statusTipTop statusTipTop_disapprove">已拒绝</div>
+						<div class="tip_approve_down tip_approve_down__disapprove"></div>
+						{elseif  ($it['tid'] != $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_finish">已完成</div>
+						<div class="tip_approve_down tip_approve_down__finish"></div>
+						{/if}
+					<!--第一人接受并转交-->
+					{elseif $row['status'] == 4 }
+						{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+							<div class="statusTipTop statusTipTop_deliver">已转交</div>
+							<div class="tip_approve_down tip_approve_down__deliver"></div>
+						{elseif ($it['tid'] != $row['jsid']) && ($it['tid'] == $row['zjid'])}
+							<div class="statusTipTop statusTipTop_approve">已接受</div>
+							<div class="tip_approve_down tip_approve_down__approve"></div>
+						{elseif  ($it['tid'] != $row['jsid']) && ($it['tid'] != $row['zjid'])}
+							<div class="statusTipTop statusTipTop_indeal">进行中</div>
+							<div class="tip_approve_down tip_approve_down__indeal"></div>
+						{/if}
+					<!--第二人拒绝-->
+					{elseif $row['status'] == 5 }
+						{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_approve">已接受</div>
+						<div class="tip_approve_down tip_approve_down__approve"></div>
+						{elseif ($it['tid'] != $row['jsid']) && ($it['tid'] == $row['zjid'])}
+						<div class="statusTipTop statusTipTop_disapprove">已拒绝</div>
+						<div class="tip_approve_down tip_approve_down__disapprove"></div>
+						{elseif  ($it['tid'] != $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_indeal">进行中</div>
+						<div class="tip_approve_down tip_approve_down__indeal"></div>
+						{/if}
+					<!--第二人接受并已完成-->
+					{elseif $row['status'] == 6 }
+						{if ($it['tid'] == $row['jsid']) && ( $it['tid'] != $row['zjid'] ) }
+						<div class="statusTipTop statusTipTop_deliver">已转交</div>
+						<div class="tip_approve_down tip_approve_down__deliver"></div>
+						{elseif ($it['tid'] != $row['jsid']) && ( $it['tid'] == $row['zjid'] ) }
+						<div class="statusTipTop statusTipTop_finish">已完成</div>
+						<div class="tip_approve_down tip_approve_down__finish"></div>
+						{elseif  ($it['tid'] != $row['jsid']) && ($it['tid'] != $row['zjid'])}
+						<div class="statusTipTop statusTipTop_finish">已完成</div>
+						<div class="tip_approve_down tip_approve_down__finish"></div>
+						{/if}
+					{/if}
+					</div>
+					<!--结束状态显示-->
+					<div class="signin_leftBox"></div>
+		 			<div class="vacationItem vacationItemBtn">
+				 	<!--初始状态-->
+				 	{if $row['status'] == 0}
+				 		{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+			 			<a href="javascript:;" class="refuse" style="background-color: #6f403d;">
+			 				<div class="btn_refuse teacher_leave_but" agree-type="first_refuse" data-id="{$row['id']}">拒绝</div>
+			 				<!--状态一 1 -->
+			 			</a>
+			 			<a href="javascript:;" class="approve" style="background-color: #ff9f22;">
+			 				<div class="btn_approve teacher_leave_but" agree-type="first_accept" data-id="{$row['id']}">接受</div>
+			 				<!--状态二 2-->
+			 			</a>
+				 		{/if}
+			 		<!--第一人拒绝无需任何操作，即 $row['status'] == 1无操作-->
+				 	<!--第一人接受-->
+				 	{elseif $row['status'] == 2 }
+				 		{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+			 			<a href="javascript:;" class="refuse" style="background-color: #06c1ae;">
+			 				<div class="btn_refuse teacher_leave_but" agree-type="first_finish" data-id="{$row['id']}">完成</div>
+			 				<!--状态三 3-->
+			 			</a>
+			 			<a href="javascript:;" class="approve" style="background-color: #079dd6;">
+			 				<div class="btn_approve teacher_leave_but" agree-type="first_deliver" data-id="{$row['id']}">转交</div>
+			 				<!--状态四 4-->
+			 			</a>
+				 		{/if}
+				 	<!--第一人接受并已完成无需任何操作，即 $row['status'] == 3无操作-->
+				 	<!--第一人接受并转交-->
+				 	{elseif $row['status'] == 4 }
+				 		{if ($it['tid'] != $row['jsid']) && ($it['tid'] == $row['zjid'])}
+			 			<a href="javascript:;" class="refuse" style="background-color: #6f403d;">
+			 				<div class="btn_refuse teacher_leave_but" agree-type="second_refuse" data-id="{$row['id']}">拒绝</div>
+			 				<!--状态五 5 -->
+			 			</a>
+			 			<a href="javascript:;" class="approve" style="background-color: #06c1ae;">
+			 				<div class="btn_approve teacher_leave_but" agree-type="second_finish" data-id="{$row['id']}">完成</div>
+			 				<!--状态六 6-->
+			 			</a>
+			 			{/if}
+				 	<!--第二人拒绝-->
+				 	{elseif $row['status'] == 5 }
+				 		{if ($it['tid'] == $row['jsid']) && ($it['tid'] != $row['zjid'])}
+			 			<a href="javascript:;" class="approve" style="width: 40%;right: 34%;">
+			 				<div class="btn_approve teacher_leave_but" agree-type="second_refuse_first_finish" data-id="{$row['id']}">完成</div>
+			 			<!--状态三 3-->
+			 			</a>
+		 				{/if}
+		 			<!--第二人接受并已完成无需任何操作，即 $row['status'] == 6无操作-->
+		 			{/if}
+		 			</div>
+				</section>
+			{/loop}	

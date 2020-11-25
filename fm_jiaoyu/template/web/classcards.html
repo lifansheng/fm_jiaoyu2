@@ -1,0 +1,409 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+{if $operation == 'post'}
+<form class="form-horizontal form" id="form1" action="" method="post" enctype="multipart/form-data">
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">添加考勤设备</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备位置</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" class="form-control" name="name" value="{$item['name']}" placeholder="填写考勤机位置">
+						<div class="help-block">前端显示考勤地点用</div>
+					</div>
+				</div>
+
+				<!-- 迅贞、万能、护校通 -->
+				<div id="credit-status1" >
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>机器号/设备号</label>
+						<div class="col-sm-9 col-xs-12">
+							{if !$item}
+								<input type="text" class="form-control" name="macid" value="{$item['macid']}" placeholder="填写机器号">
+								<div class="help-block">考勤机显示屏上获取/或设备背后</div>
+							{else}
+								<div class="help-block">{$item['macid']}   不可修改</div>
+								<input type="hidden" name="macid" value="{$item['macid']}">
+							{/if}
+						</div>
+					</div>
+					
+					<div id="credit-status66" >
+						<div id="credit-status67" >
+							
+							<div id="credit-status69" {if $item['is_master'] == 1 || empty($item['is_master'])}style="display:block"{else}style="display:none"{/if}>
+								<div class="form-group">
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>选择班级{$classes}</label>
+									<div class="col-sm-2 col-lg-2">
+										<select style="margin-right:15px;" name="bj_id" class="form-control">
+											<option value="0">选择班级</option>
+											{loop $class $row}
+											 <option value="{$row['id']}" {if $row['id'] ==$item['bj_id']} selected="selected"{/if}>{$row['classes']}</option>
+											{/loop}
+										</select>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+
+					<div id="credit-status68" >
+						
+                        <div class="form-group">
+
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>欢迎语</label>
+
+							<div class="col-sm-9 col-xs-12">
+
+								<input type="text" class="form-control" name="welcome" value="{$set['welcome']}" placeholder="考勤机开机启动广告语">
+
+								<div class="help-block">考勤机开机启动时播放的广告话术</div>
+
+							</div>
+
+						</div>
+
+                        <div class="form-group">
+
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>密码</label>
+
+							<div class="col-sm-9 col-xs-12">
+
+								<input type="text" class="form-control" name="password" value="{$set['password']}" placeholder="考勤机进入设置页面的密码">
+
+								<div class="help-block">只能是数字或字母，区分大小写，空为不启用</div>
+
+							</div>
+
+						</div>
+						<div class="form-group">
+
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>背景图</label>
+
+							<div class="col-sm-9 col-xs-12">
+                                {php echo tpl_form_field_image('bg', $bg)}
+								<div class="help-block">最佳尺寸：1920*1080</div>
+							</div>
+
+						</div>
+						<div class="form-group">
+
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>背景图</label>
+
+							<div class="col-sm-9 col-xs-12">
+                                {php echo tpl_form_field_image('bg1', $bg1)}
+								<div class="help-block">最佳尺寸：1920*1080</div>
+							</div>
+
+						</div>
+
+						
+						
+					</div>
+				</div>
+
+
+				{if $_W['isfounder']}
+					{if !empty($item['macid'])}
+						{if $item['macname'] == 1}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<!-- <a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkjl&m=fm_jiaoyu'}</a> -->
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkjl&m=fm_jiaoyu'.'&macid=' . $item['macid'] . ' '}</a>
+									<label class="radio-inline">
+								</div>
+							</div>
+						{/if}
+						{if $item['macname'] == 2}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkxz&m=fm_jiaoyu'}</a>
+									</label>
+								</div>
+							</div>
+						{/if}
+						{if $item['macname'] == 3}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkym&m=fm_jiaoyu'}</a>
+									</label>
+								</div>
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>文件路径 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{$urls}</a>
+									</label>
+								</div>
+							</div>
+						{/if}
+						{if $item['macname'] == 4}
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>设备接口 :</label>
+								<div class="col-sm-9 col-xs-12">
+									<label class="radio-inline">
+										<a>{php echo $_W['siteroot'] . 'app/index.php?i=' . $item['weid'] . '&c=entry&schoolid=' . $item['schoolid'] . '&do=checkabb&m=fm_jiaoyu'}</a>
+									</label>
+								</div>
+							</div>
+						{/if}
+					{/if}
+				{/if}
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-9 col-xs-9 col-md-9">
+				<input type="hidden" name="token" value="{$_W['token']}">
+				<input name="submit" id="submit" type="submit" value="提交" class="btn btn-primary col-lg-1">
+			</div>
+		</div>
+	</div>
+</form>
+
+{elseif $operation == 'display'}
+<div class="clearfix">
+	<form class="form-horizontal" action="" method="post">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<a class="btn btn-success col-lg-1 qx_2402" href="{php echo $this->createWebUrl('classcards', array('op' => 'post','schoolid' => $schoolid));}"/><i class="fa fa-plus-circle"> </i>  添加设备</a>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body table-responsive">
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+                        	<th>名称</th>
+							<th class="qx_2402">状态</th>
+							<th class="qx_2403">远程控制</th>
+							<th>机器号</th>
+							<th class="qx_e_d" style="width:150px; text-align:right;">状态/修改/删除</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td>{$item['name']}</td>
+							<td class="qx_2402"><input type="checkbox" value="{$item['is_on']}" name="is_on[]" data-id="{$item['id']}" {if $item['is_on'] == 1}checked{/if}></td>
+							
+							
+							<td class="qx_2403">
+                                
+                                	<a class="btn btn-default"  data-toggle="tooltip" data-placement="top" title="执行任务" onclick="show_order6({$item['id']});">执行任务</a>
+								
+							</td>
+                            
+							<td>{$item['macid']}</td>
+							<td style="text-align:right;">
+								
+								<a href="{php echo $this->createWebUrl('classcards', array('op' => 'post', 'id' => $item['id'], 'schoolid' => $schoolid))}" class="btn btn-default btn-sm qx_2402" title="编辑" data-toggle="tooltip" data-placement="top" ><i class="fa fa-edit"> </i></a>
+								<a href="{php echo $this->createWebUrl('classcards', array('op' => 'delete', 'id' => $item['id'], 'schoolid' => $schoolid))}" class="btn btn-default btn-sm qx_2404" title="删除" data-toggle="tooltip" data-placement="top" onclick="if(!confirm('删除后将不可恢复，确定删除吗?')) return false;"><i class="fa fa-times"> </i></a>
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</form>
+</div>
+<style>
+/*公共菊花转*/
+.common_progress_bg { display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; background: rgba(0, 0, 0, 0.6); z-index: 9998; } .common_progress { position: fixed; top: 40%; background: #000; height: 80px; width: 160px; border-radius: 12px; line-height: 20px; text-align: center; padding-top: 30px; z-index: 9999; } .common_audit_status, .common_no_audit_status { font-size: 14px; color: #ff9f22; margin-left: 8px; } .common_progress > img { width: 27px; height: 27px; padding-top: 30px; }  .common_progress > .common_loading { width: 30px; height: 30px; display: inline-block; vertical-align: middle; background: url({OSSURL}public/mobile/img/load.png) no-repeat; background-size: 30px; -webkit-animation: loading1 2s linear infinite; }  @-webkit-keyframes loading1 { 0% { -webkit-transform: rotate(0deg); }  33% { -webkit-transform: rotate(120deg); }  66% { -webkit-transform: rotate(240deg); }  100% { -webkit-transform: rotate(360deg); } } .common_progress > span { margin: 0 0 0 8px; color: #fff; }
+</style>
+<script src="{OSSURL}public/web/js/common.js?v=1717"></script>
+
+<div class="modal fade" id="Modal6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="  margin-top: 60px;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+		<form class="table-responsive form-inline bv-form" method="post" action="" id="form-credit" novalidate="novalidate">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+				<h4 class="modal-title" id="myModalLabel">执行命令</h4>
+			</div>
+			<div class="modal-body">
+				<table class="table table-hover table-bordered">
+					<tbody>
+						<tr>
+							<input type="hidden" id="macidforabb6" value="">
+							<th width="150">输入命令</th>
+							<td>
+								<input type="text" class="form-control" id="order6" value="" />
+							</td>
+						</tr>
+
+						<tr>
+							<th width="150">执行中任务</th>
+							<td id="loading_order6"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="submit6">提交</button>
+			</div>
+		</form>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+function show_window(id,model_type){
+	var id = id;
+	$('#Modal2').modal('toggle');
+	$("#model_type").val(model_type);
+	$('#macidforbp').val(id);
+}
+
+function show_order6(id){
+	$("#loading_order").empty();//先清空任务列表,然后在添加新获取的任务
+    var id = id;
+    $('#Modal6').modal('toggle');
+    $('#macidforabb6').val(id);
+    $.post("{php echo $this->createWebUrl('indexajax', array('op' => 'getloadingorder'))}",{id:id}, function(data){
+        if(data.result){
+            var html = '<span id=\"order'+data.id+'\" class="help-block">'+data.ordername+'<a onclick="del('+data.id+')" class="custom-url"><i class="fa fa-times-circle"></i></a></span>';
+            $('#loading_order6').append(html);
+        }else{
+            var html =  '<span class="help">当前无执行中的任务</span>';
+            $('#loading_order6').append(html);
+        }
+    },'json');
+}
+
+
+
+function del(id){
+    var id = id;
+    $.post("{php echo $this->createWebUrl('indexajax', array('op' => 'delorder'))}",{id:id}, function(data){
+        if(data.result){
+            alert(data.msg);
+            $("#loading_order").empty();
+            var html =  '<span class="help">当前无执行中的任务</span>';
+            $('#loading_order').append(html);
+        }else{
+            alert(data.msg);
+        }
+    },'json');
+}
+
+$(function(){
+
+	var e_d = 2 ;
+	{if (!(IsHasQx($tid_global,1002402,1,$schoolid)))}
+		$(".qx_2402").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if (!(IsHasQx($tid_global,1002403,1,$schoolid)))}
+		$(".qx_2403").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1002404,1,$schoolid)))}
+		$(".qx_2404").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+
+
+	$('#submit').click(function(){
+		var dotime1 = $("#dotime1").val();
+		var dotime2 = $("#dotime2").val();
+		var time_type = $("#time_type").val();
+		var submitData = {
+			schoolid :"{$schoolid}",
+			weid :"{$weid}",
+			macid : $("#macidforabb").val(),
+			order : $("#order").val(),
+			time_type : time_type,
+			dotime1 : dotime1,
+			dotime2 : dotime2,
+		};
+		$.post("{php echo $this->createWebUrl('indexajax', array('op' => 'createorder'))}",submitData, function(data){
+			if(data.result){
+				if(time_type == 1){
+					checkorder(data.id);
+				}else{
+					$('#Modal1').modal('toggle');
+					alert(data.msg);
+				}
+			}else{
+				$('#Modal1').modal('toggle');
+				alert(data.msg);
+			}
+		},'json');
+	});
+	//修改开始
+	$('#submit6').click(function(){
+		var dotime1 = $("#dotime61").val();
+		var dotime2 = $("#dotime62").val();
+		var time_type = $("#time_type").val();
+		var submitData = {
+			schoolid :"{$schoolid}",
+			weid :"{$weid}",
+			macid : $("#macidforabb6").val(),
+			order : $("#order6").val(),
+			time_type : time_type,
+			dotime1 : dotime1,
+			dotime2 : dotime2,
+		};
+		$.post("{php echo $this->createWebUrl('indexajax', array('op' => 'createorder'))}",submitData, function(data){
+			if(data.result){
+				if(time_type == 1){
+					//checkorder(data.id);
+					alert('设置成功');
+					location.reload();
+				}else{
+					$('#Modal6').modal('toggle');
+					alert(data.msg);
+				}
+			}else{
+				//$('#Modal6').modal('toggle');
+				alert(data.msg);
+			}
+		},'json');
+	});
+	
+});
+function checkorder(id){
+	ajax_start_loading("命令发送中......请不要关闭本页面");
+	var id = id;
+	$.post("{php echo $this->createWebUrl('indexajax', array('op' => 'checkorder'))}",{id: id}, function(data){
+		if(data.result){
+			ajax_stop_loading();
+			$('#Modal1').modal('toggle');
+			alert(data.msg);
+		}else{
+			setTimeout(checkorder(id), 5000);
+		}
+	},'json');
+}
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+
+	$(':checkbox[name="is_on[]"]').bootstrapSwitch();
+	$(':checkbox[name="is_on[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+		var is_on = this.checked ? 1 : 2;
+		var id = $(this).data('id');
+		
+		$.post("{php echo $this->createWebUrl('classcards', array('op' => 'change','schoolid'=>$schoolid))}", {is_on: is_on, id: id}, function(resp){
+			
+			setTimeout(function(){
+				//location.reload();
+			}, 500)
+		});
+	});
+});
+</script>
+
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,1002 @@
+{if $type == 1}
+<style>
+    .cellBox{background-color: white;padding:10px;margin-bottom: 14px;--MainColor:orange}
+    .ReportBox .StuImg{width: 100%;height: 60px;display: flex;justify-content: space-around;}
+    .ReportBox .StuImg img{width: 60px;height: 60px;border-radius: 50%;margin: 0 auto;}
+    .ReportBox .StuName{width: 100%;text-align: center;line-height: 25px;font-size: 16px;}
+    .ReportBox .ReportName,.ReportBox .CellTitle{width: 100%;font-size: 16px;font-weight: bold;line-height: 30px;text-align: center;}
+    .ScoreBox{width: var(--BaseWeight);height:  var(--BaseWeight);margin: 0 auto;position: relative;border-radius: 50%;overflow: hidden;--BaseWeight:100px;--BackImg: linear-gradient(#e66465, #9198e5);--Step:7px}
+    .ScoreBox .s-cell{position: absolute;background-image:var(--BackImg);border-radius: 50%;transform: translate(-50%,-50%);top:50%;left:50%}
+    .ScoreBox .first{width:  var(--BaseWeight);height:  var(--BaseWeight); opacity: 0.3;}
+    .ScoreBox .second{width: calc( var(--BaseWeight) - var(--Step) * 2 );height:calc( var(--BaseWeight) - var(--Step) * 2 ); opacity: 0.6;}
+    .ScoreBox .third{width:calc( var(--BaseWeight) - var(--Step) * 4 );height:calc( var(--BaseWeight) - var(--Step) * 4 ); }
+    .ScoreBox .score{background-image: none;font-size: 25px;font-weight: bold;color: white;width: 100px;text-align: center;}
+    .cellBox .description{color:var(--MainColor);font-size: 14px;line-height: 25px;}
+    .cellBox .number{font-weight: bold;font-size: 16px;}
+    .cellBox .extraTips{font-size: 12px;color:gray;line-height: 20px;transform: scale(.9);text-align: left;}
+    .ReportDetail .reportcell_title{line-height: 30px;font-size: 13px;display: flex;align-items: center;}
+    .ReportDetail .reportcell_title .rt_title{font-weight: bold;width: 50px;text-align: right;}
+    .ReportDetail .reportcell_title .rt_title::before{content:'·  ';}
+    .ReportDetail .reportcell_title .rt_line{height: 1px;width: 80px;background-color: gray;margin:0 5px}
+    .ReportDetail .reportcell_title .rt_title{font-weight: bold;width: 50px;text-align: right;}
+    .ReportDetail .reportcell_data{display: flex;}
+    .ReportDetail .reportcell_data .data_cell{flex:1;display: flex;justify-content: space-around;}
+    .ReportDetail .reportcell_data .data_cell .data{font-size: 12px;text-align: center;}
+    .ReportDetail .reportcell_data .data_cell .icon{text-align: center;color:var(--MainColor);margin-top: 5px;font-size:40px;}
+    .ReportDetail .reportcell_data .data_cell .time{font-size: 12px;color:gray}
+</style>
+<div class="ReportBox" style="background-color: #efefef;margin:0;padding:0;width: 100%;">
+    <div class="cellBox">
+        <div class="StuImg" >
+            <img src="{php echo tomedia($stuinfo['icon'])}">
+        </div>
+        <div class="StuName">{$stuinfo['s_name']}</div>
+        <div style="width: 100%;" >
+            <div class="ReportName">{$data['healthRepotTitle']}</div>
+        </div>
+    </div>
+    <div class="cellBox" >
+        <div class="ScoreBox">
+            <div class="s-cell first"></div>
+            <div class="s-cell second"></div>
+            <div class="s-cell third"></div>
+            <div class="s-cell score">{$data['score']}<span style="font-size: 16px;">分</span></div>
+        </div>
+        <div class="CellTitle" > 本月健康综合评分 </div>
+        <div class="description">{$data['currentMonth']}月共参与晨检<span class="number"> {$data['morningCheck']} </span>次，体温异常<span class="number"> {php echo $data['temperatureLow']+$data['temperatureHigher']} </span>次，手掌疑似疱疹<span class="number"> {$data['handHerpesSuspected']} </span>次，口腔疑似疱疹<span class="number"> {$data['mouthHerpesSuspected']} </span>次</div>
+        <div class="extraTips">异常情况包括：口腔检测疑似疱疹，手掌检测疑似疱疹，体温异常</div>
+    </div>
+    <div class="cellBox">
+        <div class="description">{$data['currentMonth']}月共参与常规体检<span class="number"> {$data['normalCheck']} </span>次，其中</div>
+        <div class="ReportDetail" style="width: 100%;">
+            <div class="reportcell_title">
+                <div class="rt_title">身高</div>
+                <div class="rt_line"></div>
+                <div style="flex:1" >相比上月增长了<span class="number">{php echo $data['height'] - $prevdata['height']}</span>cm</div>
+            </div>
+            <div class="reportcell_data">
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$prevdata['height']}cm</div>
+                        <div class="icon"> <i class="fa fa-male"></i> </div>
+                        <div class="time">{$prevdata['currentYear']}-{$prevdata['currentMonth']}</div>
+                    </div>
+                </div>
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$data['height']}cm</div>
+                        <div class="icon"> <i class="fa fa-male"></i> </div>
+                        <div class="time">{$data['currentYear']}-{$data['currentMonth']}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ReportDetail" style="width: 100%;">
+            <div class="reportcell_title">
+                <div class="rt_title">体重</div>
+                <div class="rt_line"></div>
+                <div style="flex:1" >相比上月增长了<span class="number">{php echo $data['weight'] - $prevdata['weight']}</span>kg</div>
+            </div>
+            <div class="reportcell_data">
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$prevdata['weight']}kg</div>
+                        <div class="icon"> <i class="fa fa-street-view"></i> </div>
+                        <div class="time">{$prevdata['currentYear']}-{$prevdata['currentMonth']}</div>
+                    </div>
+                </div>
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$data['weight']}kg</div>
+                        <div class="icon"> <i class="fa fa-street-view"></i> </div>
+                        <div class="time">{$data['currentYear']}-{$data['currentMonth']}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ReportDetail" style="width: 100%;">
+            <div class="reportcell_title">
+                <div class="rt_title">视力</div>
+                <div class="rt_line"></div>
+                <div style="flex:1" >左眼，相比上月增长了<span class="number">{php echo $data['leftEyeVision'] - $prevdata['leftEyeVision']}</span></div>
+            </div>
+            <div class="reportcell_data">
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$prevdata['leftEyeVision']}</div>
+                        <div class="icon"> <i class="fa fa-eye"></i> </div>
+                        <div class="time">{$prevdata['currentYear']}-{$prevdata['currentMonth']}</div>
+                    </div>
+                </div>
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$data['leftEyeVision']}</div>
+                        <div class="icon"> <i class="fa fa-eye"></i> </div>
+                        <div class="time">{$data['currentYear']}-{$data['currentMonth']}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ReportDetail" style="width: 100%;">
+            <div class="reportcell_title">
+                <div style="width: 50px;"></div>
+                <div class="rt_line"></div>
+                <div style="flex:1" >右眼，相比上月增长了<span class="number">{php echo $data['rightEyeVision'] - $prevdata['rightEyeVision']}</span></div>
+            </div>
+            <div class="reportcell_data">
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$prevdata['rightEyeVision']}</div>
+                        <div class="icon"> <i class="fa fa-eye"></i> </div>
+                        <div class="time">{$prevdata['currentYear']}-{$prevdata['currentMonth']}</div>
+                    </div>
+                </div>
+                <div class="data_cell">
+                    <div>
+                        <div class="data">{$data['rightEyeVision']}</div>
+                        <div class="icon"> <i class="fa fa-eye"></i> </div>
+                        <div class="time">{$data['currentYear']}-{$data['currentMonth']}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(".choice_baby").on("click", function () {
+
+        $("#selectList").show();
+    });
+
+    function isSelect1(userid) {
+        location.href = "{php echo $this->createMobileUrl('gkkpingjia')}" + '&userid=' + userid + '&schoolid=' + {
+            $schoolid
+        } + '&op=edite&gkkid=' + {
+            $gkkid
+        };
+        location.href = reload();
+    }
+    setTimeout(function () {
+        if (window.__wxjs_environment === 'miniprogram') {
+            $("#titlebar").hide();
+            $("#titlebar_bg").hide();
+            document.title =
+                "评价公开课 {if !empty($userid)} - {$myname['name']} {if $myname['type'] == 1 } {$pard} {else} 老师 {/if} {/if}";
+        }
+    }, 100);
+</script>
+{/if}
+{if $type == 2}
+<style>
+    .cellBox{background-color: white;padding:10px;margin-bottom: 14px;--MainColor:orange}
+    .ReportBox .StuImg{width: 100%;height: 60px;display: flex;justify-content: space-around;}
+    .ReportBox .StuImg img{width: 60px;height: 60px;border-radius: 50%;margin: 0 auto;}
+    .ReportBox .StuName{width: 100%;text-align: center;line-height: 25px;font-size: 16px;}
+    .ReportBox .ReportName,.ReportBox .CellTitle{width: 100%;font-size: 16px;font-weight: bold;line-height: 30px;text-align: center;}
+    .ScoreBox{width: var(--BaseWeight);height:  var(--BaseWeight);margin: 0 auto;position: relative;border-radius: 50%;overflow: hidden;--BaseWeight:100px;--BackImg: linear-gradient(#e66465, #9198e5);--Step:7px}
+    .ScoreBox .s-cell{position: absolute;background-image:var(--BackImg);border-radius: 50%;transform: translate(-50%,-50%);top:50%;left:50%}
+    .ScoreBox .first{width:  var(--BaseWeight);height:  var(--BaseWeight); opacity: 0.3;}
+    .ScoreBox .second{width: calc( var(--BaseWeight) - var(--Step) * 2 );height:calc( var(--BaseWeight) - var(--Step) * 2 ); opacity: 0.6;}
+    .ScoreBox .third{width:calc( var(--BaseWeight) - var(--Step) * 4 );height:calc( var(--BaseWeight) - var(--Step) * 4 ); }
+    .ScoreBox .score{background-image: none;font-size: 25px;font-weight: bold;color: white;width: 100px;text-align: center;}
+    .cellBox .description{color:var(--MainColor);font-size: 14px;line-height: 25px;}
+    .cellBox .number{font-weight: bold;font-size: 16px;}
+    .cellBox .extraTips{font-size: 12px;color:gray;line-height: 20px;transform: scale(.9);text-align: left;}
+    .ReportDetail .reportcell_title{line-height: 30px;font-size: 13px;display: flex;align-items: center;}
+    .ReportDetail .reportcell_title .rt_title{font-weight: bold;width: 50px;text-align: right;}
+    .ReportDetail .reportcell_title .rt_title::before{content:'·  ';}
+    .ReportDetail .reportcell_title .rt_line{height: 1px;width: 80px;background-color: gray;margin:0 5px}
+    .ReportDetail .reportcell_title .rt_title{font-weight: bold;width: 50px;text-align: right;}
+    .ReportDetail .reportcell_data{display: flex;}
+    .ReportDetail .reportcell_data .data_cell{flex:1;display: flex;justify-content: space-around;}
+    .ReportDetail .reportcell_data .data_cell .data{font-size: 12px;text-align: center;}
+    .ReportDetail .reportcell_data .data_cell .icon{text-align: center;color:var(--MainColor);margin-top: 5px;font-size:40px;}
+    .ReportDetail .reportcell_data .data_cell .time{font-size: 12px;color:gray}
+
+    .re-charts-box{font-size: 12px;color:gray;margin-top: 10px;}
+     
+    .re-charts-box *{box-sizing: border-box;}
+    .re-charts-box .chart-cell{display: flex;margin-bottom: 7px;}
+    .re-charts-box .chart-cell.legend-cell{justify-content: space-evenly;}
+    .re-charts-box .chart-cell.legend-cell .legned-box{display: flex;align-items: center;}
+    .legend-cell .legned-box .color-block{height: 12px;width: 12px;}
+    .legend-cell .legned-box .word{line-height: 14px;margin-left: 10px;}
+    .re-charts-box .chart-cell .line-title{width: 40px;line-height: 14px;}
+    .chart-cell .doub-line-chart .line-bock{display: flex;margin-bottom: 5px;flex:1}
+    .chart-cell .doub-line-chart .word{margin-left: 10px;color:gray;line-height: 14px;}
+    .chart-cell .doub-line-chart .line-c{height: 14px;font-size: 12px;position: relative;line-height: 14px;padding-right: 3px;text-align: right;color: white;}
+    .line-c.red{background-color: red;}
+    .line-c.greenlight{background-color: #63caca;}
+    .line-c.orange{background-color: orange;}
+
+    .muti-circle-box *{box-sizing: border-box;}
+    .muti-circle-box{padding: 10px;display: flex;justify-content: space-between;--WH:90px;}
+    .muti-circle-box .circle{width: var(--WH);height: var(--WH);border-radius: 50%;border:4px solid;position: relative;}
+    .muti-circle-box .circle.green{border-color: #31bbb2; box-shadow: 0 0 0px 5px rgba(49, 187, 178, 0.18); color:#31bbb2}
+    .muti-circle-box .circle.red{border-color: #ff6464; box-shadow: 0 0 0px 5px rgba(255, 100, 100, 0.18); color:#ff6464}
+    .muti-circle-box .circle.blue{border-color: #6fbaef; box-shadow:0 0 0px 5px rgba(111, 168, 239, 0.18); color:#6fbaef}
+    .muti-circle-box .circle .word-a{font-size: 15px;position: absolute;    top: 15px; text-align: center;width:100%;font-weight: bold;}
+    .muti-circle-box .circle .word-b{font-size: 13px;position: absolute;    top: 33px; width:100%;text-align: center;}
+    .muti-circle-box .circle .word-c{font-size: 13px;position: absolute;    top: 50px; width:100%;text-align: center;color:rgb(73, 73, 73)}
+
+
+    .charts-canvas{width: 500px;height:300px;margin-top: 20px;}
+</style>
+<div class="ReportBox" style="width: 100%;" >
+    <div class="cellBox">
+        <div class="StuImg" >
+            <img src="{php echo tomedia($stuinfo['icon'])}">
+        </div>
+        <div class="StuName">{$stuinfo['s_name']}</div>
+        <div style="width: 100%;" >
+            <div class="ReportName">{$dataTemp['title']}</div>
+            <div class="extraTips" style="text-align: center;">{$startdate} 至 {$enddate}</div>
+        </div>
+    </div>
+    <div class="cellBox" >
+        <div class="description">本学期共参与晨检<span class="number"> {$dataContent['morningCheck']} </span>次，体温异常<span class="number"> {php echo $dataContent['temperatureLow']+$dataContent['temperatureHigher']} </span>次，手掌疑似疱疹<span class="number"> {$dataContent['healthRepotType']} </span>次，口腔疑似疱疹<span class="number"> {$dataContent['mouthHerpesSuspected']} </span>次</div>
+        <div class="re-charts-box">
+            <div class="chart-cell">
+                <div class="line-title">
+                    体温
+                </div>
+                <div  class="doub-line-chart" style="flex:1">
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c orange" style="width: {php echo round($dataContent['temperatureLow']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['temperatureLow']}</div>
+                            <div class="line-c greenlight" style="width: {php echo round(($dataContent['morningCheck'] - $dataContent['temperatureHigher'] - $dataContent['temperatureLow'])/$dataContent['morningCheck']*100,2)}%;">{php echo $dataContent['morningCheck'] - $dataContent['temperatureHigher'] - $dataContent['temperatureLow']}</div>
+                            <div class="line-c red" style="width: {php echo round($dataContent['temperatureHigher']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['temperatureHigher']}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-cell">
+                <div class="line-title" >
+                    手检
+                </div>
+                <div  class="doub-line-chart" style="flex:1">
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c greenlight" style="width: {php echo round(($dataContent['morningCheck']-$dataContent['healthRepotType'])/$dataContent['morningCheck']*100,2)}%;">{php echo $dataContent['morningCheck']-$dataContent['healthRepotType']}</div>
+                            <div class="line-c red" style="width: {php echo round($dataContent['healthRepotType']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['healthRepotType']} </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-cell">
+                <div class="line-title" >
+                    口腔
+                </div>
+                <div  class="doub-line-chart" style="flex:1">
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c greenlight" style="width: {php echo round(($dataContent['morningCheck']-$dataContent['mouthHerpesSuspected'])/$dataContent['morningCheck']*100,2)}%;">{php echo $dataContent['morningCheck']-$dataContent['mouthHerpesSuspected']}</div>
+                            <div class="line-c red" style="width: {php echo round($dataContent['mouthHerpesSuspected']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['mouthHerpesSuspected']} </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-cell legend-cell">
+                <div class="legned-box">
+                    <span class="color-block" style="background-color: orange;"></span>
+                    <span class="word">偏低</span>
+                </div>
+                <div class="legned-box">
+                    <span class="color-block" style="background-color: #63caca;"></span>
+                    <span class="word">正常</span>
+                </div>
+                <div class="legned-box">
+                    <span class="color-block" style="background-color: red;"></span>
+                    <span class="word">偏高/疑似疱疹</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cellBox">
+        <div class="description">本学期共进行<span class="number"> {$dataContent['heightNumber']}</span>次身高测量， <span class="number"> {$dataContent['weightNumber']} </span>次体重测量，与去年相比，身高 <span class="number"> 增长 </span>了<span class="number"> {php echo $dataContent['height'] - $olddataContent['height']} </span>cm，体重 <span class="number"> 增长 </span>了<span class="number"> {php echo $dataContent['weight'] - $olddataContent['weight']} </span>kg</div>
+        <div class="muti-circle-box">
+            <div class="circle green">
+                <div class="word-a" style="top: 22px;"> {$dataContent['height']} cm</div>
+                <div class="word-c" > 身高 </div>
+            </div>
+            <div class="circle green">
+                <div class="word-a" style="top: 22px;">{$dataContent['weight']}kg </div>
+                <div class="word-c" > 体重 </div>
+            </div>
+            {if $dataContent['weight'] - $olddataContent['weight'] < 15}
+                {php $weightHtml = '偏瘦';}
+            {else if 15 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight'] < 18}
+                {php $weightHtml = '正常';}
+            {else if 18 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight']< 20}
+                {php $weightHtml = '超重';}
+            {else if 20 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight']< 22}
+                {php $weightHtml = '轻度肥胖';}
+            {else if 22 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight'] < 25}
+                {php $weightHtml = '中度肥胖';}
+            {else if 25 < $dataContent['weight']}
+                {php $weightHtml = '重度肥胖';}
+            {/if}
+            <div class="circle red">
+                <div class="word-a">{php echo $dataContent['weight'] - $olddataContent['weight']} </div>
+                <div class="word-b">
+                    {$weightHtml}
+                </div>
+                <div class="word-c">
+                    BMI
+                </div>
+            </div>
+        </div>
+        <div id="height-charts" class="charts-canvas"></div>
+        <div id="weight-charts" class="charts-canvas"></div>
+    </div>
+
+
+    <div class="cellBox">
+        <div class="description">{$dataContent['currentYear']}年共进行<span class="number"> {$dataContent['visionNumber']}</span>次视力测量，与去年相比，左眼视力 <span class="number"> 增长 </span>了<span class="number">{php echo $dataContent['leftEyeVision'] - $olddataContent['leftEyeVision']}</span>，右眼视力 <span class="number"> 增长 </span>了<span class="number"> {php echo $dataContent['rightEyeVision'] - $olddataContent['rightEyeVision']} </span>。</div>
+        <div class="muti-circle-box" style="justify-content: space-evenly;">
+            <div class="circle blue">
+                <div class="word-a" style="top: 22px;">{$dataContent['leftEyeVision']}</div>
+                <div class="word-c" > 左眼 </div>
+            </div>
+            <div class="circle blue">
+                <div class="word-a" style="top: 22px;">{$dataContent['rightEyeVision']}</div>
+                <div class="word-c" > 右眼 </div>
+            </div>
+            
+        </div>
+        <div id="eyes-charts" class="charts-canvas"></div>
+        <!-- <div id="right-eyes-charts" class="charts-canvas"></div> -->
+    </div>
+</div>
+<script type="text/javascript">
+    require(['echarts'],function(echarts){
+        function InitChartsOption(){
+            return {
+                animation:false,
+                title: {
+                    text: '默认曲线图标题',
+                    left:'center',
+                    textStyle:{
+                        fontSize:14,
+                        fontWight:'light'
+                    }
+                },
+                legend: {
+                    bottom:0,
+                    itemHeight:12,
+                    itemGap:40,
+                    textStyle:{
+                        color:'#9b9b9b'
+                    }
+                },
+                grid: {
+                    top:40, //图形距离顶部
+                    left: 30,
+                    right: 10,
+                    bottom: 30,
+                    containLabel: true //grid 区域是否包含坐标轴的刻度标签
+                },
+                xAxis: {
+                    type: 'category',
+                    axisTick:{
+                        show:false //不显示刻度线
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fdd8a9' //x轴颜色
+                        }
+                    },
+                    axisLabel: {
+                        textStyle: { //文字颜色与字体大小
+                            color: '#9b9b9b',
+                            fontSize:8
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    offset:10,
+                    scale:true,
+                    splitNumber:6,
+                    intval:0.5,
+                    axisTick:{ //不显示刻度线
+                        show:false
+                    },
+                    splitLine:{ //网格线样式
+                        show:true,
+                        lineStyle:{
+                            color:['#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb',"#fff","#fff","#fff","#fff","#fff","#fff"],
+                            type:'dashed'
+                        }
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fdd8a9' //x轴颜色
+                        }
+                    },
+                    axisLabel: {
+                        textStyle: { //文字颜色与字体大小
+                            color: '#9b9b9b',
+                            fontSize:8
+                        },
+                        formatter:function(value,index){
+                            if(parseInt(value) === value){
+                                return value.toFixed(1);
+                            }
+                        }
+                    }
+                },
+                series: [
+                    {
+                        type: 'line',
+                        smooth: true,
+                        symbolSize: 5, //折点大小
+                        label : { //每个点上显示数值
+                            show: true,
+                            color:'#9a9a9a',
+                            fontSize:8,
+                            formatter: function (value) {
+                                return value.data.toFixed(1);
+                            }
+                        },
+                        lineStyle:{
+                            color:'#ff982e', //折线颜色
+                            width:2
+                        },
+                        itemStyle:{
+                            normal:{
+                                color:'#ff982e', //折点颜色
+                            }
+                        }
+                    },
+                    {
+                        type: 'line',
+                        smooth: true,
+                        symbolSize: 5, //折点大小
+                        label : { //每个点上显示数值
+                            show: true,
+                            color:'#9a9a9a',
+                            fontSize:8,
+                            formatter: function (value) {
+                                return value.data.toFixed(1);
+                            }
+                            },
+                        lineStyle:{
+                            color:'#6fa8ef', //折线颜色
+                            width:2
+                        },
+                        itemStyle:{
+                            normal:{
+                                color:'#6fa8ef', //折点颜色
+                            }
+                        }
+                    }
+                ]
+            };
+    
+        }
+        // 指定图表的配置项和数据
+        var HeightOption = InitChartsOption();
+        HeightOption.title.text = '本学期身高变化趋势';
+        HeightOption.xAxis.data = [];
+        HeightOption.series[0].data = [];
+        var linecolor = {   
+                color: { 
+                    type: 'linear', 
+                    x: 0, y: 0, x2: 1, y2: 0,
+                    colorStops: [
+                        {
+                            offset: 0, color: 'rgba(255,101,0,.01)' // 0% 处的颜色
+                        },
+                        {
+                            offset: 1, color: 'rgba(255,101,0,.2)' // 100% 处的颜色
+                        }
+                    ],
+                    global: false // 缺省为 false
+                }
+            }
+        HeightOption.series[0].areaStyle = linecolor
+        echarts.init($("#height-charts")[0]).setOption(HeightOption);
+        var WeightOption = InitChartsOption();
+        WeightOption.title.text = '本学期体重变化趋势';
+        WeightOption.xAxis.data = [];
+        WeightOption.series[0].data = [];
+        WeightOption.series[0].areaStyle = linecolor
+        echarts.init($("#weight-charts")[0]).setOption(WeightOption);
+    
+    
+        var eyesOption = InitChartsOption();
+        eyesOption.title.text = '本学期视力变化趋势';
+        eyesOption.xAxis.data = [];
+        eyesOption.yAxis.intval = 0;
+        eyesOption.yAxis.axisLabel.formatter =(value,index)=>{ return value};
+        eyesOption.series[0].data = [];
+        eyesOption.series[1].data = [];
+        echarts.init($("#eyes-charts")[0]).setOption(eyesOption);
+    
+        $(function(){
+            var sid = `{$dataTemp['sid']}`
+            var starttime = `{$starttime}`
+            var endtime = `{$endtime}`
+
+            $.ajax({
+                url: "{php echo $this->createWebUrl('mcmanage', array('op' => 'getXqEcharts','schoolid' => $schoolid))}",
+                type: "post",
+                dataType: "json",
+                data:{sid:sid,starttime:starttime,endtime:endtime},
+                success: function (res) {
+                    HeightOption.xAxis.data = res.monthData.date
+                    HeightOption.series[0].data = res.monthData.height
+                    WeightOption.xAxis.data = res.monthData.date
+                    WeightOption.series[0].data = res.monthData.weight
+    
+                    eyesOption.series[0].name =  "右眼";
+                    eyesOption.series[0].data = res.monthData.rightEyeVision
+                    eyesOption.series[1].name =  "左眼";
+                    eyesOption.series[1].data = res.monthData.leftEyeVision
+                    eyesOption.xAxis.data = res.monthData.date
+                    console.log(123)
+                    console.log(echarts.init($("#height-charts")[0]))
+                    
+                    echarts.init($("#height-charts")[0]).setOption(HeightOption);
+                    echarts.init($("#weight-charts")[0]).setOption(WeightOption);
+                    echarts.init($("#eyes-charts")[0]).setOption(eyesOption);
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                   
+                }
+            });
+        })
+    })
+    </script>
+{/if}
+{if $type == 3}
+<style>
+    .cellBox{background-color: white;padding:10px;margin-bottom: 14px;--MainColor:orange}
+    .ReportBox .StuImg{width: 100%;height: 60px;display: flex;justify-content: space-around;}
+    .ReportBox .StuImg img{width: 60px;height: 60px;border-radius: 50%;margin: 0 auto;}
+    .ReportBox .StuName{width: 100%;text-align: center;line-height: 25px;font-size: 16px;}
+    .ReportBox .ReportName,.ReportBox .CellTitle{width: 100%;font-size: 16px;font-weight: bold;line-height: 30px;text-align: center;}
+    .ScoreBox{width: var(--BaseWeight);height:  var(--BaseWeight);margin: 0 auto;position: relative;border-radius: 50%;overflow: hidden;--BaseWeight:100px;--BackImg: linear-gradient(#e66465, #9198e5);--Step:7px}
+    .ScoreBox .s-cell{position: absolute;background-image:var(--BackImg);border-radius: 50%;transform: translate(-50%,-50%);top:50%;left:50%}
+    .ScoreBox .first{width:  var(--BaseWeight);height:  var(--BaseWeight); opacity: 0.3;}
+    .ScoreBox .second{width: calc( var(--BaseWeight) - var(--Step) * 2 );height:calc( var(--BaseWeight) - var(--Step) * 2 ); opacity: 0.6;}
+    .ScoreBox .third{width:calc( var(--BaseWeight) - var(--Step) * 4 );height:calc( var(--BaseWeight) - var(--Step) * 4 ); }
+    .ScoreBox .score{background-image: none;font-size: 25px;font-weight: bold;color: white;width: 100px;text-align: center;}
+    .cellBox .description{color:var(--MainColor);font-size: 14px;line-height: 25px;}
+    .cellBox .number{font-weight: bold;font-size: 16px;}
+    .cellBox .extraTips{font-size: 12px;color:gray;line-height: 20px;transform: scale(.9);text-align: left;}
+    .ReportDetail .reportcell_title{line-height: 30px;font-size: 13px;display: flex;align-items: center;}
+    .ReportDetail .reportcell_title .rt_title{font-weight: bold;width: 50px;text-align: right;}
+    .ReportDetail .reportcell_title .rt_title::before{content:'·  ';}
+    .ReportDetail .reportcell_title .rt_line{height: 1px;width: 80px;background-color: gray;margin:0 5px}
+    .ReportDetail .reportcell_title .rt_title{font-weight: bold;width: 50px;text-align: right;}
+    .ReportDetail .reportcell_data{display: flex;}
+    .ReportDetail .reportcell_data .data_cell{flex:1;display: flex;justify-content: space-around;}
+    .ReportDetail .reportcell_data .data_cell .data{font-size: 12px;text-align: center;}
+    .ReportDetail .reportcell_data .data_cell .icon{text-align: center;color:var(--MainColor);margin-top: 5px;font-size:40px;}
+    .ReportDetail .reportcell_data .data_cell .time{font-size: 12px;color:gray}
+
+    .re-charts-box{font-size: 12px;color:gray;margin-top: 10px;}
+     
+    .re-charts-box *{box-sizing: border-box;}
+    .re-charts-box .chart-cell{display: flex;margin-bottom: 7px;}
+    .re-charts-box .chart-cell.legend-cell{justify-content: space-evenly;}
+    .re-charts-box .chart-cell.legend-cell .legned-box{display: flex;align-items: center;}
+    .legend-cell .legned-box .color-block{height: 12px;width: 12px;}
+    .legend-cell .legned-box .word{line-height: 14px;margin-left: 10px;}
+    .re-charts-box .chart-cell .line-title{width: 40px;line-height: 14px;}
+    .chart-cell .doub-line-chart .line-bock{display: flex;margin-bottom: 5px;flex:1}
+    .chart-cell .doub-line-chart .word{margin-left: 10px;color:gray;line-height: 14px;}
+    .chart-cell .doub-line-chart .line-c{height: 14px;font-size: 12px;position: relative;line-height: 14px;padding-right: 3px;text-align: right;color: white;}
+    .line-c.red{background-color: red;}
+    .line-c.greenlight{background-color: #63caca;}
+    .line-c.orange{background-color: orange;}
+
+    .muti-circle-box *{box-sizing: border-box;}
+    .muti-circle-box{padding: 10px;display: flex;justify-content: space-between;--WH:90px;}
+    .muti-circle-box .circle{width: var(--WH);height: var(--WH);border-radius: 50%;border:4px solid;position: relative;}
+    .muti-circle-box .circle.green{border-color: #31bbb2; box-shadow: 0 0 0px 5px rgba(49, 187, 178, 0.18); color:#31bbb2}
+    .muti-circle-box .circle.red{border-color: #ff6464; box-shadow: 0 0 0px 5px rgba(255, 100, 100, 0.18); color:#ff6464}
+    .muti-circle-box .circle.blue{border-color: #6fbaef; box-shadow:0 0 0px 5px rgba(111, 168, 239, 0.18); color:#6fbaef}
+    .muti-circle-box .circle .word-a{font-size: 15px;position: absolute;    top: 15px; text-align: center;width:100%;font-weight: bold;}
+    .muti-circle-box .circle .word-b{font-size: 13px;position: absolute;    top: 33px; width:100%;text-align: center;}
+    .muti-circle-box .circle .word-c{font-size: 13px;position: absolute;    top: 50px; width:100%;text-align: center;color:rgb(73, 73, 73)}
+
+
+    .charts-canvas{width: 500px;height:300px;margin-top: 20px;}
+</style>
+
+<div class="ReportBox" style="width: 100%;background-color: #efefef;margin:0;padding:0" >
+    <div class="cellBox">
+        <div class="StuImg" >
+            <img src="{php echo tomedia($stuinfo['icon'])}">
+        </div>
+        <div class="StuName">{$stuinfo['s_name']}</div>
+        <div style="width: 100%;" >
+            <div class="ReportName">{$dataTemp['healthRepotTitle']}</div>
+            <div class="extraTips" style="text-align: center;">{$dataTemp['year']}-01-01 至 {$dataTemp['year']}-12-31</div>
+        </div>
+    </div>
+    <div class="cellBox" >
+        <div class="description">{$dataContent['currentYear']}年共参与晨检<span class="number"> {$dataContent['morningCheck']} </span>次，体温异常<span class="number"> {php echo $dataContent['temperatureLow']+$dataContent['temperatureHigher']} </span>次，手掌疑似疱疹<span class="number"> {$dataContent['healthRepotType']} </span>次，口腔疑似疱疹<span class="number"> {$dataContent['mouthHerpesSuspected']} </span>次</div>
+        <div class="extraTips">异常情况包括：口腔检测疑似疱疹，手掌检测疑似疱疹，体温异常</div>
+
+        <div class="re-charts-box">
+            <div class="chart-cell">
+                <div class="line-title">
+                    体温
+                </div>
+                <div  class="doub-line-chart" style="flex:1">
+                    <div style="display: flex;">
+                        <!-- $dataContent['morningCheck'] $dataContent['temperatureLow'] $dataContent['temperatureHigher'] -->
+                        <div class="line-bock" >
+                            <div class="line-c orange" style="width: {php echo round($dataContent['temperatureLow']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['temperatureLow']}</div>
+                            <div class="line-c greenlight" style="width: {php echo round(($dataContent['morningCheck'] - $dataContent['temperatureHigher'] - $dataContent['temperatureLow'])/$dataContent['morningCheck']*100,2)}%;">{php echo $dataContent['morningCheck'] - $dataContent['temperatureHigher'] - $dataContent['temperatureLow']}</div>
+                            <div class="line-c red" style="width: {php echo round($dataContent['temperatureHigher']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['temperatureHigher']}</div>
+                        </div>
+                        <div class="word"> {$dataContent['currentYear']} </div>
+                    </div>
+                    {if !empty($olddataContent)}
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c orange" style="width: {php echo round($olddataContent['temperatureLow']/$olddataContent['morningCheck']*100,2)}%;">{$olddataContent['temperatureLow']}</div>
+                            <div class="line-c greenlight" style="width: {php echo round(($olddataContent['morningCheck'] - $olddataContent['temperatureHigher'] - $olddataContent['temperatureLow'])/$olddataContent['morningCheck']*100,2)}%;">{php echo $olddataContent['morningCheck'] - $olddataContent['temperatureHigher'] - $olddataContent['temperatureLow']}</div>
+                            <div class="line-c red" style="width: {php echo round($olddataContent['temperatureHigher']/$olddataContent['morningCheck']*100,2)}%;">{$olddataContent['temperatureHigher']}</div>
+                        </div>
+                        <div class="word"> {$olddataContent['currentYear']} </div>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+            <div class="chart-cell">
+                <div class="line-title" >
+                    手检
+                </div>
+                <div  class="doub-line-chart" style="flex:1">
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c greenlight" style="width: {php echo round(($dataContent['morningCheck']-$dataContent['healthRepotType'])/$dataContent['morningCheck']*100,2)}%;">{php echo $dataContent['morningCheck']- $dataContent['healthRepotType']}</div>
+                            <div class="line-c red" style="width: {php echo round($dataContent['healthRepotType']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['healthRepotType']} </div>
+                        </div>
+                        <div class="word"> {$dataContent['currentYear']} </div>
+                    </div>
+                    {if !empty($olddataContent)}
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c greenlight" style="width: {php echo round(($olddataContent['morningCheck']-$olddataContent['healthRepotType'])/$olddataContent['morningCheck']*100,2)}%;">{php echo $olddataContent['morningCheck']-$olddataContent['healthRepotType']}</div>
+                            <div class="line-c red" style="width: {php echo round($olddataContent['healthRepotType']/$olddataContent['morningCheck']*100,2)}%;">{$olddataContent['healthRepotType']} </div>
+                        </div>
+                        <div class="word"> {$olddataContent['currentYear']} </div>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+            <div class="chart-cell">
+                <div class="line-title" >
+                    口腔
+                </div>
+                <div  class="doub-line-chart" style="flex:1">
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c greenlight" style="width: {php echo round(($dataContent['morningCheck']-$dataContent['mouthHerpesSuspected'])/$dataContent['morningCheck']*100,2)}%;">{php echo $dataContent['morningCheck']-$dataContent['mouthHerpesSuspected']}</div>
+                            <div class="line-c red" style="width: {php echo round($dataContent['mouthHerpesSuspected']/$dataContent['morningCheck']*100,2)}%;">{$dataContent['mouthHerpesSuspected']} </div>
+                        </div>
+                        <div class="word"> {$dataContent['currentYear']} </div>
+                    </div>
+                    {if !empty($olddataContent)}
+                    <div style="display: flex;">
+                        <div class="line-bock" >
+                            <div class="line-c greenlight" style="width: {php echo round(($olddataContent['morningCheck']-$olddataContent['mouthHerpesSuspected'])/$olddataContent['morningCheck']*100,2)}%;">{php echo $olddataContent['morningCheck']-$olddataContent['mouthHerpesSuspected']}</div>
+                            <div class="line-c red" style="width: {php echo round($olddataContent['mouthHerpesSuspected']/$olddataContent['morningCheck']*100,2)}%;">{$olddataContent['mouthHerpesSuspected']} </div>
+                        </div>
+                        <div class="word"> {$olddataContent['currentYear']} </div>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+
+            <div class="chart-cell legend-cell">
+                <div class="legned-box">
+                    <span class="color-block" style="background-color: orange;"></span>
+                    <span class="word">偏低</span>
+                </div>
+                <div class="legned-box">
+                    <span class="color-block" style="background-color: #63caca;"></span>
+                    <span class="word">正常</span>
+                </div>
+                <div class="legned-box">
+                    <span class="color-block" style="background-color: red;"></span>
+                    <span class="word">偏高/疑似疱疹</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cellBox">
+        <div class="description">{$dataContent['currentYear']}年共进行<span class="number"> {$dataContent['heightNumber']}</span>次身高测量， <span class="number"> {$dataContent['weightNumber']} </span>次体重测量，与去年相比，身高 <span class="number"> 增长 </span>了<span class="number"> {php echo $dataContent['height'] - $olddataContent['height']} </span>cm，体重 <span class="number"> 增长 </span>了<span class="number"> {php echo $dataContent['weight'] - $olddataContent['weight']} </span>kg</div>
+        <div class="muti-circle-box">
+            <div class="circle green">
+                <div class="word-a" style="top: 22px;"> {$dataContent['height']} cm</div>
+                <div class="word-c" > 身高 </div>
+            </div>
+            <div class="circle green">
+                <div class="word-a" style="top: 22px;">{$dataContent['weight']}kg </div>
+                <div class="word-c" > 体重 </div>
+            </div>
+            <!-- 儿童BMI 计算方法 体重/ (身高的平方) -->
+            <!-- 正常  超重   轻度肥胖 中度肥胖 重度肥胖
+            15-18 18-20 20-22    22-25   25- -->
+            {if $dataContent['weight'] - $olddataContent['weight'] < 15}
+                {php $weightHtml = '偏瘦';}
+            {else if 15 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight'] < 18}
+                {php $weightHtml = '正常';}
+            {else if 18 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight']< 20}
+                {php $weightHtml = '超重';}
+            {else if 20 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight']< 22}
+                {php $weightHtml = '轻度肥胖';}
+            {else if 22 <= $dataContent['weight'] - $olddataContent['weight'] && $dataContent['weight'] - $olddataContent['weight'] < 25}
+                {php $weightHtml = '中度肥胖';}
+            {else if 25 < $dataContent['weight']}
+                {php $weightHtml = '重度肥胖';}
+            {/if}
+            <div class="circle red">
+                <div class="word-a">{php echo $dataContent['weight'] - $olddataContent['weight']} </div>
+                <div class="word-b">
+                    {$weightHtml}
+                </div>
+                <div class="word-c">
+                    BMI
+                </div>
+            </div>
+        </div>
+        <div id="height-charts" class="charts-canvas"></div>
+        <div id="weight-charts" class="charts-canvas"></div>
+    </div>
+
+
+    <div class="cellBox">
+        <div class="description">{$dataContent['currentYear']}年共进行<span class="number"> {$dataContent['visionNumber']}</span>次视力测量，与去年相比，左眼视力 <span class="number"> 增长 </span>了<span class="number">{php echo $dataContent['leftEyeVision'] - $olddataContent['leftEyeVision']}</span>，右眼视力 <span class="number"> 增长 </span>了<span class="number"> {php echo $dataContent['rightEyeVision'] - $olddataContent['rightEyeVision']} </span>。</div>
+        <div class="muti-circle-box" style="justify-content: space-evenly;">
+            <div class="circle blue">
+                <div class="word-a" style="top: 22px;">{$dataContent['leftEyeVision']}</div>
+                <div class="word-c" > 左眼 </div>
+            </div>
+            <div class="circle blue">
+                <div class="word-a" style="top: 22px;">{$dataContent['rightEyeVision']}</div>
+                <div class="word-c" > 右眼 </div>
+            </div>
+            
+        </div>
+        <div id="left-eyes-charts" class="charts-canvas"></div>
+        <div id="right-eyes-charts" class="charts-canvas"></div>
+    </div>
+</div>
+<script type="text/javascript">
+    require(['echarts'],function(echarts){
+        function InitChartsOption(){
+            return {
+                animation:false,
+                title: {
+                    text: '默认曲线图标题',
+                    left:'center',
+                    textStyle:{
+                        fontSize:14,
+                        fontWight:'light'
+                    }
+                },
+                legend: {
+                    // data: ['{$dataContent['currentYear']}', '{$olddataContent['currentYear']}'],
+                    bottom:0,
+                    itemHeight:12,
+                    itemGap:40,
+                    textStyle:{
+                        color:'#9b9b9b'
+                    }
+                },
+                grid: {
+                    top:30, //图形距离顶部
+                    left: 10,
+                    right: 10,
+                    bottom: 30,
+                    containLabel: true //grid 区域是否包含坐标轴的刻度标签
+                },
+                xAxis: {
+                    type: 'category',
+                    axisTick:{
+                        show:false //不显示刻度线
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fdd8a9' //x轴颜色
+                        }
+                    },
+                    axisLabel: {
+                        textStyle: { //文字颜色与字体大小
+                            color: '#9b9b9b',
+                            fontSize:8
+                        }
+                    }
+                },
+                yAxis: {
+                    type: 'value',
+                    offset:10,
+                    scale:true,
+                    splitNumber:6,
+                    intval:0.5,
+                    // min: 77,
+                    // max: 125,
+                    axisTick:{ //不显示刻度线
+                        show:false
+                    },
+                    splitLine:{ //网格线样式
+                        show:true,
+                        lineStyle:{
+                            color:['#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb','#fbfbfb',"#fff","#fff","#fff","#fff","#fff","#fff"],
+                            type:'dashed'
+                        }
+                    },
+                    axisLine:{
+                        lineStyle:{
+                            color:'#fdd8a9' //x轴颜色
+                        }
+                    },
+                    axisLabel: {
+                        textStyle: { //文字颜色与字体大小
+                            color: '#9b9b9b',
+                            fontSize:8
+                        },
+                        formatter:function(value,index){
+                            if(parseInt(value) === value){
+                                return value.toFixed(1);
+                            }
+                        }
+                    }
+                },
+                series: [
+                    {
+                        type: 'line',
+                        smooth: true,
+                        symbolSize: 5, //折点大小
+                        label : { //每个点上显示数值
+                            show: true,
+                            color:'#9a9a9a',
+                            fontSize:8,
+                            formatter: function (value) {
+                                return value.data.toFixed(1);
+                            }
+                        },
+                        lineStyle:{
+                            color:'#ff982e', //折线颜色
+                            width:2
+                        },
+                        itemStyle:{
+                            normal:{
+                                color:'#ff982e', //折点颜色
+                            }
+                        }
+                    },
+                    {
+                        type: 'line',
+                        smooth: true,
+                        symbolSize: 5, //折点大小
+                        label : { //每个点上显示数值
+                            show: true,
+                            color:'#9a9a9a',
+                            fontSize:8,
+                            formatter: function (value) {
+                                return value.data.toFixed(1);
+                            }
+                            },
+                        lineStyle:{
+                            color:'#6fa8ef', //折线颜色
+                            width:2
+                        },
+                        itemStyle:{
+                            normal:{
+                                color:'#6fa8ef', //折点颜色
+                            }
+                        }
+                    }
+                ]
+            };
+
+        }
+
+        // 基于准备好的dom，初始化echarts实例
+        // var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var HeightOption = InitChartsOption();
+        HeightOption.title.text = '身高变化趋势';
+        HeightOption.xAxis.data = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        HeightOption.yAxis.min = 100.3;
+        HeightOption.yAxis.max = 112.3;
+        HeightOption.series[0].name =  `{$olddataContent['currentYear']}年`;
+        HeightOption.series[0].data = [107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.3, 108.0 ];
+        HeightOption.series[1].name =  "{$dataContent['currentYear']}年";
+        HeightOption.series[1].data = [109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.3, 116.0 ];
+
+        echarts.init($("#height-charts")[0]).setOption(HeightOption);
+
+        var WeightOption = InitChartsOption();
+        WeightOption.title.text = '体重变化趋势';
+        WeightOption.xAxis.data = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        WeightOption.yAxis.min = 103.3;
+        WeightOption.yAxis.max = 112.3;
+        WeightOption.series[0].name =  "{$olddataContent['currentYear']}";
+        WeightOption.series[0].data = [107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.0, 107.3, 108.0 ];
+        WeightOption.series[1].name =  "{$dataContent['currentYear']}年";
+        WeightOption.series[1].data = [109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.0, 109.3, 110.0 ];
+        echarts.init($("#weight-charts")[0]).setOption(WeightOption);
+
+
+        var leftEyesOption = InitChartsOption();
+        leftEyesOption.title.text = '左眼视力变化趋势';
+        leftEyesOption.xAxis.data = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        leftEyesOption.yAxis.min = 0;
+        leftEyesOption.yAxis.max = 1.6;
+        leftEyesOption.yAxis.intval = 0;
+        leftEyesOption.yAxis.axisLabel.formatter =(value,index)=>{ return value};
+        leftEyesOption.series[0].name =  "{$olddataContent['currentYear']}年";
+        leftEyesOption.series[0].data = [1, 1, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ];
+        leftEyesOption.series[1].name =  "{$dataContent['currentYear']}年";
+        leftEyesOption.series[1].data = [1.3, 1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3];
+        echarts.init($("#left-eyes-charts")[0]).setOption(leftEyesOption);
+
+        var rightEyesOption = InitChartsOption();
+        rightEyesOption.title.text = '右眼视力变化趋势';
+        rightEyesOption.xAxis.data = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        rightEyesOption.yAxis.min = 0;
+        rightEyesOption.yAxis.max = 1.6;
+        rightEyesOption.yAxis.intval = 0;
+        rightEyesOption.yAxis.axisLabel.formatter =(value,index)=>{ return value};
+        rightEyesOption.series[0].name =  "{$olddataContent['currentYear']}年";
+        rightEyesOption.series[0].data = [1, 1, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ];
+        rightEyesOption.series[1].name =  "{$dataContent['currentYear']}年";
+        rightEyesOption.series[1].data = [1.3, 1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3,1.3];
+
+        echarts.init($("#right-eyes-charts")[0]).setOption(rightEyesOption);
+        $(function(){
+            var sid = `{$dataTemp['sid']}`
+            var year = `{$dataTemp['year']}`
+            $.ajax({
+                url: "{php echo $this->createWebUrl('mcmanage', array('op' => 'getNdEcharts','schoolid' => $schoolid))}",
+                type: "post",
+                dataType: "json",
+                data:{sid:sid,year:year},
+                success: function (res) {
+                    HeightOption.yAxis.min = res.minYheight;
+                    HeightOption.yAxis.max = res.maxYheight;
+                    HeightOption.series[0].data = res.oldmonthData.height
+                    HeightOption.series[1].data = res.monthData.height
+
+                    WeightOption.yAxis.min = res.minYweight;
+                    WeightOption.yAxis.max = res.maxYweight;
+                    WeightOption.series[0].data = res.oldmonthData.weight
+                    WeightOption.series[1].data = res.monthData.weight
+
+                    rightEyesOption.series[0].data = res.oldmonthData.rightEyeVision
+                    rightEyesOption.series[1].data = res.monthData.rightEyeVision
+
+                    leftEyesOption.series[0].data = res.oldmonthData.leftEyeVision
+                    leftEyesOption.series[1].data = res.monthData.leftEyeVision
+                    
+                    echarts.init($("#weight-charts")[0]).setOption(WeightOption);
+                    echarts.init($("#height-charts")[0]).setOption(HeightOption);
+                    echarts.init($("#left-eyes-charts")[0]).setOption(leftEyesOption);
+                    echarts.init($("#right-eyes-charts")[0]).setOption(rightEyesOption);
+                },
+                error: function (jqXHR, textStatus, errorThrown){
+                
+                }
+            });
+        })
+    })
+    // 使用刚指定的配置项和数据显示图表。
+    // myChart.setOption(option);
+</script>
+{/if}
+    

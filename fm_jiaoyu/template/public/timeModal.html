@@ -1,0 +1,332 @@
+<style>
+.time-box { border: 1px solid #e8e8e8; height: 288px;}
+.time-box li { padding: 0 20px; border-bottom: 1px solid #e8e8e8; line-height: 40px; height: 40px; position: relative; }
+.time-box  li:first-child span { color: #ff8534;cursor: pointer; }
+.opt_box{float:right;color: #ff8534;}
+.opt_box .fa{font-size:15px;font-weight: 1;cursor: pointer}
+.opt_box .fa:first-child{margin-right:15px}
+.left_timebox{width: 30%; float: left;}
+.left_timeboxbig{width: 70%; float: left;}
+.add_new_time{cursor:pointer;}
+.new_timesave{margin-top: 5px;height: 26px;}
+.left_timeboxs{width: 20%; float: left;}
+.input-group #daynumber{font-size: 20px;font-weight: blod;color: red;}
+.clear{clear: both;}
+</style>
+<div class="modal fade" style="min-width: 400px!important;" id="Modal8" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog" style="left: 35%;top: 30%;min-width: 320px !important;">
+		<div class="modal-content" style="border-radius: 20px;">
+			<div class="modal-header">
+				<h4 class="modal-title" id="modal-title-kc" style="text-align:center;color:#333;font-size: 17px;">配置时段</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;overflow-y: scroll;padding: 34px;height: 300px;">
+				<div class="time-box" id="time-box">
+					<li class="def_class">
+						<div class="right">
+							<span class="add_new_time">+ 新增时间段</span>
+						</div>
+					</li>
+					<div id="new_timebox" style="display:none">
+						<li class="def_class">
+							<div class="left_timeboxs"><input class="form-control new_timesave" placeholder="时段名称" name="catename" type="text" value=""/></div>
+							<div class="right">
+								<div class="col-sm-3">
+									<div class="clockpicker">
+										<input type="text" placeholder="开始时间" name="sd_start" class="form-control new_timesave"/>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<div class="clockpicker">
+										<input type="text" placeholder="结束时间" name="sd_end" class="form-control new_timesave"/>
+									</div>
+								</div>
+								<div class="opt_box">
+									<i class="fa fa-save" onclick="save_time(this,0)" data-id="new"></i>
+									<i class="fa fa-times del_new_time" data-id="new"></i>
+								</div>
+							</div>
+						</li>
+					</div>
+					<div id="old_timebox">
+					</div>
+				</div>	
+			</div>
+			<div class="modal-footer" style="border-radius: 6px;">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" style="min-width: 400px!important;" id="Modal9" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog" style="left: 35%;top: 30%;min-width: 320px !important;">
+		<div class="modal-content" style="border-radius: 20px;">
+			<div class="modal-header">
+				<h4 class="modal-title" id="modal-title-kc" style="text-align:center;color:#333;font-size: 17px;">配置章节</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;overflow-y: scroll;padding: 34px;height: 300px;">
+				<div class="time-box" id="time-box">
+					<li class="def_class">
+						<div class="right">
+							<span class="add_new_menu">+ 新增章节</span>
+						</div>
+					</li>
+					<div id="new_menubox" style="display:none">
+						<li class="def_class">
+							<div class="left_timeboxbig"><input class="form-control new_timesave" placeholder="章节名称" name="catename" type="text" value=""/></div>
+							<div class="right">
+								<div class="opt_box">
+									<i class="fa fa-save" onclick="save_menu(this,0)" data-id="new"></i>
+									<i class="fa fa-times del_new_menu" data-id="new"></i>
+								</div>
+							</div>
+						</li>
+					</div>
+					<div id="old_menubox">
+					</div>
+				</div>	
+			</div>
+			<div class="modal-footer" style="border-radius: 6px;">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function pzsd(){//配置时段弹框
+	$('#Modal8').modal('toggle');
+	get_newtime()
+}
+$('.add_new_time').click(function(){
+	$('#new_timebox').show(100)	
+	$('.add_new_time').text('编辑中......')
+});
+$('.del_new_time').click(function() {
+	$('#new_timebox').hide(100)
+	$('.add_new_time').text('+ 新增时间段')	
+});
+function edit_time(elm){
+	$('.add_new_time').text('编辑中......')
+	$(elm).parent().parent().parent().hide()
+	$(elm).parent().parent().parent().next().show()
+}
+function close_old_time(elm){
+	$('.add_new_time').text('+ 新增时间段')	
+	$(elm).parent().parent().parent().hide()
+	$(elm).parent().parent().parent().prev().show()
+}
+function save_time(elm,sid){
+	var catename = $(elm).parent().parent().parent().find("input[name='catename']").val()
+	var sd_start = $(elm).parent().parent().parent().find("input[name='sd_start']").val()
+	var sd_end = $(elm).parent().parent().parent().find("input[name='sd_end']").val()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'edit_timeset'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			sid:sid,
+			catename:catename,
+			sd_start:sd_start,
+			sd_end:sd_end,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				get_newtime()
+				$('#new_timebox').hide(100)
+				$('.add_new_time').text('+ 新增时间段')	
+			}
+			alert(data.msg)
+		}		
+	});
+}
+function del_old_time(elm,sid){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'delet_timeset'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			sid:sid,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				$(elm).parent().parent().parent().remove()
+				$(elm).parent().parent().parent().prev().remove()
+				get_newmenu()
+			}else{
+				
+			}
+			alert(data.msg)
+		}		
+	});
+}
+$('.add_new_menu').click(function(){
+	$('#new_menubox').show(100)	
+	$('.add_new_menu').text('编辑中......')
+});
+$('.del_new_menu').click(function() {
+	$('#new_menubox').hide(100)
+	$('.add_new_menu').text('+ 新增章节目录')	
+});
+function edit_menu(elm){
+	$('.add_new_menu').text('编辑中......')
+	$(elm).parent().parent().parent().hide()
+	$(elm).parent().parent().parent().next().show()
+}
+function close_old_menu(elm){
+	$('.add_new_menu').text('+ 新增章节目录')	
+	$(elm).parent().parent().parent().hide()
+	$(elm).parent().parent().parent().prev().show()
+}
+function save_menu(elm,sid){
+	var catename = $(elm).parent().parent().parent().find("input[name='catename']").val()
+	var sd_start = $(elm).parent().parent().parent().find("input[name='sd_start']").val()
+	var sd_end = $(elm).parent().parent().parent().find("input[name='sd_end']").val()
+	var kcid = $('#addks_nowkcid').val()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'edit_menuset'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			sid:sid,
+			kcid:kcid,
+			catename:catename,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				get_newmenu()
+				$('#new_menubox').hide(100)
+				$('.add_new_menu').text('+ 新增章节目录')	
+			}
+			alert(data.msg)
+		}		
+	});
+}
+function del_old_menu(elm,sid){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'delet_menuset'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			sid:sid,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				$(elm).parent().parent().parent().remove()
+				$(elm).parent().parent().parent().prev().remove()
+				get_newmenu()
+			}else{
+				
+			}
+			alert(data.msg)
+		}		
+	});
+}
+function pzzj(){//配置章节弹框
+	$('#Modal9').modal('toggle');
+	get_newmenu()
+}
+function get_newmenu(){//获取最新章节列表并渲染
+	$('#old_menubox').empty()
+	$('.allmenu_list').empty();
+	var kcid = $('#addks_nowkcid').val()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'getallmenulist'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			kcid:kcid,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				var html = '';
+				var html2 = '<option value="-1">默认章节</option>';
+				var sddata = data.allmenu
+				if(sddata.length>0){
+					for (var i = 0; i < sddata.length; i++) {
+							html +=	'<li>'+
+									'	<div class="left_timeboxbig">'+sddata[i].name+'</div>'+
+									'	<div class="right">'+
+									'		<div class="opt_box">'+
+									'			<i class="fa fa-edit" onclick="edit_menu(this)"></i>'+
+									'			<i class="fa fa-trash-o" onclick="del_old_menu(this,'+sddata[i].id+')"></i>'+
+									'		</div>'+
+									'	</div>'+
+									'</li>'+
+									'<li style="display:none">'+
+									'	<div class="left_timeboxbig"><input class="form-control new_timesave" name="catename" type="text" value="'+sddata[i].name+'"/></div>'+
+									'	<div class="right">'+
+									'		<div class="opt_box">'+
+									'			<i class="fa fa-save" onclick="save_menu(this,'+sddata[i].id+')" data-id="new"></i>'+
+									'			<i class="fa fa-times" onclick="close_old_menu(this)" data-id="new"></i>'+
+									'		</div>'+
+									'	</div>'+
+									'</li>';
+							html2 +='<option value="'+sddata[i].id+'">'+sddata[i].name+'</option>';				
+					}
+				}
+				$('.allmenu_list').append(html2);
+				$('#old_menubox').append(html);
+			}
+		}
+	});
+}
+function get_newtime(){//获取最新时段列表并渲染
+	$('#old_timebox').empty()
+	$('.all_sd').empty();
+	$.ajax({
+		url: "{php echo $this->createWebUrl('indexajax', array('op'=>'getalltimeset'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				var html = '';
+				var html2 = '<option value="0">选择时段</option>';
+				var sddata = data.sd
+				if(sddata){
+					for (var i = 0; i < sddata.length; i++) {
+							html +=	'<li>'+
+									'	<div class="left_timebox">'+sddata[i].sname+'</div>'+
+									'	<div class="right"><span class="fw_time">'+sddata[i].sd_start+'-'+sddata[i].sd_end+'</span>'+
+									'		<div class="opt_box">'+
+									'			<i class="fa fa-edit" onclick="edit_time(this)"></i>'+
+									'			<i class="fa fa-trash-o" onclick="del_old_time(this,'+sddata[i].sid+')"></i>'+
+									'		</div>'+
+									'	</div>'+
+									'</li>'+
+									'<li style="display:none">'+
+									'	<div class="left_timeboxs"><input class="form-control new_timesave" name="catename" type="text" value="'+sddata[i].sname+'"/></div>'+
+									'	<div class="right">'+
+									'		<div class="col-sm-3">'+
+									'			<div class="clockpicker">'+
+									'				<input type="text" placeholder="开始时间" name="sd_start" class="form-control new_timesave" value="'+sddata[i].sd_start+'" />'+
+									'			</div>'+
+									'		</div>'+
+									'		<div class="col-sm-3">'+
+									'			<div class="clockpicker">'+
+									'				<input type="text" placeholder="结束时间" name="sd_end" class="form-control new_timesave" value="'+sddata[i].sd_end+'" />'+
+									'			</div>'+
+									'		</div>'+
+									'		<div class="opt_box">'+
+									'			<i class="fa fa-save" onclick="save_time(this,'+sddata[i].sid+')" data-id="new"></i>'+
+									'			<i class="fa fa-times" onclick="close_old_time(this)" data-id="new"></i>'+
+									'		</div>'+
+									'	</div>'+
+									'</li>';
+							html2 +='<option value="'+sddata[i].sid+'">'+sddata[i].sname+'</option>';				
+					}
+				}
+				$('.all_sd').append(html2);
+				$('#old_timebox').append(html);
+				clockpicker()
+			}
+		}		
+	});
+}
+</script>

@@ -1,0 +1,215 @@
+<?php 
+$setting = uni_setting_load('payment',  $uniacid);
+?>
+<!--支付方式弹框-->
+<style>
+/**支付方式弹框**/
+.popUpBox_pay { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }
+.trackMattesss_pay{ position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.popContentBoxs{ position: absolute; width: 90%; margin-left: 5%; max-height: 80%; top: 40%; transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }
+.not_inbox{width:90%;margin:5%}
+.poptitle1 { width: 90%; margin-left: 5%; font-size: 16px; color: #333333; text-align: center; padding: 5px 0; border-bottom: 1px solid #e0dddd; }
+.btnBox { display: -webkit-box; /* 老版本语法: Safari,  iOS, Android browser, older WebKit browsers.  */ display: -moz-box; /* 老版本语法: Firefox (buggy) */ display: -ms-flexbox; /* 混合版本语法: IE 10 */ display: -webkit-flex; /* 新版本语法： Chrome 21+ */ display: flex; /* 新版本语法： Opera 12.1, Firefox 22+ */ margin: 7px 0; }
+.wechat_pay { width: 100%; height: 40px; font-size: 15px; color: white; text-align: center; line-height: 38px; border-radius: 40px; background: #349033; }
+.ali_pay { width: 100%; height: 40px; font-size: 15px; color: white; text-align: center; line-height: 38px; border-radius: 40px; background: #1983b5; }
+.unionpay { width: 100%; height: 40px; font-size: 15px; color: white; text-align: center; line-height: 38px; border-radius: 40px; background: #e85e5e; }
+.yuezhifu { width: 100%; height: 40px; font-size: 15px; color: white; text-align: center; line-height: 38px; border-radius: 40px; background: #8a8686; }
+.baifubao { width: 100%; height: 40px; font-size: 15px; color: white; text-align: center; line-height: 38px; border-radius: 40px; background: #06c1ae; }
+</style>
+<div class="popUpBox_pay" style="z-index:108;display: none">
+	<div class="trackMattesss_pay"></div>
+	<div class="popContentBoxs" style="z-index:103;">
+		<div class="sectionContBox">
+			<div class="poptitle1">选择支付方式</div>
+			<div class="mb20 phone_wrap not_inbox">
+				{if !empty($setting['payment']['wechat']['switch'])}
+				<div class="btnBox wxpaybox mb_marsk" style="display:none">
+					<span class="wechat_pay">微信支付（加载中）</span>
+				</div>
+				{/if}
+				{if !empty($setting['payment']['alipay']['switch']) || !empty($setting['payment']['alipay']['pay_switch'])}
+				<div class="btnBox mb_marsk">
+					<span class="ali_pay" onclick="dopayOpt('alipay')">支付宝支付</span>
+				</div>
+				{/if}
+				{if $setting['payment']['unionpay']['switch']}
+				<div class="btnBox mb_marsk">
+					<span class="unionpay" onclick="dopayOpt('unionpay')">银联支付</span>
+				</div>
+				{/if}
+				{if $school['is_chongzhi'] == 1}
+				<div class="btnBox credit_box mb_marsk">
+
+				</div>
+				{/if}
+				{if $setting['payment']['baifubao']['switch']}
+				<div class="btnBox mb_marsk">
+					<span class="baifubao" onclick="dopayOpt('baifubao')">百度钱包</span>
+				</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="noworderid" value="">
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/mui.js?v=3"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/newutil.js?v=3"></script>
+<script>
+//课程页面的支付按钮
+$('.weixin_pay_btn, .weixin_pay').click(function() {
+	ajax_start_loading('..');
+	$('#noworderid').val($(this).attr("orderid"))
+	$('html,body').addClass('popNoscroll');
+	$('.popUpBox_pay').slideRightShow();
+	ajax_stop_loading();
+});
+
+//点击支付遮罩层关闭支付滑块
+$(".trackMattesss_pay").on("click",function(){
+	$('html,body').removeClass('popNoscroll');
+	$('.popUpBox_pay').slideRightHide();
+});
+
+//发起微信支付，微信支付依赖于 WeixinJSBridge 组件，所以发起时应该在ready事件中进行 非借用支付	
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	$('.wxpaybox').show();
+	$('.wechat_pay').text('微信支付');
+	$('.wechat_pay').click(function(){
+		jTips("正在唤起微信支付");
+		$('.wechat_pay').hide()
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('payajax', array('op'=>'get_payinfo_byorderid'))}",
+			dataType: 'json',
+			data:{
+				weid:"{$weid}",
+				schoolid:"{$schoolid}",
+				payMethod:'wechat',
+				openid:"{$openid}",
+				orderid:$('#noworderid').val(),
+			},
+			success:function(data){
+				if(data.result){
+					if(window.__wxjs_environment === 'miniprogram'){
+						wx.miniProgram.navigateTo({url: '../payment/payment?orderid='+data.orderid+'&cose='+data.fee+'&nowweid={$weid}&schoolid={$schoolid}&do='+data.dos+'&userid='+data.nowuserid+'&op='+data.op+''})
+					}else{
+						var jumpurl = decodeURIComponent(data.jumpurl)
+						var NowWeid = '{$_W['uniacid']}';
+						if(Number(NowWeid) == Number(data.payweid)){
+							newutil.pay({
+								orderFee : data.fee,
+								payMethod : 'wechat',
+								orderTitle :data.title,
+								orderTid : data.ordertid,
+								payweid : data.payweid,
+								orderid : data.orderid,
+								module : 'fm_jiaoyu',
+								success : function(result) {
+									alert('支付成功');
+									location.reload();
+								},
+								fail : function(result) {
+									alert('支付失败');
+									alert('fail : ' + result.message);
+									location.reload();
+								},
+								complete : function(result) {
+									console.log(result)
+									if(result.errno != 0){
+										location.reload();
+									}
+								}
+							});
+						}else{
+							window.location.href="./index.php?i="+data.payweid+"&c=entry&do=common_newpay&m=fm_jiaoyu&ordertid="+data.ordertid+"&payweid="+data.payweid+"&fee="+data.fee+"&title="+data.title+"&is_newstu="+data.is_newstu+"&orderid="+data.orderid+"&jumpurl="+data.jumpurl;
+						}
+					}
+				}else{
+					alert(data.msg);
+				}
+			}
+		});
+	});
+});
+//余额支付
+function yuezhifu(){
+	jConfirm("确认使用余额支付吗？", "删除确定对话框", function (isConfirm) {
+		if(isConfirm){
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('payajax', array('op'=>'get_payinfo_byorderid'))}",
+				dataType: 'json',
+				data:{
+					weid:"{$weid}",
+					schoolid:"{$schoolid}",
+					payMethod:'credit',
+					openid:"{$openid}",
+					orderid:$('#noworderid').val(),
+				},
+				success:function(data){
+					console.log(data)
+					alert(data.msg);
+					if(data.result){
+						location.reload();
+					}else{
+					
+					}	
+				}
+			});
+		}
+	});                   
+}
+//百度钱包和其它支付则无浏览器组件要求，可直接使用
+function dopayOpt(type) {
+    $.ajax({
+        url: "{php echo $this->createMobileUrl('payajax', array('op'=>'get_payinfo_byorderid'))}",
+        dataType: 'json',
+        data:{
+			weid:"{$weid}",
+			schoolid:"{$schoolid}",
+			payMethod:type,
+			openid:"{$openid}",
+			orderid:$('#noworderid').val(),
+        },
+        success:function(data){
+            if(data.result){
+				var jumpurl = decodeURIComponent(data.jumpurl)
+				newutil.pay({					
+					orderFee : data.fee,
+					payMethod : type,
+					orderTitle :data.title,
+					orderTid : data.ordertid,
+					payweid : data.payweid,
+					orderid : data.orderid,
+					module : 'fm_jiaoyu',
+					success : function(res) {
+						alert('支付成功')
+						location.reload();
+					},
+					fail : function(result) {
+						alert('fail : ' + result.message);
+					},
+					complete : function(result) {
+						if(result.errno != 0){
+							location.reload();
+						}
+					}
+				});
+			}	
+        }
+    });                   
+	return;	
+}
+
+function del_thisorder(orderid,is_newstu){
+    $.ajax({
+        url: "{php echo $this->createMobileUrl('payajax', array('op'=>'del_ordertid'))}",
+        dataType: 'json',
+        data:{
+			orderid:orderid,
+            is_newstu:is_newstu,
+        },
+        success:function(data){
+
+        }
+    });                   
+}
+</script>

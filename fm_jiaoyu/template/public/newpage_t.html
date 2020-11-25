@@ -1,0 +1,234 @@
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mGrzxTeacher.css?v=4.80915" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/web/css/new_yab.css" />
+<!-- <link rel="stylesheet" type="text/css" href="{OSSURL}public/web/css/demo-grid.css" />   -->
+<!-- <script type="text/javascript" src="../addons/fm_jiaoyu/public/web/js/drag.js"></script> -->
+<style>
+.item { width: 100px; height: 100px; } 
+.cards {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 300;
+  background-color: rgba(255,255,255,0.9);
+  color:black;
+  border-radius: 4px;
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  -ms-transition: all 0.2s ease-out;
+  -o-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+.item.red .cards {
+  color: #f94a7a;
+}
+
+.card-id {
+  position: absolute;
+  left: 7px;
+  top: 0;
+  height: 30px;
+  line-height: 30px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 400;
+}
+.card-remove {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+}
+.cards:hover > .cards-remove,.cards:hover > .card-config,.cards:hover > .card-refresh {
+  -moz-transform: scale(1);
+  -webkit-transform: scale(1);
+  
+}
+	 .header { width: 100%; height: 50px; position: fixed; z-index: 1000; top: 0; left: 0; } 
+	 .header .l { width: 50px; height: 50px; line-height: 50px; color: white; position: absolute; left: 0; top: 0; } 
+	 .header .m { width: 100%; height: 50px; line-height: 50px; text-align: center; color: white; font-size: 18px; } 
+	 .header .r { width: 50px; height: 50px; line-height: 50px; position: absolute; right: 0; top: 0; } 
+	
+	 .header .l a { font-size: 18px; color: white; display: block; width: 100%; height: 100%; text-align: center; }
+	 .grid {
+  position: relative;
+}
+.item {
+  display: block;
+  position: absolute;
+}
+.item.muuri-dragging,
+.item.muuri-releasing {
+  z-index: 2;
+}
+.item.muuri-hidden {
+  z-index: 0;
+}
+.item-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+</style>
+</head>
+<body>	
+    	
+
+
+		<div class="stuBanner">
+			<div class="stuBannerBg">
+			</div>
+		</div>
+		<div class="stuBox">
+			<div  class="stuInfo">
+				<input type="hidden" id="bigImage" name="bigImage"/>
+				<div class="stuHeader" onclick="uploadImg(this);">
+					<img alt="头像" src="{php echo tomedia($logo['tpic'])}" />
+					<label style="text-align: center;font-size: 10px;display: block;color: #999; margin-top: -5px;">点击修改</label>
+				</div>
+				<div class="stuInfoCenter">
+					<div class="stuName">
+						<label class="m_r_10" style="font-size: 16px;font-weight: unset;">教师名称</label>
+						
+					
+			
+					</div>
+					
+					
+					<div class="stuCampusAndBjname">
+						<span class="campus">教师称号</span>
+					</div>
+				</div>	
+			</div>				
+			<div class="stuServer">
+				<label>服务</label>
+				<div class="server">
+					<span>已绑定</span>
+				</div>
+				
+			</div>
+			{if $logo['is_wxsign'] ==1 || $logo['is_recordmac'] ==1}
+			<div class="stuServer" style="border-bottom: 0px solid #e7e7eb;">
+				<label>考勤</label>
+				<div class="server">
+					<span>服务中</span>
+				</div>
+				
+			</div>
+			{/if}	
+			<div class="stuServer" style="height:auto;">
+				<label style="height:auto;">班级</label>
+				<div class="server" style="height:auto;">
+					<span>授课班级</span>
+				</div>
+			</div>
+			<div class="stuServer">
+				<label>聊天</label>
+				<div class="server">
+					<span id="msg_word">是否接收家长私聊信息以及公开电话&nbsp;</span>
+				</div>
+				
+			</div>			
+		</div>
+		<div class="grid-demo" >
+		
+        <div class="controls cf" style="display: none;">
+            <div class="control search">
+                <div class="control-icon">
+                    <i class="material-icons"></i>
+                </div>
+                <input class="control-field search-field form-control "
+                       type="text" name="search" placeholder="Search...">
+            </div>
+            <div class="control filter">
+                <div class="control-icon">
+                    <i class="material-icons"></i>
+                </div>
+                <div class="select-arrow">
+                    <i class="material-icons"></i>
+                </div>
+                <select class="control-field filter-field form-control">
+                    <option value="" selected="">All</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                </select>
+            </div>
+            <div class="control sort">
+                <div class="control-icon">
+                    <i class="material-icons"></i>
+                </div>
+                <div class="select-arrow">
+                    <i class="material-icons"></i>
+                </div>
+                <select class="control-field sort-field form-control">
+                    <option value="order" selected="">Drag</option>
+                    <option value="title">Title (drag disabled)</option>
+                    <option value="color">Color (drag disabled)</option>
+                </select>
+            </div>
+            <div class="control layout">
+                <div class="control-icon">
+                    <i class="material-icons"></i>
+                </div>
+                <div class="select-arrow">
+                    <i class="material-icons"></i>
+                </div>
+                <select class="control-field layout-field form-control">
+                    <option value="left-top" selected="">Left Top</option>
+                    <option value="left-top-fillgaps">Left Top (fill gaps)</option>
+                    <option value="right-top">Right Top</option>
+                    <option value="right-top-fillgaps">Right Top (fill gaps)</option>
+                    <option value="left-bottom">Left Bottom</option>
+                    <option value="left-bottom-fillgaps">Left Bottom (fill gaps)</option>
+                    <option value="right-bottom">Right Bottom</option>
+                    <option value="right-bottom-fillgaps">Right Bottom (fill gaps)</option>
+                </select>
+            </div>
+        </div>
+		   <div class="grid-footer" style="display:none">
+            <button class="add-more-items btn btn-primary">
+                <i class="material-icons"></i>Add more items
+            </button>
+        </div>
+     
+    <div class="linkDiv grid" id="linkDiv" style="margin-top:10px;">
+        {loop $iconsF $key $row}	
+          <div class="item  w1 red muuri-item muuri-item-shown linkBox" data-id="{$row['ssort']}" data-color="red" data-title="mk" style="left: 0px; top: 0px; transform: translateX(240px) translateY(0px); display: block; touch-action: none; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);">
+              <div class="item-content " style="opacity: 1; transform: scale(1);">
+                <div class="cards " style="height:auto">
+                    <div class="linkImg"> 
+                      <input type="hidden" class="card-id" name="ssortId[{$row['id']}]" value="{$row['ssort']}" style="height:auto;display:none">
+                      <img alt="" src="{php echo tomedia($row['icon'])}" style="width:35px;">
+                    </div>			
+                    <span class="linkName">{$row['name']}</span>	 
+                    <span class="linkName">{if $row['icontype']}({$row['icontype']}){else}更多功能{/if}</span>	 
+                    <div class="card-remove"><i class="material-icons fa fa-bars"  onclick="showMoFang({$row['id']})"></i></div>
+                </div>
+              </div>
+          </div>
+        {/loop}	
+		</div>
+		</div>
+		
+		<script type="text/javascript">
+		
+			$(document).ready(function() {
+				$(".editor").hide();
+				var aaaa = document.getElementsByClassName('linkDiv')[0];
+				 var body = document.body;
+			});
+
+			function showMoFang(Pla){
+				$(".editor").hide();
+				$("#iconeditor"+Pla).show();
+			}
+		</script>

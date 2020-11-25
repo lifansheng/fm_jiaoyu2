@@ -1,0 +1,131 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'edit'}
+<form class="form-horizontal form" id="form1" action="" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="id" value="{$id}" />
+    <input type="hidden" name="pid" value="{$pid}" />
+	<div class="main">
+		<div class="panel panel-default">
+			<div class="panel-heading">添加设备</div>
+			<div class="panel-body">
+            	{if $device['is_bobao']==5 || $device['is_bobao']==4}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>DeviceId</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" class="form-control" name="deviceId" value="{$item['deviceId']}" placeholder="DeviceId">
+						
+					</div>
+				</div>
+                {/if}
+                {if $device['is_bobao']==3 || $device['is_bobao']==4}
+				<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>PassType</label>
+						<div class="col-sm-2 col-lg-2">
+							
+                                <input type="radio" value="1" class="printer-type" name="passType" {if $item['passType'] != '2' }checked{/if} id="credit11" > 进
+                            
+                                <input type="radio" value="2" class="printer-type" name="passType" {if $item['passType'] == '2'}checked{/if} id="credit12" > 出
+						</div>
+				</div>
+                {/if}
+                {if $device['is_bobao']==4}
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>PassDeviceId</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" class="form-control" name="passDeviceId" value="{$item['passDeviceId']}" placeholder="passDeviceId">
+						
+					</div>
+				</div>
+                {/if}
+                <div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>cameras</label>
+					<div class="col-sm-9 col-xs-12">
+                        <div class="modal-body">
+                            <table class="table table-hover table-bordered">						
+                                <tbody>
+                                    <tr>
+                                        <th >摄像机位置</th>
+                                        <th width="200">IP</th>
+                                        <th width="100">port</th>
+                                        <th width="150">username</th>
+                                        <th width="150">password</th>
+                                    </tr>
+                                    <tr>	
+                                        <td>cameras1</td>
+                                        <td><input type="text" name="cameras[0][ip]" value="{$cameras[0][ip]}"/></td>
+                                        <td><input type="text" name="cameras[0][port]" value="{$cameras[0][port]}" style="width: 100%;"/></td>
+                                        <td><input type="text" name="cameras[0][username]" value="{$cameras[0][username]}" style="width: 100%;"/></td>
+                                        <td><input type="text" name="cameras[0][password]" value="{$cameras[0][password]}" style="width: 100%;"/></td>
+                                    </tr>
+                                    <tr>	
+                                        <td>cameras2</td>
+                                        <td><input type="text" name="cameras[1][ip]" value="{$cameras[0][ip]}"/></td>
+                                        <td><input type="text" name="cameras[1][port]" value="{$cameras[0][port]}" style="width: 100%;"/></td>
+                                        <td><input type="text" name="cameras[1][username]" value="{$cameras[0][username]}" style="width: 100%;"/></td>
+                                        <td><input type="text" name="cameras[1][password]" value="{$cameras[0][password]}" style="width: 100%;"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>				
+                    </div>	
+                 </div>			
+                <div class="form-group">
+                    <div class="col-sm-9 col-xs-9 col-md-9">
+                        <input type="hidden" name="token" value="{$_W['token']}">
+                        <input name="submit" id="submit" type="submit" value="提交" class="btn btn-primary col-lg-1">
+                    </div>	
+                </div>
+            </div>
+         </div>
+	</div>
+</form>
+
+{elseif $operation == 'display'}
+<div class="clearfix">
+	<form class="form-horizontal" action="" method="post">
+    	<div class="form-group">
+			<div class="col-sm-12">
+				<a class="btn btn-success col-lg-1 qx_2402" href="{php echo $this->createWebUrl('remote', array('op' => 'edit','schoolid' => $schoolid,'pid' => $pid));}"/><i class="fa fa-plus-circle"> </i>  添加设备</a>
+			</div>
+		</div>
+		<div class="panel panel-default">
+			<div class="panel-body table-responsive">
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th>DeviceId</th>
+						    <th>PassType</th>													
+							<th>PassDeviceId</th>	
+							<th>cameras</th>
+							
+							<th style="text-align:right;">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td>{$item['deviceId']}</td>
+							<td>{$item['passType']}</td>
+							<td>{$item['passDeviceId']}</td>
+							<td>
+                            {loop $item['cameras'] $camera}
+                            ip:{$camera['ip']} port:{$camera['port']} username:{$camera['username']} password:{$camera['password']}<br />
+                            {/loop}
+                            </td>							
+							
+							<td style="text-align:right;">
+								<a href="{php echo $this->createWebUrl('remote', array('op'=>'edit','id' => $item['id'],'pid' => $item['pid'], 'schoolid' => $schoolid))}" data-tag="{$item['macid']}" class="btn btn-info btn-sm showqrcode">编辑</a>
+								
+								<a href="{php echo $this->createWebUrl('remote', array('op'=>'del','id' => $item['id'],'pid' => $item['pid'], 'schoolid' => $schoolid))}" class="btn btn-default btn-sm editconfig" data-id="{$item['id']}">删除</a>
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</form>
+</div> 
+
+
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,93 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2019-11-19 18:51:59
+ * @LastEditTime: 2020-10-21 18:48:45
+ -->
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<!--zhsdasasdsdasdd-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>{if !empty($logo['title'])}{$logo['title']}{/if}</title>
+	<meta name="keywords" content="{$_W['page']['copyright']['keywords']}" />
+	<meta name="description" content="{$_W['page']['copyright']['description']}" />
+	<link rel="shortcut icon" href="{$_W['siteroot']}{$_W['config']['upload']['attachdir']}/{if !empty($_W['setting']['copyright']['icon'])}{$_W['setting']['copyright']['icon']}{else}images/global/wechat.jpg{/if}" />
+	<link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+	{if IMS_VERSION >= 2.6}
+	<link href="{$_W['siteroot']}addons/fm_jiaoyu/public/web/css/we7.common.css?v=5" rel="stylesheet">
+	{else}
+	<link href="{$_W['siteroot']}addons/fm_jiaoyu/public/web/css/common.css?v=1" rel="stylesheet">
+	{/if}
+    <link href="{$_W['siteroot']}addons/fm_jiaoyu/template/public/css/bootstrap.min.css?v=6" rel="stylesheet">
+    <link href="{$_W['siteroot']}addons/fm_jiaoyu/template/public/css/bootstrap-reset.css?v=6" rel="stylesheet">
+	<link href="{$_W['siteroot']}addons/fm_jiaoyu/template/public/css/style.css?v=7" rel="stylesheet">
+	<link href="{$_W['siteroot']}addons/fm_jiaoyu/template/public/css/colors.css?v=2" rel="stylesheet">
+    <!-- <link href="{$_W['siteroot']}addons/fm_jiaoyu/template/public/css/style.css?v=3" rel="stylesheet"> -->
+	<!-- <link href="{$_W['siteroot']}addons/fm_jiaoyu/template/public/css/style-responsive.css" rel="stylesheet"> -->
+	<script type="text/javascript">
+	if(navigator.appName == 'Microsoft Internet Explorer'){
+		if(navigator.userAgent.indexOf("MSIE 5.0")>0 || navigator.userAgent.indexOf("MSIE 6.0")>0 || navigator.userAgent.indexOf("MSIE 7.0")>0) {
+			alert('您使用的 IE 浏览器版本过低, 推荐使用 Chrome 浏览器或 IE8 及以上版本浏览器.');
+		}
+	}
+
+	window.sysinfo = {
+		{if !empty($_W['uniacid'])}'uniacid': '{$_W['uniacid']}',{/if}
+		{if !empty($_W['acid'])}'acid': '{$_W['acid']}',{/if}
+		{if !empty($_W['openid'])}'openid': '{$_W['openid']}',{/if}
+		{if !empty($_W['uid'])}'uid': '{$_W['uid']}',{/if}
+		'siteroot': '{$_W['siteroot']}',
+		'siteurl': '{$_W['siteurl']}',
+		'attachurl': '{$_W['attachurl']}',
+		'attachurl_local': '{$_W['attachurl_local']}',
+		'attachurl_remote': '{$_W['attachurl_remote']}',
+		{if defined('MODULE_URL')}'MODULE_URL': '{MODULE_URL}',{/if}
+		'cookie' : {'pre': '{$_W['config']['cookie']['pre']}'},
+		'account' : {php echo json_encode($_W['account'])}
+	};
+	</script>
+	<script>var require = {urlArgs: 'v={php echo date('YmdH');}' };</script>
+	{if IMS_VERSION >= 1.5}
+	<script type="text/javascript" src="./resource/js/lib/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="{MODULE_URL}public/web/js/jqsession.js"></script>
+	{if  $_GPC['do'] == 'checkdatedetail'}
+	<script type="text/javascript" src="{MODULE_URL}public/web/js/amazeui.min.js?v=20200914"></script>
+	{elseif $_GPC['do'] == 'apcheck' || $_GPC['do'] == 'checklog' || $_GPC['do'] == 'visitors' || $_GPC['do'] == 'lxvis' || ($_GPC['do'] == photos && $_GPC['op'] != 'display')}
+	<script type="text/javascript" src="{MODULE_URL}public/web/js/jquery.magnific-popup.js"></script>
+	{else}
+	<script type="text/javascript" src="./resource/js/lib/bootstrap.min.js"></script>
+	{/if}
+	<script type="text/javascript" src="./resource/js/app/util.js"></script>
+	<script type="text/javascript" src="./resource/js/app/common.min.js"></script>
+	{if $_GPC['do'] != 'apcheck' && $_GPC['do'] != 'zdytest' && !($_GPC['do'] == 'theclass' && $_GPC['op'] == 'display'  ) && $_GPC['do'] != 'drug' && $_GPC['do'] != 'mallorder' && $_GPC['do'] != 'payall' && ($_GPC['do'] == 'photos' && $_GPC['op'] == 'display')}
+	<script type="text/javascript" src="./resource/js/lib/jquery.nice-select.js?v={IMS_RELEASE_DATE}"></script>
+	{/if}
+	{if  ($_GPC['do'] != 'yqdkgather') && ($_GPC['do'] != 'quesformecharts') && ($_GPC['do'] != 'allcamera' || $_GPC['op'] != 'display') && ($_GPC['do'] != 'manual' || $_GPC['op'] != 'look') &&    ($_GPC['do'] != bjquan) &&   ($_GPC['do'] != 'signup')  && ($_GPC['do'] != 'template' || ( $_GPC['do'] == template && $_GPC['op'] != 'display4' ))}
+	<script type="text/javascript" src="./resource/js/require.js"></script>
+	{/if}
+	{else}
+	<script type="text/javascript" src="./resource/js/lib/jquery-1.11.1.min.js"></script>
+	<script src="{$_W['siteroot']}web/resource/js/app/util.js"></script>
+	{if    ($_GPC['do'] != bjquan) &&    ($_GPC['do'] != signup) && ($_GPC['do'] != 'template' || ( $_GPC['do'] == template && $_GPC['op'] != 'display4' ))}
+	<script type="text/javascript" src="./resource/js/require.js"></script>
+	{/if}
+	<script src="{$_W['siteroot']}web/resource/js/app/config.js"></script>
+	{/if}
+	<!--[if lt IE 9]>
+		<script src="{$_W['siteroot']}web/resource/js/html5shiv.min.js"></script>
+		<script src="{$_W['siteroot']}web/resource/js/respond.min.js"></script>
+	<![endif]-->
+
+	<!--daozhelile-->
+</head>
+<!--zhli-->
+<body>
+{if ($_GPC['do'] == template && $_GPC['op'] == 'display4' )}
+<script type="text/javascript" src="../addons/fm_jiaoyu/public/web/js/velocity.min.js"></script>
+<script type="text/javascript" src="../addons/fm_jiaoyu/public/web/js/hammer.min.js"></script>
+<script type="text/javascript" src="../addons/fm_jiaoyu/public/web/js/muuri.js"></script>
+<script type="text/javascript" src="../addons/fm_jiaoyu/public/web/js/demo-grid.js"></script>
+{/if}

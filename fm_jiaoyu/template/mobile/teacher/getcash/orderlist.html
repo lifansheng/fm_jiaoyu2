@@ -1,0 +1,418 @@
+<div class="sign_list">
+	<div class="stu_search_head">
+		<div class="ADVtips">
+			<div class="ADVtips_title">可提现课程</div>
+			<span id="msg_word">仅显示未提现签到&nbsp;&nbsp;&nbsp;</span>
+			<div class="switch  scale03 switch_on" style="padding: 0px;">
+				<div class="switch_push">
+					<div class="switch_round"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ajax_stu_box">
+		<div class="All">     
+			<div class="listContent">
+			{loop $kclist $row}
+				<li class="orderlist">
+					<div class="cutting"></div>
+					<div class="ordercment">
+						<div class="notifyTopLeft">
+							<img src="{$row['thumb']}" class="teacherImgError" />
+						</div>
+						<div class="notifyTopRight mian_box" style="height:auto">
+							<div class="notifyTopRightTopBox">				
+								<span class="teacherInfo">{$row['name']}</span>
+							</div>
+							<p class="notifyCreateTime"><span class="notifyCreateTime">{$row['infoword']}</span></p>
+							<span class="SpanInfo" style="color:#da7131;">主讲:<span style="color:blue">{$row['zjnumber']}</span>课</span>	
+							<span class="SpanInfo" style="color:#da7131;">助教:<span style="color:blue">{$row['fdnumber']}</span>课</span>
+							<span class="SpanInfo" style="color:#da7131;">小计:<span style="color:blue">{$row['xjfee']}</span>元</span>	
+						</div>
+						<div class="right_icon openclass"></div>
+						<div class="addks type_check noact"></div>
+					</div>
+					<div class="detail_list" style="display:none">
+					{loop $row['allmysign'] $val}
+						{if $row['kctxrule'] == 1}
+						<div class="ordercment {if !$val['cangetcash']}alread{/if}" style="height:30px;">
+							<div class="notifyTopRight" style="height:auto;border-top: 1px #ddd solid;padding-top: 10px;">
+								<span class="notifyCreateTime" style="margin-right: 1px;float: left;">{$val['ksdate']}</span>
+								<span class="SpanInfo">第<span style="color:blue">{$val['ksnub']}</span>课</span>
+								{if $val['ismaster_tid']==1}<span class="SpanInfo"><span style="color:blue">主讲</span></span>{/if}
+								{if $val['ismaster_tid']==2}<span class="SpanInfo"><span style="color:#ef370b">助教</span></span>{/if}
+								{if $val['shtname']}<span class="SpanInfo" style="color:#da7131;">审核:<span style="color:blue">{$val['shtname']}</span></span>{/if}
+								{if $val['tqdleixing'] != 1}<span class="SpanInfo tips bluebtn">{if $val['tqdleixing'] == 2}提前签{/if}{if $val['tqdleixing'] == 3}补签{/if}</span>{/if}
+								{if $val['tqdtype']}<span class="SpanInfo tips redbtn">代签</span>{/if}
+								<span class="notifyCreateTime" style="margin-right: 4px;float: right;">{if $val['cangetcash']}{$val['qddate']}{else}已提现{/if}</span>
+							</div>
+							{if $val['cangetcash']}<div class="addks list_check smallnoact" signid="{$val['id']}"></div>{/if}
+						</div>
+						{/if}
+						{if $row['kctxrule'] == 2}
+						<div class="ordercment" style="margin-top:24px;padding-top: 8px;border-top: 1px #848484  solid;">
+							<div class="botleft">
+								<div class="xqbox">
+									<div class="xqboxtop">{$val['ksdate']}</div>
+									<div class="xqboxbot">第{$val['ksnub']}课</div>
+								</div>
+							</div>
+							<div class="notifyTopRight" style="height:auto;padding-top: 10px;">
+								<span class="SpanInfo">{if $val['ismaster_tid'] == 1}主讲{/if}{if $val['ismaster_tid'] == 2}助教{/if}</span>
+								{if $val['tqdleixing'] != 1}<span class="SpanInfo tips bluebtn">{if $val['tqdleixing'] == 2}提前签{/if}{if $val['tqdleixing'] == 3}补签{/if}</span>{/if}
+								{if $val['tqdtype']}<span class="SpanInfo tips redbtn">代签</span>{/if}
+								{if $val['shtname']}<span class="SpanInfo" style="color:#da7131;">审核:<span style="color:blue">{$val['shtname']}</span></span>{/if}
+								<p class="notifyCreateTime"><span class="notifyCreateTime">本接共计有{$val['stunumber']}个学生签到，总扣除学生课时{$val['stuksnum']}个</span></p>
+							</div>
+						</div>
+							{loop  $val['allstusign'] $it}
+							<div class="ordercment {if !$it['cangetcash']}alread{/if}" style="height:30px;">
+								<div class="notifyTopRight" style="height:auto;margin-top: 16px;padding-top: 5px;border-top: 1px #ddd solid;">
+									<span class="SpanInfo">{$it['s_name']}</span>
+									<span class="SpanInfo">扣<span style="color:blue">{$it['costnum']}</span>课时</span>
+									{if $it['s_shtname']}<span class="SpanInfo" style="color:#da7131;">审核:<span style="color:blue">{$it['s_shtname']}</span></span>{/if}
+									{if $it['s_leixing'] != 1}<span class="SpanInfo tips bluebtn">{if $it['s_leixing'] == 2}提前签{/if}{if $it['s_leixing'] == 3}补签{/if}</span>{/if}
+									{if $it['s_tqdtype']}<span class="SpanInfo tips redbtn">代签</span>{/if}
+									<span class="notifyCreateTime" style="margin-right: 4px;float: right;">{if $it['cangetcash']}{$it['s_qddate']}{else}已提现{/if}</span>
+								</div>
+								{if $it['cangetcash']}<div class="addks list_check smallnoact" signid="{$it['id']}"></div>{/if}
+							</div>
+							{/loop}		
+						{/if}
+					{/loop}
+					</div>
+				</li>
+			{/loop}	
+			</div>
+			<div class="clear"></div>
+			<div class="clear"></div>
+			<div class="clear"></div>
+		</div>
+		<div class="foot_bot">
+			<div class="foot_kc_bot">
+				<div class="tea_sign">
+					<div class="check_all fenge noact">&nbsp;&nbsp;&nbsp;<span class="mb_marsk">全选</span></div>
+					<div class="orderlistinfo">
+						<div class="bot_fee_info"><span class="chosed_number">0</span>个课时,</div>
+						<div class="bot_fee_box">合计:<div class="bot_fee_rmb">￥</div><div class="bot_fee">0.00</div></div>
+					</div>
+				</div>
+				<div class="mb_marsk tjddcalss tea_pk" onclick="getcash_next()">合并提交</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="next_class"  style="display:none">
+	<div class="next_top">
+		<div class="next_top_info">
+			<div class="next_top_cash">今日剩余提现额度：￥{$restxfee}</div>
+			<div class="next_top_text">今日剩余提现次数: {$restxtimes}次<span class="tips">规则</span></div>
+		</div>
+		<div class="next_bot_info">
+			<div class="next_bot_left">￥</div>
+			<div class="next_bot_right bot_fee">0.00</div>
+		</div>
+	</div>
+	<div class="info">说明：单次提现金额不得小于{$ontxmin}</div>
+	<div class="tx_type">
+		<div class="tx_type_top">提现方式</div>
+		<div class="tx_boxs">
+			<div class="tx_boxs_icon chosed" onclick="chose_txtype(1,this)">
+				<div class="tx_icon"><img src="{OSSURL}public/mobile/img/weixinicon.png"></div>
+				<div class="tx_word">微信</div>
+			</div>
+			<div class="tx_boxs_icon nochosed" onclick="chose_txtype(2,this)">
+				<div class="tx_icon"><img src="{OSSURL}public/mobile/img/distribution1.png"></div>
+				<div class="tx_word">现金</div>
+			</div>
+			<div class="tx_boxs_icon nochosed" onclick="chose_txtype(3,this)">
+				<div class="tx_icon"><img src="{OSSURL}public/mobile/img/jifen.png"></div>
+				<div class="tx_word">其他</div>
+			</div>
+		</div>
+	</div>
+	<div class="info">说明：最终提现结算方式以财务审核为准</div>
+	<div class="my_infobox">
+		<div class="my_info_list">
+			<div class="my_info_title">
+				<span style="color:red">*</span>
+				<span>真实姓名</span>
+			</div>
+			<input class="inputcalss" id="realname" placeholder="输入您的真实姓名..." value="{$realname}" >
+		</div>
+		<div class="my_info_list">
+			<div class="my_info_title">
+				<span style="color:red">*</span>
+				<span>手机号码</span>
+			</div>
+			<input class="inputcalss" id="mobile" type="number" placeholder="输入您的手机号..." value="{$mobile}" >
+		</div>
+		<div class="my_info_list">
+			<div class="my_info_title">
+				<span style="color:red">&nbsp;&nbsp;</span>
+				<span>备注信息</span>
+			</div>
+			<input class="inputcalss" id="rank" placeholder="提现备注，最多50字..." value="请尽快通过审核,谢谢" >
+		</div>
+	</div>
+	<div class="info">说明：如选择微信提现则必须输入实名认证微信姓名且需与您的教师名称相同</div>
+	<div class="foot_bot">
+		<div class="foot_kc_bot">
+			<div class="tea_sign">
+				<div class="orderlistinfo">
+					<div class="bot_fee_info"><span class="chosed_number">0</span>个课时,</div>
+					<div class="bot_fee_box">合计:<div class="bot_fee_rmb">￥</div><div class="bot_fee">0.00</div></div>
+				</div>
+			</div>
+			<div class="mb_marsk tea_pk" onclick="getcash()">提交申请</div>
+		</div>
+	</div>
+	<input type="hidden" id="bot_fee" value="0"/>
+	<input type="hidden" id="txtype" value="1"/>
+	<input type="hidden" id="restxfee" value="{$restxfee}"/>
+	<input type="hidden" id="restxtimes" value="{$restxtimes}"/>
+	<input type="hidden" id="ontxmin" value="{$ontxmin}"/>
+	<input type="hidden" id="ontxmax" value="{$ontxmax}"/>
+	<input type="hidden" id="cantime" value="{$cantime}"/>
+	<input type="hidden" id="user_oneorder_max" value="{$txrule['user_oneorder_max']}"/>
+</div>
+<script>
+//提交申请
+function getcash(){
+	var txtype = $('#txtype').val()
+	var realname = $('#realname').val()
+	var mobile = $('#mobile').val()
+	var rank = $('#rank').val()
+	var restxfee = parseInt($('#restxfee').val())
+	var restxtimes = parseInt($('#restxtimes').val())
+	var user_oneorder_max = $('#user_oneorder_max').val()
+	var bot_fee = $('#bot_fee').val()
+	var cantime = parseInt($('#cantime').val())
+	var ontxmin = parseInt($('#ontxmin').val())
+	var ontxmax = parseInt($('#ontxmax').val())
+	if(cantime == 2){
+		jTips("抱歉，单次提现时间间隔不得低于{$txrule['every_days']}分钟")
+		return false
+	}
+	if(bot_fee < ontxmin){
+		jTips('抱歉，单笔提现金额不得小于'+ontxmin+'元')
+		return false
+	}
+	if(bot_fee > ontxmax){
+		jTips('抱歉，单笔提现金额不得大于'+ontxmax+'元')
+		return false
+	}
+	if(bot_fee > restxfee){
+		jTips('抱歉，您今日最高还可提现'+restxfee+'元')
+		return false
+	}
+	if(restxtimes == 0){
+		jTips('抱歉，您今天的提现次数已用完');
+		return false
+	}
+	if(!txtype){
+		jTips('请选择提现方式');
+		return false
+	}
+	if(!realname || realname==''){
+		jTips('请输入您的正式姓名');
+		return false
+	}
+	if(!mobile || mobile==''){
+		jTips('请输入您的手机号码');
+		return false
+	}
+	var orderarr =  [];
+	$(".list_check").not(".smallnoact").each(function () {
+		orderarr.push($(this).attr("signid"));
+	});
+	if(orderarr.length < 1){
+		jTips('请至少选择一个签到记录');
+	}else{
+		var r = confirm("已选中"+orderarr.length+"条签到,提交后不能再次重复对这些记录进行发起申请,确认继续吗？");
+		if (r == true) {
+			ajax_start_loading("提交申请中...");
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('getcash', array('schoolid' => $schoolid,'op' => 'get_cash'), true)}",
+				type: "post",
+				dataType: "json",
+				data: {orderarr:orderarr,txtype:txtype,realname:realname,mobile:mobile,rank:rank},
+				success: function(result) {
+					ajax_stop_loading();
+					jTips(result.msg);
+					if(result.result){
+						$('html,body').removeClass('popNoscroll')
+						$('.popUpBox1').slideRightHide()
+						$('#index').val('index')
+						showtxlog()
+					}
+				},
+				error: function(e) {
+					ajax_stop_loading();
+					jTips('访问网络失败');
+				}
+			});
+		}
+	}
+}
+function chose_txtype(type,elm){
+	$('.tx_boxs_icon').addClass('nochosed')
+	$('.tx_boxs_icon').removeClass('chosed')
+	if($(elm).hasClass('nochosed')){
+		$(elm).addClass('chosed')
+		$(elm).removeClass('nochosed')
+	}else{
+		$(elm).addClass('nochosed')
+		$(elm).removeClass('chosed')
+	}
+	$('#txtype').val(type)
+}
+$('.scale03').click(function() {
+	if($(this).hasClass('switch_on')){
+		$(this).removeClass('switch_on')
+		$(this).addClass('switch_off')
+		$('#msg_word').text('显示所有签到记录')
+		$('.alread').show()
+	}else{
+		$(this).addClass('switch_on')
+		$(this).removeClass('switch_off')
+		$('#msg_word').text('仅显示未提现签到')
+		$('.alread').hide()
+	}
+});
+$('.mian_box').click(function() {
+	let typeicon = $(this).next()
+	let listbox = $(this).parent().next()
+	if($(typeicon).hasClass('openclass')){
+		$(typeicon).addClass('closeclass')
+		$(typeicon).removeClass('openclass')
+		$(listbox).slideDown(200)
+	}else{
+		$(typeicon).addClass('openclass')
+		$(typeicon).removeClass('closeclass')
+		$(listbox).slideUp(100)
+	}
+});
+//底部全选
+$('.check_all').click(function() {
+	if($(this).hasClass('act')){
+		$(this).addClass('noact')
+		$(this).removeClass('act')
+		$('.list_check').addClass('smallnoact')
+		$('.list_check').removeClass('smallact')
+		$('.type_check').addClass('noact')
+		$('.type_check').removeClass('act')		
+	}else{
+		$(this).addClass('act')
+		$(this).removeClass('noact')
+		$('.list_check').addClass('smallact')
+		$('.list_check').removeClass('smallnoact')
+		$('.type_check').addClass('act')
+		$('.type_check').removeClass('noact')
+	}
+	check_fee()
+});
+$('.list_check').click(function() {
+	if($(this).hasClass('smallnoact')){
+		$(this).addClass('smallact')
+		$(this).removeClass('smallnoact')
+		change_type(this,1)
+	}else{
+		$(this).addClass('smallnoact')
+		$(this).removeClass('smallact')
+		change_type(this,2)
+	}
+	check_fee()
+});
+
+$('.type_check').click(function() {
+	let listbox = $(this).parent().next().find('.list_check')
+	if($(this).hasClass('noact')){
+		$(this).addClass('act')
+		$(this).removeClass('noact')
+		$(listbox).each(function() {
+			$(this).addClass('smallact')
+			$(this).removeClass('smallnoact')
+		});
+	}else{
+		$(this).addClass('noact')
+		$(this).removeClass('act')
+		$(listbox).each(function() {
+			$(this).addClass('smallnoact')
+			$(this).removeClass('smallact')
+		});
+	}
+	check_fee()
+});
+
+function change_type(elm,type){
+	let type_check = $(elm).parent().parent().prev().find('.type_check')
+	let parent_box = $(elm).parent().parent().find('.list_check')
+	if(type == 1){
+		$(parent_box).each(function() {
+			if($(this).hasClass("smallact")){
+				if(type_check.hasClass('noact')){
+					type_check.removeClass('noact')
+					type_check.addClass('act')
+				}
+			}else{
+				if(type_check.hasClass('act')){
+					type_check.removeClass('act')
+					type_check.addClass('noact')
+				}
+			}
+		});
+	}else{
+		if(type_check.hasClass('act')){
+			type_check.removeClass('act')
+			type_check.addClass('noact')
+		}
+	}
+}
+//提交申请
+function getcash_next(){
+	var orderarr =  [];
+	$(".list_check").not(".smallnoact").each(function () {
+		orderarr.push($(this).attr("signid"));
+	});
+	if(orderarr.length < 1){
+		jTips('请至少选择一个签到记录');
+	}else{
+		pushHistory()
+		$('#index').val('getcash_next')
+		$('.sign_list').slideLeftHide()
+		$('.next_class').slideRightShow()
+	}
+}
+
+function check_fee(){
+	var orderarr =  [];
+	$(".list_check").not(".smallnoact").each(function () {
+		orderarr.push($(this).attr("signid"));
+	});
+	if(orderarr.length > 0){
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('getcash', array('schoolid' => $schoolid,'op' => 'check_fee'), true)}",
+			type: "post",
+			dataType: "json",
+			data: {orderarr:orderarr},
+			success: function(result) {
+				if(result.fee > 0){
+					$('.tea_pk').removeClass('tjddcalss')
+					$('.bot_fee').text(result.fee)
+					$('#bot_fee').val(result.fee)
+					$('.chosed_number').text(orderarr.length)
+				}
+			},
+			error: function(e) {
+				jTips('访问网络失败');
+			}
+		});
+	}else{
+		$('.tea_pk').addClass('tjddcalss')
+		$('.bot_fee').text('0.00')
+		$('#bot_fee').val(0)
+		$('.chosed_number').text(0)
+	}
+}
+</script>

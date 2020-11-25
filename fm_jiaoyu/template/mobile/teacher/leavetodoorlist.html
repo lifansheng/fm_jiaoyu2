@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+{php echo register_jssdks();}
+<style type="text/css">
+.main {margin: 10px 10px;box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;border-radius: 10px;padding-bottom: 10px;}
+.notifyCreateTime{
+	margin-top: 0px;
+}
+</style>
+{php include $this->template('port');}
+<title>{$school['title']}</title>
+</head>
+<body>
+<div class="All">       
+	<div class="top_head_blank" style="height:0px"></div>	
+	<div class="listContent">
+        <ul id="fileul">
+            {loop $leave $v}
+            <li class="main" id="{$v['id']}" style="display: block;">
+                <div class="cutting"></div>
+                <div class="notifyTopBox" style="height:90px;">
+                    <div class="notifyTopLeft">
+                        <img src="{if $v['thumb']}{php echo tomedia($v['thumb'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" onclick="showBig(this)"/>
+                    </div>					
+                    <div class="notifyTopRight">
+                                
+                        <p class="notifyCreateTime">申请者：{$v['s_name']}</p>
+                        <p class="notifyCreateTime">处理者：{$v['tname']}</p>
+                        <p class="notifyCreateTime">开始时间：{php echo date('m月d日 H:i', $v['startime1'])}</p>
+                        <p class="notifyCreateTime">结束时间：{php echo date('m月d日 H:i', $v['endtime1'])}</p>
+                        <p class="notifyCreateTime">事由：{$v['conet']}</p>
+                    </div>
+                </div>
+            </li>
+            {/loop}	
+        </ul>
+	</div>
+</div>
+</body>
+</html>
+<script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+
+<script>
+    new Scroll_load({
+        "limit": "0",
+        "ajax_switch": true,
+        "ul_box": "#fileul",
+        "li_item": "#fileul .main",
+        'param': ['id'],
+        "ajax_url": "{php echo $this->createMobileUrl('leavetodoorlist', array('schoolid' => $schoolid,'op'=>'scroll_more'), true)}",
+        "page_name": "teacher_notify",
+        "after_ajax": function () {}
+    }).load_init();
+</script>
+{php include $this->template('newfooter');} 

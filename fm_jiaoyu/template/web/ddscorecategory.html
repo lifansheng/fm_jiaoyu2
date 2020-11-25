@@ -1,0 +1,417 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel panel-info">
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                {if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1005001,1,$schoolid)))}
+                <li {if $_GPC['do']=='ddscorelog'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddscorelog', array('op' => 'display', 'schoolid' => $schoolid))}">打分记录</a></li>
+                {/if}
+                {if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1005006,1,$schoolid)))}
+                <li {if $_GPC['do']=='ddcheckscore'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddcheckscore', array('op' => 'display', 'schoolid' => $schoolid))}">考核打分</a></li>
+                {/if}
+                {if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1005003,1,$schoolid)))}
+                <li {if $_GPC['do']=='ddscorecategory'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddscorecategory', array('op' => 'display', 'schoolid' => $schoolid))}">评分项</a></li>
+                {/if}
+            </ul>
+        </div>
+    </div>
+</div> 
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+.schooltip { position: absolute; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">评分项管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="ddscorecategory" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-lg-1 control-label" style="width: 100px;">按名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="title" type="text" value="{$_GPC['title']}">
+                    </div>	
+					<label class="col-lg-2 control-label" style="width: 100px;">按班级</label>				
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bjid" class="form-control">
+                            <option value="0"> 请选择班级</option>
+                            {loop $banji $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bjid']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    
+                    <div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<a class="btn btn-primary qx_004" href="{php echo $this->createWebUrl('ddscorecategory', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i> 新增项目</a>
+					</div>
+				</div>					
+
+
+            </form>
+        </div>
+    </div> 
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th style="width:7%">排序</th>
+                            <th style="width:20%">评分项名称</th>
+                            <th style="width:15%">考核类型</th>
+                            <th style="width:15%">评分类型</th>
+                            <th style="width:20%">评分值</th>
+                            <th style="width:10%;">关联班级</th>
+                            <!-- <th style="width:10%;">关联特殊班级</th> -->
+                            <th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                            <td>{$item['ssort']}</td>	
+                            <td>{$item['title']}</td>	
+                            <td>{php echo $item['type'] == 1 ? 班级考核 : 班主任考核}</td>	
+                            <td>{php echo $item['addition'] == 1 ? 加分项 : 减分项}</td>	
+                            <td>{$item['score']}</td>	
+                            <td>
+                                <div><span class="show_yulan_img" style="border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white">悬浮查看</span> </div>
+                                <div class="schooltip" style="padding:10px 10px;background-color:#1b1a1ab8;width:auto;max-width: 200px;color:white;">
+                                    {loop $item['bjlist'] $row_b}
+                                    <span style="font-weight: bold;white-space: nowrap;">{$row_b['sname']}</span> | 
+                                    {/loop}
+                                </div>
+                            </td>
+                            <td class="qx_e_d" style="text-align:right;">
+                                <a class="btn btn-default btn-sm" onclick="copy(`{$item['id']}`)" title="复制"><i class="fa fa-copy"></i></a>&nbsp;&nbsp;
+                                <a class="btn btn-default btn-sm qx_004" href="{php echo $this->createWebUrl('ddscorecategory', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_005" href="{php echo $this->createWebUrl('ddscorecategory', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                    <tr>
+                        <td colspan="10">
+                            <input name="token" type="hidden" value="{$_W['token']}" />
+                            <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+                        </td>
+                    </tr>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="copyHtml" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="left:25%">
+        <form id="copyData" onsubmit="return false" action="##" method="post" class="form-horizontal form" >
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <h4 class="modal-title">复制当前数据</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-lg-1 control-label" style="width: 100px;">排序</label>
+                        <div class="col-sm-6 col-lg-6">
+                            <input class="form-control" name="ssort" type="number" >
+                        </div>	
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-1 control-label" style="width: 100px;">标题</label>
+                        <div class="col-sm-6 col-lg-6">
+                            <input class="form-control" name="title" type="text">
+                        </div>	
+                    </div>
+                        <input type="hidden" name="copyid">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="tijiao()">确定</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var copyid = 0;
+    function copy(id){
+        $("input[name=copyid]").val(id)
+        $("#copyHtml").modal("show")
+    }
+    function tijiao(){
+        let formData = $("#copyData").serializeArray();
+        $.ajax({
+            url: "{php echo $this->createWebUrl('ddscorecategory', array('op' => 'copy','schoolid'=>$schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:formData,
+            success: function (res) {
+                alert(res.msg)
+                location.href = "{php echo $this->createWebUrl('ddscorecategory', array('op' => 'display','schoolid'=>$schoolid))}"
+            }
+        });
+    }
+{if !(IsHasQx($tid_global,1005004,1,$schoolid))}
+    $(".qx_004").hide();
+{/if}
+
+{if !(IsHasQx($tid_global,1005005,1,$schoolid))}
+    $(".qx_005").hide();
+{/if}
+
+$(function(){
+
+	var x = -190;
+	var y = -60;
+	$(".show_yulan_img").mouseover(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).show();
+		console.log(e);
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+	}).mouseout(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).hide();
+	}).mousemove(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});	
+	});
+
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的项目!');
+            return false;
+        }
+        if(confirm("确认要删除选择的项目?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('ddscorecategory', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+});
+
+</script>
+{elseif $operation == 'post'}
+<div class="panel panel-info">
+   <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回</a></div>
+</div>
+<div class="main">
+    <form action="" method="post"  class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$item['id']}" />
+        <input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-6" >
+                        <input type="text" name="ssort" class="form-control" value="{$item['ssort']}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评分项名称</label>
+                    <div class="col-sm-6" >
+                        <input type="text" name="title" class="form-control" value="{$item['title']}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">考核类型</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="type" class="form-control">
+                            <option value="1" {if $item['type'] == 1}selected{/if}>班级考核</option>
+                            <option value="2" {if $item['type'] == 2}selected{/if}>班主任考核</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">考核老师</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="fzid" class="form-control">
+                            {loop $fzlist $row}
+                            <option value="{$row['sid']}">{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group sendBox" {if !$item['id']} style="display: none;" {/if}>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">考核老师列表</label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label" style="width: 20px;"  ></label>
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label" style="text-align:left;width:48%;max-width: unset; overflow-y: scroll; max-height: 100px; min-height: 42px; border: 1px solid #ebdddd;" id="Send_label" >
+                        {loop $tealist $row}
+                            <span style="border: 1px solid #e8e8e8; padding:3px 3px;" onclick="del_stu(`{$row['id']}`)" id="span_{$row['id']}"> {$row['tname']}<input type="hidden" name="tid[]" value="{$row['id']}">&nbsp;&nbsp;&nbsp;<i class="fa fa-times" ></i></span>
+                        {/loop}
+                    </label>
+                </div>
+
+                <div class="form-group choosediv" id="BjChooseDiv" style="display: none" >
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择教师</label>
+                    <div class="col-sm-12 col-lg-8" id="teaHtml">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评分类型</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="addition" class="form-control">
+                            <option value="1" {if $item['addition'] == 1}selected{/if}>加分项</option>
+                            <option value="2" {if $item['addition'] == 2}selected{/if}>减分项</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分值</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input type="text" name="score" class="form-control" value="{$item['score']}" />
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">关联班级</label>
+                    <div class="col-sm-9 col-xs-6">
+                        <div class="input-group text-info">
+                            <label  class="checkbox-inline" style="margin-left: 10px;width: 100px;"><input type="checkbox" style="margin-top: 4px;" onclick="CheckboxAll(this)" id="check_all" />全选</label></br>
+                            {loop $banji $uni}
+                            {php $is = $this->uniarr($uniarr,$uni['sid']);}
+                                <label class="checkbox-inline" style="margin-left: 10px;min-width: 140px;">
+                                <input style="margin-top: 4px;" type="checkbox" class="check_bj"  name="bjidarr[]" value="{$uni['sid']}"{if ($is)}checked="checked"{/if}> {$uni['sname']}
+                                </label>
+                            {/loop}
+                        </div>
+                        <div class="help-block">选择要关联的班级</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>	
+<script>
+    $(function(){
+        $('select[name=fzid]').change()
+    })
+    //发送对象选择，教师组或者指定班级
+    $("select[name='fzid']").change(function(){
+        fzid = $(this).val()
+        $("#BjChooseDiv").slideDown()
+        $(".sendBox").slideDown()
+        $("#teaHtml").html('')
+        $.ajax({
+            url: "{php echo $this->createWebUrl('ddscorecategory', array('op' => 'getTeaList', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:{fzid:fzid},
+            success: function (res) {
+                let data = res.data
+                for(let item of data){
+                    let html = `<label class="checkbox-inline" style="width:20%;margin-left: 10px"><input type="checkbox" onclick="check_count(this)" id="Check_${item.id}" data-name="${item.tname}" class="TeaInput" value="${item.id}" style="float: none;" >${item.tname}</label>`;
+                    $("#teaHtml").append(html)
+                    if($(`input[name='tid[]'][value='${item.id}']`).length > 0){
+                        $(`input.TeaInput[value='${item.id}']`).prop('checked',true)
+                    }
+                }
+            }
+        });
+    })
+    
+    //checkbox选择的值(教师组或者班级)
+    function check_count(th){
+        var span_length = $("#Send_label span").length;
+        if(span_length == 0 ){
+            $('#Send_label').html('');
+        }
+        var value_th= th.value;
+        var text_th = $(th).attr("data-name");
+        let addhtml = '';
+        if(th.checked == false){
+            del_stu(value_th);
+        }else if(th.checked == true){
+            addhtml = `<span style="border: 1px solid #e8e8e8; padding:3px 3px;" onclick="del_stu(${value_th})" id="span_${value_th}"> ${text_th}<input type="hidden" name="tid[]" value="${value_th}">&nbsp;&nbsp;&nbsp;<i class="fa fa-times" ></i></span>`
+            $('#Send_label').append(addhtml);
+        }
+    }
+    // //删除选择的教师组或者班级
+    function del_stu(id) {
+        $("#span_" + id).remove();
+        $("#Check_" + id).prop('checked', false);
+        $("#checkbox_" + id).attr("checked", false);
+        var span_length = $("#Send_label span").length;
+        if (span_length == 0) {
+            $("#Send_label").html('请选择考核老师');
+        }
+    }
+
+    function CheckboxAll(e){
+        $('input.check_bj').prop('checked',e.checked)
+    }
+    $(function(){
+        $('input.check_bj').click(function(){
+            let IsAllC = true
+            $('input.check_bj').each(function(){
+                if(this.checked === false){
+                    IsAllC = false
+                }
+            })
+            $('#check_all').prop('checked',IsAllC)
+        })
+    })
+
+    //特殊班级切换
+    $("input[name='isspecial']").on('change',function(){
+        if($(this).val() == 1){
+            $(".specialBj").slideDown()
+        }else{
+            $(".specialBj").slideUp()
+        }
+    })
+</script>
+{/if}
+{template 'public/footer'}

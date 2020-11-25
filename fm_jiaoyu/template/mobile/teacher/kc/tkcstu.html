@@ -1,0 +1,107 @@
+{if $operation == 'display'}
+<div class="All">       
+	<div class="listContent">
+	<div id="shousuo"></div>
+		{loop $leave $v}
+		<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft">
+					<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+				</div>							
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox">				
+						<span class="teacherInfo">{$v['s_name']}</span>
+						{if $v['pard']}<div class="wexintip"></div>{/if}
+					</div>
+					<p class="notifyCreateTime">{if $v['numberid']}<span class="notifyCreateTime">学号:{$v['numberid']}</span>{/if}</p>
+					<span class="teacherInfo" style="color:#da7131;">已签：<span style="color:blue">{$v['yq']}</span>课时</span>	
+					<span class="teacherInfo" style="color:#da7131;">总购：<span style="color:blue">{$v['buy']}</span>课时</span>
+					<span class="teacherInfo" style="color:#da7131;">剩余：<span style="color:blue">{$v['rest']}</span>课时</span>	
+				</div>
+				<div class="addks" onclick="addsk({$v['id']})">
+					<img src="{OSSURL}public/mobile/img/add_ksbtn.png" class="img-responsive"/>
+				</div>
+			</div>
+		</li>
+		{/loop}	
+	</div>
+	<div class="more" onclick="morestu()">
+		<div class="has_show_over" style="clear:both;height:45px;line-height:45px">
+			<div class="jzz_div">
+				<div class="jzz jzz_over">
+					<div class="pir"><img src="{OSSURL}/public/mobile/img/p_jzz.png" /></div>
+					<div class="jzz_text">加载更多+</div>
+				</div>
+			</div>
+		</div>
+	</div>
+    <div class="F_div " style="right: 18px;background: #1a90f2;" onclick="close_STUBOX();">
+        <div class="F_div_text">返回</div>
+    </div>
+<div class="clear"></div>
+<div class="clear"></div>
+<div class="clear"></div>
+</div>
+{/if}
+{if $operation == 'search'}
+<div class="All">       
+	<div class="listContent">
+		<div id="shousuo"></div>
+		{loop $leave1 $v}
+		<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft">
+					<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+				</div>							
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox">				
+						<span class="teacherInfo">{$v['s_name']}</span>
+						{if $v['pard']}<div class="wexintip"></div>{/if}
+					</div>
+					<p class="notifyCreateTime">{if $v['numberid']}<span class="notifyCreateTime">学号:{$v['numberid']}</span>{/if}</p>
+					<span class="teacherInfo" style="color:#da7131;">已签：<span style="color:blue">{$v['yq']}</span>课时</span>	
+					<span class="teacherInfo" style="color:#da7131;">总共：<span style="color:blue">{$v['buy']}</span>课时</span>
+					<span class="teacherInfo" style="color:#da7131;">剩余：<span style="color:blue">{$v['rest']}</span>课时</span>	
+				</div>
+				<div class="addks" onclick="addsk({$v['id']})">
+					<img src="{OSSURL}public/mobile/img/add_ksbtn.png" class="img-responsive"/>
+				</div>
+			</div>
+		</li>
+		{/loop}	
+	</div>
+    <div class="F_div " style="right: 18px;" onclick="close_STUBOX();">
+        <div class="F_div_text">返回</div>
+    </div>
+<div class="clear"></div>
+<div class="clear"></div>
+<div class="clear"></div>
+</div>
+{/if}
+{if $operation == 'morestu'}
+{loop $leave1 $v}
+		<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft">
+					<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+				</div>							
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox">				
+						<span class="teacherInfo">{$v['s_name']}</span>
+						{if $v['pard']}<div class="wexintip"></div>{/if}
+					</div>
+					<p class="notifyCreateTime">{if $v['numberid']}<span class="notifyCreateTime">学号:{$v['numberid']}</span>{/if}</p>
+					<span class="teacherInfo" style="color:#da7131;">已签：<span style="color:blue">{$v['yq']}</span>课时</span>	
+					<span class="teacherInfo" style="color:#da7131;">总共：<span style="color:blue">{$v['buy']}</span>课时</span>
+					<span class="teacherInfo" style="color:#da7131;">剩余：<span style="color:blue">{$v['rest']}</span>课时</span>	
+				</div>
+				<div class="addks" onclick="addsk({$v['id']})">
+					<img src="{OSSURL}public/mobile/img/add_ksbtn.png" class="img-responsive"/>
+				</div>
+			</div>
+		</li>
+{/loop}
+{/if}

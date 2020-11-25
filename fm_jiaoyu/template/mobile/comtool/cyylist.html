@@ -1,0 +1,47 @@
+{loop $leave1 $v}
+		<li class="main" time="{$v['createtime']}" id="{$v['id']}" style="display: block;">
+			<div class="tongzhi">
+				
+				
+				<span class="tongzhiTitle">课程预约试听</span>
+				{if !empty($v['tbeizhu'])}
+				<div class="audit_statusNew">已联系</div>
+				{/if}
+				
+			
+			</div>
+			<div class="cutting"></div>
+			<div class="notifyTopBox" style="height:auto;">
+				
+				<div class="notifyTopRight" style="width:94%;padding-right: 10px;">
+					
+					<div class="notifyTopRightTopBox" style="height:25px;margin-top: 2px;">
+						<span class="teacherInfo">课程名称：{$v['kname']}</span>
+						 
+				 
+							
+					</div><div class="notifyTopRightTopBox" style="height:25px;margin-top: 2px;">
+						
+						<span class="teacherInfo">学生姓名：{$v['name']}</span>
+					
+							
+					</div><div class="notifyTopRightTopBox" style="height:25px;margin-top: 2px;">
+						
+						<span class="teacherInfo">联系方式：{$v['tel']}</span>
+							
+					</div>
+					<div class="notifyTopRightTopBox" style="height:auto;margin-top: 2px;text-overflow:ellipsis;">
+						
+						<span class="teacherInfo" style="overflow: hidden;text-overflow:ellipsis;white-space:nowrap;width: auto;">预约备注：{$v['beizhu']}</span>
+							
+					</div>
+					<div class="notifyTopRightTopBox" style="height:25;margin-top: 2px;">
+						
+						<span class="teacherInfo">创建时间:&nbsp;&nbsp;{$v['time']}</span>
+							
+					</div>
+				</div>
+			</div>
+			
+		</li>
+		{/loop}

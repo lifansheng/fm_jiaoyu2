@@ -1,0 +1,340 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li {if $_GPC['do']=='apartmentset'}class="active"{/if}><a href="{php echo $this->createWebUrl('apartmentset', array('op' => 'display', 'schoolid' => $schoolid))}">楼栋管理</a></li>
+			{if (IsHasQx($tid_global,1003211,1,$schoolid))}
+			<li {if $_GPC['do']=='kcbiao'}class="active"{/if}><a href="{php echo $this->createWebUrl('aproomset', array('op' => 'display', 'schoolid' => $schoolid))}">宿舍管理</a></li>
+			{/if}
+		</ul>	
+	</div>
+</div>
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<style>
+	.form-control-excel { height: 34px; padding: 6px 12px; font-size: 14px; line-height: 1.42857143; color: #555; background-color: #fff; background-image: none; border: 1px solid #ccc; border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075); box-shadow: inset 0 1px 1px rgba(0,0,0,.075); -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s; -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s; }
+	.schooltip { position: absolute; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+
+</style>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">楼栋管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="apartmentset" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />	
+				<div class="form-group">
+						  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按楼栋名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="sea_name" id="" type="text" value="{$_GPC['sea_name']}">
+                    </div>						
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>						
+					<div class="col-sm-2 col-lg-2" style="width:8%">						
+						<a class="btn btn-primary qx_3202" href="{php echo $this->createWebUrl('apartmentset', array('op'=>post, 'schoolid' => $schoolid))}" ><i class="fa fa-plus"></i> 新增楼栋</a>
+					</div>
+				</div>	
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th style="width:100px">排序</th>
+							<th >楼栋名称</th>
+							<th style="width:200px">楼栋管理员</th>
+							<th style="width:200px">入住人数</th>
+							<th style="width:200px">宿舍数</th>
+							<th style="width:200px" class="qx_3211">宿舍详情</th>								 
+							<th class="qx_e_d" style="text-align:right; width:100px">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+						<tr>
+							<td><input type="text" class="form-control" name="ssort[{$item['id']}]" value="{$item['ssort']}"></td>
+							<td>{$item['name']}</td>
+							<td>
+								{if !empty($item['teachers'])}
+									<div><span class="show_yulan_img" style="border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white">悬浮查看</span> </div>
+									<div class="schooltip" style="padding:10px 10px;background-color:#1b1a1ab8;width:auto;max-width: 120px;color:white;">
+									{loop $item['teachers'] $item1}
+										<span style="font-weight: bold;">{$item1['tname']}</span> | 
+									{/loop}
+									</div>
+								{else}
+									<span class="label label-danger">未分配管理员</span>
+								{/if}
+							</td>
+							<td>
+								{if !empty($item['stuCount'])}
+								<span class="label label-success">{$item['stuCount']} 人 </span>
+							{else}
+								<span class="label label-danger">无人入住</span>
+							{/if}
+							</td>
+							<td>
+							{if !empty($item['roomCount'])}
+								<span class="label label-info">{$item['roomCount']} 间</span>
+							{else}
+								<span class="label label-danger">未录入宿舍信息</span>
+							{/if}
+							</td>
+							<td><a class="btn btn-default qx_3211" href="{php echo $this->createWebUrl('aproomset', array('op' => 'display', 'schoolid' => $schoolid,'apid'=>$item['id'],'from'=>'apartment'))}"  data-toggle="tooltip" data-placement="top" title="宿舍详情"  >宿舍详情</a></td>					
+							<td class="qx_e_d" style="text-align:right;">
+								<a class="btn btn-default btn-sm qx_3202" href="{php echo $this->createWebUrl('apartmentset', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_3203" href="{php echo $this->createWebUrl('apartmentset', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+							</td>
+						</tr>
+						{/loop}
+					</tbody>
+				</table>
+				{$pager}
+			</form>
+		</div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+	var x = -190;
+	var y = -60;
+	$(".show_yulan_img").mouseover(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).show();
+		console.log(e.pageY);
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+	}).mouseout(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).hide();
+	}).mousemove(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});	
+	});
+})
+
+$(document).ready(function() {
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1003202,1,$schoolid))}
+		$(".qx_3202").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1003203,1,$schoolid))}
+		$(".qx_3203").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1003211,1,$schoolid))}
+		$(".qx_3211").hide();
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});	
+
+//显示弹框
+function show_order(id){
+	var id=id;
+	if(id == 1 ){
+		$("#ModalTitle").html("购买课程");
+		$('#stulist').html('抱歉，找不到学生，请重新选择班级');	
+		$("#select_kc").removeClass("xugoukc");
+		$(".xugoukc").hide();
+		$("#submit2").hide();
+		$(".nj_bj").show();
+		$("#submit1").show();
+	}else if(id ==2 ){
+		$("#ModalTitle").html("续购课程");
+		$('#stulist').html('抱歉，找不到学生，请重新选择课程');	
+		$("#select_kc").addClass("xugoukc");
+		$(".nj_bj").hide();
+		$("#submit1").hide();
+		$(".xugoukc").show();
+		$("#submit2").show();
+	}
+	$('#Modal1').modal('toggle'); 
+}
+
+//班级动作
+$('#bj_kcbuy').change(function(){
+	var schoolid = "{$schoolid}";
+	var kcid = $("#select_kc").val();
+	var bjId = $("#bj_kcbuy option:selected").attr('value');	
+	if(bjId != null && bjId != 0){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getstu_bj'))}", {'bjId': bjId, 'schoolid': schoolid,'kcid':kcid}, function(data) {
+			data = JSON.parse(data);
+			stulist = data.stulist;
+			console.log(data);
+			var html   = '';
+			if (stulist != '') {
+				for (var i in stulist) {
+					if(stulist[i].check != true){
+						html += '<label  class="checkbox-inline" style="width:20%;min-width:85px;margin-left: 10px"><input type="checkbox" name="sidarr"  value="'+stulist[i].id+'"style="float: none;" > '+stulist[i].s_name+'</label>';
+					}
+				}
+			}
+			$('#stulist').html(html);	
+		});
+
+	}
+});
+
+</script>
+{elseif $operation == 'post'}
+<style>
+	.col-sm-1{ width:3% !important }
+</style>
+<div class="panel panel-info">
+   <div class="panel-heading"><a class="btn btn-primary" href="{php echo $this->createWebUrl('apartmentset', array('op' => 'display', 'schoolid' => $schoolid))}"><i class="fa fa-tasks"></i> 返回楼栋列表</a></div>
+</div>
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="parentid" value="{$parent['id']}" />
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">编辑楼栋</div>
+            <div class="panel-body">
+				<div id="custom-url">
+					<div class="form-group">
+						<label class="col-sm-2" style="width:5%;text-align:right;line-height:30px;">排序</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort" placeholder="排序" class="form-control" value="{$apartment['ssort']}" />
+						</div>
+						<label class="col-sm-2" style="width:5%"></label>
+						<label class="col-sm-2" style="width:8%;text-align:right;line-height:30px;">楼栋名称</label>
+						<div class="col-sm-2 col-lg-2" style="width:20%">
+							<input type="text" name="ApartName" placeholder="楼栋名称" class="form-control" value="{$apartment['name']}" />
+						</div>
+						<label class="col-sm-2" style="width:5%"></label>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2" style="width:5%;text-align:right;line-height:30px;">管理员</label>
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 20px;"  ></label>
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="text-align:left;width:80%;max-width: unset" id = "stu_div" >
+							{if $thisTealist}
+								{loop $thisTealist $row}
+								<span class="stuname" style="border:1px solid #e8e8e8; padding:3px 3px;white-space: nowrap;" onclick="del_stu({$row['id']})" id="span_{$row['id']}"> {$row['tname']}<input class="tidArr" tname="{$row['tname']}" type = "hidden" name="tidarr[]" value = "{$row['id']}"><i class="fa fa-times" style="font-size:13px"></i></span>
+								{/loop}
+							{else}
+								请选择楼栋管理员
+							{/if}
+						</label>
+					</div>
+					<div class="form-group" id="upload_list">
+						<label class="col-sm-1 control-label">&nbsp;</label>
+						<div class="col-sm-2 col-lg-2" style="width: 20%">
+							<select style="margin-right:15px;" name="select_fz" id="select_fz" class="form-control">
+								<option value=" ">请选择教师分组</option>
+								<option value="0">未分组</option>
+								{loop $fz $it}
+								<option value="{$it['sid']}">{$it['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						<label onclick="hideTeaList(this)" id="hideTlist" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;display: none"  ><i class="fa fa-caret-up"></i>  收起</label>
+					</div>
+					<div class="form-group" id="teaDIv">
+					   <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"></label>
+						<div class="col-sm-9 col-xs-6">
+							<div class="input-group text-info" id="teacherList"> </div>
+							<div class="help-block">请选择楼栋管理员</div>
+						</div>
+					</div>
+                </div>	
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script>
+ 
+ var countSelectedT = Number('{$CountTea}');
+
+ function  hideTeaList(e) {
+	console.log(sildeType)
+	$('#teaDIv').slideToggle();
+	sildeType = sildeType == 1 ? 0 : 1;
+	if(sildeType == 1){
+	 	$(e).html('<i class="fa fa-caret-up"></i>  收起');
+	}else if(sildeType == 0){
+		$(e).html('<i class="fa fa-caret-down"></i>  展开');
+	}
+}
+
+ function del_stu(id){
+	countSelectedT --;
+	$("#span_"+id).remove();
+	$("#Check_"+id).prop('checked',false);
+	$("#checkbox_"+id).attr("checked",false);
+	var text11 = $("#stu_div").text();
+	var span_length = $("#stu_div span").length;
+	console.log(countSelectedT);
+	if(span_length == 0 ){
+		var endhtml = "请选择楼栋管理员";
+		$("#stu_div").html(endhtml);
+	}
+}
+
+function check_count(th){
+	let value_th = $(th).val();
+	let tName = $(th).attr(`tname`);
+	if($(th).is(':checked') == false){
+		del_stu(value_th)
+	}else if($(th).is(':checked') == true){
+		countSelectedT = countSelectedT + 1 ;
+		let addhtml = '<span class="stuname" style="border: 1px solid #e8e8e8; padding:3px 3px;white-space: nowrap;" onclick="del_stu('+value_th+')" id="span_'+value_th+'">'+tName+'<input class="tidArr" type = "hidden" name="tidarr[]" value = "'+value_th+'" tname="'+tName+'"><i class="fa fa-times" style="font-size: 13px;"></i></span>';
+		if(countSelectedT == 1){
+			$('#stu_div').html(addhtml);
+		}else{
+			$('#stu_div').append(addhtml);
+		}
+	}
+}
+
+$('#select_fz').change(function(){
+	var schoolid = "{$schoolid}";
+	var fzId = $("#select_fz option:selected").attr('value');
+	if(fzId != null && fzId !=' '){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'GetTeachersByFz','schoolid'=>$schoolid))}", {'fz_id':fzId}, function(data) {
+			console.log(data)
+			var html   = '';
+			if (data != '') {
+				for (var i in data) {
+					var is_checked = '';
+					if($("#span_"+data[i].id).length > 0 ){
+						is_checked = 'checked';
+					}
+					html += '<label  class="checkbox-inline" style="width:10%;margin-left: 10px"><input type="checkbox"  onclick="check_count(this)" id="Check_'+data[i].id+'" value="'+data[i].id+'" tname="'+data[i].tname+'" style="float: none;" >'+data[i].tname+'</label>';
+				}
+			}
+			$('#teacherList').html(html);
+			$('#teaDIv').slideDown();
+			$("#hideTlist").html('<i class="fa fa-caret-up"></i>  收起');
+			$("#hideTlist").show();
+			sildeType = 1;
+		},'json');
+	}
+});
+
+</script>
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,528 @@
+{template 'public/header'}
+
+{template 'public/comhead'}
+
+ <style>
+
+.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+
+.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+
+.alert p {margin: 0 0 10px;display: block;}
+
+.alert .bold{font-weight:bold;}
+
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+
+-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+
+ </style>
+
+{if $operation == 'display'}
+
+<div class="main">
+
+    <div class="panel panel-info">
+
+        <div class="panel-heading">值日生管理</div>
+
+        <div class="panel-body">
+
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+
+                <input type="hidden" name="c" value="site" />
+
+                <input type="hidden" name="a" value="entry" />
+
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+
+                <input type="hidden" name="do" value="cook" />
+
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                
+                <div class="form-group">
+                    
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" id="bj_id" class="form-control">
+                            <option value="0">请选择班级</option>
+                            {loop $bj $it}
+                            <option value="{$it['sid']}" {if $it['sid'] == $row['bj_id']} selected="selected"{/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>					
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>	
+								
+                </div>
+
+				<div class="form-group">
+
+                    <div class="col-sm-2 col-lg-2">                      
+
+                        <a class="btn btn-primary qx_1002 add" ><i class="fa fa-plus"></i> 添加值日生</a>
+
+                    </div>
+
+                </div>      
+
+            </form>
+
+        </div>
+
+    </div> 
+
+    <div class="panel panel-default">
+
+        <div class="table-responsive panel-body">
+
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+			<table class="table table-hover">
+
+				<thead class="navbar-inner">
+
+					<tr>
+
+						<th style="width:15%">班级</th>
+
+						<th style="width:8%;">更新时间</th>
+
+						<th  style="text-align:right; width:8%;">操作</th>
+
+					</tr>
+
+				</thead>
+
+				<tbody>
+
+					{loop $list $item}
+
+					<tr>
+
+						<td style="overflow:visible; word-break:break-all; text-overflow:auto;white-space:normal">{$item['bjname']}</td>
+
+						<td style="overflow:visible; word-break:break-all; text-overflow:auto;white-space:normal">
+
+						  <div><span class="label label-info">{php echo date('Y-m-d H:i:s',$item['createtime'])}</span></div>                   
+
+						</td>
+
+						
+
+						<td  style="text-align:right;">
+
+							<a class="btn btn-default btn-sm  qx_bj_ck" href="{php echo $this->createWebUrl('classeduty', array('op' => 'post','schoolid' => $schoolid,'id' => $item['id'],'bj_id' => $item['bj_id']))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;
+
+							<a class="btn btn-default btn-sm qx_1003" href="{php echo $this->createWebUrl('classeduty', array('op' => 'delete', 'schoolid' => $schoolid,'id' => $item['id']))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+
+						</td>
+
+					</tr>
+
+					{/loop}
+
+				</tbody>
+
+				<tr>
+
+					<td colspan="10">
+
+						<input name="token" type="hidden" value="{$_W['token']}" />
+
+						<input type="button" class="btn btn-primary qx_1003" name="btndeleteall" value="批量删除" />
+
+					</td>
+
+				</tr>
+
+			</table>
+
+			</form>
+
+        </div>
+
+    </div>
+
+	{$pager}
+
+</div>
+
+<script type="text/javascript">
+
+
+
+$(function(){
+
+   $(".add").click(function(){
+
+        var bj_id = $('#bj_id').val();
+		
+		if(bj_id==0){
+
+            alert('请选择班级!');
+
+            return false;
+
+        }
+		window.location.href="{php echo $this->createWebUrl('classeduty', array('op' => 'post', 'schoolid' => $schoolid))}&bj_id="+bj_id;
+
+    });
+
+});
+
+
+
+</script>
+
+<!--添加&编辑-->
+
+{elseif $operation == 'post'}
+
+<style>
+
+.template .item{position:relative;display:block;float:left;border:1px #ddd solid;border-radius:5px;background-color:#fff;padding:5px;width:100px;margin:0 20px 20px 0; overflow:hidden;}
+
+.template .title{margin:5px auto;line-height:2em;}
+
+.template .title a{text-decoration:none;}
+
+.template .item img{width:100px;height:100px; cursor:pointer;}
+
+.template .title .fa{display:none}
+
+.template .active .fa.fa-check{display:inline-block;position:absolute;bottom:33px;right:6px;color:#FFF;background:#009CD6;padding:5px;font-size:14px;border-radius:0 0 6px 0;}
+
+.template .fa.fa-times{cursor:pointer;display:inline-block;position:absolute;top:10px;right:6px;color:#D9534F;background:#ffffff;padding:5px;font-size:14px;text-decoration:none;}
+
+.template .fa.fa-times:hover{color:red;}
+
+.template .item-bg{width:100%; height:342px; background:#000; position:absolute; z-index:1; opacity:0.5; margin:-5px 0 0 -5px;}
+
+.template .item-build-div1{position:absolute; z-index:2; margin:-5px 10px 0 5px; width:168px;}
+
+.template .item-build-div2{text-align:center; line-height:30px; padding-top:150px;}
+
+</style>
+
+<div class="panel panel-info">
+
+   <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回列表</a></div>
+
+</div>
+
+<div class="main">
+
+	<div id="Layer2" class="qx_1002_show" style="display:none; background-color: gray;opacity:0.1;position:absolute; width:100%; height:100%; z-index:9999; padding-bottom: 20px; filter:Alpha(opacity=30)" >
+
+	</div>
+
+<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+
+        <input type="hidden" name="id" value="{$item['id']}" />
+
+        <input type="hidden" name="schoolid" value="{$schoolid}" />
+
+        <div class="panel panel-default">
+
+            <div class="panel-heading">基础设置</div>
+
+            <div class="panel-body">
+
+
+                    <div class="form-group">
+
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">所属班级</label>
+
+						<div class="col-sm-2 col-lg-2">
+								<input type="text" class="form-control" value="{$banji['sname']}" readonly="readonly" />
+						</div> 		
+
+                    </div>
+
+             </div>                                               
+
+        </div>
+
+        <div class="clearfix template">        
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/1.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>
+
+                      {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="mon_students[]" value="{$row['id']}" {if in_array($row['id'],$monarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}
+                    
+                    
+               </div>
+
+            </div>
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/2.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>                
+
+                     {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="tus_students[]" value="{$row['id']}" {if in_array($row['id'],$tusarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}
+                      
+               </div>
+
+            </div>
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/3.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>                
+
+                      {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="wed_students[]" value="{$row['id']}" {if in_array($row['id'],$wedarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}   
+
+               </div>
+
+            </div>
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/4.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>
+
+                      {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="thu_students[]" value="{$row['id']}" {if in_array($row['id'],$thuarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}   
+
+                                      
+
+               </div>
+
+            </div>
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/5.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>                
+
+                     {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="fri_students[]" value="{$row['id']}" {if in_array($row['id'],$friarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}   
+                     
+               </div>
+
+            </div>    
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/6.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>                
+
+                      {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="sat_students[]" value="{$row['id']}" {if in_array($row['id'],$satarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}   
+                      
+               </div>
+
+            </div>        
+
+            <div class="panel panel-default">    
+
+                <div class="panel-body">
+
+                      <div class="item item-style">
+
+                          <div class="title">
+
+                                <img src="../addons/fm_jiaoyu/public/web/recipe/7.jpg" class="img-rounded" />   
+
+                          </div>
+
+                      </div>                
+
+                      {loop $students $row}
+                      <div class="item item-style" style="border:none">
+
+                          <div class="title" style="text-align:center;">
+
+                                <img src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="width:50px; height:50px;" class="img-rounded" /> 
+
+                          </div>
+						  <div style=" height:28px;text-align:center;color:red;font-size:16px;">{$row['s_name']}</div>
+                          <div style=" height:15px;text-align:center;color:red;font-size:16px;">
+                          	<input type="checkbox" name="sun_students[]" value="{$row['id']}" {if in_array($row['id'],$sunarr)} checked="checked"{/if} />
+                          </div>
+                      </div>
+					{/loop}   
+                    
+               </div>
+
+            </div>                
+
+        </div>
+
+        <div class="form-group col-sm-12">
+
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1 qx_1002" />
+
+            <input type="hidden" name="token" value="{$_W['token']}" />
+
+        </div>
+
+    </form>
+
+</div> 
+
+{/if}
+
+<script type="text/javascript">
+
+$(function(){
+
+	{if !(IsHasQx($tid_global,1001002,1,$schoolid))}
+
+		$(".qx_1002").hide();
+
+		$(".qx_1002_show").show();
+
+		$(".qx_bj_ck").attr("title","查看");
+
+	{/if}
+
+	{if !(IsHasQx($tid_global,1001003,1,$schoolid))}
+
+		$(".qx_1003").hide();
+
+		
+
+	{/if}
+
+});	
+
+</script>
+
+{template 'public/footer'}

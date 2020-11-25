@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<title>{$school['title']}</title>
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+/**弹框开启后限制BODY高度**/
+.pop_open{height:100%;overflow:hidden}
+/**圆形进度条清晰度**/
+.circleChart_canvas{  width: 64px; height: 64px; }
+.circleChart_text{line-height:65px !important}
+/**按钮点击特效**/
+.mb_marsk:foucs{ -webkit-mask:-webkit-linear-gradient(rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53));}
+/**加载花瓣转圈效果**/
+.loading-layer{ height: 100%;;width:100%;background-color: rgb(255,255,255,0.59);text-align: center;position: absolute;z-index: 1}
+.loading-layer div{width: 100%;height: 30px;padding-top:100px;display: flex;flex-direction: row;justify-content: space-around;}
+.loading-layer img{ height: 30px; width:30px; -webkit-transition-property: -webkit-transform; -webkit-transition-duration: 1s; -moz-transition-property: -moz-transform; -moz-transition-duration: 1s; -webkit-animation: rotate 1s linear infinite; -moz-animation: rotate 1s linear infinite; -o-animation: rotate 1s linear infinite; animation: rotate 1s linear infinite;}
+@-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)} to{-webkit-transform: rotate(360deg)} }
+@-moz-keyframes rotate{from{-moz-transform: rotate(0deg)} to{-moz-transform: rotate(359deg)} }
+@-o-keyframes rotate{from{-o-transform: rotate(0deg)} to{-o-transform: rotate(359deg)} }
+@keyframes rotate{from{transform: rotate(0deg)} to{transform: rotate(359deg)} }
+.all{ width: 100%; height: auto;  }
+/***************上下周**************/
+.day_div { position: fixed; display: flex;width: 100%; line-height: 40px; height: 40px;text-align: center;background-color: #fff;    border-bottom: 1px #ddd solid;  z-index: 3;}
+.day_div .last_days {height: 40px;width: 25%; position: relative;}
+.day_div .day_mid{ width: 50%; height: 40px; position: relative;}
+.day_div .next_days {height: 40px;width: 25%; position: relative;}
+.day_div .last_days:before{    content: ""; width: 20px; height: 40px; position: absolute; left: 5px; background: url({OSSURL}public/mobile/img/btn-left-arrow-0976d44f.png) no-repeat;  background-position: center center;     background-size: 10px 14px; }
+.day_div .next_days:after{ content: ""; width: 20px; height: 40px; position: absolute; background: url({OSSURL}public/mobile/img/btn-right-arrow-20e8a1fa.png) no-repeat;  background-position: center center;     background-size: 9px 14px;}
+.day_mid .active_diet { background-color: #1a90f2; font-size: 13px; color: #fff; width: 70%; border-radius: 7px; margin-top: 3px; height: 34px; margin-left: 15%; }
+.active_diet .noweekname{ height: 18px; line-height: 18px; }
+.active_diet .nowweekdate{ height: 18px; line-height: 14px; font-size: 11px; }
+/***************上下周 end**************/
+ /***课时列表头部筛选***/
+.pk_bot_box{ width: 100%; position: fixed; height: auto; padding-right: 2%; padding-left: 2%; background-color: #fff;  margin-top: 40px;  z-index: 3;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.13)}
+.pj_bot_header{ width: 100%; line-height: 40px; color: #565454; height: 40px; display: flex;}
+.pj_bot_header .bot_header_left{  width: 33%;float: left; }
+.pj_bot_header .bot_header_mid{ width: 33%; position: relative;text-align: center;}
+.pj_bot_header .bot_header_right{ width: 33%; position: relative;text-align: center;}
+.right_word:after{    content: ""; width: 22px; height: 40px; position: absolute;background: url({MODULE_URL}public/mobile/img/down_arrow.png) no-repeat;  background-position: center center; background-size: 11px 6px;}
+/**隐藏input和select选择器**/
+.bot_header_mid select{ width: 33%; height: 42px; -webkit-appearance: none; -moz-appearance: none; appearance: none; opacity: 0; position: absolute; }
+.bot_header_right select{ width: 33%; height: 42px; -webkit-appearance: none; -moz-appearance: none; appearance: none; opacity: 0; position: absolute; }
+/************************课时列表头部筛选 end****************************/
+/* 课时列表 */
+.pk_bot_bot{width: 100%;margin-top: 85px;position: absolute;margin-bottom: 75px;}
+.pk_ks{ list-style: none; width: 100%; margin-top: 5px; padding: 2%; background-color: #fff; box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.13)}
+.pk_ks:first-child{margin-top: 0px;}
+.pk_ks .pktop_box{ width: 100%; height: 34px; display: flex;border-bottom: 1px #ddd solid; }
+.pk_ks .pktop_box .topleft{ width: 80%; font-size: 20px;}
+.pk_ks .pktop_box .topleft label{ font-size: 11px; background: #fff; border-radius: 4px; padding: 1px; color: red; border: 1px #f50c0c solid; }
+.pk_ks .pktop_box .topriht{ width: 20%; color: #1a90f2;text-align: center; }
+.pkbot_box{ width: 100%; height: 58px; margin-top: 5px; display: flex; }
+.pkbot_box .botleft{ width: 18%; }
+.botleft .xqbox{ height: 55px; text-align: center; width: 80%; background: #88c3f5; margin-left: 10%; margin-top: 5%; color: #fff; border-radius: 8px; }
+.xqbox .xqboxtop{ width: 100%; background-color: #1a90f2; height: 21px; border-top-left-radius: 9px; border-top-right-radius: 9px;   font-size: 11px; line-height: 21px; }
+.xqbox .xqboxbot{ width: 100%; height: 34px; font-size: 17px; font-weight: bold; line-height: 32px;}
+.pkbot_box .botmid{ width: 62%; }
+.botmid .kcname{ width: 100%; font-size: 15px;    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.botmid .kcinfo{ width: 100%; color: #848383; font-size: 12px;     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.pkbot_box .botright{ width: 20%; text-align: center;  color: #1a90f2;   line-height: 27px;  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.pkbot_box .botright .bot_top{ line-height: 35px; }
+.pkbot_box .botright .bot_top label{ background: #1a90f2; padding-left: 15%; padding-right: 15%; padding-top: 3%; padding-bottom: 3%; border-radius: 6px; font-size: 14px; color: #fff; }
+/* 课时列表 end*/
+</style>
+</head>
+<body class="auto_height" id="auto_height">
+<div class="all">
+    <div class="day_div">
+        <div class="last_days left_btn mb_marsk" onclick="changeweek('prev')">上一周</div>
+        <div class="day_mid">
+                <div class="active_diet mb_marsk" onclick="changeweek('now')">
+                    <div class="noweekname">本周</div>
+                    <div class="nowweekdate">2020/4/20-4/26</div>
+                </div>
+        </div>
+        <div class="next_days right_btn mb_marsk" onclick="changeweek('next')">下一周</div>
+    </div>
+	<div class="pk_bot_box">
+		<div class="pj_bot_header">
+            <div class="bot_header_left">本周排课:{$mykcnub}节</div>
+            <div class="bot_header_mid mb_marsk">
+				<select name="rep_type" id="kc_type">
+                    <option value="0">全部</option>
+                    {loop $mykclist $row}
+                    <option value="{$row['kcid']}">{$row['kcname']}</option>
+                    {/loop}
+				</select>
+				<div class="right_word">按课程</div>
+			</div>
+			<div class="bot_header_right mb_marsk">
+				<select name="rep_type" id="sd_type">
+                    <option value="0">全部</option>
+                    {loop $timeframe $row}
+                    <option value="{$row['sid']}">{$row['sname']}</option>
+                    {/loop}
+				</select>
+				<div class="right_word">按时段</div>
+			</div>
+        </div>
+    </div>
+    <div class="loading-layer" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+    <div class="pk_bot_bot">
+    </div>
+</div>   
+</body>
+</html>
+<input type="hidden" id="dtweek" value="0">
+{php include $this->template('port');}
+<script type="text/javascript">
+common_ajax_callback = false;
+function qiandao(ksid,type,elm){
+        if(type == 1){
+            word = "签到本课将会扣除课时，确定继续签到吗？"
+        }
+        if(type == 2){
+            word = "补签本课将会扣除课时，确定继续补签吗？"
+        }
+        jConfirm(word, '确认对话框', function(r) {
+        if (r) {
+            show_loadlyer()
+            //ajax 提交
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('mykccalendar', array('op' => 'sign_ks','schoolid'=>$schoolid), true)}",
+                type: "post",
+                dataType: "json",
+                data:{
+                    ksid:ksid
+                },
+                success: function (result) {
+                    if(result.result){
+                        var thediv =  $(elm).parent()
+                        $(elm).parent().empty()
+                        var html = ''
+                        jTips(result.msg)
+                        if(result.needconfirm){
+                            var html = '<span style="color: rgb(226, 142, 40);">待确认</span><div class="bot_top" onclick="tixing('+result.insertid+',this)"><label >提醒</label></div>';
+                        }else{
+                            if(result.needpl){
+                                var html = '<a style="color: rgb(226, 142, 40);" onclick="gotopj('+result.kcid+','+result.ksid+')">未评价</a><p style="color: #1a90f2;">已签</p>';
+                            }else{
+                                var html = '<p style="color: #1a90f2">已签</p>';
+                            }
+                        }
+                        $(thediv).html(html)
+                    }else{
+                        if(result.xugou){
+                            jConfirm(result.msg, '确认对话框', function(rer) {
+                                 if (rer) {
+                                    location.href = "{php echo $this->createMobileUrl('myclass',array('schoolid' => $schoolid), true)}"
+                                 }else{
+                                    return false 
+                                 }
+                            });     
+                        }else{
+                            jAlert(result.msg)
+                        }
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert(textStatus);
+                }
+            });
+        } else {
+            return false
+        }
+    });
+}
+function tixing(signid,elm){
+    jConfirm('确认发送提醒给老师吗？', '确认对话框', function(r) {
+        if (r) {
+            show_loadlyer()
+            //ajax 提交
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('mykccalendar', array('op' => 'tx_ls','schoolid'=>$schoolid), true)}",
+                type: "post",
+                dataType: "json",
+                data:{
+                    signid:signid
+                },
+                success: function (result) {
+                    jTips(result.msg)
+                    if(result.result){
+                        $(elm).hide()
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert(textStatus);
+                }
+            });
+        } else {
+            return false
+        }
+    });
+}
+// 上下周切换
+changeweek('now')
+function changeweek(type){
+    show_loadlyer()
+	var dtweek = $('#dtweek').val()
+	if(type == 'prev'){
+		var nowweek =  Number(dtweek) -1;
+		$('#dtweek').val(nowweek)
+	}else if(type == 'next'){
+		var nowweek = Number(dtweek) +1;
+		$('#dtweek').val(nowweek)
+	}else{
+		var nowweek = 0;
+		$('#dtweek').val(nowweek)
+    }
+	get_head_week(nowweek)
+    get_kslist(nowweek)
+	//search_kslist('search',nowweek)
+}
+//获取头部切换信息
+function get_head_week(nowweek){
+	$('.pj_bot_box').empty();
+	$('.upload_error_bg').remove()
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('mykccalendar',array('schoolid' => $schoolid,'op' => 'week_header'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {dtweek:nowweek},
+		success: function (result) { 
+            $('.noweekname').text(result.tiptitle)
+            $('.nowweekdate').text(result.tiptime)
+		}
+	})
+}
+//获取排课数据列表
+function get_kslist(nowweek){
+	$('.pk_bot_bot').empty();
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('mykccalendar',array('schoolid' => $schoolid,'op' => 'kslist'), true)}",
+		type: "post",
+		dataType: "html",
+		data: {dtweek:nowweek},
+		success: function (result) {
+			$('.pk_bot_bot').html(result)
+		}
+	})
+}
+// 按课程筛选
+$(document).on('change','#kc_type',function() {
+    show_loadlyer()
+	var text =  $("#kc_type").find("option:selected").text();
+	var value =  $("#kc_type").find("option:selected").val();
+    $(this).parents().children('.right_word').text(text)
+    if(value > 0 ){
+        $('.pk_bot_bot li').hide()
+        $('.kc_'+value).show()
+    }else{
+        $('.pk_bot_bot li').show()
+    }
+})
+//跳转课程详情
+function gotokc(kcid,ksid){
+    location.href = "{php echo $this->createMobileUrl('mykcinfo',array('schoolid' => $schoolid), true)}"+"&id="+kcid+"&ksid="+ksid
+}
+//跳转课程评价
+function gotopj(kcid,ksid){
+    location.href = "{php echo $this->createMobileUrl('kcpingjia',array('schoolid' => $schoolid,'sid' => $it['sid']), true)}"+"&kcid="+kcid+"&ksid="+ksid
+}
+// 按时段筛选
+$(document).on('change','#sd_type',function() {
+    show_loadlyer()
+	var text =  $("#sd_type").find("option:selected").text();
+	var value =  $("#sd_type").find("option:selected").val();
+	$(this).parents().children('.right_word').text(text)
+    if(value > 0 ){
+        $('.pk_bot_bot li').hide()
+        $('.sd_'+value).show()
+    }else{
+        $('.pk_bot_bot li').show()
+    }
+})
+show_loadlyer()
+function show_loadlyer(){
+    $('.loading-layer').show()
+    setTimeout(loadDelay, 300); 
+}
+function loadDelay() {
+   $('.loading-layer').hide()
+}
+</script>
+{php include $this->template('footer');}

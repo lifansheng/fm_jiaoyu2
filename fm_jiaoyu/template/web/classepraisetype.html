@@ -1,0 +1,108 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+ <style>
+.cLine {overflow: hidden; padding: 5px 0;color:#000000;}
+.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+.alert p {margin: 0 0 10px;display: block;}
+.alert .bold{font-weight:bold;}
+ </style>
+<div class="panel panel-default">
+		<div class="panel-body">
+			<ul class="nav nav-tabs" id="myTab">
+				<li {if $_GPC['do'] == 'classepraise' }class="active" {/if} ><a href="{php echo $this->createWebUrl('classepraise', array('op' => 'display', 'schoolid' => $schoolid));}">优秀学生</a></li>
+				<li {if $_GPC['do'] == 'classepraisetype'}class="active" {/if} ><a href="{php echo $this->createWebUrl('classepraisetype', array('op' => 'display', 'schoolid' => $schoolid));}">优秀类型</a></li>
+				
+				<li {if $_GPC['do'] == 'classepraisecomment'}class="active" {/if}><a href="{php echo $this->createWebUrl('classepraisecomment', array('op' => 'display', 'schoolid' => $schoolid));}" >优秀评语</a></li>
+				
+			</ul>
+		</div>
+	</div>
+{if $operation == 'post'}
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <!-- <input type="hidden" name="parentid" value="{$parent['id']}" /> -->
+        <input type="hidden" name="schoolid" value="{$schoolid}" />		
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                分类编辑
+            </div>
+            <div class="panel-body">                
+                
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分类名称</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="title" class="form-control" value="{$item['title']}" />
+					</div>
+                </div>			
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+
+{elseif $operation == 'display'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+		  <a style="margin-left:40px;" class="btn btn-primary qx_1122" href="{php echo $this->createWebUrl('classepraisetype', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i>新增分类</a>
+		  <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i>刷新</a>        
+		</div>
+    </div>
+    
+	{template 'public/excel_input'}
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+                        <th style="width:70%;;">分类</th>
+						<th>添加人</th>
+                        <th class="qx_e_d" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $sclist $row}
+                    <tr>
+                        <td>{$row['title']}</td>
+						<td>{if $row['tanme']}<span class="label label-success">{$row['tname']}</span>{else}<span class="label label-info">管理员添加</span>{/if}</td>
+                        <td class="qx_e_d" style="text-align:right;"><a class="btn btn-default btn-sm qx_1122" href="{php echo $this->createWebUrl('classepraisetype', array('op' => 'post', 'id' => $row['id'], 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_1124" href="{php echo $this->createWebUrl('classepraisetype', array('op' => 'delete', 'id' => $row['id'], 'schoolid' => $schoolid))}" onclick="return confirm('确认删除此分类吗？');return false;" title="删除"><i class="fa fa-times"></i></a></td>
+                    </tr>
+                    {/loop}
+                    
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+<script type="text/javascript">
+$(function(){
+	var e_d = 2 ;
+	{if (!(IsHasQx($tid_global,1001123,1,$schoolid)))}
+		$(".qx_1123").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1001122,1,$schoolid)))}
+		$(".qx_1122").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if (!(IsHasQx($tid_global,1001124,1,$schoolid)))}
+		$(".qx_1124").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});
+
+</script>
+
+
+{/if}
+{template 'public/footer'}

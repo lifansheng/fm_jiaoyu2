@@ -1,0 +1,18 @@
+{loop $leave $v}
+<li class="main" id="{$v['id']}" style="display: block;">
+    <div class="cutting"></div>
+    <div class="notifyTopBox" style="height:90px;">
+        <div class="notifyTopLeft">
+            <img src="{if $v['thumb']}{php echo tomedia($v['thumb'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" onclick="showBig(this)"/>
+        </div>					
+        <div class="notifyTopRight">
+                    
+            <p class="notifyCreateTime">申请者：{$v['s_name']}</p>
+            <p class="notifyCreateTime">处理者：{$v['tname']}</p>
+            <p class="notifyCreateTime">开始时间：{php echo date('m月d日 H:i', $v['startime1'])}</p>
+            <p class="notifyCreateTime">结束时间：{php echo date('m月d日 H:i', $v['endtime1'])}</p>
+            <p class="notifyCreateTime">事由：{$v['conet']}</p>
+        </div>
+    </div>
+</li>
+{/loop}	

@@ -1,0 +1,37 @@
+
+{loop $checklist $row}
+<li class="main" time="{$row['location']}">
+    <div class="user_img">
+        <img src="{php echo tomedia($row['icon'])}">
+    </div>
+    <div class="user_name">
+        <div class="user_name_1">
+            <span class="u_name">{$row['s_name']}&nbsp;&nbsp;</span>
+            <span class="u_class">{$nowbj['sname']}</span>
+        </div>
+        {if $type == '1'}
+            {if $row['tiwen'] < 35.5 || $row['tiwen'] >37.5}
+            <div class="user_name_2">
+                {$row['tiwen']}℃
+            </div>
+            {else}
+            <div>
+                {$row['tiwen']}℃
+            </div>
+            {/if}
+        
+            <div class="user_name_3">
+                检测时间：{php echo date("H:i",$row['createtime'])} 
+            </div>
+            <div class="record_btn_1" onclick="ShowAddModal(this,`{$row['id']}`)">修改</div>
+        {else}
+            <div class="user_name_2">
+                未检查
+            </div>
+            <div class="user_name_3">
+                电话:<a href="{$row['mobile']}" style="display:initial;font-size: 0.6rem; color: #a1a1a1;">{$row['mobile']}</a>
+            </div>
+        {/if}
+    </div>
+</li>
+{/loop}

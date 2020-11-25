@@ -1,0 +1,230 @@
+{if is_showgkk()}
+    {loop $leave $row}
+    <section class="vacationRecord_section"  time="{$row['localtion']}">
+        <div class="vacationItem">
+            <span class="vacation_title">申请人:</span><span class="vacation_mom vacation_left">{$row['tname']}</span>
+            <div class="left_dotsVacation"></div>
+        </div>
+        <div class="vacationItem">
+            <span class="vacation_time">开始时间:</span><span class="vacation_time vacation_left">{php echo date('Y-m-d H:i:s',$row['startime1'])}</span>
+            <div class="left_dotsVacation"></div>
+        </div>
+        <div class="vacationItem">
+            <span class="vacation_time">结束时间:</span><span class="vacation_time vacation_left">{php echo date('Y-m-d H:i:s',$row['endtime1'])}</span>
+            <div class="left_dotsVacation"></div>
+        </div>
+        <div class="vacationItem">
+            <span class="vacation_title">类型:</span><span class="vacation_title vacation_left">{$row['type']}</span>
+            <div class="left_dotsVacation"></div>
+        </div>
+        {if is_showgkk()}
+        <div class="vacationItem">
+            <span class="vacation_title">调课类型:</span><span class="vacation_title vacation_left">
+                {if $row['tktype'] == 0}
+                无课
+                {elseif $row['tktype'] == 1}
+                自主调课
+                {elseif $row['tktype'] == 2}
+                教务处调课
+                {/if}
+                </span>
+            <div class="left_dotsVacation"></div>
+        </div>
+        {/if}
+        <div class="vacationItem vacationItemOther">
+            <span class="vacation_title">原因:</span><span class="vacation_title vacation_titleOther">{$row['conet']}</span>
+            <div class="left_dotsVacation left_dotsVacationOther"></div>
+        </div>
+        <!--老师回复-->
+        <!--if 未处理-->
+        {if $row['status'] == 0}
+        <div class="teachReplyBox">
+            <div class="teachReplyTitleBox qx_01002_show">回复:<div class="lectBorderLine"></div></div>
+            <div class="teachReplyInfo qx_01002_show">
+                <em>&#9670;</em>
+                <span class="teachTop">&#9670;</span>
+                <textarea class="txtArea" rows="4"> </textarea>
+            </div>
+            <div class="teachReplyBottom">
+                <span class="vacation_time otherTime">申请时间:</span><span class="vacation_time vacation_left otherTime">{php echo date('Y-m-d H:i:s',$row['createtime'])}</span>
+            </div>
+            <div class="left_teachReply"></div>
+            <div class="teachReplyLeftLine"></div>
+            <div class="teachReplyLeftCircle"></div>
+        </div>
+        <!--endif未处理，else年级主任同意，待校长同意-->
+        {else if  $row['status'] == 3 }
+        <div class="teachReplyBox">
+            <div class="teachReplyToptBox">
+                <div class="teachReplyLeftBox">
+                    <img src="{if $row['njzricon']}{php echo tomedia($row['njzricon'])}{else}{php echo tomedia($schol['tpic'])}{/if}" class="img-responsive">
+                </div>
+                <div class="teachReplyRightTitle">
+                    <span class="teachReplyName">年级主任：{$row['njzrtname']}【已批准】</span>
+                    <span class="teachReplyTitle_Time">{php echo date('Y-m-d H:i:s',$row['njzrcltime'])}</span>
+                </div>
+            </div>
+            {if !empty($row['njzryj'])}
+            <div class="teachReplyInfo">
+                {$row['njzryj']}
+            </div>
+            {/if}
+            <!--如果当前教师为校长-->
+            {if $isxz['status'] == 2}
+            <div class="teachReplyTitleBox qx_01002_show">回复:<div class="lectBorderLine"></div></div>
+            <div class="teachReplyInfo qx_01002_show">
+                <em>&#9670;</em>
+                <span class="teachTop">&#9670;</span>
+                <textarea class="txtArea" rows="4"> </textarea>
+            </div>
+            {/if}
+            <div class="teachReplyBottom">
+                <span class="vacation_time otherTime">申请时间:</span><span class="vacation_time vacation_left otherTime">{php echo date('Y-m-d H:i:s',$row['createtime'])}</span>
+            </div>
+            <div class="left_teachReply"></div>
+            <div class="teachReplyLeftLine"></div>
+            <div class="teachReplyLeftCircle"></div>
+        </div>
+        <!--endif年级主任同意待校长审批，if已最终同意或拒绝-->
+        {else}
+        <div class="teachReplyBox">
+            <!--if 已最终同意-->
+            {if $row['status'] == 1 || $row['status'] == 2 }
+            <!--if经过了年级主任审批-->
+            <!--显示年级主任的审批意见-->
+            {if !empty($row['tonjzrid']) && $row['tozxid'] != 0 }
+            <div class="teachReplyToptBox">
+                <div class="teachReplyLeftBox">
+                    <img src="{if $row['njzricon']}{php echo tomedia($row['njzricon'])}{else}{php echo tomedia($schol['tpic'])}{/if}" class="img-responsive">
+                </div>
+                <div class="teachReplyRightTitle">
+                    <span class="teachReplyName">年级主任：{$row['njzrtname']}【已批准】</span>
+                    
+                </div>
+            </div>
+            <div class="teachReplyInfo">
+                <textarea class="txtArea" rows="4" readonly="readonly">{$row['njzryj']}</textarea>
+                
+            </div>
+            {/if}
+            <!--endif经过了年级主任审批-->
+            {/if}
+            <!--endif 已最终同意-->
+            
+            <!--显示最终审批意见-->
+            {if $row['reconet']}
+            <div class="teachReplyToptBox">
+                <div class="teachReplyLeftBox">
+                    <img src="{if $row['clicon']}{php echo tomedia($row['clicon'])}{else}{php echo tomedia($schol['tpic'])}{/if}" class="img-responsive">
+                </div>
+                <div class="teachReplyRightTitle">
+                    <span class="teachReplyName">
+                        {if IsHasQx($row['cltid'],'shjsqj',2,$schoolid) && !is_xz($row['cltid'])}
+                        教导处：
+                        {else if is_xz($row['cltid']) && !empty($row['toxztid'])}
+                        校长:
+                        {else if is_xz($row['cltid']) && empty($row['toxztid'])}
+                        教导处：
+                        {/if}
+                        {$row['cltname']}
+                        </span>
+                    <span class="teachReplyTitle_Time">{php echo date('Y-m-d H:i:s',$row['cltime'])}</span>
+                </div>
+            </div>
+            <div class="teachReplyInfo">
+                <em>&#9670;</em>
+                <span class="teachTop">&#9670;</span>
+                <textarea class="txtArea" rows="4" readonly="readonly">{$row['reconet']}</textarea>
+            </div>
+            {/if}
+            <div class="teachReplyBottom">
+                <span class="vacation_time otherTime">申请时间:</span><span class="vacation_time vacation_left otherTime">{php echo date('Y-m-d H:i:s',$row['createtime'])}</span>
+            </div>
+            <div class="left_teachReply"></div>
+            <div class="teachReplyLeftLine"></div>
+            <div class="teachReplyLeftCircle"></div>
+        </div>
+        {/if}
+        <!--endif已最终同意或拒绝-->
+
+        <!--状态显示-->
+        {if $row['status'] == 0 || $row['status'] == 3 }				
+        <div class="statusTip">
+            <div class="statusTipTop statusTipTop_disapprove">待批</div>
+            <div class="tip_approve_down tip_approve_down__disapprove"></div>
+        </div>
+        {else if $row['status'] == 2}
+        <div class="statusTip">
+            <div class="statusTipTop ">拒绝</div>
+            <div class="tip_approve_down "></div>
+        </div>
+        {else if $row['status'] == 1}
+        <div class="statusTip">
+            <div class="statusTipTop" style="background-color:#3ba1dc;border-bottom-color:#3ba1dc">批准</div>
+            <div class="tip_approve_down" style="border-top-color:#3ba1dc"></div>
+        </div>				
+        {/if}
+        <!--结束状态显示-->
+        
+        <div class="signin_leftBox"></div>
+        <!--if待处理-->
+        {if $row['status'] == 0 ||  $row['status'] == 3 }
+        <!--	if 是年级主任  且 不是校长  且 状态为初始待审批（未经过年级主任审批）--> 
+        {if in_array($isxz['fz_id'],$fzarr) && $isxz['status'] != 2 && $row['status'] == 0 }
+        <div  class="vacationItem vacationItemBtn qx_01002_show">
+            <a href="javascript:;" class="refuse">
+                <div class="btn_refuse teacher_leave_but" agree-type="disagree" tk-id="{$row['tktype']}" data-id="{$row['id']}">拒绝</div>
+            </a>
+            <a href="javascript:;" class="approve">
+                <div class="btn_approve teacher_leave_but" agree-type="njzragree" tk-id="{$row['tktype']}" data-id="{$row['id']}">批准</div>
+            </a>
+        </div>
+        <!--endif是年级主任  且 不是校长  且 状态为初始待审批（未经过年级主任审批) , if 是校长-->
+        {else if $isxz['status'] == 2}
+        <div class="vacationItem vacationItemBtn qx_01002_show">
+            <a href="javascript:;" class="refuse">
+                <div class="btn_refuse teacher_leave_but" agree-type="disagree" tk-id="{$row['tktype']}" data-id="{$row['id']}">拒绝</div>
+            </a>
+            <a href="javascript:;" class="approve">
+                <div class="btn_approve teacher_leave_but" agree-type="agree" tk-id="{$row['tktype']}" data-id="{$row['id']}">批准</div>
+            </a>
+        </div>
+        {/if}
+        <!--end if 是校长-->
+        {/if}
+        <!--end if 待审批-->
+    </section>
+    {/loop}
+{else}
+    {loop $leave $item}
+        <a class="qx_01002 vacationRecord_section" href="{php echo $this->createMobileUrl('tmcomet', array('schoolid' => $schoolid, 'id' => $item['id']), true)}" time="{$item['localtion']}"> 
+            <li class="messageItem">
+                <div class="avatar">
+                    <img class="l" src="{if $item['icon']}{php echo tomedia($item['icon'])}{else}{php echo tomedia($school['tpic'])}{/if}" alt="头像">
+                    {if $item['status'] == 0}
+                    <div class="unread l"></div>
+                    {else}
+                    <div class="l"></div>
+                    {/if}
+                </div>
+                <input id="leaveid" type="hidden" value="{$item['id']}" />
+                <div class="msgBody">
+                    <div class="msgHeader">
+                    <div class="msgTitle">
+                    |{$item['tname']}|老师的请假申请
+                    {if $item['status'] == 1}
+                    <span style="color:blue;font-weight:bold">【已同意】</span>
+                    {elseif $item['status'] == 2}
+                    <span style="color:red;font-weight:bold">【已拒绝】</span>
+                
+                    {/if}
+                    </div>
+                </div>
+                    <div class="msgContent">{$item['conet']}</div>
+                    <div class="msgSender l">{$teacher[$item['tid']]['tname']}</div>
+                    <div class="msgTime l">{php echo (date('Y-m-d H:m:s',$item['createtime']))}</div>
+                </div>
+            </li>
+        </a>
+    {/loop}
+{/if}

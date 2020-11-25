@@ -1,0 +1,99 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-02-19 15:57:35
+ * @LastEditTime: 2020-02-20 16:19:52
+ -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$student['s_name']}疫情打卡记录</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+<script src="{OSSURL}public/mobile/js/jquery.js"></script>
+<script src="{OSSURL}public/mobile/js/PromptBoxUtil.js"></script>
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+{php echo register_jssdks();}
+<style>
+	*{box-sizing: border-box;}
+</style>
+</head>
+	<body>
+		{php include $this->template('port');}
+		<div class="all">
+			<div class="sick_list">
+				{loop $yqdk $key $row}
+					<div class="bangdingForm main" time="{$key}">
+						<div class="bangdingBox">
+							<div class="headerBox3">
+								<div class="headerinfo3">
+									<span class="t">{$student['s_name']}({$bj['sname']})</span>
+									<span class="r">{php echo date('Y-m-d', $row['createtime'])}</span>
+								</div>	
+							</div>					
+							<div class="infoBox2" style="border:none">
+								<ul style="padding: 10px;">
+									<li>
+										<span class="l">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：</span>
+										<span class="r">
+											{if $row['tiwen'] < 35.5 || $row['tiwen'] >37.5}
+											<span class="diary_tag_notify">
+												{$row['tiwen']}℃
+											</span>
+											{else}
+											<span>
+												{$row['tiwen']}℃
+											</span>
+											{/if}
+										</span>
+									</li>
+									<li>
+										<span class="l">距上次打卡:</span>
+										<span class="r">{if $row['range'] > 100}<span style="color:#f17575;">{$row['range']}</span>{else}{$row['range']}{/if}米</span>
+									</li>
+									{loop $row['content'] $key2 $row2}
+									<li style="text-align: left;">
+										<div style="color: #827A7A;">{php echo yqselect($key2,'title')}:</div>
+										{if is_array($row2)}
+										<div style="padding-top: 10px;padding-left: 20px;">
+											{loop $row2 $item}
+											<span style="color: #827A7A; font-weight: bold;">{php echo yqselect($key2,'data',$item)}</span>
+											{/loop}
+										</div>
+										{else}
+										<div style="color: #827A7A;font-weight: bold;padding-top: 10px;padding-left: 20px;">{php echo yqselect($key2,'data',$row2)}</div>
+										{/if}
+									</li>	
+									{/loop}
+								</ul>
+							</div>
+						</div>
+					</div>
+				{/loop}
+			</div>
+			
+		</div>
+	</body>
+{php include $this->template('footer');}
+</html>
+<script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+<script type="text/javascript">
+// 底部加载更多
+new Scroll_load({
+    "limit": "0",
+    "pageSize": 28,
+    "ajax_switch": true,
+    "ul_box": ".sick_list",
+    "li_item": ".sick_list .main",
+    'param' : ['time'],
+    "ajax_url": "{php echo $this->createMobileUrl('syqdklist', array('schoolid' => $schoolid ,'op'=>'scroll_more'))}",
+    "page_name": "parent_home_index",
+    "after_ajax": function () {
+    }
+}).load_init();
+</script>

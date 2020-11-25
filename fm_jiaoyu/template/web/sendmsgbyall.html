@@ -1,0 +1,114 @@
+{template 'public/header'}
+<div class="container-fluid">
+    <div class="jumbotron clearfix alert alert-info">
+        <div class="row">
+            <div class="col-xs-12 col-sm-3 col-lg-2">	<i class="fa fa-5x fa-info-circle"></i>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+                <h2></h2>
+                <p id="title" style="font-size: 22px;"></p>
+                <p id="zhuangtai" style="font-size: 22px;">发送进度:<span id="jindu" style="width:35px;text-align:right;display:inline-block">0</span>%<span style="white-space: pre;">  </span><img src="{MODULE_URL}public/web/css/loading_test.gif" style="width:20px;line-height:20px;padding-bottom: 2px;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        let type = {$_GPC['type']};
+        console.log(type)
+        $(".nav ").hide();
+        var url = "{php echo $this->createWebUrl('indexajax',array('op'=>'SendBjtzWithArray','noticeidarr'=>$NoticeIdArr,'stuarr'=>$result,'schooltype'=>$schooltype))}";
+        var data = [];
+        if(type == 1){
+            $("#title").html("开始群发班级通知,请勿执行任何操作！");
+            data = {
+                weid:"{$weid}",
+                schoolid : "{$schoolid}",
+                tname:"{$tname}",
+                page : 1,
+                total : "{$total}",
+                type:type,
+                psize:"{$pageSize}",
+                sendtype : "{$sendType}",
+            };
+        }
+        $.ajax({
+            url: url,
+            data: data,
+            type: "POST",
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                //return
+                //提交后 隐藏加载层
+                if (result.status == 1) {
+                    console.log("yes11111111111111");
+                    let page = result.page;
+                    let total = result.total;
+                    let type = result.type;
+                    let stuarr = result.stuarr;
+                    let noticeidarr = result.noticeidarr;
+                    $("#jindu").html(result.pro);
+                        upload_pro(page,noticeidarr,total,type,stuarr, this);
+                } else if (result.status == 2) {
+                    alert("发送完成！");
+                    location.href = "{php echo $this->createWebUrl('notice', array('schoolid' => $schoolid,'op'=>display))}";
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                console.log(XMLHttpRequest.status);
+                console.log(XMLHttpRequest.readyState);
+                console.log(textStatus);
+                alert(url);
+            },
+        });
+    });
+
+    function upload_pro(page,noticeidarr,total,type,stuarr,self) {
+        console.log("yes");
+        let prodata = [];
+        if(type==1){
+            prodata = {
+                weid:"{$weid}",
+                schoolid : "{$schoolid}",
+                tname:"{$tname}",
+                page : page,
+                total :total,
+                type:type,
+                psize:"{$pageSize}",
+                sendtype : "{$sendType}",
+                noticeidarr:noticeidarr,
+                stuarr:stuarr
+            };
+        }
+        $.ajax({
+            url: "{php echo $this->createWebUrl('indexajax', array('schoolid' => $schoolid,'op' => 'SendBjtzWithArray','schooltype'=>$schooltype))}",
+            data: prodata,
+            type: "POST",
+            dataType: "json",
+            success: function (result) {
+                console.log(result);
+                //提交后 隐藏加载层
+                if (result.status == 1) {
+                    let page = result.page;
+                    let total = result.total;
+                    let type = result.type;
+                    let stuarr = result.stuarr;
+                    let noticeidarr = result.noticeidarr;
+                    $("#jindu").html(result.pro);
+                    upload_pro(page,noticeidarr,total,type,stuarr, this);
+                }
+                else if (result.status == 2) {
+                    alert("发送完成！");
+                    location.href = "{php echo $this->createWebUrl('notice', array('schoolid' => $schoolid,'op'=>display))}";
+                }
+            },
+            error: function () {
+                //提交后 隐藏加载层
+                alert("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+            },
+        });
+    };
+</script>
+{template 'public/footer'}

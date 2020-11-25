@@ -1,0 +1,452 @@
+{if $operation == 'ksheader'}
+<div class="topbox">
+	<div class="topbox_info">
+		<div class="left_div">
+			<div class="ksorder">
+				<div class="ordertitle">课节</div>
+				<div class="ordernub" id="ordernub">{$nuber}</div>
+			</div>
+		</div>
+		<div class="mid_div">
+			<div class="kc_name">{$kcinfo['name']}</div>
+			<div class="ks_info">{php echo date('Y.m.d',$ksinfo['date'])} {$sdinfo['sname']}</div>
+			<div class="ks_info">授课：{if $thiskstea}{$thiskstea}{else}没有老师签到{/if}</div>
+		</div>
+		<div class="mbl_div">
+			<div class="ksmbl" id="kspingfen">{$mydef}</div>
+			<div class="mbltitle">我的得分</div>
+		</div>
+	</div>
+</div>
+{/if}
+{if $operation == 'stu_pllist'}
+{if $stuplks}
+{loop $stuplks $row}
+<div class="pop_plbox">
+	<div class="pl_head">
+		<div class="left_head"><img class="heiderimg" src="{$stuinfo['icon']}"/><label class="xtip">学<label></div>
+		<div class="right_head">
+			<span class="head_name">{$stuinfo['s_name']}</span>
+			<span class="head_time">{$row['mastime']}</span>
+		</div>
+	</div>
+	<div class="fenge"><i></i><p>我对老师的打分</p></div>
+	<div class="star_box">
+		{loop $stu_star_tea $it}	
+		<div class="one_star_box">
+			<div class="star_name">{$it['tname']}:</div>   
+			{$it['starh5']}
+		</div>
+		{/loop}
+	</div>
+	<div class="fenge"><i></i><p>我对老师的评价</p></div>
+	<div class="comment_item" style="    padding-left: 0px;">
+		<text class="c">{$row['content']}</text>
+		{if $row['audio']}
+		<div class="reply_viceo">
+			<div class="audio_div">
+				<audio style="width:80%;margin-left: 10%;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+			</div>
+		</div>
+		{/if}
+		{if $row['photo']}
+		<div class="reply_video">
+			{$row['photo']}
+		</div>
+		{/if}
+		{if $row['allrelpyss'] >0}
+		<div class="reply_shearebox">
+			<div class="sherbox_replys"><img src="{OSSURL}public/mobile/img/bv_comment_icon.png"/>&nbsp;&nbsp;{$row['allrelpyss']}</div>
+			<!-- <div class="sherbox_sheare"><img src="{OSSURL}public/mobile/img/pyqdkc.png"/>&nbsp;&nbsp;分享</div> -->
+		</div>
+		{/if}
+	</div>
+	{if $row['allrelpy']}
+	<div class="comment_item" style="background: #FAFBFC;">
+		{loop $row['allrelpy'] $item}
+		<div class="reply">
+			<img class="heiderimg" src="{$item['icon']}"/>
+				<text class="n">{$item['name']}</text>
+				<text class="t">{$item['reptime']}</text>
+				<text class="c">{$item['content']}</text>
+		</div>
+		{/loop}
+	</div>
+	{/if}
+	<div class="bot_tools">
+		<div class="eidt_box" onclick="open_pjlist('edit')"><img src="{OSSURL}public/mobile/img/comment.png"/>编辑</div>
+		<div class="rep_box" onclick="open_repybox(this)"><img src="{OSSURL}public/mobile/img/icon_message.png"/>回复</div>
+		<!-- <div class="rep_boxs"><img src="{OSSURL}public/mobile/img/icon_message.png"/>回复</div> -->
+	</div>
+	<div class="agin_replybox" style="display:none">
+		<input placeholder="输入回复内容" value=""/>
+		<div class="agin_reply_send" onclick="reply_pl({$row['id']},this)">发送</div>
+	</div>
+</div>
+{/loop}
+{else}
+<div class="pop_plbox">
+	<div class="pl_head">
+		<div class="left_head"><img class="heiderimg" src="{$stuinfo['icon']}"/><label class="xtip">学<label></div>
+		<div class="right_head">
+			<span class="head_name">{$stuinfo['s_name']}</span>
+			<span class="head_time">未评论</span>
+		</div>
+	</div>
+	<div class="fenge"><i></i><p>我对老师的打分</p></div>
+	<div class="pop_empteabox">
+		<img src="{OSSURL}public/mobile/img/181547187714_.pic_hd@2x.png"/>
+		<div class="txword">您还未评价老师</div>
+		<div class="pop_txstubtn" onclick="open_pjlist('new')">评价</div>
+	</div>
+</div>	
+{/if}
+{if $teaplxs}
+{loop $teaplxs $row}
+<div class="pop_plbox">
+	<div class="pl_head">
+		<div class="left_head"><img class="heiderimg" src="{$row['masthumb']}"/><label class="stip">师<label></div>
+		<div class="right_head">
+			<span class="head_name">{$row['mastname']}</span>
+			<span class="head_time">{$row['mastime']}</span>
+		</div>
+	</div>
+	<div class="fenge"><i></i><p>老师对我的打分</p></div>
+	<div class="star_box">
+		{loop $tea_star_stu $it}
+		<div class="one_star_box">
+			{$it['starh5']}
+		</div>
+		{/loop}
+	</div>
+	<div class="fenge"><i></i><p>老师对我的评价</p></div>
+	<div class="comment_item" style="    padding-left: 0px;">
+		<text class="c">{$row['content']}</text>
+		{if $row['audio']}
+		<div class="reply_viceo">
+			<div class="audio_div">
+				<audio style="width:80%;margin-left: 10%;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+			</div>
+		</div>
+		{/if}
+		{if $row['photo']}
+		<div class="reply_video">
+			{$row['photo']}
+		</div>
+		{/if}
+		{if $row['allrelpyss'] >0}
+		<div class="reply_shearebox">
+			<div class="sherbox_replys"><img src="{OSSURL}public/mobile/img/bv_comment_icon.png"/>&nbsp;&nbsp;{$row['allrelpyss']}</div>
+			<!-- <div class="sherbox_sheare"><img src="{OSSURL}public/mobile/img/pyqdkc.png"/>&nbsp;&nbsp;分享</div> -->
+		</div>
+		{/if}
+	</div>
+	{if $row['allrelpy']}
+	<div class="comment_item" style="background: #FAFBFC;">
+		{loop $row['allrelpy'] $item}
+		<div class="reply">
+			<img class="heiderimg" src="{$item['icon']}"/>
+				<text class="n">{$item['name']}</text>
+				<text class="t">{$item['reptime']}</text>
+				<text class="c">{$item['content']}</text>
+		</div>
+		{/loop}
+	</div>
+	{/if}
+	<div class="bot_tools">
+		<div class="rep_boxs" onclick="open_repybox(this)"><img src="{OSSURL}public/mobile/img/icon_message.png"/>回复</div>
+	</div>
+	<div class="agin_replybox" style="display:none">
+		<input placeholder="输入回复内容" value=""/>
+		<div class="agin_reply_send" onclick="reply_pl({$row['id']},this)">发送</div>
+	</div>
+</div>
+{/loop}
+{else}
+<div class="pop_plbox">
+	<div class="pl_head">
+		<div class="left_head"><img class="heiderimg" src="{$zjteainfo['thumb']}"/><label class="stip">师<label></div>
+		<div class="right_head">
+			<span class="head_name">{$zjteainfo['tname']}</span>
+			<span class="head_time">未评论</span>
+		</div>
+	</div>
+	<div class="fenge"><i></i><p>老师对我的评分</p></div>
+	<div class="pop_empteabox">
+		<img src="{OSSURL}public/mobile/img/181547187714_.pic_hd@2x.png"/>
+		<div class="txword">老师还未评价我</div>
+		<div class="pop_txstubtn" onclick="txonestu(this)">提醒老师</div>
+	</div>
+</div>	
+{/if}
+{/if}
+{if $operation == 'on_pl_stu'}
+	<!--学生打分滑块-->
+	<div class="dafen_plbox">
+		<div class="dafen_head">
+			<div class="dafen_titbox">
+				<div class="dafen_title">请对老师打分</div>
+				<div class="dafen_title_tip">请滑动星星打分</div>
+			</div>
+		</div>
+		<div class="df_starbox">
+			{if $type == 'edit'}
+			{loop $stu_star_tea $row}
+			<div class="one_df_starbox">
+				<div class="one_df_name">{$row['tname']}</div>
+				<div class="one_df_star">
+					<img id="star1_{$row['totid']}" onclick="hs_click(1,{$row['totid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star2_{$row['totid']}" onclick="hs_click(2,{$row['totid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star3_{$row['totid']}" onclick="hs_click(3,{$row['totid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star4_{$row['totid']}" onclick="hs_click(4,{$row['totid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star5_{$row['totid']}" onclick="hs_click(5,{$row['totid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+				</div>
+			</div>
+			{/loop}
+			{/if}
+			{if $type == 'new'}
+			{loop $allsigntea $val}
+			<div class="one_df_starbox">
+				<div class="one_df_name">{$val['tname']}</div>
+				<div class="one_df_star">
+					<img id="star1_{$val['tid']}" onclick="hs_click(1,{$val['tid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star2_{$val['tid']}" onclick="hs_click(2,{$val['tid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star3_{$val['tid']}" onclick="hs_click(3,{$val['tid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star4_{$val['tid']}" onclick="hs_click(4,{$val['tid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star5_{$val['tid']}" onclick="hs_click(5,{$val['tid']})" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+				</div>
+			</div>
+			{/loop}
+			{/if}
+		</div>
+		{if $type == 'new'}
+		<div class="df_plbox">
+			<div class="df_plbox_textare">
+				<textarea id="feedback_content" placeholder="请留下对该您的评论吧~" ></textarea>
+			</div>
+			<div class="df_plbox_vocie">
+			
+			</div>
+			<div class="df_plbox_photos">
+				
+			</div>
+			<input type="hidden" id="pics[]" value=""/>
+			<div class="df_plbox_tools">
+				<div class="pl_toolbox">
+					<div class="add_photo mb_marsk"><img class="" src="{OSSURL}public/mobile/img/btn/bot/59ddef4d7a25b_21.png"></div>
+					<div class="add_vocie mb_marsk" onclick="wxvocie()"><img class="" src="{OSSURL}public/mobile/img/btn/bot/59ddef4d7a25b_79.png"></div>
+				</div>	
+				<div class="df_bntrightword">0/200</div>
+			</div>
+		</div>
+		{/if}
+		{if $type == 'edit'}
+		{loop $stuplks $item}
+		<div class="df_plbox">
+			<div class="df_plbox_textare">
+				<textarea id="feedback_content" placeholder="请留下对该您的评论吧~" >{$item['content']}</textarea>
+			</div>
+			<div class="df_plbox_vocie">
+
+			</div>
+			<div class="df_plbox_photos">
+				
+			</div>
+			<input type="hidden" id="pics[]" value=""/>
+			<div class="df_plbox_tools">
+				<div class="pl_toolbox">
+					<div class="add_photo mb_marsk"><img class="" src="{OSSURL}public/mobile/img/btn/bot/59ddef4d7a25b_21.png"></div>
+					<div class="add_vocie mb_marsk" onclick="wxvocie()"><img class="" src="{OSSURL}public/mobile/img/btn/bot/59ddef4d7a25b_79.png"></div>
+				</div>	
+				<div class="df_bntrightword">0/200</div>
+			</div>
+		</div>
+		{/loop}
+		{/if}
+		<div class="df_bntbox">
+			<div class="df_bnt">
+				<div onclick="close_pjlist()" class="df_cacsl mb_marsk">取消</div>
+				<div class="df_send mb_marsk">发送</div>
+			</div>
+		</div>
+	</div>			
+	<div class="babysay_bg" style="display: none;">
+		<div class="say_time_box">
+			<div class="say_time_level"></div>
+		</div>
+		<div class="babysay_box">
+			<div class="say_btn1 record_btn"></div>
+			<div class="say_tips1">点击话筒开始录音吧</div>
+			<div class="say_tips2">时长不超过<span class="pink_f">60</span>秒</div>
+		</div>
+	</div>
+	<input type="hidden"  id="contenid" value="{$item['id']}">
+	<input type="hidden" id="subtype" value="{$type}">
+	<input type="hidden" id="signteanub" value="{$signteanub}">
+<script type="text/javascript">
+var ROOT_URL = "{OSSURL}";
+var MODULE_URL = "{MODULE_URL}";
+var check = new Object();
+var signteanub = $('#signteanub').val()
+$(function () {
+	//点击隐藏录音框
+	$(".babysay_bg").on("click", function (e) {
+		$(this).hide(200);
+	});
+
+	var submit_wxsdkSendData = true;
+	var choose_img_params = {
+		choose_img_btn: ".add_photo",//选择图片按钮
+		upload_btn: ".df_send", //提交按钮
+		img_showlist: ".df_plbox_photos", //图片显示的列表
+		record_btn: ".record_btn",
+		video_btn: ".add_vocie",
+		video_list: ".df_plbox_vocie",
+		del_video_btn: "delete_voice_btn",
+		img_max_length: 9,
+		video_max_length: 1,
+		upload_img_url: "{php echo $this->createMobileUrl('bjqajax',array('op'=>'donwimg'))}",     //图片的url
+		upload_video_url: "{php echo $this->createMobileUrl('bjqajax',array('op'=>'donwvioce'))}",   //音频的url
+		wxsdkcheckForm: function () {
+			// 1.这里先做校验文本框不能为空
+			var diary_content = $.trim($("#feedback_content").val());
+
+			if (diary_content.replace(/(#)[0-9a-zA-Z\u4e00-\u9fa5]{0,255}(#)/g, '$1$2').replace(/[#]/g, "") == "") {
+				jAlert("请先输入评论内容");
+				return false;
+			}
+			// 2.敏感词检查
+			var sensitive_words = "{$word}";
+			var filter = sensitive_words.split('|');
+			for (var i = 0; i < filter.length; i++) {
+				var filter_word = filter[i].trim();
+
+				if (filter_word == "")
+					continue;
+
+				if (diary_content.indexOf(filter_word) > -1) {
+					jAlert("请遵守国家法律法规，请勿发布暴力、谣言、色情等言论。正文内容含有非法词语：" + filter_word);
+					return false;
+				}
+			}
+			var star = Object.keys(check); 
+			if(star.length < signteanub){
+				jAlert("请为本节所有老师打分");
+				return false;
+			}
+			// 验证成功
+			return true;
+		},
+		wxsdkSendData: function (imgServerid, videoServerid, videoTime, media_receiveid) {
+			if (submit_wxsdkSendData) {
+				submit_wxsdkSendData = false;
+				// var content = iphone_emoji_filter($("#feedback_content").val());
+				var url = "{php echo $this->createMobileUrl('kcpingjia',array('op'=>'subpl'))}";
+				var content = iphone_emoji_filter($("#feedback_content").val().replace(/(#)[0-9a-zA-Z\u4e00-\u9fa5]{0,255}(#)/g,'$1$2').replace(/[#]/g,""));
+				  // var content = iphone_emoji_filter($("#feedback_content").val());
+
+
+				var receiveid = [];
+				var receivetime = 0;
+
+				$(".df_plbox_photos li").not(".sdk_img_li").each(function () {
+					receiveid.push($(this).children("img").attr("receive_id"));
+				});
+				$(".df_plbox_vocie li").not(".sdk_voice_li").each(function () {
+					receiveid.push($(this).children("audio").attr("receive_id"));
+				});
+				var data = {
+					weid:"{$weid}",
+					schoolid : "{$schoolid}",
+					sid:$('#nowsid').val(),
+					ksid:$('#nowksid').val(),
+					subtype:$('#subtype').val(),
+					contenid:$('#contenid').val(),
+					userid:"{$it['id']}",
+					content: content,
+					check:check,
+					photoUrls: imgServerid,
+					audioServerid: videoServerid,
+					audioTime: videoTime,
+					receiveid: receiveid,
+					receivetime: receivetime,
+				}
+				ajax_upload(url, data, this);
+			}
+		}
+	};
+	$.wx_upload = $.extend($.wx_upload, choose_img_params);
+	$.wx_upload.init();
+	wx.ready(function () {
+		wx.onVoicePlayEnd({
+			complete: function (res) {
+				$.wx_upload.wxsdkonVoicePlayEnd(res.localId);
+			}
+		});
+		wx.onVoiceRecordEnd({
+			success: function (res) {
+				jTips("超过1分钟!");
+				$.wx_upload.wxsdkonVoiceRecordEnd(res.localId);
+			}
+		});
+	});
+});
+
+
+function ajax_upload(url, data, self) {
+	$.ajax({
+		url: url,
+		data: data,
+		type: "POST",
+		dataType: "json",
+		success: function (result) {
+			//提交后 隐藏加载层
+			self.hideLoadingMsg();
+			jTips(result.msg, function () {
+				if (result.result) {
+					get_stuplbox($('#nowksid').val())
+					close_pjlist()
+				} else {
+					$.wx_upload.success_img_arr = [];
+					$.wx_upload.fail_local_img_arr = [];
+					$.wx_upload.fail_server_img_arr = [];
+					$.wx_upload.success_video_arr = [];
+					$.wx_upload.fail_local_video_arr = [];
+					$.wx_upload.fail_server_video_arr = [];
+				}
+			});
+			
+		},
+		error: function () {
+			//提交后 隐藏加载层
+			self.hideLoadingMsg();
+			$.wx_upload.success_img_arr = [];
+			$.wx_upload.fail_local_img_arr = [];
+			$.wx_upload.fail_server_img_arr = [];
+			$.wx_upload.success_video_arr = [];
+			$.wx_upload.fail_local_video_arr = [];
+			$.wx_upload.fail_server_video_arr = [];
+			jTips("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+		},
+	});
+}
+//打开录音	
+function wxvocie(){
+	if ($('.df_plbox_vocie').children("li").length < 1) {      //新改
+	   $('.babysay_bg').show()
+	} else {
+		jAlert("最多只能传1条语音哦！");
+	}
+}
+{if $stu_star_tea}
+{loop $stu_star_tea $row}
+hs_click('{$row['star']}','{$row['totid']}')
+{/loop}
+{/if}
+//处理星星打分
+function hs_click(param,ord){
+	check[ord] = param;//记录当前打分
+	out(ord);//设置星星数
+}
+</script>
+{/if}	

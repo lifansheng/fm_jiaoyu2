@@ -1,0 +1,45 @@
+<div class="form-group" style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>滚动公告</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" class="form-control" name="ym_pop" value="{$banner['pop']}" placeholder="滚动公告">
+        <div class="help-block">显示在待机界面</div>
+    </div>
+</div>
+<div class="form-group " style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>语音提示</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" class="form-control" name="VOICEPRE" value="{$banner['VOICEPRE']}" placeholder="例如：#name#,刷卡成功">
+        <div class="help-block">变量名含义，名称：#name# </div>
+    </div>
+</div>
+<div class="form-group " style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频链接</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" class="form-control" name="video" value="{$banner['video']}" placeholder="视频链接">
+        <div class="help-block">设备上显示视频，必须为物理地址不支持代码</div>
+    </div>
+</div>
+<div class="form-group " style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片1</label>
+    <div class="col-sm-9 col-xs-12">
+        {php echo tpl_form_field_image('pic1', $banner['pic1'])}
+    </div>
+</div>
+<div class="form-group " style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片2</label>
+    <div class="col-sm-9 col-xs-12">
+        {php echo tpl_form_field_image('pic2', $banner['pic2'])}
+    </div>
+</div>
+<div class="form-group " style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片3</label>
+    <div class="col-sm-9 col-xs-12">
+        {php echo tpl_form_field_image('pic3', $banner['pic3'])}
+    </div>
+</div>
+<div class="form-group " style="width: 100%;">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">广告图片4</label>
+    <div class="col-sm-9 col-xs-12">
+        {php echo tpl_form_field_image('pic4', $banner['pic4'])}
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<!-- checkboxsss -->
+{loop $fztea $menu}
+<li class="menu-item">
+    <div class="table-div table-div-menu" style="padding: 12px 37px;">
+        <div class="table-div__item name">{$menu['sname']}</div>
+        <div class="table-div__item name"></div>
+        <div class="table-div__item action">
+            <div class="link-group">
+                <a href="javascript:;" class="toggle"></a>
+            </div>
+        </div>
+    </div>
+    <ul class="two">
+        <li class="menu-item" style="padding: 25px;">
+            <div class="input-group text-info">
+            {loop $menu['alltea'] $r}
+                <label class="checkbox-inline" style="width:80px;margin-left: 10px"><input class="pre idss" {if $r['checked']}checked{/if} data-name="{$r['tname']}" type="checkbox" value="{$r['id']}" style="float: none;" />{$r['tname']}</label>
+            {/loop}
+            </div>
+        </li>
+    </ul>
+</li>
+{/loop}
+<li class="menu-item">
+    <div class="table-div table-div-menu" style="padding: 12px 37px;">
+        <div class="table-div__item name">未分组({php echo count($nofztea)}人)</div>
+        <div class="table-div__item name"></div>
+        <div class="table-div__item action">
+            <div class="link-group">
+                <a href="javascript:;" class="toggle"></a>
+            </div>
+        </div>
+    </div>
+    <ul class="two">
+        <li class="menu-item" style="padding: 25px;">
+            <div class="input-group text-info">
+            {loop $nofztea $row}
+                <label class="checkbox-inline" style="width:80px;margin-left: 10px"><input class="pre idss" {if $row['checked']}checked{/if} data-name="{$row['tname']}" type="checkbox" value="{$row['id']}" style="float: none;"/>{$row['tname']}</label>
+            {/loop}
+            </div>
+        </li>
+    </ul>
+</li>
+<script>
+    $('.toggle').click(function () {
+        $(this).parent().parent().parent().parent().toggleClass('menu-open')
+    })
+</script>

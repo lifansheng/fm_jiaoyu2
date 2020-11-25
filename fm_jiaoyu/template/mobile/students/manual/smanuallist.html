@@ -1,0 +1,225 @@
+<!--
+* @Discription: 教师端成长手册列表
+* @Author: Hannibal·Lee
+* @Date: 2020-04-20 10:30:31
+ * @LastEditTime: 2020-08-25 11:00:28
+-->
+<!DOCTYPE html>
+<title>{$school['title']}</title>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+    <link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab.css?v=1?v=1111" />
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.90120" />
+    <link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+    {php include $this->template('port');}
+    <style>
+        *{box-sizing: border-box;}
+        body{font-size: 16px;margin:0;background-color: #f3f3f3;}
+        ul,li{list-style: none;}
+        .TopHeader{width: 100%;height: 50px;display: flex;color:white;background-color: #06c1ae;}
+        .TopHeader .tl{height: 50px;width: 50px;padding:5px}
+        .TopHeader .tl img{border-radius: 50%;width: 100%;height: 100%;}
+        .TopHeader .tm{flex: 1;line-height: 50px;}
+        .TopHeader .tr{width: 50px;font-size: 24px;line-height: 50px;text-align: center;}
+        .FileContentBox{ height: calc(100vh -  100px);width: 100vw;overflow:auto;padding-top: 10px;}
+        .remodal_right{position: fixed;width: 100vw;height: 100vh;top:0;z-index: 100;}
+        .remodal_right.onhide{transition-delay: 0.2s;transform: scale(0);}
+        .remodal_right.onshow{transform: scale(1);}
+        .remodal_backgroud{width: 100%;height: 100%;background-color: rgba(121,121,121,0.45);}
+        .remodal_rightslide{height: 100%;width: 50%;background-color: white;    position: absolute; top: 0; }
+        .remodal_right.onshow .remodal_rightslide{right: 0;transition: right 0.2s;}
+        .remodal_right.onhide .remodal_rightslide{right: -50%;transition: right 0.2s;}
+        .remodal_rightslide .remodal_slide_top{width: 100%;height: 40px;line-height: 40px;text-align: center;border-bottom: 1px solid #c1c1c1;}
+        .content_ul{width: 100%;height: calc(100% - 40px);overflow:scroll}
+        .content_ul li{height: 35px;line-height: 35px;width: 100%;padding:0 10px;position: relative;border-bottom: 1px solid #c1c1c1;}
+        .content_ul li i{position: absolute; top: 0; right: 5px; line-height: 35px; color: #06c1ae; font-size: 20px; text-shadow: 0px 0px 3px #18675f;display: none;}
+        li.active i{display: block;}
+        .file_itembox{width:100%;height: 120px;display: flex;background-color: white;padding:10px;margin-bottom: 10px;}
+        .file_itembox .status{position: absolute;top:-10px;right: -10px;background-color: #35cec7;padding:1px 10px;border-radius: 0 0 0 10px;color:white;font-size: 14px;}
+
+
+        .slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;}
+        .slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+        .slide_left_menu {right: 0;background-color: #fff;z-index: 999;margin: 50px; width: 80%;position: relative;}
+       
+</style>
+<style>
+    .TipsReDesign_GLOBAL {
+        z-index: 9999;
+        position: fixed;
+        width: auto;
+        max-width: 300px;
+        height: auto;
+        color: white;
+        padding: 15px;
+        top: 50%;
+        text-align: center;
+        left: 50%;
+        background-color: rgba(0, 0, 0, .43);
+        border-radius: 5px;
+        transform: translate(-50%, -50%) scale(0);
+        overflow: hidden;
+        opacity: 0;
+        transition: opacity 0.1s 0.025s, transform 0.1s cubic-bezier(1, -0.17, 1, 0.13);
+    }
+
+    .TipsReDesign_GLOBAL.OnShow {
+        opacity: 1;
+        transition: opacity 0.001s cubic-bezier(0.58, 0.08, 1, -0.18), transform 0.125s cubic-bezier(0.04, 0.84, 0.42, 0.76);
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .TipsReDesign_GLOBAL.Re {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.6);
+        transition: opacity 0.01s 0.025s, transform 0.1s cubic-bezier(1, -0.17, 1, 0.13);
+    }
+
+    .popover {
+        z-index: 2060;
+    }
+</style>
+</head>
+<body>
+    <div class="TopHeader" style="background-color:{$school['headcolor']}">
+        <div class="tl">
+            <img src="{$student['icon']}" >
+        </div>
+        <div class="tm">
+            <span style="font-size: 18px;margin-right: 10px;">{$student['s_name']}</span><span>{$student['bjname']}</span>
+        </div>
+    </div>
+    <div class="FileContentBox">
+        <ul id="fileul" >
+            <!-- 学生/家长端采用此样式 -->
+            {loop $list $kl}
+            <div  style="width:100%;height: 100px;display: flex;background-color: white;padding:10px;margin-bottom: 10px;" tagid="{$kl['id']}" class="student" onclick="IntoDetail(`{$it['sid']}`,`{$kl['id']}`,1)">
+                <div style="height: 100%;width: 60px;" >
+                    <img src="{$kl['thumb']}"  style="width: 100%;height: 100%;">
+                </div>
+                <div style="height: 100%;flex:1;position: relative;" >
+                    <div style="padding:0 10px"> {$kl['title']} </div>
+                    <div style="padding:0 10px;font-size: 12px;color:gray"> {$kl['createtime']} </div>
+                    {if $kl['AllowShare']}
+                    <i class="fas fa-share-alt" style="font-size: 14px;position: absolute;bottom: 0px;left:10px" onclick="Share(`{$it['sid']}`,`{$kl['id']}`)"> 分享</i>
+                   
+                    {/if}
+                    {if $kl['is_cose'] == 1}
+                    <i class="fas fa-shopping-cart" style="font-size: 14px;position: absolute;bottom: 0px;left:60px;margin-left: 5px;" onclick="CheckBuy(`{$it['sid']}`,`{$kl['id']}`)">购买</i>
+                    {/if}
+                    {if $kl['pdffile']}
+                    <span style="padding:2px 20px;background-color: #06c1ae;font-size: 14px;border-radius: 15px;position: absolute;right: 5px;color:white" onclick="DownPDF(`{$kl['pdffile']}`)"> 下载</span>
+                    {/if}
+
+                    <!-- <div calss="status" style="position: absolute;top:-10px;right: -10px;background-color: gray;padding:1px 10px;border-radius: 0 0 0 10px;" >
+                        sd
+                    </div> -->
+                </div>
+            </div>
+            {/loop}
+        </ul>
+    </div>
+
+    <div id="common_progress" class="common_progress_bg">
+        <div class="common_progress">
+            <div class="common_loading"></div>
+            <br><span>正在载入...</span></div>
+    </div>
+    
+<style>
+      .ShowPostBox{position: fixed;top:0;left:0;background-color: rgba(0, 0, 0, 0.49);z-index: 999;height: 0;width: 0;}
+        .ShowPostBox.InShow{height: 100%;width: 100%;}
+        .ShowPostBox .bkgbox{position: absolute;width: 100%;height: 100%;z-index: 1;display: none;}
+        .ShowPostBox.InShow .bkgbox{display: block;}
+        .ShowPostBox .SPB-content{position: absolute;width: 92%;margin:30px 4% auto 4%;z-index: 2; transition:opacity 0.2s .1s,transform 0.2s .1s;   opacity: 0;transform:scale(0.6); }
+        .ShowPostBox.InShow .SPB-content{opacity: 1;transform:scale(1); }
+        .ShowPostBox .SPB-content img{width: 100%;position: relative;border-radius: 10px;}
+        .ShowPostBox .SPB-content .TipsWord{width: 100%;text-align: center;color:white;font-size: 16px;}
+</style>
+    <div class="ShowPostBox" >
+        <div class="bkgbox" onclick="javascript:$(this).parent().removeClass('InShow')"></div>
+        <div class="SPB-content">
+            <img src="">
+            <div class="TipsWord">长按海报保存</div>
+        </div>
+    </div>
+
+    <div class="slide_left_menu_bg">
+        <div class="slide_left_menu">
+            <img src="" style="width: 100%;position: relative;">
+        </div>
+    </div>
+</body>
+
+
+<script src="{OSSURL}public/mobile/js/scroll.muti.stushare.js?v=1717"></script>
+<script>
+
+    function Share(sid, id) {
+        e = window.event;
+        e.stopPropagation();
+        e.preventDefault();
+        ajax_start_loading("正在生成海报...")
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'CreateManualPoster','weid'=>$weid,'schoolid'=>$schoolid))}",
+            type: "post",
+            dataType: "json",
+            data: {
+                sid: sid,
+                id: id
+            },
+            success: function (res) {
+                ajax_stop_loading()
+                $(".ShowPostBox").addClass("InShow");
+                $('.ShowPostBox img').attr('src', res)
+            }
+        });
+
+    }
+
+    function IntoDetail(sid, id, isOver) {
+        window.location.href = "{php echo $this->createMobileUrl('smanuallookstupage',array('op'=>'display','schoolid'=> $schoolid))}" + "&sid=" + sid + "&id=" + id + "&isOver=" + isOver;
+    }
+
+    function CheckBuy(sid, id) {
+        e = window.event;
+        e.stopPropagation();
+        e.preventDefault();
+        $.post("{php echo $this->createMobileUrl('payajax',array('op'=>'CheckBuyManual','weid'=>$weid,'schoolid'=>$schoolid))}", {
+            sid: sid,
+            id: id
+        }, function (res) {
+            if (confirm(res.msg)) {
+                location.href = "{php echo $this->createMobileUrl('order',array('op'=>'no_g','schoolid'=> $schoolid))}";
+            }
+        }, 'json');
+    }
+
+    function DownPDF(path) {
+        e = window.event;
+        e.stopPropagation();
+        e.preventDefault();
+        location.href = path;
+    }
+    $(".slide_left_menu_bg").click(function () {
+        $(".slide_left_menu_bg").removeClass("show_menu_bg");
+    })
+
+
+    var ScrollDiv = ".FileContentBox";
+    new Scroll_load({
+        "limit": "0",
+        "ajax_switch": true,
+        "ul_box": "#fileul",
+        "li_item": "#fileul .student",
+        'param': ['tagid'],
+        "ajax_url": "{php echo $this->createMobileUrl('smanuallist', array('schoolid' => $schoolid,'op'=>'scroll_more','bj_id'=>$bj_id ), true)}",
+        "page_name": "teacher_notify",
+        "after_ajax": function () {}
+    }).load_init();
+</script>
+{php include $this->template('footer');}
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+<script src="{OSSURL}public/mobile/js/jquery.js"></script>
+<script src="{OSSURL}public/mobile/js/PromptBoxUtil.js"></script>
+{php include $this->template('port');}
+<style>
+.user_name > select {display: block;width: 100%;height: 34px;border-radius: 3px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;}
+</style>
+</head>
+	<body>
+		<div class="all">
+			<div id="titlebar" class="header mainColor">
+				<div class="l">
+					<a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a>
+				</div>
+				<div class="m">
+					<span>{$language['signuplist_title']}</span>
+				</div>
+			</div>
+			<div id="titlebar_bg" class="_header"></div>
+			{loop $list $row}
+				<div class="bangdingForm" >
+					<div class="bangdingBox">
+						<div class="headerBox3">
+							<div class="headerinfo3">
+								<span class="t">{$row['name']}(家长)</span>
+								<span class="r">{php echo date('Y-m-d H:m', $row['createtime'])}</span>
+							</div>	
+						</div>					
+						<div class="infoBox2">
+							<ul>
+								<li>
+									<span class="l">状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：</span>
+									<span class="r">{if $row['status'] == 1}未分配{else if $row['status'] == 2}已分配{/if}</span>
+								</li>
+								<li>
+									<span class="l">学生姓名：</span>
+									<span class="r">{$row['sname']}</span>
+								</li>
+								<li>
+									<span class="l">预留手机：</span>
+									<span class="r">{$row['mobile']}</span>
+								</li>
+								<li>
+									<span class="l">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+									<span class="r">{if $row['sex'] ==1}男{else}女{/if}</span>
+								</li>
+								<li>
+									<span class="l">出生年月：</span>
+									<span class="r">{php echo date('Y年m月d日',$row['birthday'])}</span>
+								</li>
+								<li>
+									<span class="l">孩子爱好：</span>
+									<span class="r">{$row['hobby']}</span>
+								</li>
+							</ul>
+						</div>
+						<div class="footerbox">
+							<div class="footinfo">
+							{if $row['status'] == '1'}
+								<span class="r" onclick="chack({$row['id']});">分配老师</span>
+							{else}
+								<span class="r">已分配</span>
+							{/if}	
+							</div>	
+						</div>						
+					</div>
+				</div>
+			{/loop}
+        </div>
+        
+        <div class="popUpBox" style="display: none">
+            <div class="trackMatte"></div>
+            <div class="popContentBox">
+                <input type="hidden" id="v_id" value="{$v['id']}" />
+                <div class="poptitle" id="sname">申请信息</div>
+                <div class="sectionContBox" id="infobox" style="display: none">
+                    	<input type="hidden" name="fpid" id="fpid">		
+                    <div class="user_name">
+                        <select name="kcid" id="select_kc">
+                            <option value="0">请选择课程</option>
+                            {loop $kclist $item}
+                            <option value="{$item['id']}">{$item['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="user_name" id="isShowTgy" style="display: none">
+                        <select name="tgyid" id="tgylist">
+
+                        </select>
+                    </div>	
+                    <div class="btnBox">
+                        <div class="btnPass" onclick="tijiao()">确定</div>
+                        <div class="btnCancel">取消</div>
+                    </div>
+                </div>
+            </div>
+        </div>	
+	</body>
+<script type="text/javascript">
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+var PB = new PromptBox();
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+		document.title="报名记录";
+	}
+}, 100);
+
+function chack(id){
+    e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	$('.popUpBox').show();
+	$('#infobox').show();
+    $('#fpid').val(id);
+    $('#select_kc').val('0');
+    $('#tgylist').val('');
+    $("#isShowTgy").hide();
+}
+
+$(function(){
+    $('#select_kc').change(function(){
+        var kcid = $("#select_kc option:selected").attr('value');
+        var schoolid = `{$schoolid}`;
+        var weid = `{$weid}`;
+        if(kcid != null){
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'GetTgy'))}", {'kcid':kcid, 'schoolid': schoolid,'weid':weid}, function(data) {
+                $("#isShowTgy").slideDown();
+                tgylist = data.tgy;
+                var html = '';
+                if (tgylist != '') {
+                    for (var i in tgylist) {
+                        if(`${tgylist[i].tid}` != 'null'){
+                            html += `<option value="${tgylist[i].tid}" >${tgylist[i].tname}</option>`;
+                        }else{
+                            html += `<option value="0" >未分配推广员</option>`;
+
+                        }
+                    }
+                }
+                $('#tgylist').html(html);
+            },'json');
+        }
+    });
+})
+
+$('.btnCancel').click(function() {
+	$('.popUpBox').hide();
+	$('html,body').removeClass('popNoscroll');
+});
+
+function tijiao(){
+    var schoolid = `{$schoolid}`
+    var weid = `{$weid}`
+    var kcid = $("#select_kc option:selected").attr('value');
+    var tgyid = $("#tgylist option:selected").attr('value');
+    var fpid = $("#fpid").val();
+    if(kcid == 0 || kcid == ""){
+        jTips("请选择课程");
+        return;
+    }
+    if(tgyid == 0 || tgyid == ""){
+        jTips("请选择推广员");
+        return;
+    }
+
+    $.post("{php echo $this->createMobileUrl('techerajax',array('op'=>'FpTgy'))}", {'kcid':kcid, 'schoolid': schoolid,'weid':weid,'tgyid':tgyid,'fpid':fpid}, function(data) {
+        jTips(data.msg); 
+        window.location.reload()
+    },'json');
+    
+}
+</script>
+{php include $this->template('newfooter');}
+</html>

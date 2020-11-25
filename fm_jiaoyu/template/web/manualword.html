@@ -1,0 +1,489 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<div class="main">
+    <style>
+    .form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+    input[type="radio"]{margin-top: 2px !important;}
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]{ -moz-appearance: textfield; }
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">管理评语</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="manualword" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">选择分类</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="groupid" class="form-control">
+                            <option value="0" {if $_GPC['groupid'] == 0}selected{/if}>所有分类</option>
+                            <option value="-1" {if $_GPC['groupid'] == -1}selected{/if}>未分类</option>
+                          
+                        </select>
+                    </div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+                        <a class="btn btn-primary" href="javascript:;" onclick="ShowComment()"> <i class="fa fa-plus"></i> 新增评语</a>
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+                        <a class="btn btn-primary" href="javascript:;" onclick="ShowCommentType()"> <i class="fa fa-cog"></i> 管理分类</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th >模板内容</th>
+                            <th style="width:8%">所属分类</th>
+                            <th style="width:8%;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                            <td>{$item['title']}</td>
+                            <td>
+                                {if !empty($item['sname'])}
+                                    {$item['sname']}
+                                {else}
+                                    未分类
+                                {/if}
+                            </td>
+                            <td >
+                                <a href="javascript:EditComment({$item['id']},{$item['sid']},{$item['ssort']},'{$item['title']}')" >编辑</a>
+                                <a href="javascript:DeleteComment({$item['id']})" onclick="return confirm('确认删除吗？');return false;" >删除</a>
+                            </td>
+                        </tr>
+                        {/loop}
+                        <tr>
+                            <td colspan="10">
+                                <input name="token" type="hidden" value="{$_W['token']}" />
+                                <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .ComTypeBox{width: 100%;border:1px solid #d8d8d8;border-radius: 3px;color:#4e4e4e}
+    .TypeLiBox .itemli{width: 100%;display: flex;line-height: 40px;padding:0 20px}
+    .TypeLiBox:not(:last-child){border-bottom: 1px solid #d8d8d8;}
+    .TypeLiBox .LeftBox{flex:1}
+    .TypeLiBox .RightBox{width: 60px;text-align: right;}
+    .TypeLiBox .RightBox i{font-size: 14px;}
+    .AddNewPoint{width: 150px;}
+    .ClickDom{color:#53d1d2;transition: color 0.2s;cursor: pointer;}
+    .ClickDom:hover{color:#00c1b2;transition: color 0.2s;}
+    .EditInput{height: 25px;border-radius: 3px;border: 1px solid #d8d8d8;padding:2px 5px;width:80%}
+    .EditInput:focus{border-color:#53d1d2}
+</style>
+
+<div class="modal fade" id="CommentType" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document" style="width: 500px;left:calc(40% - 100px)">
+		<div class="modal-content" style="width:500px">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">管理分类</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal form">
+                    <div class="panel-body">
+                        <div class="ComTypeBox">
+                            <div class="TypeLiBox"  style="line-height: 40px;padding:0 20px" >
+                                <span class="AddNewPoint ClickDom" onclick="AddNewType()" >
+                                    <i class="fa fa-plus" style="font-size: 14px;"></i>新增分类
+                                </span>
+                            </div>
+                            <div id="TypeRoot">
+                                {loop $commenttype $row_c_m}
+                                <div  class="TypeLiBox" data-typeid="{$row_c_m['sid']}">
+                                    <div class="itemli showbox">
+                                        <div class="LeftBox">{$row_c_m['sname']}</div>
+                                        <div class="RightBox">
+                                            <i class="fa fa-edit ClickDom IntoEdit"></i>
+                                            <i class="fa fa-trash ClickDom Delete"></i>
+                                        </div>
+                                    </div>
+                                    <div class="itemli editbox" style="display:none">
+                                        <div class="LeftBox">
+                                            <input type="text" class="EditInput"  value="{$row_c_m['sname']}" data-default_value="{$row_c_m['sname']}">
+                                        </div>
+                                        <div class="RightBox">
+                                            <i class="fa fa-save ClickDom SaveEdit"></i>
+                                            <i class="fa fa-close ClickDom CancelEdit"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/loop}
+                            </div>
+
+                        </div>
+                    </div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="CommentModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">添加评语</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal form">
+					<input type="hidden" id="editid" value="0">
+					<div class="panel panel-default">
+						<div class="panel-body">
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">排序</label>
+								<div class="col-sm-2 col-lg-3">
+									<input class="form-control" id="ssort" type="number">
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">评语分类</label>
+								<div class="col-sm-2 col-lg-3">
+									<select style="margin-right:15px;" name="commentid" class="form-control">
+                                     
+                                    </select>
+                                </div>
+                            </div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">内容</label>
+								<div class="col-sm-2 col-lg-8">
+                                    <textarea  class="form-control" name="" id="comment" style="width: 100%;height: 120px;resize: none;"></textarea>
+								</div>
+                            </div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="AddComment()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+
+ $(function(){
+
+
+    $(".check_all").click(function(){
+        var checked = $(this).prop("checked")
+        $("input[type=checkbox]").prop("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的内容!');
+            return false;
+        }
+        if(confirm("确认要删除选择的内容?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('manualword', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+ })
+
+function DeleteComment(id){
+    $.ajax({
+        url: "{php echo $this->createWebUrl('manualword', array('op' => 'delete',  'schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data:{
+            id:id
+        },
+        success: function (res) {
+            alert(res.msg)
+            window.location.reload()
+        }
+    });
+}
+
+    function ReFreahType(IsInEdit){ //获取所有分类
+        $,$.ajax({
+            url: "{php echo $this->createWebUrl('manualword', array('op' => 'GetAllType','schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            success: function (res) {
+                let SelectOuterHtml = `<option value="0">所有分类</option>
+                                <option value="-1">未分类</option>`;
+                let SelectInnerHtml = '<option value="0">请选择类型</option>';
+                let editTypeHtml  = '';
+                for(let item of res.data.typelist){
+                    SelectOuterHtml +=`<option value="${item.sid}">${item.sname}</option>`
+                    SelectInnerHtml +=`<option value="${item.sid}">${item.sname}</option>`
+                    editTypeHtml += `
+                                    <div  class="TypeLiBox" data-typeid="${item.sid}">
+                                        <div class="itemli showbox">
+                                            <div class="LeftBox">${item.sname}</div>
+                                            <div class="RightBox">
+                                                <i class="fa fa-edit ClickDom IntoEdit"></i>
+                                                <i class="fa fa-trash ClickDom Delete"></i>
+                                            </div>
+                                        </div>
+                                        <div class="itemli editbox" style="display:none">
+                                            <div class="LeftBox">
+                                                <input type="text" class="EditInput"  value="${item.sname}" data-default_value="${item.sname}">
+                                            </div>
+                                            <div class="RightBox">
+                                                <i class="fa fa-save ClickDom SaveEdit"></i>
+                                                <i class="fa fa-close ClickDom CancelEdit"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                    `
+                    $("select[name=groupid]").html(SelectOuterHtml).val(Number("{$_GPC['groupid']}"))
+                    $("select[name=commentid]").html(SelectInnerHtml)
+                    if(IsInEdit === false){
+                        $("#TypeRoot").html(editTypeHtml)
+
+                    }
+                    AddEditTypeListen()
+                }
+            }
+        });
+    }
+
+    ReFreahType(false)
+
+    function AddEditTypeListen(){ //添加分类编辑事件监听
+        $(".IntoEdit").off("click")
+        $(".Delete").off("click")
+        $(".SaveEdit").off("click")
+        $(".CancelEdit").off("click")
+        $(".IntoEdit").on("click",function() {
+            let Root = $(this).parent().parent()
+            Root.hide()
+            Root.next().show()
+            let a = $(Root.next().find("input")[0]).data("default_value")
+            Root.next().find("input").focus().val('')
+            Root.next().find("input").focus().val(a)
+
+        })
+        $(".Delete").on("click",function() {
+            let r = confirm('删除分类后，该分类下的所有评语将会移动至未分组，是否确认删除该分类？')
+            if(r === true){
+                let typeid = $(this).parent().parent().parent().data("typeid")
+                DeleteType(typeid,$(this).parent().parent().parent())
+            }
+        })
+        $(".SaveEdit").on("click",function() {
+            let typeid = $(this).parent().parent().parent().data("typeid")
+            let Name = $($(this).parent().prev().find("input")[0]).val()
+            SaveEditType(typeid,Name,$(this).parent().parent().parent())
+
+        })
+        $(".CancelEdit").on("click",function() {
+            $($(this).parent().prev().find("input")[0]).val($($(this).parent().prev().find("input")[0]).data("default_value"))
+            let Root = $(this).parent().parent()
+            Root.hide()
+            Root.prev().show()
+        })
+    }
+
+    function DeleteType(id,e){ //删除分类
+        console.log(id)
+        $,$.ajax({
+            url: "{php echo $this->createWebUrl('manualword', array('op' => 'deleteType','schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:{
+                typeid:id
+            },
+            success: function (res) {
+                if(res.status === true){
+                    alert("删除分类成功")
+                    $(e).remove()
+                    ReFreahType(true)
+                }else {
+                    alert(res.msg)
+                }
+            },
+            failure: function(res) {
+                alert("删除分类失败")
+            }
+        });
+    }
+
+    function SaveEditType(id,name,e){ //保存分类编辑
+        $.ajax({
+            url: "{php echo $this->createWebUrl('manualword', array('op' => 'editType','schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:{
+                typeid:id,
+                typeName:name
+            },
+            success: function (res) {
+                $(e).find(".showbox .LeftBox").text(name)
+                $(e).find(".editbox input").attr("data-default_value",name).val(name)
+                $(e).find(".showbox").show()
+                $(e).find(".editbox").hide()
+                ReFreahType(true)
+            },
+            failure: function(res) {
+                alert("新增分类失败")
+            }
+        });
+    }
+
+    function ShowCommentType(){ //展示分类管理
+            $('#CommentType').find(".showbox").show()
+            $('#CommentType').find(".editbox").hide()
+            $('#CommentType').modal('toggle');
+        }
+
+    function AddNewType(){ //新增分类
+        $.ajax({
+            url: "{php echo $this->createWebUrl('manualword', array('op' => 'editType','schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:{
+                typeid:0
+            },
+            success: function (res) {
+                let html = `
+                    <div class="TypeLiBox" data-typeid="0" >
+                        <div class="itemli showbox" >
+                            <div class="LeftBox">新增分类</div>
+                            <div class="RightBox">
+                                <i class="fa fa-edit ClickDom IntoEdit"></i>
+                                <i class="fa fa-trash ClickDom Delete"></i>
+                            </div>
+                        </div>
+                        <div class="itemli editbox" style="display:none" >
+                            <div class="LeftBox">
+                                <input type="text" class="EditInput"  value="新增分类" data-default_value="新增分类">
+                            </div>
+                            <div class="RightBox">
+                                <i class="fa fa-save ClickDom SaveEdit"></i>
+                                <i class="fa fa-close ClickDom CancelEdit"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $("#TypeRoot").prepend(html)
+                ReFreahType(true)
+                AddEditTypeListen()
+            },
+            failure: function(res) {
+                alert("新增分类失败")
+            }
+        });
+
+    }
+
+    function EditComment(id,sid,ssort,comment){ //编辑评语
+        $("#ssort").val(ssort)
+        $("#editid").val(id)
+        $("select[name=commentid]").val(sid)
+        $("#comment").val(comment)
+        $("#CommentModal").modal("toggle")
+    }
+
+    function ShowComment(){ //展示新增评语
+            $("#ssort").val(0)
+            $("#editid").val(0)
+            $("#editid").val(0)
+            $("select[name=commentid]").val(0)
+            $("#comment").val('')
+            $('#CommentModal').modal('toggle');
+        }
+   
+        function AddComment(){ //添加/编辑评语
+        if($("select[name='commentid'] :selected").val() == 0){
+            alert('请选择类型');
+            return
+        }
+        if($("#comment").val() == ''){
+            alert('请输入内容');
+            return
+        }
+        let data = {
+            ssort : $("#ssort").val(),
+            comment : $("#comment").val(),
+            commentid : $("select[name='commentid'] :selected").val(),
+            editid : $("#editid").val()
+
+        }
+        $.post("{php echo $this->createWebUrl('manualword', array('op' => 'AddComment','schoolid' => $schoolid))}", data, function(result) {
+            alert(result.msg);
+            location.reload()
+        },'json');
+    }
+    /************************添加评语**********************************/
+
+
+</script>
+
+ 
+
+
+<script type="text/javascript">
+    var ImgList = [];
+    var imgindex = 0;
+    var mbtype = 1;
+    var EnableId = 0; //启用模板对应的id
+   
+     
+       
+    /************************批量删除**********************************/
+
+
+    /************************批量删除**********************************/
+
+    
+
+    
+
+
+</script>
+ 
+{/if}
+{template 'public/footer'}

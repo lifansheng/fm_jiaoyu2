@@ -1,0 +1,31 @@
+{loop $leave1 $v}
+<li class="main" time="{$v['createtime']}" id="{$v['id']}" style="display: block;" onclick="goTo(`{$v['id']}`)">
+    <div class="tongzhi">
+        <span class="tongzhiTitle">{$v['title']}</span>
+        {if $v['ydrs']}<span class="redtip"></span>{/if}
+        <span class="common_audit_status">{$v['ydrs']}</span>
+        {if $v['ismobile'] ==1}
+        <div class="audit_statusPass">电脑端</div>
+        {else}
+        <div class="audit_statusNew">手机端</div>
+        {/if}
+    </div>
+    <div class="cutting"></div>
+    <div class="notifyTopBox">
+        <div class="notifyTopLeft">
+            <img src="{php echo tomedia($v['thumb'])}" class="teacherImgError" />
+        </div>
+        <div class="notifyTopRight">
+            
+            <div class="notifyTopRightTopBox">
+                <span class="teacherInfo">{$v['tname']}</span>
+                    {if $v['shenfen'] == '校长'}<div class="JobLeaderBox">{$v['shenfen']}</div>{/if}
+                    {if $v['shenfen'] == '主任'}<div class="JobTeacherBox">{$v['shenfen']}</div>{/if}
+                    {if $v['shenfen'] == '老师'}<div class="JobTeacherBox">{$v['shenfen']}</div>{/if}
+            </div>
+            <p class="notifyCreateTime">{$v['time']}</p>
+        </div>
+    </div>
+    <div class="main_text" style="max-height: 60px; line-height: 20px; overflow: hidden;">{$v['content']}</div>
+</li>
+{/loop}

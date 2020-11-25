@@ -1,0 +1,723 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+            <li {if $_GPC['do']=='behaviorscore'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviorscore', array('op' => 'display', 'schoolid' => $schoolid))}">评测打分</a></li>
+            <li {if $_GPC['do']=='behaviorlog'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviorlog', array('op' => 'display', 'schoolid' => $schoolid))}">打分记录</a></li>
+            <li {if $_GPC['do']=='behaviormanager'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviormanager', array('op' => 'display', 'schoolid' => $schoolid))}">分类管理</a></li>
+		</ul>
+	</div>
+</div> 
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<style>
+    .form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+    #BHS_RootBox{background-color:unset;padding:unset}
+    .behaviorAct{height: calc(100vh - 100px);padding:unset}
+    .BHS-StuListBox{float: left;height: 100%;width: 220px;background-color: white;margin-right: 20px;border-radius: 5px;position: relative;}
+    #BHS-StuList{height: calc(100% - 40px);overflow-y: auto;padding:0 5px;position: relative;}
+
+    .BHS-Stu{width: 100%;height: 50px;position: relative;transition:height 0.1s;margin:5px 0px}
+    .BHS-Stu img{width: 40px;height: 40px;border-radius: 50%;}
+    .BHS-Stu span{margin-left: 10px;font-size: 14px;;transition:height 0.1s;width: calc(100% - 65px); display: inline-block;}
+    .BHS-Stu:after{ content:''; z-index: 1; width: 0; height: 100%; position: absolute; background-color: #a3a2a22b; transition:width 0.25s; }
+    .BHS-Stu:hover:after{ width: 100%; transition:width 0.25s; }
+    /* .BHS-Stu.active:hover::after{width: 0 !important ;transition:width 0.015s;transition-delay: 0.13s;} */
+    .BHS-Stu.active span{font-size: 15px !important; font-weight: bold;transition:all 0.15s} 
+    .BHS-Stu>div{position: absolute;width: 100%;height: 100%;z-index: 2;padding:5px 10px}
+    input[type="range"] {
+    /*-webkit-box-shadow: 0 1px 0 0px #424242, 0 1px 0 #060607 inset, 0px 2px 10px 0px black inset, 1px 0px 2px rgba(0, 0, 0, 0.4) inset, 0 0px 1px rgba(0, 0, 0, 0.6) inset;*/
+        -webkit-appearance: none; /*去除默认样式*/
+        margin-top: 5px;
+        background-color: #ebeff4;
+        /*border-radius: 15px;*/
+        width: calc(80% - 20px) !important;
+        -webkit-appearance: none;
+        height:4px;
+        padding:0 ;
+        border: none;
+        margin-left: 10px;
+        margin-right: 10px;
+    /*input的长度为80%，margin-left的长度为10%*/
+    }
+    input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;/*去除默认样式*/
+    cursor: default;
+    top: 0;
+    height: 16px;
+    width: 16px;
+    transform: translateY(0px);
+    /*background: none repeat scroll 0 0 #5891f5;*/
+    background: #fff;
+    border-radius: 15px;
+    border: 5px solid #41cac0;
+    /*-webkit-box-shadow: 0 -1px 1px #fc7701 inset;*/
+    }
+    #BHS_list_box{ height: calc(100% - 40px);width:100%;overflow-y:auto;padding:5px 30px;font-size: 14px; }
+    .BHS_event{width: 100%;display: flex;margin-bottom: 40px;}
+    .BHS_event .BHS_event_order{width: 20px;text-align: right;margin:10px 0;margin-right: 10px;}
+    .BHS_event .BHS_event_content{flex:1}
+    .BHS_event .BHS_event_content>div{margin:10px 0}
+    .BHS_event_score>span{display: inline-block;width: 80px;}
+    .Default_Word{display: inline-block;padding:2px 10px;font-size: 13px;}
+    textarea.BHS_word{width: calc(100% - 40px);resize: none;height: 80px;border-radius: 3px;border:1px solid #b3b3b3}
+    .BHSW_event:after{
+        content:'';
+        height: 1px;
+        width: 80%;
+        background-color: #eaeaea;
+        position: absolute;
+        bottom: 0;
+        margin-left: 10%;
+    }
+    .BHSW_event{
+        display: flex;min-height: 35px;line-height: 24px;position: relative;padding: 6px 0px;
+    }
+    .restyleSpan{margin-left: 20px;padding:3px 12px;font-size: 10px;margin-bottom: 6px;}
+    .BHSW_event .BHSW_order{text-align: right;margin-right: 10px;width: 40px;}
+    #ScrollToTop{width: 40px;height: 80px;background-color: #41c9c0;padding:2px 5px;border-radius: 5px;color:white;right:0px;margin-right: 40px;position: fixed;bottom: 80px;display: none;}
+</style>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">行为评测打分</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="teascore" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择期号</label>				
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="qh_id" class="form-control">
+                            <option value="0"> 请选择期号</option>
+                            {loop $qhlist $row_q}
+                            <option value="{$row_q['sid']}" {if $row_q['sid'] == $_GPC['qh_id']} selected="selected"{/if}>{$row_q['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">选择班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" class="form-control">
+                            <option value="0"> 请选择班级</option>
+                            {loop $bjlist $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['old_sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>	
+                    <div class="col-sm-2 col-lg-2" style="margin-left:55px">
+                        <span class="btn btn-default" onclick="GetStuByBj()" > 开始打分</span>
+                    </div>
+                </div>					
+            </form>
+        </div>
+    </div> 
+    <div class="panel panel-default file-container" style="display:none;" id="download_list">
+        <div class="panel-body">
+            <form action="" method="post"  class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="leadExcel" value="true">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="teascore" />
+                <input type="hidden" name="op" value="out_list" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <input type="hidden" name="fromtid" value="{$tid_global}" />
+                <div class="col-sm-2 col-lg-2">
+                    <select name="scoretime" class="form-control">
+                        <option value="">请选择评分时间</option>
+                        {loop $scoreT $row}
+                        <option value="{$row['scoretime']}" >{php echo date("Y-m",$row['scoretime'])}</option>
+                        {/loop}
+                    </select>
+                </div>	
+                <button class="btn btn-primary" >导出</button>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default file-container" style="display:none;" id="upload_list">
+        <div class="panel-body">
+            <form id="form">
+                <div class="col-sm-2 col-lg-2">
+                    <select name="ob_id" id="ob_id" class="form-control">
+                        <option value="">请选择项目导入</option>
+                        {loop $scoreOb $row}
+                        <option value="{$row['sid']}" {if $row['sid'] == $_GPC['ob_id']} selected="selected"{/if}>{$row['sname']}</option>
+                        {/loop}
+                    </select>
+                </div>
+                <input type="hidden" id="fromtid" value="{$tid_global}">		
+                <input name="viewfile" id="viewfile" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+                <a class="btn btn-warning"><label for="unload" style="margin: 0px;padding: 0px;">上传...</label></a>
+                <input type="file" class="pull-left btn-primary span3" name="file" id="unload" style="display: none;"
+                        onchange="document.getElementById('viewfile').value=this.value;this.style.display='none';">
+                <a class="btn btn-danger" onclick="submits('input_teapf','form');">导入数据</a>
+                <a class="btn btn-info" href="../addons/fm_jiaoyu/public/example/example_teascore.xls"><i class="fa fa-download"></i>下载导入模板</a>
+            </form>
+        </div>
+    </div>
+    {template 'public/excel_input'}
+    <div class="panel panel-default" id="BHS-Tips">
+        <div class="table-responsive panel-body ">
+            <div style="padding-top:10px;padding-bottom:10px;font-size: 16px;">请选择期号与班级后，开始打分</div>
+        </div>
+    </div>
+    <div class="panel panel-default" id="BHS_RootBox" style="display: none;" >
+        <div class="table-responsive panel-body behaviorAct">
+            <div class="BHS-StuListBox" >
+                <div class="panel-heading" style="background-color: #d9edf7;">学生列表(<span id="StuCount"></span>人)</div>
+                <div id="BHS-StuList" >
+                    <div class="content" style="width: 100%;"> </div>
+                    <div id="floatBK" style="width: calc(100% - 10px);height: 50px;background-color: #efefef;z-index: 1;position: absolute;top: 42px;margin:5px 0">
+                        <i class="fa fa-caret-right" style="position: absolute;top: 17px;right: 17px;"></i>
+                    </div>
+                </div>
+                
+            </div>
+            <div style="float: left;height: 100%;width: calc(100% - 240px);background-color:white;border-radius: 5px;padding-bottom: 40px;position: relative;">
+                <div class="panel-heading" style="background-color: #d9edf7;">
+                    <span>当前学生：</span><span id="StuName"></span>
+                    <span style="display: inline-block;position: absolute; left: 300px;">
+                    <span id="QhName">学期</span> - <span id="BjName">班级</span></span>
+                    <div style="float: right;margin-right: 40px;">
+                        <span class="btn btn-primary" onclick="prevStu(NowStuId)" style="display: inline-block;padding:2px 10px;font-size: 13px;border-color: #41c9c0;">上一个</span>
+                        <span class="btn btn-primary" onclick="nextStu(NowStuId)" style="display: inline-block;padding:2px 10px;font-size: 13px;border-color: #41c9c0;">下一个</span>
+                    </div >
+                </div >
+                <div id="BHS_list_box"  >
+                    <div>
+                        <form action="javescrpit:return false" id="scoreForm"></form>
+                    </div>
+                    <div>
+                        <span class="btn btn-primary" style="margin-left: 100px;" onclick="SaveBHS(NowStuId)">提交</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" style="min-width: 400px!important;" id="Modal_tips" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog" style="min-width:500px !important;width: 500px !important;top:30%">
+		<div class="modal-content" style="border-radius: 10px;">
+			<div class="modal-body" style="width: 100%;">
+				<div class="js-menu-container">
+					<div class="panel-body system-menu-list">
+						<div style="font-size: 16px;height:42px;line-height: 42px;text-align: center" id="SyncWord">
+                            <i class="fa fa-circle-o-notch fa-spin" style="margin:0"></i>
+                            <span>获取学生中...</span> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+ 
+<div class="modal fade" style="min-width: 400px!important;" id="Modal_tips_saveBHS" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog" style="min-width:500px !important;width: 500px !important;top:30%">
+		<div class="modal-content" style="border-radius: 10px;">
+			<div class="modal-body" style="width: 100%;">
+				<div class="js-menu-container">
+					<div class="panel-body system-menu-list">
+						<div style="font-size: 16px;height:42px;line-height: 42px;text-align: center" id="SyncWord">
+                            <span id="Save-Tips">提交成功</span> 
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" style="min-width: 400px!important;" id="ReModal_Word" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"   >
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-header">
+                <h4 class="modal-title">选择评语</h4>
+            </div>
+            <div class="modal-body BHS_content" style="width: 100%;"> </div>
+            <div class="modal-footer" style="border-radius: 6px;">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ScrollToTop" onclick="STop()" >
+    <i class="fa fa-chevron-up" style="font-size: 30px;"></i>
+    回到顶部
+</div>
+<script type="text/javascript">
+//变更当前学生的数据处理器
+function StuId(option){
+    this.nowid          = 0
+    this.targetDiv      = `BHS-StuList`
+    this.cellClass      = `BHS-Stu`
+    this.cellAttr       = `data-id`
+    this.bjidDiv        = 'select[name=bj_id]'
+    this.ScoreTargetDiv = "#scoreForm"
+    this.StuName        = '#StuName'
+    for(let i in option){
+        if(typeof(option[i]) === 'string'){
+            this[i] = option[i]
+        }
+    }
+    console.log(this)
+}
+
+//接受值更改
+StuId.prototype.SetActStu = function(id){
+    this.nowid = Number(id) ;
+    $(`#${this.targetDiv}`).find(`.${this.cellClass}`).removeClass('active')
+    $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).addClass('active')
+    let Dt = '';
+    if($(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).attr('done') === 'true'){
+        Dt = '(已评)'
+    }
+    $(this.StuName).text($(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('span').text() + Dt)
+    let eventPositionTop =  $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).position().top //元素相对定位
+    let boxScrollTop = $(`#${this.targetDiv}`)[0].scrollTop //滚动高度 
+    //滚动高度 + 相对高度 = 元素相对于父节点的绝对高度
+    let eventAbsTop = eventPositionTop + boxScrollTop
+    $('#floatBK').animate({top:eventAbsTop},150)
+    const bjid = NowBjId
+    const qhid = NowQhId
+
+    const TargetDiv = this.ScoreTargetDiv
+    $.ajax({
+        url: "{php echo $this->createWebUrl('behaviorscore', array('op' => 'getscorellist','schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "html",
+        data:{
+            stuid:id,
+            bjid:bjid,
+            qhid:qhid
+        },
+        success: function (res) {
+            $(TargetDiv).html(res)
+            $(TargetDiv).parent().parent().animate({scrollTop:0},150)
+            let IsThisDone = true
+                $('#scoreForm').find('textarea').each(function(){
+                    if($(this).val() === ''){
+                        IsThisDone = false
+                    }
+                })
+                if(IsThisDone === true){
+                    NowStuId.IsStuDone('done')
+                }else{
+                    NowStuId.IsStuDone('false')
+                }
+                console.log(IsThisDone)
+            $(".score_range").bind('input', function(e) {
+                let value = $(this).val()
+                console.log($(this).parent().siblings('.score_value'))
+                $(this).parent().siblings('.score_value').text(value)
+               
+            })
+        }
+    });
+    return this.nowid
+}
+
+//变更学生为已评
+StuId.prototype.IsStuDone = function(status) {
+    if(status === 'done'){
+        $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).attr('done','true') 
+        $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('span').css('color','#4ec1b8')
+    }else{
+        $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).attr('done','false') 
+        $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('span').css('color','unset')
+    }
+}
+
+
+//滚动
+StuId.prototype.ScrollEvent = function(){
+    let eventPositionTop =  $(`#${this.targetDiv}`).find(`.${this.cellClass}[${this.cellAttr}=${this.nowid}]`).position().top //元素相对定位
+    let boxScrollHeight = $(`#${this.targetDiv}`)[0].scrollHeight //总高度
+    let boxClientHeight = $(`#${this.targetDiv}`)[0].clientHeight //可视区域高度
+    let boxScrollTop = $(`#${this.targetDiv}`)[0].scrollTop //滚动高度 
+    //滚动高度 + 相对高度 = 元素相对于父节点的绝对高度
+    let eventAbsTop = eventPositionTop + boxScrollTop
+    if(eventAbsTop > boxClientHeight / 2 && eventAbsTop < boxScrollHeight - boxClientHeight / 2 + 50 ){
+        $(`#${this.targetDiv}`).animate({scrollTop:eventAbsTop - boxClientHeight / 2},150)
+    }else if(eventAbsTop > boxScrollHeight - boxClientHeight / 2 + 50){
+        $(`#${this.targetDiv}`).animate({scrollTop:boxScrollHeight},150)
+    }else{
+        $(`#${this.targetDiv}`).animate({scrollTop:0},150)
+
+    }
+}
+
+StuId.prototype.IsLast = function(){
+    const targetId =   $(`#${this.targetDiv}`).find(`.${this.cellClass}.active`).next().attr('data-id')
+    if(targetId === undefined){
+        return true
+    }else{
+        return false
+    }
+}
+
+StuId.prototype.IsFirst = function(){
+    const targetId =   $(`#${this.targetDiv}`).find(`.${this.cellClass}.active`).prev().attr('data-id')
+    if(targetId === undefined){
+        return true
+    }else{
+        return false
+    }
+}
+
+//下一个
+StuId.prototype.Next = function(){
+    const targetId =   $(`#${this.targetDiv}`).find(`.${this.cellClass}.active`).next().attr('data-id')
+    if(this.IsLast()){
+        alert("已经是最后一个啦")
+        return
+    }
+    this.SetActStu(targetId)
+    this.ScrollEvent()
+    
+}
+//上一个
+StuId.prototype.Prev = function(){
+    const targetId =   $(`#${this.targetDiv}`).find(`.${this.cellClass}.active`).prev().attr('data-id')
+    if(targetId === undefined){
+        alert("已经是第一个啦")
+        return
+    }
+    this.SetActStu(targetId)
+    this.ScrollEvent()
+}
+
+
+
+
+
+
+
+
+
+
+
+//定义预设评语对象
+function dfWord(modalID){
+    if(modalID == null){
+        console.error("dfWord Object Need param");
+       return 
+    }
+    this._actBHSid = 0
+    this._actDiv = ''
+    this._actModal = $(modalID)
+    
+}
+
+//获取评语
+dfWord.prototype.GetWord = function(id){
+    if(typeof(id) !== 'number' ){
+        console.error('dfWord.GetWord param1 need number')
+        return
+    }
+    console.log()
+    this._actDiv = `div[data-id=${id}]`
+    let ActModal = this._actModal
+    $.ajax({
+        url: "{php echo $this->createWebUrl('behaviorscore', array('op' => 'getBHSword','schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data:{
+            BHSid:id
+        },
+        success: function (res) {
+            let html = ''
+            for(let i in res){
+                html += `<div  class="BHSW_event" >
+                    <div  class="BHSW_order">
+                        ${ Number(i) + Number(1)}.
+                    </div>
+                    <div style="flex:1;" class="BHS_word_content">${res[i]}</div>
+                    <div>
+                        <span class="btn btn-primary restyleSpan"  onclick="AddWord(this)"><i class="fa fa-plus" style="font-size: 14px;"></i> 添加</span>
+                    </div>
+                </div> `;
+            }
+            console.log(ActModal)
+            ActModal.find('.BHS_content').html(html)
+            $(ActModal).modal('toggle');
+        }
+    });
+}
+
+//设置评语
+dfWord.prototype.SetWord = function(word){
+    const NewPt = new RegExp(/[\,\.\?\!\，\。\？\！\;\；]/)
+    let Oldtext =  $(this._actDiv).find('textarea').val()
+    let _RegTest = NewPt.test(Oldtext.substr(Oldtext.length-1,1))
+    if(Oldtext != '' && _RegTest !== true ){
+        Oldtext = Oldtext +'。' + word
+    }else{
+        Oldtext = Oldtext + word
+    }
+    $(this._actDiv).find('textarea').val(Oldtext)
+    $(this._actModal).modal('toggle');
+}
+
+//添加评语 function
+function AddWord(e){
+    const text = $(e).parent().siblings('.BHS_word_content').text()
+    GdfWord.SetWord(text)
+}
+//显示评语 function
+function GetDefaultWord(id){
+    GdfWord.GetWord(id)
+}
+
+//滚动到顶部
+function STop(){
+    const currentY = document.documentElement.scrollTop || document.body.scrollTop
+    scrollAnimation(currentY, 0) 
+    $("#ScrollToTop").fadeOut(150)
+}
+//window动态滚动方法
+function scrollAnimation(currentY, targetY) {
+ // 获取当前位置方法
+ // const currentY = document.documentElement.scrollTop || document.body.scrollTop
+
+ // 计算需要移动的距离
+ let needScrollTop = targetY - currentY
+ let _currentY = currentY
+ setTimeout(() => {
+   // 一次调用滑动帧数，每次调用会不一样
+   const dist = Math.ceil(needScrollTop / 10)
+   _currentY += dist
+   window.scrollTo(_currentY, currentY)
+   // 如果移动幅度小于十个像素，直接移动，否则递归调用，实现动画效果
+   if (needScrollTop > 10 || needScrollTop < -10) {
+     scrollAnimation(_currentY, targetY)
+   } else {
+     window.scrollTo(_currentY, targetY)
+   }
+ }, 5)
+}
+
+//定义左侧学生列表实例
+var NowStuId = new StuId(); 
+//定义预设评语实例
+var GdfWord = new dfWord('#ReModal_Word')
+var NowBjId = 0 ;
+var NowQhId = 0 ;
+
+//点击选中学生
+function ChangeStu(id,NowStuId){
+    if(NowStuId instanceof StuId){
+        NowStuId.SetActStu(id)
+    }
+}
+
+//下一个学生
+function nextStu(NowStuId){
+    if(NowStuId instanceof StuId){
+        NowStuId.Next()
+    }
+}
+
+//上一个学生
+function prevStu(NowStuId){
+    if(NowStuId instanceof StuId){
+        NowStuId.Prev()
+    }
+}
+
+
+//获取学生列表 function
+function GetStuByBj(){
+    const bjid = $('select[name=bj_id]').val()
+    const qhid = $('select[name=qh_id]').val()
+    const qhname = $('select[name=qh_id]').find("option:selected").text()
+    const bjname = $('select[name=bj_id]').find("option:selected").text()
+    if(qhid === '0'){
+        alert('请选择期号')
+        return
+    }
+    if(bjid === '0'){
+        alert('请选择班级')
+        return
+    }
+    $("#QhName").text(qhname)
+    $("#QhName").attr('data-id',qhid)
+    $("#BjName").text(bjname)
+    $("#BjName").attr('data-id',bjid)
+    NowBjId = bjid;
+    NowQhId = qhid;
+    $("#Modal_tips").modal('toggle');
+    $.ajax({
+        url:"{php echo $this->createWebUrl('behaviorscore', array('op' => 'getstubybj','schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data:{
+            bjid:bjid,
+            qhid :NowQhId 
+        },
+        success: function (res) {
+            let html = '';
+            for(let i of res){
+                html +=`<div class="BHS-Stu" data-id="${i.id}" done="${i.done}" onclick="ChangeStu(${i.id},NowStuId)">
+                        <div>
+                            <img src="${i.stuicon}">`;
+                if(i.done === true){
+                    html +=` <span style="color:#4ec1b8">${i.s_name} </span>`;
+                }else{
+                    html +=` <span>${i.s_name} </span>`;
+
+                }            
+                           
+                html +=`</div>
+                    </div>`;
+            }
+            $("#BHS-StuList .content").html(html)
+            $("#StuCount").text(res.length)
+            $("#BHS-Tips").hide();
+            $("#BHS_RootBox").show();
+            NowStuId.SetActStu(Number(res[0].id))
+            $("#Modal_tips").modal('toggle');
+            const currentY = document.documentElement.scrollTop || document.body.scrollTop
+            scrollAnimation(currentY, $(document).height()-$(window).height())
+            $("#ScrollToTop").fadeIn(150)
+        }
+    });
+}
+
+//保存学生评分
+function SaveBHS(NowStuId){
+    let IsEmptyWord = false
+    $('textarea.BHS_word').each(function(){
+        let v = $(this).val().replace(/^\s*|\s*$/g,"")
+        if(v === ''){
+            IsEmptyWord = true
+        }
+    })
+    if(IsEmptyWord === true){
+        alert("您有评语未填写")
+        return
+    }
+    const SaveForm = new FormData(document.getElementById('scoreForm'))
+    SaveForm.append('qhid',$("#QhName").attr('data-id'));
+    SaveForm.append('stuid',NowStuId.nowid);
+    $.ajax({
+        url: "{php echo $this->createWebUrl('behaviorscore', array('op' => 'SaveBHS','schoolid' => $schoolid))}",
+        type: "post",
+        processData: false,
+        contentType: false,
+        data:SaveForm,
+        success: function (res) {
+            if(NowStuId.IsLast() === false){
+                $('#Save-Tips').text("提交成功,切换下一个")
+                NowStuId.IsStuDone('done')
+                NowStuId.Next()
+            }else{
+                $('#Save-Tips').text("提交成功")
+            }
+            $("#Modal_tips_saveBHS").modal('toggle')
+            setTimeout(() => {
+                $("#Modal_tips_saveBHS").modal('toggle')
+            }, 1000);
+        }
+    });
+}
+$(function(){
+    $(window).on('scroll',function(){
+        var h = $(document).height()-$(window).height();
+        const sct = $(window).scrollTop()
+        if(sct === 0){
+            $("#ScrollToTop").fadeOut(150)
+        }
+        if(sct === h){
+            $("#ScrollToTop").fadeIn(150)
+        }
+    })
+})
+
+</script>
+{elseif $operation == 'post'}
+<div class="panel panel-info">
+   <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回</a></div>
+</div>
+<div class="main">
+<form action="" method="post"  class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$item['id']}" />
+		<input type="hidden" name="tid" value="{$item['tid']}" />	
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                修改评分
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">老师姓名:</label>
+                    <div class="col-sm-9" >
+                       <span class="form-control" style="color:red;border:unset">{$teacher['tname']}</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评分时间:</label>
+                    <div class="col-sm-2" style="color:red;">
+                      <span class="form-control" style="color:red;border:unset"> {php echo date("Y-m",$item['scoretime'])}</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评分组:</label>
+                    <div class="col-sm-2" style="color:red;">
+                      <span class="form-control" style="color:red;border:unset"> {$fromfz['name']}</span>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评分老师:</label>
+                    <div class="col-sm-2">
+                      <span class="form-control" style="color:red;border:unset">
+						{$fromteacher['tname']}
+						{if $fromteacher['status'] == 2}
+						<span class=" label label-info" >校长</span>
+						{/if}
+					  </span>
+                    </div>
+                </div>				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">选择项目</label>
+                    <div class="col-sm-2">
+                        <select class="form-control" style="margin-right:15px;" name="ob_id" onchange="fetchChildKm(this.options[this.selectedIndex].value)"  autocomplete="off" class="form-control">
+                            <option value="0">请选择项目</option>
+                            {loop $scoreOb $it}
+                            <option value="{$it['sid']}" {if $it['sid'] == $item['obid']} selected="selected"{/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>					
+				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">评价分数</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="text" name="score" class="form-control" value="{$item['score']}" />
+                        </div>
+                    </div>
+                </div>				
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>	
+{/if}
+{template 'public/footer'}

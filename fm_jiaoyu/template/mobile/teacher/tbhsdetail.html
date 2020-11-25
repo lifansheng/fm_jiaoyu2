@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="HandheldFriendly" content="true" />
+        <link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+        <link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+        <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+        {php echo register_jssdks();}
+        <style>
+            *{box-sizing: border-box;}
+            .TopSwitchBox{width: 100%;height: auto;padding:5px 10px;font-size: 14px;line-height: 30px; }
+            .StuInfoBox{display: flex;}
+            .slide_left_menu_ul li.act {background: url({OSSURL}public/mobile/img/be_choose_icon_02.png) right center no-repeat;background-size: 16px;background-origin: content-box;-moz-background-origin: content-box;-webkit-background-origin: content-box;}
+            .slide_left_menu_ul li {padding: 0 10px 0 10px;}
+            .act-btn{ background-color: #06c1ae; padding:3px 10px; font-size: 14px; color:white; border-radius: 5px; }
+            input[type="range"] { /*-webkit-box-shadow: 0 1px 0 0px #424242, 0 1px 0 #060607 inset, 0px 2px 10px 0px black inset, 1px 0px 2px rgba(0, 0, 0, 0.4) inset, 0 0px 1px rgba(0, 0, 0, 0.6) inset;*/ -webkit-appearance: none; /*去除默认样式*/ margin-top: 5px; background-color: #ebeff4; /*border-radius: 15px;*/ width: 95%; -webkit-appearance: none; height:4px; padding:0 ; border: none; margin-left: 10px; margin-right: 10px; position: absolute; /*input的长度为80%，margin-left的长度为10%*/ }
+            input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none;/*去除默认样式*/ cursor: default; top: 0; height: 16px; width: 16px; transform: translateY(0px); /*background: none repeat scroll 0 0 #5891f5;*/ background: #fff; border-radius: 15px; border: 5px solid #41cac0; /*-webkit-box-shadow: 0 -1px 1px #fc7701 inset;*/ }
+            .ActBox{display: flex;flex-direction: row;justify-content: space-between;padding:10px 20px}
+            #BHS_ROOT{margin-top:140px;width: 100%;background-color: white;height: auto;padding:10px;line-height: 28px;height: calc(100vh - 190px);overflow-y: auto;padding-top: 0;}
+            .BHS-cell{ width: 100%;display: flex;margin-bottom: 20px; }
+            .BHS-cell .order{width: 25px;text-align: right;margin-right: 5px;}
+            .range_span{display: inline-block; height: 12px; position: relative; width: 112px; }
+            .fast_word{margin-left: 5px;display: inline-block;background-color: #06c1ae; padding:2px 5px;font-size: 90%;border-radius: 5px;color:white;line-height: 20px;}
+            .BHS-cell textarea{resize: none;width:calc(100% - 25px);border-radius: 3px;border:1px solid #b9b9b9}
+            .loading-layer{height: 100%;width:100%;background-color: #ffffff;text-align: center;position: absolute	;z-index: 1}
+            .loading-layer div{width: 100%;height: 40px;padding-top:40px;display: flex;flex-direction: row;justify-content: space-around;}
+            .loading-layer img{ height: 40px; width:40px; -webkit-transition-property: -webkit-transform; -webkit-transition-duration: 1s; -moz-transition-property: -moz-transform; -moz-transition-duration: 1s; -webkit-animation: rotate 1s linear infinite; -moz-animation: rotate 1s linear infinite; -o-animation: rotate 1s linear infinite; animation: rotate 1s linear infinite;}
+            
+            @-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)}
+                to{-webkit-transform: rotate(360deg)}
+            }
+            @-moz-keyframes rotate{from{-moz-transform: rotate(0deg)}
+                to{-moz-transform: rotate(359deg)}
+            }
+            @-o-keyframes rotate{from{-o-transform: rotate(0deg)}
+                to{-o-transform: rotate(359deg)}
+            }
+            @keyframes rotate{from{transform: rotate(0deg)}
+                to{transform: rotate(359deg)}
+            }
+
+            .ReCreateModal{ width: 100vw; height: 100vh; position: fixed; top:0; z-index: 999; display: none; }
+            .ReModal-backgroundBox{ width: 100vw; height: 100vh; background-color: #2b2b2b47; position: absolute; top:0; z-index: -1; }
+            input[type="checkbox"] + label::after { content: "\a0"; /*不换行空格*/ display: inline-block; vertical-align: middle; font-size: 18px; width: 12px; height: 12px; right: 6px; border-radius: 2px; border: 1px solid #01cd78; line-height: 1; position: absolute; margin-top: 4px; top:0; }
+            input[type="checkbox"]:checked + label::after { background-color: #01cd78; background-clip: content-box; width: 8px; height: 8px; padding: 2px; }
+            .Modal-box{width: 80%;margin-left: 10%;height: 60vh;background-color: white;margin-top: 15vh;border-radius: 5px;border:1px solid gainsboro;padding:10px;display: flex;flex-direction: column;}
+            .Modal-box .Modal-title{line-height: 20px;text-align: center;font-size: 16px;border-bottom: 1px solid #dadada;padding-bottom: 10px;margin-bottom: 10px;}
+            .Modal-content-box{flex: 1;margin-bottom: 20px;overflow-y: scroll;position: relative;}
+            .word-cell{display: flex;width: 100%;position: relative;margin-bottom: 10px;padding-bottom: 10px;}
+            .word-order{width: 25px;text-align: right;margin-right: 5px;}
+            .word-text{width: calc(100% - 25px);}
+            .Modal-btn{height: 40px;display: flex;justify-content: space-around;}
+            .Modal-btn .btn{padding:5px 20px;border-radius: 5px;height: 30px;color:white}
+            .word-cell:after{ content:''; width: 80%; height: 1px; background-color: whitesmoke; margin-left: 10%; position: absolute; bottom:0 }
+            .TopStuInfo{position: fixed;width: 100%;z-index: 10;background-color: white;top:0;border-bottom:1px solid #e4e4e4;    box-shadow: 0px 3px 11px 0px #d4d4d4;height: 140px;}
+            #NowStuImg{width: 60px;height: 60px;border-radius: 50%;}
+            .BHS-submitBox{margin-top:30px;padding-bottom: 20px;text-align: center;}
+            .BHS-submitBox span{display: inline-block;padding:2px 20px;background-color: #06c1ae;border-radius: 5px;color:white}
+        </style>
+        <title>行为评测</title>
+    </head>
+    <body>
+        {php include $this->template('port');}
+        <div class="TopStuInfo">
+            <div class="StuInfoBox">
+                <div class="StuIcon" style="padding:13px 20px" >
+                    <img id="NowStuImg" src="{php echo tomedia($stulist[0]['icon'])}">
+                </div>
+                <div class="Stuinfo" style="flex:1;line-height: 25px;padding-top: 10px;">
+                    <div>
+                        学生：<span id="StuNameSpan">{$stulist[0]['s_name']}</span><span class="NowIsDone" style=" display: none;">(已点评)</span>
+                    </div>
+                    <div> 班级：{$bj['sname']} </div>
+                    <div> 学期：{$qh['sname']} </div>
+                </div>
+            </div>
+            <div class="ActBox">
+                <div class="act-btn" onclick="lastStu()"> 上一个 </div>
+                <div class="act-btn" onclick="ShowStuList()"> 学生列表 </div>
+                <div class="act-btn" onclick="nextStu()"> 下一个 </div>
+            </div>
+        </div>
+    
+        <div id="BHS_ROOT">
+            <div class="loading-layer" style="display: none;">
+                <div> <img src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""></div>
+                <div style="line-height: 40px;">切换学生中</div>
+            </div>
+            <form id="scoreForm" action="javascript:return false;" style="padding-top: 20px;" > </form>
+            <div class="BHS-submitBox">
+                <span onclick="SubmitBHS()">提交</span>
+            </div>
+        </div>
+
+        <style>
+            .slide_left_menu{z-index: 4;left:100vw}
+            .ReSlideBack{width: 100vw;height: 100vh;background-color: #19191966;z-index: 1;position: absolute;display: none;}
+        </style>
+
+        <div class="ReSlide" style="position: fixed;top:0;z-index: 9999;width: 100%;" id="StuListSlide">
+            <div class="ReSlideBack" ></div>
+            <div class="slide_left_menu">
+                <div class="slide_left_menu_til">学生列表</div>
+                <ul class="slide_left_menu_ul BHS-StuList" style="height: calc(100vh - 40px);overflow-y: scroll;">
+                    {loop $stulist $row}
+                    <li onclick="SwitchActStu({$row['id']});" class="BHS-Stu {if $NowStuId == $row['id']}act{/if}" data-id="{$row['id']}" >
+                        <div style="font-size: 15px;" >
+                            <span style="display:block;width: 50px;height: 50px;float: left;margin-right: 5px;padding-top:5px" >
+                                <img src="{php echo tomedia($row['icon'])}" style="width: 40px;height: 40px;border-radius: 50%;">
+                            </span>
+                            <span class="Gsname">{$row['s_name']}</span><span class="isDone" style="color:#26dada;font-size: 90%;{if $row['isdone'] == false} display: none;{/if}"> (已点评) </span>
+                        </div>
+                    </li>
+                    {/loop}	
+                </ul>
+            </div>
+        </div>
+            
+         
+
+        <div class="ReCreateModal" id="WordModal" >
+            <div class="ReModal-backgroundBox"> </div>
+            <div class="Modal-box">
+                <div class="Modal-title">选择预设评语</div>
+                <div class="Modal-content-box">
+                    <div class="loading-layer" >
+                        <div> <img src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""></div>
+                        <div style="line-height: 40px;">获取中</div>
+                    </div>
+                    <div class="Modal-content" > </div>
+                </div>
+                <div class="Modal-btn">
+                    <div class="btn" style="background-color: #50adad;" onclick="AddWord()">确定</div>
+                    <div class="btn" style="background-color: #f1cc47;" onclick="closeReModal('WordModal')">取消</div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            //定义当前操作学生对象
+            function StuId(option){
+                this.nowid          = 0
+                this.targetDiv      = `.BHS-StuList`
+                this.cellClass      = `.BHS-Stu`
+                this.cellAttr       = `data-id`
+                this.ScoreTargetDiv = "#scoreForm"
+                this.StuName        = '#StuNameSpan'
+                this.StuIcon        = '#NowStuImg'
+                for(let i in option){
+                    if(typeof(option[i]) === 'string'){
+                        this[i] = option[i]
+                    }
+                }
+            }
+
+            //接受值更改
+            StuId.prototype.SetActStu = function(id){
+                $(".NowIsDone").hide()
+                this.nowid = Number(id) ;
+                $(this.targetDiv).find(this.cellClass).removeClass('act')
+                $(this.targetDiv).find(`${this.cellClass}[${this.cellAttr}=${this.nowid}]`).addClass('act')
+                $(this.StuName).text($(this.targetDiv).find(`${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('.Gsname').text())
+                $(this.StuIcon).attr('src',$(this.targetDiv).find(`${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('img').attr('src'))
+                const ScoreTargetDiv = this.ScoreTargetDiv
+                // ajax_start_loading("切换学生中")
+                if($(this.ScoreTargetDiv).siblings(".loading-layer")){
+                    $(this.ScoreTargetDiv).siblings(".loading-layer").show(0,function(){
+                        $("#BHS_ROOT").animate({scrollTop:'0'},150)
+                    })
+                }
+                $.ajax({
+                    url: "{php echo $this->createmobileUrl('tbhsdetail', array('op' => 'getscorellist','schoolid' => $schoolid))}",
+                    type: "post",
+                    dataType: "json",
+                    data:{
+                        stuid:id,
+                        bjid:'{$bjid}',
+                        qhid:'{$qhid}'
+                    },
+                    success: function (res) {
+                        $(ScoreTargetDiv).html('')
+                        let IsThisDone = res.isdone
+                        if(IsThisDone === true){
+                            NowStuId.IsStuDone('done')
+                            $(".NowIsDone").show()
+                        }else{
+                            NowStuId.IsStuDone('false')
+                            $(".NowIsDone").hide()
+                        }
+                        for(let i in res.bhslist){
+                            let html = `
+                            <div class="BHS-cell" data-id="${res.bhslist[i].sid}">
+                                <div class="order">${Number(i) + Number(1)}.</div>
+                                <div style="flex:1" >
+                                    <div>${res.bhslist[i].sname}</div>
+                                    <div>
+                                        <span>设置得分 : </span>
+                                        <span>
+                                            <span class="range_span"> <input name="score[${res.bhslist[i].sid}]" type="range" class="score_range" min='0' max='5' step="0.5" value="${res.bhslist[i].setscore}"></span>
+                                        <span class="score_value" style="width: 25px;display: inline-block;text-align: right;margin-right: 5px;">${res.bhslist[i].setscore}</span>分
+                                        </span>
+                                    </div>
+                                    <div style="margin-bottom: 5px;">
+                                        <span>填写评语 : </span> <span class="fast_word" onclick="GetDefaultWord(${res.bhslist[i].sid})" >快速评价</span>
+                                    </div>
+                                    <div>
+                                        <textarea class="BHS_word" name="word[${res.bhslist[i].sid}]" rows="5" >${res.bhslist[i].setword}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                            $(ScoreTargetDiv).append(html)
+                            // ajax_stop_loading()
+                            if($(ScoreTargetDiv).siblings(".loading-layer")){
+                                $(ScoreTargetDiv).siblings(".loading-layer").fadeOut(100)
+                            }
+                        }
+                        $(".score_range").bind('input', function(e) {
+                            let value = $(this).val()
+                            $(this).parent().siblings('.score_value').text(value)
+                        })
+                        return
+                    }
+                });
+                return this.nowid
+            }
+
+            //变更学生为已评
+            StuId.prototype.IsStuDone = function(status) {
+                if(status === 'done'){
+                    $(this.targetDiv).find(`${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('.isDone').show()
+                }else{
+                    $(this.targetDiv).find(`${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('.isDone').hide()
+                }
+                console.log($(this.targetDiv).find(`${this.cellClass}[${this.cellAttr}=${this.nowid}]`).find('.isDone'))
+            }
+
+            StuId.prototype.IsLast = function(){
+                const targetId =   $(this.targetDiv).find(`${this.cellClass}.act`).next().attr('data-id')
+                if(targetId === undefined){
+                    return true
+                }else{
+                    return false
+                }
+            }
+
+            StuId.prototype.IsFirst = function(){
+                const targetId =   $(this.targetDiv).find(`${this.cellClass}.act`).prev().attr('data-id')
+                if(targetId === undefined){
+                    return true
+                }else{
+                    return false
+                }
+            }
+
+            //下一个
+            StuId.prototype.Next = function(){
+                const targetId =   $(this.targetDiv).find(`${this.cellClass}.act`).next().attr('data-id')
+                if(this.IsLast()){
+                    alert("已经是最后一个啦")
+                    return
+                }
+                this.SetActStu(targetId)   
+            }
+
+            //上一个
+            StuId.prototype.Prev = function(){
+                const targetId =   $(this.targetDiv).find(`${this.cellClass}.act`).prev().attr('data-id')
+                if(targetId === undefined){
+                    alert("已经是第一个啦")
+                    return
+                }
+                this.SetActStu(targetId)
+            }
+
+            $(document).ready(function() {
+                NowStuId.SetActStu({$NowStuId})
+            })
+            //侧边栏学生点击事件
+            function SwitchActStu(id) {
+                NowStuId.SetActStu(id)
+                $('#StuListSlide .ReSlideBack').siblings(".slide_left_menu").animate({left:'100vw'},150,function() {
+                        $('#StuListSlide .ReSlideBack').hide()
+                    })
+            }
+            //上一个 func
+            function lastStu(){
+                NowStuId.Prev()
+            }
+            //下一个 func
+            function nextStu(){
+                NowStuId.Next()
+            }
+
+            //显示学生列表
+            function ShowStuList() {
+                $('#StuListSlide').find('.ReSlideBack').show()
+                $('#StuListSlide').find('.slide_left_menu').animate({left:'40vw'},150)
+            }
+            
+            //定义预设评语对象
+            function dfWord(modalID){
+            if(modalID == null){
+                console.error("dfWord Object Need param");
+            return 
+            }
+            this._actBHSid = 0
+            this._actDiv = ''
+            this._actModal = $(modalID)
+            
+        }
+
+            //获取评语
+            dfWord.prototype.GetWord = function(id){
+                if(typeof(id) !== 'number' ){
+                    console.error('dfWord.GetWord param1 need number')
+                    return
+                }
+                this._actDiv = `div.BHS-cell[data-id=${id}]`
+                let ActModal = this._actModal
+                $(ActModal).fadeIn(150);
+                $(ActModal).find(".loading-layer").show()
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('tbhsdetail', array('op' => 'getBHSword','schoolid' => $schoolid))}",
+                    type: "post",
+                    dataType: "json",
+                    data:{
+                        BHSid:id
+                    },
+                    success: function (res) {
+                        let html = ''
+                        for(let i in res){
+                            html += `<div class="word-cell">
+                            <div class="word-order">${Number(i) + 1}.</div>
+                            <div class="word-text">
+                                <input type="checkbox" class="wordck" id="check_${i}" style="position: absolute;">
+                                <label style="width: 100%;display: block;position: relative;" for="check_${i}" ><div style="width: calc(100% - 20px);">${res[i]}</div></label>
+                            </div>
+                        </div>`;
+                        }
+                        $(ActModal).find('.Modal-content').html(html)
+                        $(ActModal).find(".loading-layer").hide()
+                        
+                    }
+                });
+            }
+
+            //设置评语
+            dfWord.prototype.SetWord = function(word){
+                const NewPt = new RegExp(/[\,\.\?\!\，\。\？\！\;\；]/)
+                let Oldtext =  $(this._actDiv).find('textarea').val()
+                let _RegTest = NewPt.test(Oldtext.substr(Oldtext.length-1,1))
+                if(Oldtext != '' && _RegTest !== true ){
+                    Oldtext = Oldtext +'。' + word
+                }else{
+                    Oldtext = Oldtext + word
+                }
+                $(this._actDiv).find('textarea').val(Oldtext)
+            }
+
+            //添加评语 function
+            function AddWord(e){
+                $("input.wordck:checked").each(function(){
+                    GdfWord.SetWord($(this).siblings(`label[for=${$(this).attr('id')}]`).text())
+                })
+                $('#WordModal').fadeOut(150);
+            }
+            //显示评语 function
+            function GetDefaultWord(id){
+                GdfWord.GetWord(id)
+            }
+
+            var NowStuId = new StuId(); 
+            var GdfWord = new dfWord('#WordModal')
+
+            function closeReModal(id){
+                $(`#${id}`).fadeOut(150)
+            }
+
+            function SubmitBHS(){
+                const SaveForm = new FormData(document.getElementById('scoreForm'))
+                SaveForm.append('qhid','{$qhid}');
+                SaveForm.append('stuid',NowStuId.nowid);
+                let IsEmptyWord = false
+                $('textarea.BHS_word').each(function(){
+                    let v = $(this).val().replace(/^\s*|\s*$/g,"")
+                    if(v === ''){
+                        IsEmptyWord = true
+                    }
+                })
+                if(IsEmptyWord === true){
+                    alert("您有评语未填写")
+                    return
+                }
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('tbhsdetail', array('op' => 'SaveBHS','schoolid' => $schoolid))}",
+                    type: "post",
+                    processData: false,
+                    contentType: false,
+                    data:SaveForm,
+                    success: function (res) {
+                        if(NowStuId.IsLast() === false){
+                           jTips("提交成功,切换下一个")
+                           NowStuId.IsStuDone('done')
+                            NowStuId.Next()
+                        }else{
+                            jTips("提交成功!")
+                            NowStuId.IsStuDone('done')
+                        }
+                      
+                    }
+                });
+            }
+
+
+            $(function(){
+                $(".ReCreateModal .ReModal-backgroundBox").click(function(){
+                    closeReModal($(this).parent().attr('id'))
+                })
+
+                $('#StuListSlide .ReSlideBack').click(function(){
+                    $(this).siblings(".slide_left_menu").animate({left:'100vw'},150,function() {
+                        $('#StuListSlide .ReSlideBack').hide()
+                    })
+                })
+                $(".slide_left_menu_bg").on("click", function() {
+                    $(this).find(".slide_left_menu").animate({width:0},150)
+                    $(this).animate({opacity:0},200,function() {
+                    $('#StuListSlide').removeClass("show_menu_bg")
+                    $(this).find(".slide_left_menu").animate({width:'60%'},100)
+                })
+                });
+            })
+        </script>
+    </body>
+</html>
+ 
+ 
+{php include $this->template('newfooter');} 

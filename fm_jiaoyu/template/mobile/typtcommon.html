@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+ 
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$_W['user']['username']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{MODULE_URL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{MODULE_URL}public/mobile/css/greenStyle.css?v=4.60120" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php echo register_jssdks();}
+{php include $this->template('port');}
+</head>
+<style>
+.item-button{position: absolute;right: 0px;border-radius: 5px;border: 1px solid #14c682;bottom: 0px;}
+.item-button a{margin: 2px;font-size: 13px;color: #6f6969;}
+.submitBtn{margin: 20px 10px 10px 10px; height: 40px; line-height: 40px; border-radius: 20px; text-align: center; color: white; cursor: pointer;}
+.ClickRightImg{height: 18px;vertical-align:middle;margin-bottom: 4px;transform:rotate(180deg);}
+</style>
+<body style="background-color: white;position: absolute !important;width:100%">
+{if $Nouser == 'Nouser'}
+<div class="all">
+	<div class="bangdingForm" style="border: unset;margin-top: 10px">
+		<div class="bangdingTab" style="margin-top: 40vw">
+            <div style="font-size: 20px;text-align:center" > 对不起，当前用户不存在</div>
+		</div>
+	</div>
+</div>
+{else}
+<div class="all">
+	<div class="bangdingForm" style="border: unset;margin-top: 10px">
+		<div class="bangdingTab" style="margin-top: 20px">
+			<div style="font-size: 20px;text-align:center" > 选择学生关系</div>
+		</div>
+		<div class="bangdingBox" style="border: unset">
+			<div class="headerBox" style="margin-top: 20px">
+				<div class="leftHeader">
+					<img id="wxiconpath" alt="" src="{php echo tomedia($sicon);}" />
+					<span id="wxname">{$Check_typt['s_name']}</span>
+				</div>
+			</div>				
+			<div id="parentBox" class="changeBox activeBox">
+				<ul>
+
+					
+		
+					<li>
+						<span class="l">选择关系：</span>
+						<span class="r">
+							<label>请选择</label>
+								<select id="subjectId">
+									<option value="">请选择</option>
+									<option value="2">母亲</option>
+									<option value="3">父亲</option>
+									<option value="5">其他家长</option>
+									<option value="4">本人</option>
+								</select>
+							<i></i>
+						</span>
+					</li>	
+
+				</ul>
+				<div class="submitBtn mainColor" onclick="bangDing();">绑定</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/if}
+</body>
+<script type="text/javascript">
+ 
+	$('select').change(function() {
+		var count = 0;
+		var screenHeight = window.screen.height;
+		var blurInterval = setInterval(function () {
+			$('body').css('min-height', (screenHeight-=10)+'px');
+			if (count >= 10) {
+				clearInterval(blurInterval);
+				$('body').css('min-height', '');
+			}
+			count++;
+		}, 10)
+	});
+	$(document).ready(function() {
+		$("#subjectId").change(function() {
+			changeGx();
+		});
+	});
+
+	function changeGx(){
+		$("#subjectId").parent().find("label").html($("#subjectId").find("option:selected").text());
+	}
+ 
+
+ 
+
+	function bangDing(){
+        if($("#subjectId").val() == null || $("#subjectId").val() == ""){
+            jTips("请选择关系！");
+            return;
+        }	
+		 
+		jConfirm("确认绑定？", "删除确定对话框", function (isConfirm) {
+			if(isConfirm){
+				var submitData = {
+					openid :"{$openid}",
+					schoolid :"{$schoolid}",
+					weid :"{$weid}",
+                    uid :"{$_W['member']['uid']}",
+                    sid : "{$Check_typt['id']}",
+					subjectId : $("#subjectId").val(),  //关系
+				};
+					$.post("{php echo $this->createMobileUrl('typtcommon',array('op'=>'bdstu'))}",submitData,function(data){
+					if(data.status){
+						jTips(data.msg);
+						window.location.href = "{php echo $this->createMobileUrl('detail', array('schoolid' => $schoolid), true)}"
+					}else{
+						jTips(data.msg);
+					}
+				},'json'); 
+			}
+		});
+	}
+	
+	</script>
+</html>
+
+
+<script>
+	WeixinJSHideAllNonBaseMenuItem();	
+   function WeixinJSHideAllNonBaseMenuItem(){
+	   if (typeof wx != "undefined"){
+		   wx.ready(function () {
+			   wx.hideAllNonBaseMenuItem();
+		   });
+	   }
+   }
+   </script>
+
+ 

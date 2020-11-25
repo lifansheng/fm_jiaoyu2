@@ -1,0 +1,682 @@
+{if $operation == 'ksheader'}
+<div class="topbox">
+	<div class="topbox_info">
+		<div class="left_div">
+			<div class="ksorder">
+				<div class="ordertitle">课节</div>
+				<div class="ordernub" id="ordernub"></div>
+			</div>
+		</div>
+		<div class="mid_div">
+			<div class="kc_name">{$kcinfo['name']}</div>
+			<div class="ks_info">{php echo date('Y.m.d',$ksinfo['date'])} {$sdinfo['sname']}</div>
+			<div class="ks_info">授课：{if $thiskstea}{$thiskstea}{else}没有老师签到{/if}</div>
+		</div>
+		<div class="mbl_div">
+			<div class="ksmbl" id="kspingfen">{$kspingfen}</div>
+			<div class="mbltitle">本节平均得分</div>
+		</div>
+	</div>
+</div>
+<script>
+$('#ordernub').text('')
+move('ordernub','{$nuber}')
+</script>
+{/if}
+{if $operation == 'stu_box'}
+	<div class="loading-layer" style="display:"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+	<div class="pj_bot_header">
+		<div class="bot_header_left">本节签到学生:{$stunub}</div>
+		<div class="bot_header_mid" onclick="txallstu(this)">批量提醒</div>
+		<div class="bot_header_right">
+			<select name="rep_type" id="rep_type">
+				<option value="1">全部学生</option>
+				<option value="2">老师未评</option>
+				<option value="3">学生未评</option>
+			</select>
+			<div class="right_word">全部学生</div>
+		</div>
+	</div>
+	<div class="pj_bot_bot">
+	{loop $allplstu $row}
+		<li id="stu{$row['sid']}" sid="{$row['sid']}" class="on_stu {if !$row['tostu']}lswp{/if} {if !$row['totea']}xswp{/if}" onclick="open_pjlist({$row['sid']},{$ksid})">
+			<div class="stu_leftbox">
+				<div class="stu_headerbox"><img src="{$row['icon']}"></div>
+				<div class="stu_namebox">{$row['s_name']}</div>
+				{if $row['signtype'] ==2}<div class="stu_signtype">代签</div>{/if}
+			</div>
+			<div class="stu_rightbox">
+				{if $row['tostu']}<span class="yp">老师已评</span>{else}<span>老师未评</span>{/if}
+				{if $row['totea']}<span class="yp">学生已评</span>{else}<span>学生未评</span>{/if}
+			</div>
+		</li>
+	{/loop}	
+	</div>
+<script>
+//晒选评价类型
+$(document).on('change','#rep_type',function() {
+	var text =  $("#rep_type").find("option:selected").text();
+	var value =  $("#rep_type").find("option:selected").val();
+	$(this).parents().children('.right_word').text(text)
+	$('.loading-layer').show()
+	setTimeout(loadDelay, 300);
+	if(value == 1){
+		$('.pj_bot_bot .on_stu').show()
+	}
+	if(value == 2){
+		$('.pj_bot_bot .on_stu').hide()
+		$('.pj_bot_bot .lswp').show()
+	}
+	if(value == 3){
+		$('.pj_bot_bot .on_stu').hide()
+		$('.pj_bot_bot .xswp').show()
+	}
+});
+</script>	
+{/if}
+{if $operation == 'on_pl_stu'}
+	<div class="pop_head">
+		<div class="header_pop">
+			<div class="topbox">
+				<div class="ksstutop">
+					<div class="ksstutop_left mb_marsk" onclick="close_pjlist()"><img src="{OSSURL}public/mobile/img/user_quit.png"/></div>
+					<div class="ksstumid_div">
+						<div class="stu_name">{$stuinfo['s_name']}
+							<img class="font_icon" src="{OSSURL}public/mobile/img/ico_{if $stuinfo['sex'] == 1}boy1{else}girl{/if}.png"></img>
+						</div>
+						<div class="ks_info">{$kcinfo['name']}</div>
+						<div class="ks_info">{php echo date('Y.m.d',$ksinfo['date'])} {$sdinfo['sname']}</div>
+					</div>
+					<div class="kssturight_div">
+						<div class="right_headerbox"><img src="{$stuimg}" /></div>
+					</div>
+				</div>
+			</div>
+			<div class="bot_box">
+				<div class="pj_box myks mb_marsk" onclick="showteatostubox()">
+					<div class="box_lefts">
+						<div class="box_left_lab">
+						{if !empty($checkpxs)}
+							<span class="boxleft">师</span>
+							<span class="sanjiao"></span>
+							<span class="boxright">学</span>
+						{else}
+							<span class="spx_boxleft">师</span>
+							<span class="spx_sanjiao"></span>
+							<span class="spx_right">学</span>
+						{/if}
+						</div>
+						<div class="box_left_title">{$stuinfo['s_name']}</div>
+					</div>
+					<div class="box_rights" style="padding: 12px;">
+						<span class="starpj">
+							{$stustar}
+						</span>	
+					</div>
+					{if !empty($checkpxs)}<div class="right_pftext"></div>{else}<div class="right_pftextno"></div>{/if}
+				</div>
+				{loop $allkstea $key $row}
+				<div class="pj_box myks mb_marsk" {if $key == 0}onclick="showstutoteabox(this)"{else}style="display:none"{/if}>
+					<div class="box_lefts">
+						<div class="box_left_lab">
+						{if $row['checkpls']}
+							<span class="boxrights">师</span>
+							<span class="sanjiaos"></span>
+							<span class="boxlefts">学</span>
+						{else}	
+							<span class="spx_boxlefts">师</span>
+							<span class="spx_sanjiaos"></span>
+							<span class="spx_rights">学</span>
+						{/if}	
+						</div>
+						<div class="box_left_title">{$row['tname']}</div>
+					</div>
+					<div class="box_rights" style="padding: 12px;">
+						<span class="starpj">
+							{$row['star']}
+						</span>	
+					</div>
+					{if $key == 0 && $allksteacunt > 1}<div class="right_words" onclick="showmorete(this)"></div>{/if}
+				</div>
+				{/loop}
+			</div>
+		</div>
+	</div>
+	<div id="teaplbox">
+		{if $teaplxs} 
+		{loop $teaplxs $row}
+			<div class="pop_plbox">
+				<div class="comment_item">
+					<img class="heiderimg" src="{$row['masthumb']}"/>
+					<text class="n">{$row['mastname']}<span class="setjx" onclick="setjx({$row['id']},this)">{if $row['is_show'] == 1}设为精选{else}取消精选{/if}</span></text>
+					<text class="t">{$row['mastime']}</text>
+					<text class="c">{$row['content']}</text>
+					{if $row['audio']}
+					<div class="reply_viceo">
+						<div class="audio_div">
+							<audio style="width:100%;height: 36px;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+						</div>
+					</div>
+					{/if}
+					{if $row['photo']}
+					<div class="reply_video">
+						{$row['photo']}
+					</div>
+					{/if}
+					<div class="reply_shearebox">
+						<div class="sherbox_replys"><img src="{OSSURL}public/mobile/img/bv_comment_icon.png"/>&nbsp;&nbsp;{$row['allrelpyss']}</div>
+						{if $row['tid'] == $it['tid']}
+						<div class="sherbox_edite" onclick="del_on_masterpl({$row['id']})"><img src="{OSSURL}public/mobile/img/btn_delete_02.png"/>&nbsp;&nbsp;删除</div>
+						{/if}
+						{if $row['tid'] == $it['tid']}
+						<div class="sherbox_sheare" onclick="open_eidt({$row['id']})"><img src="{OSSURL}public/mobile/img/comment.png"/>&nbsp;&nbsp;编辑</div>
+						{/if}
+					</div>
+				</div>
+				{if $row['allrelpy']}
+				{loop $row['allrelpy'] $item}
+					<div class="comment_item" style="background: #FAFBFC;">
+						<div class="reply">
+						<img class="heiderimg" src="{$item['icon']}"/>
+							<text class="n">{$item['name']}</text>
+							<text class="t">{$item['reptime']}</text>
+							<text class="c">{$item['content']}</text>
+						</div>
+					</div>
+				{/loop}
+				{/if}
+				<div class="agin_replybox" style="display:none">
+					<input placeholder="输入回复内容" value=""/>
+					<div class="agin_reply_send" onclick="reply_pl({$row['id']},this)">发送</div>
+				</div>
+				<div class="pl_botboxs mb_marsk" onclick="open_repybox(this)">再评价一条</div>
+			</div>
+		{/loop}	
+		{else}	
+			<div class="pop_empteabox">
+				<img src="{OSSURL}public/mobile/img/181547187714_.pic_hd@2x.png"/>
+				<div class="txword">老师还没有评论哦</div>
+			</div>
+			<div class="pl_botbox mb_marsk">写评论</div>
+		{/if}
+	</div>
+	<div id="stuplbox">
+		{if $stuplks}
+		{loop $stuplks $row}
+			<div class="pop_plbox" style="margin-bottom: 55px; ">
+				<div class="comment_item">
+					<img class="heiderimg" src="{$row['masthumb']}"/>
+					<text class="n">{$row['mastsname']}<span class="setjx" onclick="setjx({$row['id']},this)">{if $row['is_show'] == 1}设为精选{else}取消精选{/if}</span></text>
+					<text class="t">{$row['mastime']}</text>
+					<text class="c">{$row['content']}</text>
+					{if $row['audio']}
+					<div class="reply_viceo">
+						<div class="audio_div">
+							<audio style="width:100%;height: 36px;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+						</div>
+					</div>
+					{/if}
+					{if $row['photo']}
+					<div class="reply_video">
+						{$row['photo']}
+					</div>
+					{/if}
+					<div class="reply_shearebox">
+						<div class="sherbox_replys"><img src="{OSSURL}public/mobile/img/bv_comment_icon.png"/>&nbsp;&nbsp;{$row['allrelpyss']}</div>
+					</div>
+				</div>
+				{if $row['allrelpy']}
+				{loop $row['allrelpy'] $item}
+					<div class="comment_item" style="background: #FAFBFC;">
+						<div class="reply">
+						<img class="heiderimg" src="{$item['icon']}"/>
+							<text class="n">{$item['name']}</text>
+							<text class="t">{$item['reptime']}</text>
+							<text class="c">{$item['content']}</text>
+						</div>
+					</div>
+				{/loop}
+				{/if}
+				<div class="agin_replybox" style="display:none">
+					<input placeholder="输入回复内容" value=""/>
+					<div class="agin_reply_send" onclick="reply_pl({$row['id']},this)">发送</div>
+				</div>
+				<div class="pl_botboxs mb_marsk" onclick="open_repybox(this)">回复ta</div>
+			</div>
+		{/loop}	
+		{else}	
+			<div class="pop_empstubox">
+				<img src="{OSSURL}public/mobile/img/181547187714_.pic_hd@2x.png"/>
+				<div class="txword">学生还没有评论哦,赶快提醒ta吧</div>
+				<div class="pop_txstubtn" onclick="txonestu(this)">提醒ta</div>
+			</div>
+		{/if}	
+	</div>
+	<!-- <div class="F_div mb_marsk" style="right: 18px;background: #1a90f2; z-index: 101; bottom: 84px;" onclick="close_pjlist();">
+		<div class="F_div_text">返回</div>
+	</div> -->
+	<!--底部固定栏-->
+	<div class="pop_bottom">
+		<div class="pop_botleft mb_marsk" onclick="prev_stu()">上一个</div>
+		<div class="pop_botright mb_marsk" onclick="next_stu()">下一个</div>
+	</div>
+	<!--对学生打分滑块-->
+	<div class="dafen_plbox" style="display:none">
+		<div class="dafen_head">
+			<div class="dafen_titbox">
+				<div class="dafen_title">请对学生打分</div>
+				<div class="dafen_title_tip">请滑动星星打分</div>
+			</div>
+		</div>
+		<div class="df_starbox">
+			<div class="one_df_starbox">
+				<div class="one_df_name">{$stuinfo['s_name']}</div>
+				<div class="one_df_star">
+					<img id="star1_22" onclick="hs_click(1,22)" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star2_22" onclick="hs_click(2,22)" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star3_22" onclick="hs_click(3,22)" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star4_22" onclick="hs_click(4,22)" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+					<img id="star5_22" onclick="hs_click(5,22)" class="star" src="{OSSURL}public/mobile/img/star_comment_empty.png">
+				</div>
+			</div>
+		</div>
+		<div class="df_plbox">
+			<div class="df_plbox_textare">
+				<textarea id="feedback_content" placeholder="请留下对该学生的评论吧~" ></textarea>
+			</div>
+			<div class="df_plbox_vocie">
+			
+			</div>
+			<div class="df_plbox_photos">
+				
+			</div>
+			<input type="hidden" id="pics[]" value=""/>
+			<div class="df_plbox_tools">
+				<div class="pl_toolbox">
+					<div class="add_photo mb_marsk"><img class="" src="{OSSURL}public/mobile/img/btn/bot/59ddef4d7a25b_21.png"></div>
+					<div class="add_vocie mb_marsk" onclick="wxvocie()"><img class="" src="{OSSURL}public/mobile/img/btn/bot/59ddef4d7a25b_79.png"></div>
+				</div>	
+				<div class="df_bntrightword">5/200</div>
+			</div>
+		</div>
+		<div class="df_bntbox">
+			<div class="df_bnt">
+				<div class="df_cacsl mb_marsk">取消</div>
+				<div class="df_send mb_marsk">发送</div>
+			</div>
+		</div>
+	</div>			
+	<div class="babysay_bg" style="display: none;">
+		<div class="say_time_box">
+			<div class="say_time_level"></div>
+		</div>
+		<div class="babysay_box">
+			<div class="say_btn1 record_btn"></div>
+			<div class="say_tips1">点击话筒开始录音吧</div>
+			<div class="say_tips2">时长不超过<span class="pink_f">60</span>秒</div>
+		</div>
+	</div>
+	<input type="hidden" id="editid" value="">
+	<input type="hidden" id="subtype" value="{if $teaplxs}eidt{else}new{/if}">
+<script type="text/javascript">
+
+
+var ROOT_URL = "{OSSURL}";
+var MODULE_URL = "{MODULE_URL}";
+var check = new Object();
+var receiveid = [];
+ 
+
+ 
+
+$.wx_upload = deepClone(OriginWx_upload); //****************************************
+
+$(function () {
+	//点击隐藏录音框
+	$(".babysay_bg").on("click", function (e) {
+		$(this).hide(200);
+	});
+
+	var submit_wxsdkSendData = true;
+	var choose_img_params = {
+		choose_img_btn: ".add_photo",//选择图片按钮
+		upload_btn: ".df_send", //提交按钮
+		img_showlist: ".df_plbox_photos", //图片显示的列表
+		record_btn: ".record_btn",
+		video_btn: ".add_vocie",
+		video_list: ".df_plbox_vocie",
+		del_video_btn: "delete_voice_btn",
+		img_max_length: 9,
+		video_max_length: 1,
+		upload_img_url: "{php echo $this->createMobileUrl('bjqajax',array('op'=>'donwimg'))}",     //图片的url
+		upload_video_url: "{php echo $this->createMobileUrl('bjqajax',array('op'=>'donwvioce'))}",   //音频的url
+		wxsdkcheckForm: function () {
+			// 1.这里先做校验文本框不能为空
+			var diary_content = $.trim($("#feedback_content").val());
+
+			if (diary_content.replace(/(#)[0-9a-zA-Z\u4e00-\u9fa5]{0,255}(#)/g, '$1$2').replace(/[#]/g, "") == "") {
+				jAlert("请先输入评论内容");
+				return false;
+			}
+			// 2.敏感词检查
+			var sensitive_words = "{$word}";
+			var filter = sensitive_words.split('|');
+			for (var i = 0; i < filter.length; i++) {
+				var filter_word = filter[i].trim();
+
+				if (filter_word == "")
+					continue;
+
+				if (diary_content.indexOf(filter_word) > -1) {
+					jAlert("请遵守国家法律法规，请勿发布暴力、谣言、色情等言论。正文内容含有非法词语：" + filter_word);
+					return false;
+				}
+			}
+			var star = Object.keys(check); 
+			if(star.length < 1){
+				jAlert("请为学生打分");
+				return false;
+			}
+			// 验证成功
+			return true;
+		},
+		wxsdkSendData: function (imgServerid, videoServerid, videoTime, media_receiveid) {
+			if (submit_wxsdkSendData) {
+				submit_wxsdkSendData = false;
+				// var content = iphone_emoji_filter($("#feedback_content").val());
+				var url = "{php echo $this->createMobileUrl('tkcpingjia',array('op'=>'subpl'))}";
+				var content = iphone_emoji_filter($("#feedback_content").val().replace(/(#)[0-9a-zA-Z\u4e00-\u9fa5]{0,255}(#)/g,'$1$2').replace(/[#]/g,""));
+				  // var content = iphone_emoji_filter($("#feedback_content").val());
+
+
+				
+				var receivetime = 0;
+
+				$(".df_plbox_photos li").not(".sdk_img_li").each(function () {
+					receiveid.push($(this).children("img").attr("receive_id"));
+				});
+				$(".df_plbox_vocie li").not(".sdk_voice_li").each(function () {
+					receiveid.push($(this).children("audio").attr("receive_id"));
+				});
+				var data = {
+					weid:"{$weid}",
+					schoolid : "{$schoolid}",
+					sid:$('#nowsid').val(),
+					ksid:$('#nowksid').val(),
+					tid:"{$tid_global}",
+					subtype:$('#subtype').val(),
+					editid:$('#editid').val(),
+					userid:"{$it['id']}",
+					content: content,
+					check:check,
+					photoUrls: imgServerid,
+					audioServerid: videoServerid,
+					audioTime: videoTime,
+					receiveid: receiveid,
+					receivetime: receivetime,
+				}
+				ajax_upload(url, data, this);
+			}
+		}
+	};
+
+	$.wx_upload = $.extend($.wx_upload, choose_img_params);
+	$.wx_upload.init();
+	wx.ready(function () {
+		wx.onVoicePlayEnd({
+			complete: function (res) {
+				$.wx_upload.wxsdkonVoicePlayEnd(res.localId);
+			}
+		});
+		wx.onVoiceRecordEnd({
+			success: function (res) {
+				jTips("超过1分钟!");
+				$.wx_upload.wxsdkonVoiceRecordEnd(res.localId);
+			}
+		});
+	});
+});
+
+
+function ajax_upload(url, data, self) {
+	$.ajax({
+		url: url,
+		data: data,
+		type: "POST",
+		dataType: "json",
+		success: function (result) {
+			//提交后 隐藏加载层
+			self.hideLoadingMsg();
+			jTips(result.msg, function () {
+				if (result.result) {
+					pushonestupl($('#nowsid').val(),$('#nowksid').val())
+				} else {
+					$.wx_upload.success_img_arr = [];
+					$.wx_upload.fail_local_img_arr = [];
+					$.wx_upload.fail_server_img_arr = [];
+					$.wx_upload.success_video_arr = [];
+					$.wx_upload.fail_local_video_arr = [];
+					$.wx_upload.fail_server_video_arr = [];
+				}
+			});
+			
+		},
+		error: function () {
+			//提交后 隐藏加载层
+			self.hideLoadingMsg();
+			$.wx_upload.success_img_arr = [];
+			$.wx_upload.fail_local_img_arr = [];
+			$.wx_upload.fail_server_img_arr = [];
+			$.wx_upload.success_video_arr = [];
+			$.wx_upload.fail_local_video_arr = [];
+			$.wx_upload.fail_server_video_arr = [];
+			jTips("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+		},
+	});
+}
+
+//上一个 下一个学生
+function prev_stu(){
+	let prevsid = $('#prevsid').val()
+	if(prevsid > 0){
+		pushonestupl(prevsid,$('#nowksid').val())
+	}else{
+		jTips('已经是第一个学生了')
+	}
+}
+function next_stu(){
+	let nextsid = $('#nextsid').val()
+	if(nextsid > 0){
+		pushonestupl(nextsid,$('#nowksid').val())
+	}else{
+		jTips('当前已经是最后一个学生了')
+	}
+}
+
+//删除评论
+function del_on_masterpl(mastid){
+	jConfirm("如本评论有回复也将一同删除，删除后不可恢复，确定删除本条评论吗？", "确定对话框", function (isConfirm) {
+		if(isConfirm){
+			$.ajax({ //先检查是否本节授课
+				url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'del_on_masterpl'), true)}",
+				type: "post",
+				dataType: "json",
+				data: {mastid:mastid,ksid:$('#nowksid').val(),tid:'{$tid_global}',sid:$('#nowsid').val()},
+				success: function (result) {
+					jTips(result.msg)
+					if(result.result){
+						pushonestupl($('#nowsid').val(),$('#nowksid').val())
+					}
+				}
+			})
+		}
+	});
+}
+//修改精选状态
+function setjx(mastid,elm){
+	jConfirm("设置精品讲展示在前端课程购买页面，取消则会不显示，确定继续吗", "确定对话框", function (isConfirm) {
+		if(isConfirm){
+		$.ajax({ //先检查是否本节授课
+			url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'cheackteasign'), true)}",
+			type: "post",
+			dataType: "json",
+			data: {ksid:$('#nowksid').val(),tid:'{$tid_global}'},
+			success: function (result) {
+				if(result.result){
+					$.ajax({ //设置精选
+						url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'setjx'), true)}",
+						type: "post",
+						dataType: "json",
+						data: {masterid:mastid},
+						success: function (result) {
+							jTips(result.msg)
+							if(result.result){
+								if(result.is_show == 0){
+									$(elm).text('取消精选')
+								}
+								if(result.is_show == 1){
+									$(elm).text('设为精选')
+								}
+							}
+						}
+					})
+				}else{
+					jAlert("抱歉你不是本节授课老师！");
+				}
+			}
+		})
+		}
+	});
+}
+//打开回复框
+function open_repybox(elm){
+	$.ajax({ //先检查是否本节授课
+		url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'cheackteasign'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {ksid:$('#nowksid').val(),tid:'{$tid_global}'},
+		success: function (result) {
+			if(result.result){
+				$(elm).hide()
+				$(elm).prev().show(200)
+			}else{
+				jAlert("抱歉你不是本节授课老师！");
+			}
+		}
+	})
+}
+//点击回复
+function reply_pl(masterid,elm){
+	let content = $(elm).prev().val()
+	if(content != '' && content != null){
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'reply_pl'), true)}",
+			type: "post",
+			dataType: "json",
+			data: {
+				weid:"{$weid}",
+				schoolid : "{$schoolid}",
+				sid:$('#nowsid').val(),
+				ksid:$('#nowksid').val(),
+				tid:"{$tid_global}",
+				userid:"{$it['id']}",
+				masterid:masterid,
+				content:content
+			},
+			success: function (result) {
+				jTips(result.msg)
+				pushonestupl($('#nowsid').val(),$('#nowksid').val())
+				$(elm).parent().hide()
+				$(elm).parent().next().show(200)
+			}
+		})
+	}else{
+		jAlert('请输入回复内容')
+	}
+}
+//打开录音	
+function wxvocie(){
+	if ($('.df_plbox_vocie').children("li").length < 1) {      //新改
+	   $('.babysay_bg').show()
+	} else {
+		jAlert("最多只能传1条语音哦！");
+	}
+}
+ //展开查看更多老师的评分
+function showmorete(elm){
+	$(elm).parent().nextAll().toggle()
+}
+//显示学生评论老师内容
+function showstutoteabox(){
+	$('#teaplbox').hide()
+	$('.dafen_plbox').hide()
+	$('#stuplbox').show(200)
+}
+//显示老师评论学生内容
+function showteatostubox(){
+	$('#stuplbox').hide()
+	$('#teaplbox').show(200)
+
+}
+{if $checkpxsstar}
+hs_click('{$checkpxsstar['star']}',22)
+{/if}
+//处理星星打分
+function hs_click(param,ord){
+	check[ord] = param;//记录当前打分
+	out(ord);//设置星星数
+}
+function open_eidt(eidtid){
+	$('#editid').val(eidtid)
+	$.ajax({ //先检查是否本节授课
+		url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'edite_pl'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {ksid:$('#nowksid').val(),tid:'{$tid_global}',masterid:eidtid},
+		success: function (result) {
+			if(result.result){
+				$('#feedback_content').val(result.mastre.content)
+				$('#teaplbox').hide()
+				$('#stuplbox').hide()
+				$('.pop_empteabox').hide()
+				$('.pl_botbox').hide()
+				$('.dafen_plbox').slideRightShow()
+			}else{
+				jAlert(result.msg);
+			}
+		}
+	})
+
+}
+//打开老师点评学生
+$('.pl_botbox').click(function() {
+	//$('.F_div').hide()
+	$.ajax({ //先检查是否本节授课
+		url: "{php echo $this->createMobileUrl('tkcpingjia',array('schoolid' => $schoolid,'op' => 'cheackteasign'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {ksid:$('#nowksid').val(),tid:'{$tid_global}'},
+		success: function (result) {
+			if(result.result){
+				$('#teaplbox').hide()
+				$('#stuplbox').hide()
+				$('.pop_empteabox').hide()
+				$('.pl_botbox').hide()
+				$('.dafen_plbox').slideRightShow()
+			}else{
+				jAlert("抱歉你不是本节授课老师！");
+			}
+		}
+	})
+});
+//关闭老师点评学生
+$('.df_cacsl').click(function() {
+	$('#teaplbox').slideLeftShow()
+	$('#stuplbox').slideLeftShow()
+	$('.dafen_plbox').slideRightHide()
+	$('.F_div').show()
+	$('.pop_empteabox').show()
+	$('.pl_botbox').slideLeftShow()
+});
+</script>
+{/if}	

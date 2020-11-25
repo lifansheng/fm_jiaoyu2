@@ -1,0 +1,19 @@
+<?php 
+$loadscset = pdo_fetch("select is_comload from " . tablename($this->table_index) . " where id = :id  ", array(":id" => $_GPC['schoolid']));
+$comadsssss = pdo_fetch("select * from " . tablename($this->table_banners) . " where id = :id And weid = :weid ", array(":id" => $loadscset['is_comload'], ":weid" => $_W['uniacid']));
+?>
+{if $loadscset['is_comload']}
+{if $comadsssss['begintime']<TIMESTAMP && $comadsssss['endtime']>TIMESTAMP && $comadsssss['enabled'] ==1}
+<div id="loadingDiv" style="position: fixed; top: 0; bottom: 0; width: 100%; left: 0; background-color: #fff; z-index: 999999; display: block;">
+    <div class="ajax_loading" style="display: box; display: -webkit-box; -webkit-box-orient: vertical; -webkit-box-pack: center; -webkit-box-align: center; width: 100%; height: 100%;">
+        <img style="width: 38%; display: block;" src="{php echo tomedia($comadsssss['thumb'])}">
+    </div>
+</div>
+<script>
+    setTimeout(loadDelay, 800);
+    function loadDelay() {
+        $('#loadingDiv').remove()
+    }
+</script>
+{/if}
+{/if}

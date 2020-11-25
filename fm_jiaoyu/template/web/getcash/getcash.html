@@ -1,0 +1,408 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li {if $_GPC['do']=='getcash' && $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('getcash', array('op' => 'display', 'schoolid' => $schoolid))}">提现记录</a></li>
+			{if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1006001,1,$schoolid)))}
+			<li {if $_GPC['do']=='getcash' && $operation == 'ruleset'}class="active"{/if}><a href="{php echo $this->createWebUrl('getcash', array('op' => 'ruleset', 'schoolid' => $schoolid))}">提现设置</a></li>
+			{/if}
+		</ul>	
+	</div>
+</div>
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}	
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">提现申请订单列表</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="getcash"/>
+				<input type="hidden" name="op" value="display"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="is_pay" value="{$_GPC['is_pay']}"/>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">订单状态</label>
+					<div class="col-sm-4 col-xs-4 col-md-4">
+						<div class="btn-group btn-xs">
+							<a href="{php echo $this->createWebUrl('getcash', array('id' => $item['id'], 'is_pay' => '-1', 'schoolid' => $schoolid))}" class="btn {if $is_pay == -1}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('getcash', array('id' => $item['id'], 'is_pay' => '1', 'schoolid' => $schoolid))}" class="btn {if $is_pay == 1}btn-primary{else}btn-default{/if}">未审核</a>
+							<a href="{php echo $this->createWebUrl('getcash', array('id' => $item['id'], 'is_pay' => '2', 'schoolid' => $schoolid))}" class="btn {if $is_pay == 2}btn-primary{else}btn-default{/if}">已审核</a>
+							<a href="{php echo $this->createWebUrl('getcash', array('id' => $item['id'], 'is_pay' => '3', 'schoolid' => $schoolid))}" class="btn {if $is_pay == 3}btn-primary{else}btn-default{/if}">未提现</a>
+							<a href="{php echo $this->createWebUrl('getcash', array('id' => $item['id'], 'is_pay' => '4', 'schoolid' => $schoolid))}" class="btn {if $is_pay == 4}btn-primary{else}btn-default{/if}">已提现</a>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-5 col-sm-3 col-md-1 control-label">条件</label>
+                    <div class="col-sm-2 col-lg-1">
+                        <input class="form-control" name="number" id="" placeholder="提现订单号" type="text" value="{$_GPC['number']}" pr>
+                    </div>
+                    <div class="col-sm-2 col-lg-1">
+                        <input class="form-control" name="realname" id="" placeholder="提现人真实姓名" type="text" value="{$_GPC['realname']}">
+                    </div>
+					<div class="col-sm-2 col-lg-1">
+                        <input class="form-control" name="mobile" id="" placeholder="提现人手机号" type="text" value="{$_GPC['mobile']}">
+                    </div>
+				</div>
+				<div class="form-group">	
+					<label class="col-xs-5 col-sm-3 col-md-1 control-label">申请时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+					<div class="col-sm-2 col-lg-2" style="">
+						<button class="btn btn-default glow btn-sm"><i class="fa fa-search"></i> 搜索</button>
+						<button class="btn btn-success glow btn-sm qx_6006" name="out_put" value="output"><i class="fa fa-download"></i> 导出记录</button>
+					</div>		
+				</div>						
+			</form>
+		</div>		
+    </div>
+    <div class="card panel-default">
+        <div class="table-responsive card-body">
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+			<table class="table table-hover">
+				<thead class="navbar-inner">
+					<tr>
+						<th style="width:3%;text-align:center">订单号</th>
+						<th style="width:6%;text-align:left">姓名</th>
+						<th style="width:5%;">审核</th>
+						<th style="width:6%;">审核人</th>
+						<th style="width:6%;">结算</th>
+						<th style="width:5%;text-align:left">提现</th>
+						<th style="width:5%;text-align:left">到账</th>
+						<th style="width:6%;">付款方式</th>
+						<th style="width:6%;">账户</th>
+						<th style="width:6%;">申请时间</th>
+						<th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop $list $item}
+					<tr>
+						<td class="pt-2" style="text-align:center">
+						   {$item['id']}
+						</td>
+						<td style="text-align:left" class="cursor-pointer" onclick="CheckInfo({$item['id']});">
+							<img style="width:30px;height:30px;border-radius:50%;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);" src="{$item['icon']}" width="50" style="border-radius: 3px;" />  {$item['realname']}
+							{if $item['tid']}<span class="badge badge-light-primary">师</span>{/if}{if $item['sid']}<span class="badge badge-light-success">学</span>{/if}
+							<small class="text-muted mt-1">{$item['mobile']}</small>
+						</td>
+						<td class="pt-2 cursor-pointer" onclick="CheckInfo({$item['id']});">
+							{if $item['approval']}
+								{if $item['approval'] == 1}<span class="bullet bullet-danger bullet-sm"></span>已拒绝{/if}
+								{if $item['approval'] == 2}<span class="bullet bullet-success bullet-sm"></span>已审核{/if}
+							{else}
+								<span class="bullet bullet-warning bullet-sm"></span>未审核
+							{/if}							
+						</td>
+						<td class="pt-2">
+						   {if $item['approval'] == 2}{$item['who']}{/if}
+						</td>
+						<td class="pt-2">
+							{if $item['status'] == 1}<span class="badge badge-light-warning mr-1">未到账</span>{/if}
+							{if $item['status'] == 2}<span class="badge badge-light-success mr-1">已到账</span>{/if}
+						</td>	
+						<td style="text-align:left">
+							<i class="fa fa-yen text-primary align-items-center btn-lg px-0"> {$item['oldfee']}</i>
+						</td>
+						<td style="text-align:left">
+						{if $item['fee'] > 0}
+							<i class="fa fa-yen text-danger align-items-center btn-lg px-0"> {$item['fee']}</i>
+						{/if}	
+						</td>						
+						<td class="pt-2">
+						    {if $item['paytype'] == 1}<span class="badge badge-success"><i class="fa fa-check-circle">&nbsp;微信付款</i></span>{/if}
+							{if $item['paytype'] == 2}<span class="badge badge-warning"><i class="fa fa-money">&nbsp;现金付款</i></span>{/if}
+							{if $item['paytype'] == 3}<span class="badge badge-dark"><i class="fa fa-database">&nbsp;其他方式</i></span>{/if}
+						</td>	
+						<td class="pt-2">
+							{if $item['paytype'] == 1}{$item['payweidname']}{/if}
+							{if $item['paytype'] == 2}现金{/if}
+							{if $item['paytype'] == 3}其他{/if}
+						</td>
+						<td class="pt-2">
+							<small class="text-muted mt-1">{php echo date('Y.m.d',$item['createtime'])}</small>
+						</td>
+						<td class="pt-2 qx_e_d"  style="text-align:right;">
+							{if empty($item['shtid']) || empty($item['paytid']) || $item['status'] == 1}<span class="btn btn-default btn-sm opt_{$item['id']} cursor-pointer spbk_btn" onclick="OptOrder({$item['id']});" title="处理订单"><i class="primary fa fa-spinner fa-spin"></i></span>{/if}
+							<span class="btn btn-default btn-sm cursor-pointer" onclick="CheckInfo({$item['id']});" title="查看详情"><i class="fa fa-eye"></i></span>	
+							<span class="btn btn-default btn-sm cursor-pointer qx_6004"  onclick="DelteOrder({$item['id']},this)" title="删除订单"><i class="fa fa-trash"></i></span>
+						</td>
+					</tr>
+					{/loop}
+				</tbody>
+			</table>
+			{$pager}
+        </div>
+    </div>
+</div>
+<!-- 查看订单 modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="order_edite_box" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog myModalleft" style="width:40%;">
+		<div class="loading-layer" id="order_load"><div><img style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="ed_teabox" style="max-height:unset !important;">
+			
+		</div>
+	</div>
+</div>
+<!-- 处理订单 modal -->
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog uploader-modal modal-lg" role="document" style="min-width:600px!important;left:35%">		
+		<div class="loading-layer" id="opt_load"><div><img style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="opt_boxs">			
+			
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	{if (!(IsHasQx($tid_global,1006003,1,$schoolid)) && !(IsHasQx($tid_global,1006005,1,$schoolid)))}
+		$(".spbk_btn").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1006004,1,$schoolid)))}
+		$(".qx_6004").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1006006,1,$schoolid)))}
+		$(".qx_6006").hide();
+	{/if}
+});
+function DelteOrder(orderid,elm) {
+	var truthBeTold = window.confirm('注意：删除本申请将会同步删除本次提现组成，用户可对订单再次提现，确认要删除吗 ?');
+	if (truthBeTold) {
+		$.ajax({
+			url: "{php echo $this->createWebUrl('getcash', array('op'=>'delteorder','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {orderid:orderid},
+			success: function (result) {
+				ReToastGlobal(result.msg)
+				if (result.result) {
+					$(elm).parent().parent().remove()
+				}
+			}	
+		});
+	}
+}
+
+function OptOrder(orderid){
+	$('#Modal1').modal('toggle');
+	$('#opt_boxs').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('getcash', array('op'=>'orderinfo','webtemp'=>'optroder','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {orderid:orderid},
+		success: function (data) {
+			if (data) {
+				$('#opt_load').hide()
+				$('#opt_boxs').html(data)
+			}
+		}	
+	});
+}
+function CheckInfo(orderid){
+	$('#order_edite_box').modal('toggle');
+	$('#ed_teabox').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('getcash', array('op'=>'orderinfo','webtemp'=>'orderinfo','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {orderid:orderid},
+		success: function (data) {
+			if (data) {
+				$('#order_load').hide()
+				$('#ed_teabox').html(data)
+			}
+			
+		}	
+	});
+}
+//滚动数字
+function move(div,nub){
+	let oSpan = document.getElementById(div);
+	if(oSpan.innerHTML != undefined ){
+		let d= nub === 'null' ? 0 : nub ;//跳动到最后的数字
+		let s= parseInt(oSpan.innerHTML);//起始起始值 一般是 0 或其他
+		let time=1000;  //所用时间 1000毫秒（ 在1秒内 数值增加到d）;
+		let outTime=0;  //所消耗的时间
+		let interTime=30;
+		let timer = setInterval(function(){
+			outTime+=interTime;
+			if(outTime < time){
+				oSpan.innerHTML= parseInt(d/time*outTime);
+			}else{
+				oSpan.innerHTML=d;
+				clearInterval(timer)
+			}
+		},interTime);
+	}
+	return
+}
+</script>
+{else if $operation == 'ruleset'}
+<div class="main display_fixed">
+	<div class="col-xs-5">
+		<div class="card panel-info pl-0 pr-0">
+			<div class="panel-heading">全校提现规则设置</div>
+			<div class="card-body">	
+				<div class="cLine">
+					<div class="alert">
+						<p><span class="bold">微信提现付款提示：</span><br>
+						◆ 不支持给非实名用户打款<br>
+						◆ 给同一个实名用户付款，单笔单日限额5000/5000元<br>
+						◆ 一个商户同一日付款总额限额10万元<br>
+						<strong><font color="red">特别提醒: 次处设置为全局不仅仅只针对微信付款，现金付款或其他方式付款也会累计此处规则的设置</font></strong><br>			</p>
+					</div>
+				</div>
+				<div class="modal-body">
+					 <form id="upsence_form" method="post" class="form-horizontal form" >
+						<input type="hidden" name="schoolid" value="{$schoolid}" />	
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>单次额度</label>
+									<div class="col-sm-5 col-xs-12">
+										<div class="input-group">
+											<input type="number" style="margin-right:15px;" name="user_max" id="user_max" value="{$ruleset['user_max']}" class="form-control">
+											<span class="input-group-addon">元</span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>单次最小</label>
+									<div class="col-sm-5 col-xs-12">
+										<div class="input-group">
+											<input type="number" style="margin-right:15px;" name="user_min" id="user_min" value="{$ruleset['user_min']}" class="form-control">
+											<span class="input-group-addon">元</span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>单日额度</label>
+									<div class="col-sm-5 col-xs-12">
+										<div class="input-group">
+											<input type="number" style="margin-right:15px;" name="user_oneorder_max" id="user_oneorder_max" value="{$ruleset['user_oneorder_max']}" class="form-control">
+											<span class="input-group-addon">元</span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>单日次数</label>
+									<div class="col-sm-5 col-xs-12">
+										<div class="input-group">
+											<input type="number" style="margin-right:15px;" name="getcashtimes" id="getcashtimes" value="{$ruleset['getcashtimes']}" class="form-control">
+											<span class="input-group-addon">次</span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label">提现间隔</label>
+									<div class="col-sm-5 col-xs-12">
+										<div class="input-group">
+											<input type="number" style="margin-right:15px;" name="every_days" id="every_days" value="{$ruleset['every_days']}" class="form-control">
+											<span class="input-group-addon">分钟</span>
+										</div>
+									</div>
+								</div>
+								{if $_W['isfounder'] || $_W['role'] == 'owner'}
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label">付款账户</label>
+									<div class="col-sm-5 col-xs-12">
+										<select class="form-control" id="payweid">
+											<option value="0">请选择收款账户</option>
+											{loop $payweid $row}
+											<option value="{$row['uniacid']}" {if $ruleset['payweid']==$row['uniacid']}selected{/if}>{$row['name']}</option>
+											{/loop}
+										</select>
+										<div class="help-block">不设置则默认当前公众号，请确保所选账户有充足余额和已经配置微信支付证书</div>
+									</div>
+								</div>
+								{else}
+									<input type="hidden" id="payweid" value="{$ruleset['payweid']?$ruleset['payweid']:$_W['uniacid']}" />
+								{/if}
+								<div class="form-group">										
+									<label class="col-xs-12 col-sm-3 col-md-2 control-label">规则说明</label>
+									<div class="col-sm-9">
+										<div class="help-block">不填写手机端则不会显示规则按钮</div>
+										{php echo tpl_ueditor('ruleword', $ruleset['ruleword']);}
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>		
+				</div>				
+				<div class="modal-footer">	
+					<div type="button" class="btn btn-primary glow" id="submit2" onclick="sureChange()" >确认修改</div>
+				</div>			
+			</div>	
+		</div>
+	</div>
+</div>	
+<script type="text/javascript">
+function sureChange(){
+	var user_max = $('#user_max').val()
+	var user_min = $('#user_min').val()
+	var getcashtimes = $('#getcashtimes').val()
+	var every_days = $('#every_days').val()
+	var payweid = $('#payweid').val()
+	var ruleword =  $("textarea[name='ruleword']").val();
+	var user_oneorder_max = $('#user_oneorder_max').val()
+	if(user_max > 5000){
+		ReToastGlobal("单次提现额度不得设置大于5000")
+		return false
+	}
+	if(user_min < 1){
+		ReToastGlobal("单次提现额度不得设置小于1元")
+		return false
+	}
+	if(user_oneorder_max > 5000){
+		ReToastGlobal("单日提现额度不得设置大于5000")
+		return false
+	}
+	if(getcashtimes > 10){
+		ReToastGlobal("单日提现次数不得设置大于10次")
+		return false
+	}
+	if(!user_max && !user_oneorder_max && !getcashtimes){
+		ReToastGlobal("请完成1-3项的必要设置")
+		return false
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('getcash', array('op'=>'saverule','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			user_min:user_min,
+			user_max:user_max,
+			user_oneorder_max:user_oneorder_max,
+			getcashtimes:getcashtimes,
+			every_days:every_days,
+			payweid:payweid,
+			ruleword:ruleword,
+		},
+		success: function (data) {
+			if (data.result) {
+				ReToastGlobal("设置成功")
+				location.reload()
+			}
+		}	
+	});		
+}
+</script>
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,28 @@
+
+{loop $list $kl}
+<!-- 教师端采用此样式 -->
+<div class="file_itembox" >
+    <div style="height: 100%;width: 60px;" >
+        <img src="{$kl['thumb']}"   style="width: 100%;height: 80px;margin-top: 10px;">
+    </div>
+    <div style="height: 100%;flex:1;position: relative;" >
+        <div style="padding:0 10px;line-height: 30px;"> {$kl['title']} </div>
+        <div style="padding:0 10px;line-height: 27px;"> {$kl['qhname']} </div>
+        <div style="padding:0 10px;font-size: 12px;color:gray">{$kl['createtime']}</div>
+
+        <div style="padding:0 10px;font-size: 14px;color:red;display: flex;justify-content: space-between;">
+            <span>进度</span>
+            <span>已发送 1/1</span>
+        </div>
+        {if $kl['type'] == 1}
+        <div class="status" style="background-color: #3587ce;" >
+            成长手册
+        </div>
+        {else}
+        <div class="status" >
+            毕业纪念册
+        </div>
+        {/if}
+    </div>
+</div>
+{/loop}

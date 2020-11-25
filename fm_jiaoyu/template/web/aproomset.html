@@ -1,0 +1,547 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info original">
+	<div class="panel-body">
+		<ul class="nav nav-tabs ">
+			{if (IsHasQx($tid_global,1003201,1,$schoolid))}
+			<li {if $_GPC['do']=='apartmentset'}class="active"{/if}><a href="{php echo $this->createWebUrl('apartmentset', array('op' => 'display', 'schoolid' => $schoolid))}">楼栋管理</a></li>
+			{/if}
+			<li {if $_GPC['do']=='aproomset'}class="active"{/if}><a href="{php echo $this->createWebUrl('aproomset', array('op' => 'display', 'schoolid' => $schoolid))}">宿舍管理</a></li>
+		
+		</ul>	
+	</div>
+</div>
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+    <style>
+        .form-control-excel {
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+    </style>
+    <div class="panel panel-info">
+        <div class="panel-heading">楼栋管理</div>
+		<div class="panel">
+  			<div class="panel-heading" id="backToAp" style="display:none">
+	  			<a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回</a>
+  			</div>
+		</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal original" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="aproomset" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />	
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">选择楼栋</label>
+					<div class="col-sm-2 col-lg-2" >
+                        <select style="margin-right:15px;" name="apid" id="select_ap" class="form-control">
+                            <option value="0">请选择楼栋</option>
+                            {loop $apartmentlist $it}
+                            <option value="{$it['id']}" {if $_GPC['apid'] == $it['id']} selected="selected" {/if}>{$it['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按入住年级</label>
+					<div class="col-sm-2 col-lg-2" >
+                        <select style="margin-right:15px;" name="njid" id="select_nj" class="form-control">
+                            <option value="0">请选择年级</option>
+                            {loop $xueqi $it}
+                            <option value="{$it['sid']}" {if $_GPC['njid'] == $it['sid']} selected="selected" {/if} >{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按入住班级</label>
+					<div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bjid" id="bj" class="form-control">
+                            <option value="0">请选择班级</option>
+                            {loop $bj $it}
+                            <option value="{$it['sid']}" {if $_GPC['bjid'] == $it['sid']} selected="selected" {/if}>{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>					
+				</div>	
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按宿舍名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="RoomName" id="" type="text" value="{$_GPC['RoomName']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按学生名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="StuName" id="" type="text" value="{$_GPC['StuName']}">
+                    </div>	
+
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+							
+					</div>
+						
+						
+					<div class="col-sm-2 col-lg-2" style="width:8%">						
+						<a class="btn btn-primary qx_3212" href="{php echo $this->createWebUrl('aproomset', array('op'=>post, 'schoolid' => $schoolid))}" ><i class="fa fa-plus"></i> 新增宿舍</a>
+					</div>					
+				</div>
+						
+            </form>
+        </div>
+    </div>
+	
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:100px">排序</th>
+					<th >名称</th>
+					<th >所属楼栋</th>
+					<th>早间出入时段</th>
+					<th>午间出入时段</th>
+					<th>晚间出入时段</th>
+					<th>自定义出入时段</th>
+					<th>自定义1出入时段</th>
+					<th>入住人数</th>
+					<th style="width:200px">宿舍成员</th>								
+					<th class="qx_e_d" style="text-align:right; width:100px">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<td><input type="text" class="form-control" name="ssort[{$item['id']}]" value="{$item['ssort']}"></td>
+					<td>{$item['name']}</td>
+				 	<td  ><span class="label label-primary">{$item['apname']}</span></td>
+					<td><span class="label label-info">{$item['morning_start']} - {$item['morning_end']}</span></td>
+					<td><span class="label label-info">{$item['noon_start']} - {$item['noon_end']}</span></td>
+					<td><span class="label label-info">{$item['night_start']} - {$item['night_end']}</span></td>
+					<td><span class="label label-info">{$item['zdy_start']} - {$item['zdy_end']}</span></td>
+					<td><span class="label label-info">{$item['zdy1_start']} - {$item['zdy1_end']}</span></td>
+					<td><span class="label label-success">{$item['stuCount']}</span></td>
+					<td><a class="btn btn-default"  data-toggle="tooltip" data-placement="top" title="宿舍成员" onclick="Showroom({$item['id']});" >宿舍成员</a></td>				
+					<td class="qx_e_d" style="text-align:right;">
+						<a class="btn btn-default btn-sm qx_3212" href="{php echo $this->createWebUrl('aproomset', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_3213" href="{php echo $this->createWebUrl('aproomset', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;">
+	<div class="modal-dialog modal-lg" role="document">		
+		<div class="modal-content">			
+		<form class="table-responsive form-inline bv-form" method="post" action="" id="form-credit" novalidate="novalidate">				
+			<div class="modal-header">					
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>					
+				<h4 class="modal-title"  style="color:black">宿舍成员</h4>	
+			</div>
+			<div class="modal-body">
+				<table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th>头像</th>
+					<th >学生姓名</th>
+					<th >班级</th>
+					<th>年级</th>
+					
+				</tr>
+			</thead>
+			<tbody id="modal_detail">
+				
+				<tr >
+					<th>头像</th>
+					<td>姓名</td>
+					<td>班级</td>
+				 	<td>年级</td>
+				</tr>
+				
+			</tbody>
+		</table>				
+			</div>				
+			<div class="modal-footer">	
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				
+			</div>			
+		</form>		
+		</div>	
+	</div>
+</div>
+<script type="text/javascript">
+
+$(function(){
+	{if $_GPC['from'] == 'apartment'}
+		$(".original").hide();
+		$("#backToAp").show();
+	{/if}
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1003212,1,$schoolid))}
+		$(".qx_3212").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1003213,1,$schoolid))}
+		$(".qx_3213").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+
+
+
+});
+//显示弹框
+function Showroom(id){
+	var  schoolid = {$schoolid};
+	var roomid = id;
+	$.post("{php echo $this->createWebUrl('aproomset',array('op'=>'getstuByRoomid'))}", {'schoolid': schoolid,'roomid':roomid}, function(data) {
+			console.log(data);
+			data = JSON.parse(data);
+			stulist = data.stulist;
+			console.log(data);
+			var html   = '';
+			if (stulist != '') {
+				for (var i in stulist) {
+						html += '<tr >'+
+								'	<td> <img style="width:50px;height:50px;border-radius:50%;" src="'+stulist[i].icon+
+								'" width="50" style="border-radius: 3px;" /></td>'+
+								'	<td>'+stulist[i].s_name+'</td>'+
+								'	<td>'+stulist[i].bjname+'</td>'+
+								'	<td>'+stulist[i].njname+'</td>'+
+								'</tr>';
+				}
+			}
+			console.log(html);
+			$('#modal_detail').html(html);	
+		});
+	$('#Modal1').modal('toggle'); 
+};
+
+//班级动作
+$('#bj').change(function(){
+	var schoolid = "{$schoolid}";
+	var kcid = $("#select_kc").val();
+	var bjId = $("#bj option:selected").attr('value');	
+	if(bjId != null && bjId != 0){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getstu_bj'))}", {'bjId': bjId, 'schoolid': schoolid,'kcid':kcid}, function(data) {
+			data = JSON.parse(data);
+			stulist = data.stulist;
+			console.log(data);
+			var html   = '';
+			if (stulist != '') {
+				for (var i in stulist) {
+					
+						html += '<label  class="checkbox-inline" style="width:20%;min-width:85px;margin-left: 10px"><input type="checkbox" name="sidarr"  value="'+stulist[i].id+'"style="float: none;" > '+stulist[i].s_name+'</label>';
+					
+				}
+			}
+			$('#stulist').html(html);	
+		});
+
+	}
+});
+
+</script>
+{elseif $operation == 'post'}
+<style>
+.stuname:hover{
+border-color: #f40;
+
+}
+.stuname{
+border: 1px solid #e8e8e8;
+padding:3px 3px;
+}
+
+
+</style>
+<div class="panel panel-info">
+   <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回</a></div>
+</div>
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$item['id']}" />	
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                编辑宿舍信息
+            </div>
+            <div class="panel-body">
+ 
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >排序</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <input type="number" name="ssort" class="form-control" value="{$item['ssort']}" />
+							<span class="help-block">值越大越靠前</span>
+                        </div>
+                    </div>
+                </div>			
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >宿舍名称</label>
+                    <div class="col-sm-9">
+                    
+                            <input type="text" name="name" class="form-control" value="{$item['name']}" required="required" oninvalid="setCustomValidity('宿舍名称不能为空！');" oninput="setCustomValidity('');"/>
+                    </div>
+                </div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">所属楼栋:</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="ApId" id="ApId" class="form-control">
+                            {loop $apartmentlist $row}
+                            <option value="{$row['id']}" {if $item['apid'] == $row['id']} selected="selected"{/if}>{$row['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>					
+				</div>
+				
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >楼层</label>
+                    <div class="col-sm-2">
+						<input type="number" name="floornum" class="form-control" min="1" value="{$item['floornum']}" required="required" oninvalid="setCustomValidity('楼层不能为空或必须大于等于1');" oninput="setCustomValidity('');"/>
+						<div class="help-block">填写数字，大于等于1</div>
+                    </div>
+                </div>
+                
+                
+                <div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >早间出入时段</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('morning_start', $item['morning_start'])}
+							<span class="input-group-addon">至</span>
+							{php echo tpl_form_field_clock('morning_end', $item['morning_end'])}
+						 
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >午间出入时段</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('noon_start', $item['noon_start'])}
+							<span class="input-group-addon">至</span>
+							{php echo tpl_form_field_clock('noon_end', $item['noon_end'])}
+						 
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >午间归寝时间</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('noon_deadline', $item['noon_deadline'])}
+						</div>
+						<div class="help-block">超出该时间未归寝则为未按时归寝</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >晚间出入时段</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('night_start', $item['night_start'])}
+							<span class="input-group-addon">至</span>
+							{php echo tpl_form_field_clock('night_end', $item['night_end'])}
+						</div>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >晚间归寝时间</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('night_deadline', $item['night_deadline'])}
+						</div>
+						<div class="help-block">超出该时间未归寝则为未按时归寝</div>
+					</div>
+				</div>
+
+				
+                <div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >自定义出入时段</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('zdy_start', $item['zdy_start'])}
+							<span class="input-group-addon">至</span>
+							{php echo tpl_form_field_clock('zdy_end', $item['zdy_end'])}
+						 
+						</div>
+					</div>
+					
+				</div>
+                <div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >自定义1出入时段</label>
+					<div class="col-sm-9 col-xs-9 col-md-4">
+						<div class="input-group clockpicker" style="margin-bottom: 15px">
+							{php echo tpl_form_field_clock('zdy1_start', $item['zdy1_start'])}
+							<span class="input-group-addon">至</span>
+							{php echo tpl_form_field_clock('zdy1_end', $item['zdy1_end'])}
+						 
+						</div>
+					</div>
+					
+				</div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >已入住学生:</label>
+					 <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 20px;"  ></label>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;white-space: nowrap;text-align:left" id = "stu_div" >
+					{if $students}
+						{loop $students $row}
+							<span class="stuname" onclick="del_stu({$row['id']})" id="span_{$row['id']}">{$row['s_name']} {if $row['sex'] == 1} <i class="fa fa-mars"></i> {else}<i class="fa fa-venus"></i>{/if} <input type = "hidden" name="stu_id[]" value = "{$row['id']}"><i class="fa fa-times"></i></span>
+						{/loop}
+					{else}
+                          请添加入住学生
+					  {/if}
+                    </label>
+                </div>	
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >添加入住学生 </label>
+                    <div class="col-sm-2 col-lg-2" style="width: 20%">
+                        <select style="margin-right:15px;" name="nj" id="select_nj" class="form-control">
+                            <option value="0">请选择年级</option>
+                            {loop $xueqi $it}
+                            <option value="{$it['sid']}" >{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					<div class="col-sm-2 col-lg-2" style="width: 20%">
+                        <select style="margin-right:15px;" name="bj" id="bj" class="form-control">
+                            <option value="0">请选择班级</option>
+                            {loop $bj $it}
+                            <option value="{$it['sid']}">{$it['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  > </label>
+                    <div class="col-sm-9">
+                        <div class="input-group" id = "stulist">
+                            请选择年级与班级
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+//显示弹框
+function del_stu(id){
+	$("#span_"+id).remove(); 
+	$("#checkbox_"+id).attr("checked",false);
+	var text11 = $("#stu_div").text();
+	var span_length = $("#stu_div span").length;
+	console.log(span_length);
+	if(span_length == 0 ){
+	
+	var endhtml = "请选择入住学生";
+		$("#stu_div").html(endhtml);
+	}
+}
+
+
+//班级动作
+$('#bj').change(function(){
+	var schoolid = "{$schoolid}";
+	var kcid = $("#select_kc").val();
+	var bjId = $("#bj option:selected").attr('value');	
+	if(bjId != null && bjId != 0){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getstu_ap','roomid'=>$id))}", {'bjId': bjId, 'schoolid': schoolid,'kcid':kcid}, function(data) {
+			data = JSON.parse(data);
+			stulist = data.stulist;
+			console.log(data);
+			var html   = '';
+			if (stulist != '') {
+				for (var i in stulist) {
+					var is_checked = '';
+					if($("#span_"+stulist[i].id).length > 0 ){
+						is_checked = 'checked';
+					}
+					if(stulist[i].sex == 1){
+						var icon = '<i class="fa fa-mars"></i>'
+					}else{
+						var icon = '<i class="fa fa-venus"></i>'
+					}
+					html += '<label  class="checkbox-inline" style="width:20%;min-width:85px;margin-left: 10px"><input type="checkbox" name="sidarr" id="checkbox_'+stulist[i].id+'" onclick="check_count(this)" stu-name="'+stulist[i].s_name+'"  value="'+stulist[i].id+'"style="float: none;" '+is_checked+' > '+stulist[i].s_name+icon+'</label>';
+				}
+			}
+			$('#stulist').html(html);	
+		});
+
+	}
+});
+
+function check_count(th){
+	var span_length = $("#stu_div span").length;
+	if(span_length == 0 ){
+		$('#stu_div').html('');
+	}
+	var value_th= th.value;
+	var text_th = $(th).attr("stu-name");
+	if(th.checked == false){
+		del_stu(value_th);
+	}else if(th.checked == true){
+		var addhtml = ' <span class="stuname" onclick="del_stu('+value_th+')" id="span_'+value_th+'"> '+text_th+' <input type = "hidden" name="stu_id[]" value = "'+value_th+'"><i class="fa fa-times"></i></span>';
+		$('#stu_div').append(addhtml);
+	}
+}
+
+</script>
+
+
+{/if}
+<script>
+//班级年级联动
+$("#select_nj").change(function() {
+	var type = 4;
+	var cityId = $("#select_nj option:selected").attr('value');
+	changeGrade(cityId,type, function() {});
+});
+function changeGrade(gradeId, type, __result) {
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	//获取班次
+	$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+		data       = JSON.parse(data);
+		classlevel = data.bjlist;
+		var html   = '';
+		
+		html += '<select id="bj"><option value="">请选择班级</option>';
+		if (classlevel != '') {
+			for (var i in classlevel) {
+				html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+			}
+		}
+		$('#bj').html(html);	
+	});
+}
+</script>
+{template 'public/footer'}

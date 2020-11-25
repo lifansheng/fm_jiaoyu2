@@ -1,0 +1,86 @@
+{loop $list $item}
+<div class="morelist branch-item ng-scope">
+    <input id="showlan" type="hidden" value="{$item['lng']},{$item['lat']}"/>
+    <a class="branch-info " href="{php echo $this->createMobileUrl('detail', array('schoolid' => $item['id']), true)}">
+        <div class="branch-image">
+            <img src="{php echo tomedia($item['logo']);}">
+        </div>
+        <div class="delivery-info">
+            <div class="first-line">
+                <div class="name ng-binding">{$item['title']}</div>
+                {if $item['is_hot'] != 1}
+                <div class="tag label-red ng-scope">招生中</div>
+                {/if}
+                <div class="tag label-green ng-scope">{$item['leixing']}</div>
+            </div>
+            <div class="second-line">
+                <div class="comment-level red">
+                    <div class="ng-isolate-scope">
+                        <?php for($i=0;$i < $item['level']; $i++){ ?>
+                        <i class="fa fa-star-o ng-scope"></i>
+                        <?php }?>
+                    </div>
+                </div>
+            </div>
+            <div class="third-line">
+                <div class="time ng-hide" ng-show="branch.delivery_times.length &gt; 0">
+                    <i class="fa fa-clock-o"></i>
+                    电话
+                </div>
+                <div class="fee ng-binding">
+                    <span class="ng-binding ng-scope">{$item['tel']}</span>
+                    <span class="spliter"></span>
+                    <span class="ng-binding ng-scope">{$item['city']}{$item['quyu']}</span>
+                    <span class="spliter"></span>
+                </div>
+                <div class="address ng-binding">{$item['address']}</div>
+            </div>
+        </div>
+    </a>
+</div>
+{/loop}
+
+
+{loop $restlist $item}
+<div class="morelist branch-item ng-scope" time="{$item['dist']}">
+    <input id="showlan" type="hidden" value="{$item['lng']},{$item['lat']}"/>
+    <a class="branch-info " href="{php echo $this->createMobileUrl('detail', array('schoolid' => $item['id']), true)}">
+        <div class="branch-image">
+            <img src="{php echo tomedia($item['logo']);}">
+        </div>
+        <div class="delivery-info">
+            <div class="first-line">
+                <div class="name ng-binding">{$item['title']}</div>
+                {if $item['is_hot'] != 1}
+                <div class="tag label-red ng-scope">招生中</div>
+                {/if}
+                <div class="tag label-green ng-scope">{$item['leixing']}</div>
+                <div class="distance right ng-binding" id="shopspostion"></div>
+            </div>
+            <div class="second-line">
+                <div class="comment-level red">
+                    <div class="ng-isolate-scope">
+                        <?php for($i=0;$i < $item['level']; $i++){ ?>
+                        <i class="fa fa-star-o ng-scope"></i>
+                        <?php }?>
+                    </div>
+                </div>
+            </div>
+            <div class="third-line">
+                <div class="time ng-hide" ng-show="branch.delivery_times.length &gt; 0">
+                    <i class="fa fa-clock-o"></i>
+                    电话
+                </div>
+                <div class="fee ng-binding">
+                    <span class="ng-binding ng-scope">{$item['tel']}</span>
+                    <span class="spliter"></span>
+                    <span class="ng-binding ng-scope">{$item['city']}{$item['quyu']}</span>
+                    <span class="spliter"></span>
+                </div>
+                <div class="address ng-binding">{$item['address']}</div>
+            </div>
+        </div>
+    </a>
+</div>
+{/loop}
+

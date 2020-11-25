@@ -1,0 +1,99 @@
+{if $thisbj}
+	<li class="menu-item">
+		<div class="table-div table-div-menu" style="padding: 12px 37px;">
+			<div class="table-div__item name"><span class="label label-success">已付{$paycotal}人</span>&nbsp;&nbsp;<span class="label label-danger">未付{$unpaycotal}人</span>&nbsp;&nbsp;{$thisbj['sname']}({$stutoal}人)</div>
+			<div class="table-div__item name"></div>
+			<div class="table-div__item action">
+				<div class="link-group">
+					<a href="javascript:;" class="toggle"></a>
+				</div>
+			</div>
+		</div>
+		<ul class="two">
+			<li class="menu-item">
+				<div class="modal-body" style="width: 100%;">
+					<div class="modal-left">
+						<div class="help block" id="suc_input" style=" text-align:center;">已付费({$paycotal}人)</div>
+						<div class="form-group group_left" id="left">
+						{loop $stulist $r}
+							{if $r['ispay']}
+							<div class='help block now text_new'><img class="suc_icon" src="{OSSURL}public/mobile/img/icon-checked.png"/>{$r['s_name']}-{$r['pay_type']}</div>
+							{/if}
+						{/loop}
+						</div>
+					</div>
+					<div class="modal-right">
+						<div class="help block" id="def_input" style="text-align:center;">未付费({$unpaycotal}人)<span class="label label-info qxbtn qxqx"><i style="font-size:10px" class='fa fa-circle-thin iconss'></i>未选</span></div>
+						<div class="form-group group_right" id="right">
+						{loop $stulist $r}
+							{if !$r['ispay'] && $r['s_name']}
+							<div class='help block now text_new'>{$r['s_name']}<input class="pre idss" data-sid="{$r['id']}" type="checkbox" value="{$r['id']}" style="float: right;"/></div>
+							{/if}
+						{/loop}
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</li>
+{else}
+	{loop $bjarr $val}
+	<li class="menu-item">
+		<div class="table-div table-div-menu" style="padding: 12px 37px;">
+			<div class="table-div__item name"><span class="label label-success">已付{$val['paycotal']}人</span>&nbsp;&nbsp;<span class="label label-danger">未付{$val['unpaycotal']}人</span>&nbsp;&nbsp;{$val['bjname']}({$val['stutoal']}人)</div>
+			<div class="table-div__item name"></div>
+			<div class="table-div__item action">
+				<div class="link-group">
+					<a href="javascript:;" class="toggle"></a>
+				</div>
+			</div>
+		</div>
+		<ul class="two">
+			<li class="menu-item">
+				<div class="modal-body" style="width: 100%;">
+					<div class="modal-left">
+						<div class="help block" id="suc_input" style=" text-align:center;">已付费({$val['paycotal']}人)</div>
+						<div class="form-group group_left" id="left">
+						{loop $val['stulist'] $r}
+							{if $r['ispay']}
+							<div class='help block now text_new'><img class="suc_icon" src="{OSSURL}public/mobile/img/icon-checked.png"/>{$r['s_name']}-{$r['pay_type']}</div>
+							{/if}
+						{/loop}
+						</div>
+					</div>
+					<div class="modal-right">
+						<div class="help block" id="def_input" style="text-align:center;">未付费({$val['unpaycotal']}人)<span class="label label-info qxbtn qxqx"><i style="font-size:10px" class='fa fa-circle-thin iconss'></i>未选</span></div>
+						<div class="form-group group_right" id="right">
+						{loop $val['stulist'] $r}
+							{if !$r['ispay'] && $r['s_name']}
+							<div class='help block now text_new'>{$r['s_name']}<input class="pre idss" data-sid="{$r['id']}" type="checkbox" value="{$r['id']}" style="float: right;"/></div>
+							{/if}
+						{/loop}
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</li>
+	{/loop}
+{/if}
+<script>
+	$('.toggle').click(function () {
+		$(this).parent().parent().parent().parent().toggleClass('menu-open')
+	})
+	$('.qxbtn').click(function () {
+		if($(this).hasClass('qxbq')){
+			$(this).addClass('qxqx');
+			$(this).removeClass('qxbq');
+			$(this).empty();
+			$(this).html("<i style='font-size:10px' class='fa fa-check-circle iconss'></i>全选");
+			$(this).parent().next().children().find('.idss').prop("checked",true);
+		}else{
+			$(this).addClass('qxbq');
+			$(this).removeClass('qxqx');
+			$(this).empty();
+			$(this).html("<i style='font-size:10px' class='fa fa-circle-thin iconss'></i>全选");
+			$(this).parent().next().children().find('.idss').prop("checked",false);
+		}	
+	})
+</script>

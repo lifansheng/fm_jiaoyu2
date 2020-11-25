@@ -1,0 +1,129 @@
+<!--
+ * @Discription:  教师会议
+ * @Author: Hannibal·Lee
+ * @Date: 2020-09-23 14:26:25
+ * @LastEditTime: 2020-09-24 18:20:19
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+<link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/web/font-awesome5/css/all.min.css?v=5.00120" />
+
+{php echo register_jssdks();}
+
+{php include $this->template('port');}
+<title>会议列表</title>
+</head>
+<body>
+    <style>
+        *{box-sizing: border-box;}
+        .block-box{width: 100%;padding:0 10px}
+        .block-box .block-title{font-size: 16px;line-height: 40px;font-weight: bold;}
+
+        .meeting-item{background-color: white;min-height: 30px;box-shadow: 3px 2px 2px 0px #d6d6d6;padding:10px;border-radius: 5px;margin-bottom: 10px;position: relative;}
+        .meeting-info{display: flex;align-items: center;padding:10px 0}
+        .meeting-info .thumb{width: var(--ImgWidth);--ImgWidth:50px}
+        .meeting-info .thumb img{width: var(--ImgWidth);height: var(--ImgWidth); }
+        .meeting-info .text{flex:1;padding:0 0  0 10px}
+        .meeting-info .text .text-item{font-size: 13px;line-height: 20px;}
+        .meeting-type{display: inline-block;font-size: 12px;padding:2px 5px;border-radius: 5px;line-height: 14px;}
+        .meeting-type.type-1{color: var(--Color);border:1px solid var(--Color);--Color:#8c8cfb}
+        .meeting-type.type-2{color: var(--Color);border:1px solid var(--Color);--Color:#35c11c}
+      
+        .meeting-action{padding-top: 5px;height: 30px;text-align: right;border-top: 1px solid #f1f1f1;}
+        .meeting-action .action-btn{display: inline-block;padding:2px 10px;border-radius: 5px;color:white;}
+
+        .overtime{-webkit-filter: grayscale(1);/* Webkit */ filter:gray;/* IE6-9 */ filter: grayscale(1);/* W3C */}
+        .overtime:after{content:"会议结束";position: absolute;top:10px;right:10px;height: 35px;border-radius: 50%;border:2px solid red;width: 35px;font-size: 12px;text-align: center;padding:2px;transform: rotate(30deg);}
+        .SwitchBox{width:100%;height: 50px;display: flex;justify-content: space-around;align-items: center;padding-top: 10px;}
+        .content .item{display: inline-block;padding:3px 10px;min-width: 60px;text-align: center;background-color: white;border-right: 1px solid #d6d6d6;}
+        .content .item.active{background-color: #5ed1fd;color:white;border:unset}
+        .content .item:first-of-type{border-radius: 10px 0 0 10px;}
+        .content .item:last-of-type{border-radius:0 10px  10px 0;border-right:unset}
+
+        .SwitchContent{width: 100%;height: calc(100vh - 100px);overflow: auto;}
+    </style>
+    <div class="SwitchContent" tag="stu" >
+    </div>
+
+</div>
+</body>
+</html>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/remaster.main.js?v=1.0.1"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/scroll_remaster.js?v=1.0.0"></script>
+<script>
+    $(function () {
+        getMettingList()
+    })
+
+    //签到会议
+    function signMeeting(id){
+        ReConfirm({"confirm":"确定签到该会议？"},function(r){
+            if(r){
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('smeetinglist', array('schoolid' => $schoolid,'op'=>'saveMeeting' ), true)}",
+                    type: "post",
+                    dataType: "json",
+                    data:{meet_id:id},
+                    success: function (res) {
+                        alert(res.msg)
+                        location.reload()
+                    }
+                });
+            }
+        })
+    }
+    //获取签到会议列表
+
+    function getMettingList(){
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('smeetinglist', array('schoolid' => $schoolid,'op'=>'getMettingList' ), true)}",
+            type: "post",
+            dataType: "html",
+            success: function (html) {
+                $(`.SwitchContent[tag='stu']`).html(html)
+            }
+        });
+    }
+
+    function getInfo(obj,id){
+        //阻止冒泡
+        e = window.event;
+		e.stopPropagation();
+		e.preventDefault();
+        $(obj).parent().next().slideToggle(150)
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('smeetinglist', array('schoolid' => $schoolid,'op'=>'getInfo'))}",
+            type: "post",
+            dataType: "html",
+            data:{id:id},
+            success: function (html) {
+                $(obj).parent().next().html(html)
+            }
+        });
+    }
+
+    var ScrParam = {
+        "limit": "0",
+        "ajax_switch": true,
+        "ul_box": ".list .block-content",
+        "li_item": ".meeting-item",
+        "param": ["ctype"],
+        "ajax_url": "{php echo $this->createMobileUrl('smeetinglist', array('schoolid' => $schoolid,'op'=>'scroll_more' ), true)}",
+        "after_ajax": function () {}
+    }
+    var ScrollObj = {
+        stu:new Scroll_load(ScrParam, ".SwitchContent[tag='stu']")
+    }
+    ScrollObj.stu.load_init()
+</script>
+
+ 
+{php include $this->template('footer');}

@@ -1,0 +1,97 @@
+{if $leave1}
+{loop $leave1 $v}
+<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+	<div class="cutting"></div>
+	<div class="notifyTopBox">
+		<div class="notifyTopLeft">
+			<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+		</div>
+		<div class="erwei qx_00502" id="erwei{$v['id']}">
+		{if $ertype && $v['qrcode_id']}
+			<img src="{OSSURL}public/mobile/img/20180317214727.png" class="img-responsive">
+		{/if}
+		</div>
+		<div class="btnEditBox qx_00502" style="right: 61px;" onclick="itemEdit({$v['id']});return false;">
+			<img src="{OSSURL}public/mobile/img/btn_edit_01.png" class="img-responsive">
+		</div>
+		{if !$_W['schooltype']}	
+		<div class="btnDeleteBox qx_00503" onclick="del_notice({$v['id']});return false;">
+			<img src="{OSSURL}public/mobile/img/btn_delete_01.png" class="img-responsive">
+		</div>
+		{/if}	
+		<div class="notifyTopRight">
+			<div class="notifyTopRightTopBox">
+				{if $v['sex'] == 1}<div class="boytip"></div>{/if}
+				{if $v['sex'] == 2}<div class="girltip"></div>{/if}				
+				<span class="teacherInfo">{$v['s_name']}</span>			
+				{if $v['pard']}<div class="wexintip"></div>{/if}
+				{if $v['pard']}
+					{loop $v['pard'] $vs}
+						<div class="{if $vs['pardid'] ==2}pard2{/if}{if $vs['pardid'] ==3}pard3{/if}{if $vs['pardid'] ==4}pard4{/if}{if $vs['pardid'] ==5}pard5{/if}">{$vs['guanxi']}</div>
+					{/loop}
+				{else}	
+					<div class="JobLeaderBox">未绑定</div>
+				{/if}
+			</div>
+			{if $_W['schooltype']}
+			<span class="teacherInfo" style="color:#da7131;">已签:<span style="color:blue">{$v['yq']}</span>课时</span>	
+			<span class="teacherInfo" style="color:#da7131;">总购:<span style="color:blue">{$v['buy']}</span>课时</span>
+			<span class="teacherInfo" style="color:#da7131;">剩余:<span style="color:blue">{$v['rest']}</span>课时</span>
+			{else}
+				<p class="notifyCreateTime">{$v['banji']}</p>
+			{/if}
+			{if $v['numberid']}<p class="notifyCreateTime">学号:{$v['numberid']}</p>{/if}
+		</div>
+	</div>
+</li>
+{/loop}
+{/if}
+{if $leave2}
+{loop $leave2 $v}
+<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+	<div class="cutting"></div>
+	<div class="notifyTopBox">
+		<div class="notifyTopLeft">
+			<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+		</div>
+		<div class="erwei qx_00502" id="erwei{$v['id']}">
+		{if $ertype && $v['qrcode_id']}
+			<img src="{OSSURL}public/mobile/img/20180317214727.png" class="img-responsive">
+		{/if}
+		</div>
+		<div class="btnEditBox qx_00502" onclick="itemEdit({$v['id']});return false;">
+			<img src="{OSSURL}public/mobile/img/btn_edit_01.png" class="img-responsive">
+		</div> 
+		{if !$_W['schooltype']}	
+		<div class="btnDeleteBox qx_00503" onclick="del_notice({$v['id']});return false;">
+			<img src="{OSSURL}public/mobile/img/btn_delete_01.png" class="img-responsive">
+		</div>
+		{/if}	
+		<div class="notifyTopRight">
+			<div class="notifyTopRightTopBox">
+				{if $v['sex'] == 1}<div class="boytip"></div>{/if}
+				{if $v['sex'] == 2}<div class="girltip"></div>{/if}				
+				<span class="teacherInfo">{$v['s_name']}</span>			
+				{if $v['pard']}<div class="wexintip"></div>{/if}
+				{if $v['pard']}
+					{loop $v['pard'] $vs}
+						<div class="{if $vs['pardid'] ==2}pard2{/if}{if $vs['pardid'] ==3}pard3{/if}{if $vs['pardid'] ==4}pard4{/if}{if $vs['pardid'] ==5}pard5{/if}">{$vs['guanxi']}</div>
+					{/loop}
+				{else}	
+					<div class="JobLeaderBox">未绑定</div>
+				{/if}
+			</div>
+			{if $_GPC['schoolType'] ==1}
+			<span class="teacherInfo" style="color:#da7131;">已签:<span style="color:blue">{$v['yq']}</span>课时</span>	
+			<span class="teacherInfo" style="color:#da7131;">总购:<span style="color:blue">{$v['buy']}</span>课时</span>
+			<span class="teacherInfo" style="color:#da7131;">剩余:<span style="color:blue">{$v['rest']}</span>课时</span>
+			{else}
+				<p class="notifyCreateTime">{$v['banji']}</p>
+			{/if}
+			{if $v['numberid']}<p class="notifyCreateTime">学号:{$v['numberid']}</p>{/if}
+		</div>
+	</div>
+</li>
+{/loop}
+<div class="top_head_blank" style="height: 18px;color: #8c8888;text-align: center;">以上为搜索结果</div>
+{/if}

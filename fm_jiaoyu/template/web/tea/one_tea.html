@@ -1,0 +1,110 @@
+{loop $list $item}
+<tr id="teaid_{$item['id']}">
+	<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+	<td><input type="text" class="form-control" name="sort[{$item['id']}]" value="{$item['sort']}"></td>
+	<td style="text-align:center">
+	<img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($item['thumb'])}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($school['tpic'])}{/if}" width="50"  style="border-radius: 3px;" /></br>{$item['tname']}
+	</td>
+	<td>
+	{if $item['sex'] == 1}<span class="badge badge-light-primary">男</span>{else}<span class="badge badge-light-success">女</span>{/if}
+	{if $item['birthdate']}
+		<span class="badge badge-light-info">{php echo (date('Y',TIMESTAMP) - date('Y',$item['birthdate']))}岁</span>
+		<span class="badge badge-light-secondary">{php echo date('Y-m-d',$item['birthdate'])}</span>
+	{/if}
+	</td>
+	{if !$_W['schooltype']}
+	<td>
+		<?php 
+			if(is_array($item['bjlist'])) { 
+				foreach($item['bjlist'] as $row){
+					echo($row['xqname']);
+					echo('</br>');
+				}
+			}
+		?>
+	</td>
+	<td>
+		<?php 
+			if(is_array($item['bjlist'])) { 
+				foreach($item['bjlist'] as $row){
+					echo($row['bjname']);
+					echo('</br>');
+				}
+			}
+		?>
+	</td>
+	<td>
+		<?php 
+			if(is_array($item['bjlist'])) { 
+				foreach($item['bjlist'] as $row){
+					echo($row['kmname']);
+					echo('</br>');
+				}
+			}
+		?>
+	</td>
+	{else}
+	 <td >
+		<?php 
+			if(is_array($item['kclist'])) { 
+				foreach($item['kclist'] as $row){
+					echo($row['name']);
+					echo('&emsp;');
+					echo( '<span class="bullet bullet-primary bullet-xs"></span><small class="text-muted">已签'.$row['ksnum_yq'].'节</small>');
+					echo('&emsp;');
+					
+					echo('</br>');
+				}
+			}
+		?>
+	</td>
+
+	
+	{/if}
+	
+	{if $_W['schooltype']}			
+	<td>{$item['kcnum']}</td>   
+	<td>
+	<span class="bullet bullet-primary bullet-xs"></span><small class="text-muted">共{$item['zks']}节</small></br>
+	<span class="bullet bullet-dark bullet-xs"></span><small class="text-muted">未完{$item['wwks']}节</small></br>
+	<span class="bullet bullet-info bullet-xs"></span><small class="text-muted">已完{$item['ywks']}节</small>
+	</td>
+	{/if}               
+	<td>{$item['mobile']}</td>
+					  
+   <td>
+   {if !empty($item['openid']) || !empty($item['userid'])}
+   <img style="width:35px;height:35px;border-radius:50%;" src="{php echo tomedia($item['avatar'])}" width="35"  onerror="this.src='./resource/images/nopic.jpg';" style="border-radius: 3px;" /></br>{$item['nickname']} </br>
+   <a class="btn btn-default btn-sm qx_606" href="{php echo $this->createWebUrl('assess', array('id' => $item['id'], 'op' => 'jiebang', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认解绑？');return false;" title="解绑"><i class="fa fa-times"></i>&nbsp;解绑</a>			   
+   {else}
+   <span title="{$item['code']}">绑定码:{$item['code']}</span>
+   {/if}
+   </td>
+   <td> 
+		{if $item['Ttitle']}<span class="bullet bullet-primary bullet-sm"></span><small class="text-muted">{$item['Ttitle']}</small></br>{/if}
+		{if $item['status'] == 2}<span class="badge badge-danger">校长</span>{/if}
+		{if $item['status'] == 1}<span class="badge badge-secondary">教员</span>{/if}
+		{if is_njzr($item['id']) != 0}<span class="badge badge-info">{NJNAME}管理</span>{/if}
+		{if $item['is_show'] == 1}<span class="badge badge-light-secondary">隐藏</span>{/if}
+		{if keep_hxy()}
+		<br/>
+			{if $item['typt_is_admin'] == 1}
+			<span class="label label-info">统一平台管理员</span>
+			{/if}
+		{/if}
+
+   </td>       
+   {if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+   <td>
+	   {if  !empty($item['typt_user_id'])}
+	   <span class="label label-primary">已同步</span>
+	   {/if}
+   </td>
+   {/if}
+   <td style="text-align:right;" class="qx_e_d">
+	  <div class="btn btn-default btn-sm qx_602" title="编辑" onclick="edite_tea({$item['id']})"><i class="fa fa-pencil"></i></div>
+	  &nbsp;&nbsp;
+	  <div class="btn btn-default btn-sm qx_607" title="删除" onclick="deletetea({$item['id']})"><i class="fa fa-times"></i></div>
+   </td>
+</tr>
+{/loop}

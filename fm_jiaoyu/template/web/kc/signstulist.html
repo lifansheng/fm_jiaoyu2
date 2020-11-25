@@ -1,0 +1,329 @@
+<style>
+    .modal-open{overflow: hidden;}
+    .conent_load{width: 15px; height: 19px; display: inline-block; background: url({MODULE_URL}public/mobile/img/gh_xh_wating.gif) no-repeat center center / 15px 19px; margin-left: 10px;}.coments{width:100%;height: auto;} 
+    .weui_switchs:checked {border-color: #30c6e1;background-color: #30c6e1;}
+.weui_switchs:checked:before {-webkit-transform: scale(0);transform: scale(0);}
+.weui_switchs:checked:after {-webkit-transform: translateX(20px);transform: translateX(20px);}
+.weui_switchs {font-size: 14px;-webkit-appearance: none;-moz-appearance: none;appearance: none;position: relative;width: 48px;height: 28px;border: 1px solid #DFDFDF;outline: 0;border-radius: 16px;box-sizing: border-box;background: #DFDFDF;vertical-align: middle;float: right;right: 12px;}
+.weui_switchs:before {content: " ";position: absolute;top: 0;left: 0;width: 46px;height: 26px;border-radius: 15px;background-color: #FDFDFD;-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.weui_switchs:after {content: " ";position: absolute;top: 0;left: 0;width: 26px;height: 26px;border-radius: 15px;background-color: #FFFFFF;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.weui_switch:checked {border-color: #30c6e1;background-color: #30c6e1;}
+.weui_switch:checked:before {-webkit-transform: scale(0);transform: scale(0);}
+.weui_switch:checked:after {-webkit-transform: translateX(20px);transform: translateX(20px);}
+.weui_switch {font-size: 14px;-webkit-appearance: none;-moz-appearance: none;appearance: none;position: relative;width: 48px;height: 28px;border: 1px solid #DFDFDF;outline: 0;border-radius: 16px;box-sizing: border-box;background: #DFDFDF;vertical-align: middle;float: right;right: 12px;}
+.weui_switch:before {content: " ";position: absolute;top: 0;left: 0;width: 46px;height: 26px;border-radius: 15px;background-color: #FDFDFD;-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.weui_switch:after {content: " ";position: absolute;top: 0;left: 0;width: 26px;height: 26px;border-radius: 15px;background-color: #FFFFFF;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+    .up_saleboxs {
+    float: right;
+    color: #444;
+    font-size: 23px;
+    margin-right: 15px;
+    cursor: pointer;
+}
+.comment_item {
+    padding-left: 50px;
+    position: relative;
+    min-height: 40px;
+    margin: 0 0 40px;
+    font-size: 12px;
+}
+.comment_item text {
+    display: block;
+}
+.comment_item img {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    left: 0;
+    top: 10px;
+    border-radius: 40px;
+}
+.comment_item .n {
+    color: #4C91FF;
+    margin-bottom: 10px;
+}
+.comment_item .c {
+    font-size: 13px;
+    color: #374F5E;
+    margin-bottom: 9px;
+}
+.comment_item .t {
+    color: #91A0B2;
+}
+.comment_item .reply {
+    background: #FAFBFC;
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: 7px;
+}
+.reply_shearebox {
+    width: 100%;
+    color: #777777;
+    height: auto;
+    position: relative;
+    margin-bottom: 9px;
+    margin-top: 15px;
+    display: flex;
+    line-height: 18px;
+    font-size: 13px;
+}
+.reply_shearebox .sherbox_replys {
+width: 42px;
+line-height: 35px;
+text-align: right;
+}
+.reply_shearebox .sherbox_replys img {
+width: 15px;
+height: 15px;
+}
+.reply_video {
+width: 100%;
+height: auto;
+position: relative;
+margin-bottom: 9px;
+overflow-y: hidden;
+}
+.reply_video .photo_box {
+width: 28%;
+height: 80px;
+margin-left: 2%;
+margin-top: 2%;
+float: left;
+overflow-y: hidden;
+}
+.reply_video .photo_box img {
+width: 100%;
+position: relative;
+border-radius: 0px;
+height: auto;
+}
+.navbar-inner{
+background-color: #f1f1f1;
+}
+.table-hover{
+border: 1px #ddd solid;
+}
+</style>
+<div class="panel panel-default" style="max-height: 600px;">
+    <div class="panel-body">
+        <div>
+            <span style="font-size: 20px;">签到学员</span>
+            {if $SignStudents['list']}		
+            <div style="float: right;">
+                <button class="btn btn-info" onclick="OutExcel()" ><i class="fa fa-download"></i> 导出</button>
+            </div>
+            {/if}
+        </div>
+    </div>
+    
+    <div class="table-responsive panel-body" style="position: relative;">	
+        <div class="loading-layer" id="SignList-loading-layer" style="margin-left: -15px;"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>	
+        {if $SignStudents['list']}	
+        <table class="table table-hover" style="text-align: center;">
+            <thead class="navbar-inner">
+                <tr>
+                    <th style="width:15%;text-align: left;">学生</th>
+                    <th style="width:15%;">剩余课时</th>
+                    <th style="width:15%;">签到情况</th>
+                    <th style="width:15%;">课消金额</th>
+                    <th style="width:25%;">评价状态</th>
+                    <th style="width:15%;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {loop $SignStudents['list'] $item}
+                <tr>
+                    <td style="text-align: left;">{$item['s_name']}</td>
+                    <td>{$item['restks']}</td>
+                    <td>{$item['signtype']}</td>
+                    <td>{$item['kxje']}</td>
+                    <td style="text-align: left;  justify-content: space-evenly;">
+                        {if $item['tostu']}<span style="color:#2e72dc;width: 100px;" class="Img"  onclick="LookPj(`{$item['ksid']}`,`{$item['sid']}`,1)">{$item['startostu']}</span>{else}<span style="color: #ff8534;width: 100px;">授课老师未评</span>{/if}
+                        {if $item['totea']}<span style="color:#2e72dc;width: 100px;" class="Img" onclick="LookPj(`{$item['ksid']}`,`{$item['sid']}`,2)">{$item['startotea']}</span>{else}<a href="javascript:;" onclick="TxStuPj(this,`{$item['sid']}`,`{$item['ksid']}`)" style="color: #4b8bfd;width: 100px;">提醒学员评价</a>{/if}
+                    </td>
+                    <td><a href="javascirpt:;" style="color: #4b8bfd;" onclick="LookPj(`{$item['ksid']}`,`{$item['sid']}`,1)"><i class="fa fa-eye">查看评价</i></a></td>
+                </tr>
+                {/loop}
+            </tbody>
+        </table>
+        {$SignStudents['pager']}
+        {else}
+        <div class="ant-empty ant-empty-normal" style="text-align:center;margin-top:3%;display:block">
+			<div class="ant-empty-image">
+				<img alt="暂无数据" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCA2NCA0MSIgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxKSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgIDxlbGxpcHNlIGZpbGw9IiNGNUY1RjUiIGN4PSIzMiIgY3k9IjMzIiByeD0iMzIiIHJ5PSI3Ii8+CiAgICA8ZyBmaWxsLXJ1bGU9Im5vbnplcm8iIHN0cm9rZT0iI0Q5RDlEOSI+CiAgICAgIDxwYXRoIGQ9Ik01NSAxMi43Nkw0NC44NTQgMS4yNThDNDQuMzY3LjQ3NCA0My42NTYgMCA0Mi45MDcgMEgyMS4wOTNjLS43NDkgMC0xLjQ2LjQ3NC0xLjk0NyAxLjI1N0w5IDEyLjc2MVYyMmg0NnYtOS4yNHoiLz4KICAgICAgPHBhdGggZD0iTTQxLjYxMyAxNS45MzFjMC0xLjYwNS45OTQtMi45MyAyLjIyNy0yLjkzMUg1NXYxOC4xMzdDNTUgMzMuMjYgNTMuNjggMzUgNTIuMDUgMzVoLTQwLjFDMTAuMzIgMzUgOSAzMy4yNTkgOSAzMS4xMzdWMTNoMTEuMTZjMS4yMzMgMCAyLjIyNyAxLjMyMyAyLjIyNyAyLjkyOHYuMDIyYzAgMS42MDUgMS4wMDUgMi45MDEgMi4yMzcgMi45MDFoMTQuNzUyYzEuMjMyIDAgMi4yMzctMS4zMDggMi4yMzctMi45MTN2LS4wMDd6IiBmaWxsPSIjRkFGQUZBIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K"/>
+			</div>
+			<p class="ant-empty-description">该课时暂无签到记录</p>
+		</div>
+        {/if}
+    </div>
+</div>
+
+<style>
+.tab_saidnav{ position: absolute; width: 48px; height: 100px; left: -47px; top: 23%; text-align: center; background-color: #e7e7eb; border-top-left-radius: 5px; border-bottom-left-radius: 5px; cursor:pointer }
+.tab_saidnav li{ list-style: none; width: 100%; height: 50%; border-right: 1px #e7e7eb solid; }
+.tab_saidnav .acts{ background-color: #fff; border-right: 1px #fff solid; border-bottom: 1px #e7e7eb solid; }
+.tab_saidnav li:first-child{ border-top-left-radius: 5px; }
+.tab_saidnav li:last-child{ border-bottom-left-radius: 5px; }
+.tab_saidnav li div{ width: 80%; margin-left: 10%; padding-top: 20%; -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none;}
+</style>
+<!-- 编辑或新增老师 modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;" id="PjList" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft" style="width: 30%;">
+        <div class="loading-layer" id="PjList-loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+        <div class="tab_saidnav">
+            <li id="tea_info1" opt="tea_info" class="acts"><div>老师评价</div></li>
+            <li id="stu_info1" opt="stu_info"><div>学生评价</div></li>
+        </div>
+        <div class="modal-content" id="PlListBox" style="max-height:unset !important;">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <div class="form-horizontal form">
+                        <div class="form-group" style="margin-bottom:1px;">
+                            <label class="col-sm-3 control-label" style="text-align: left;">课程评论</label>
+                        </div>
+                        <div class="form-group" style="padding: 20px;max-height: 1000px;overflow-y: scroll;">
+                            <div class="comment_lsit" id="kspjlist">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var pjksid = 0;
+    var pjsid = 0;
+    let loadcont = "<div class='conent_load'></div>"
+    function page_signlist(url,page,elm){
+		$('#sign_list').empty()
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "html",
+			data: {
+				id:ksid,
+				page:page
+			},
+			success: function (data) {
+				if (data) {
+                    setTimeout (function () {
+                        $("#SignList-loading-layer").hide()
+                    }, 300);
+                    $('#sign_list').html(data)
+				}
+			}		
+		});
+	}
+    function TxStuPj(e,sid,ksid){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('kcbiao',array('schoolid' => $schoolid,'op' => 'TxStuPj'))}",
+            type: "post",
+            dataType: "json",
+            data:{sid:sid,ksid:ksid},
+            success: function (res) {
+                alert(res.msg)
+                $(e).css({'color':'#ccc'});
+                $(e).html('已经提醒!');
+            },
+            error: function (jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+                //DoSomething
+            }
+        });
+    }
+    
+    function LookPj(ksid,sid,type,isInner = false){
+        pjksid = ksid
+        pjsid = sid
+        $(".tab_saidnav .acts").removeClass("acts")
+        if (type == '1'){
+            $("#stu_info").hide()
+            $("#tea_info").show(200)
+            $(".tab_saidnav").find("#tea_info1").addClass("acts")
+        }
+        if (type == '2'){
+            $("#tea_info").hide()
+            $("#stu_info").show(200)
+            $(".tab_saidnav").find("#stu_info1").addClass("acts")
+        }
+        console.log(type)
+        if(isInner == false){
+            $('#PjList').modal('toggle');
+        }
+        $('#PjList-loading-layer').show()
+        $.ajax({
+            url: "{php echo $this->createWebUrl('kcbiao', array('op' => 'GetPlList', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "html",
+            data: {
+                ksid:ksid,
+                sid:sid,
+                type:type,
+            },
+            success: function(result) {
+                setTimeout (function () {
+                    $('#PjList-loading-layer').hide()
+                    $("#kspjlist").html(result)
+                }, 300);
+            },
+            error: function(e) {
+                alert('访问网络失败');
+            }
+        });
+    }
+
+    $(".tab_saidnav li").click(function(){
+        $(".tab_saidnav .acts").removeClass("acts")
+        $(this).addClass("acts")
+        let opt = $(this).attr("opt")
+        if (opt == 'tea_info'){
+            $("#stu_info").hide()
+            $("#tea_info").show(200)
+            LookPj(pjksid,pjsid,1,true)
+        }
+        if (opt == 'stu_info'){
+            $("#tea_info").hide()
+            $("#stu_info").show(200)
+            LookPj(pjksid,pjsid,2,true)
+        }
+    });
+
+    function opt_pl(id,type,elm){
+        var thisval = $(elm).prop('checked')?0:1;
+        var word = $(elm).prop('checked')?"显示":"隐藏";
+        $.ajax({
+            url: "{php echo $this->createWebUrl('kecheng', array('op'=>'opt_pl','schoolid'=>$schoolid))}",
+            type: "post",
+            dataType: "json",
+            data: {
+                id:id,
+                type:thisval
+            },
+            success: function (data) {
+                if(data.reslut){
+                    if(thisval == 1){
+                        $(elm).prev().removeClass('label-success')
+                        $(elm).prev().addClass('label-warning')
+                        $(elm).prev().text(word)
+                    }
+                    if(thisval == 0){
+                        $(elm).prev().removeClass('label-warning')
+                        $(elm).prev().addClass('label-success')
+                        $(elm).prev().text(word)
+                    }				
+                }else{
+                    alert(data.msg)
+                }
+            }		
+        });
+    }
+    function OutExcel(){
+        window.location.href = "{php echo $this->createWebUrl('kcbiao', array('op'=>'GetKsSignInfo','schoolid'=>$schoolid,'opt'=>'OutExcel'))}"+'&id='+ksid;
+    }
+    </script>
+</script>

@@ -1,0 +1,152 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<ul class="nav nav-tabs">
+    <li class="active"><a href="#">平台设置</a></li>
+</ul>
+{if $operation == 'display'}
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/web/css/main.css"/>
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+		{if $_W['isfounder']}
+		    <div class="alert alert-success">
+                温馨提示:</br>
+				此处设置后，本平台所有公众号独立后台都使用此设置
+            </div>
+		{/if}	
+            <div class="row" style="margin-left: 15px;">
+                {template 'public/new_ctrl_nave'}
+            </div>
+            <h3>独立后台页面</h3>
+            <p style="margin: 0px">
+                <strong>校园管理登录后台 :</strong>
+                <a> {php echo $_W['siteroot']}addons/fm_jiaoyu/admin</a>
+            </p>
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="weid" value="{$weid}" />
+				<div class="panel panel-default">
+					<div class="panel-heading">设置独立后台页面</div>
+					<div class="panel-body">
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label">风格设置</label>
+							<div class="col-sm-9">
+								<label class="radio-inline"><input type="radio" value="1" class="printer-type" name="is_new"{if empty($item) || $item['is_new'] == 1}checked{/if} id="isshow1"> 旧版</label>
+								<label class="radio-inline"><input type="radio" value="2" class="printer-type" name="is_new"{if !empty($item) && $item['is_new'] == 2}checked{/if} id="isshow2"> 新版</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label">后台名称</label>
+							<div class="col-sm-9">
+								<input type="text" name="htname" class="form-control" value="{$item['htname']}"  placeholder=""/>
+								<span class="help-block">例如：微教育校园管理系统</span>
+							</div>
+						</div>
+						<div class="form-group system-icon">
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label">背景颜色</label>
+							<div class="col-sm-9 col-xs-12">
+								{php echo tpl_form_field_color('bgcolor', $item['bgcolor']);}
+								<span class="help-block">背景颜色</span>
+							</div>
+						</div>
+						<div id="credit-status2" {if $item['is_new'] == 2}style="display:block"{else}style="display:none"{/if}>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">中心图片</label>
+								<div class="col-sm-9">
+									{php echo tpl_form_field_image('newcenteriocn', $item['newcenteriocn'])}
+									<span class="help-block">建议用透明图片，尺寸方正</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">底部版权</label>
+								<div class="col-sm-9">
+									<input type="text" name="banquan" class="form-control" value="{$item['banquan']}"  placeholder=""/>
+									<span class="help-block">例如：微美科技</span>
+								</div>
+							</div>
+						</div>	
+						<div id="credit-status1" {if empty($item) || $item['is_new'] == 1}style="display:block"{else}style="display:none"{/if}>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">背景图片</label>
+								<div class="col-sm-9">
+									{php echo tpl_form_field_image('bgimg', $item['bgimg'])}
+									<span class="help-block">如启用背景图片，背景演示将失效,顶部云朵也会不显示</span>
+								</div>
+							</div>						
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">图片1</label>
+								<div class="col-sm-9">
+									{php echo tpl_form_field_image('banner1', $item['banner1'])}
+									<span class="help-block">显示在顶部,建议尺寸530*291,留空则不显示</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">图片2</label>
+								<div class="col-sm-9">
+									{php echo tpl_form_field_image('banner2', $item['banner2'])}
+									<span class="help-block">显示在顶部,建议尺寸502*61,留空则不显示</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">图片3</label>
+								<div class="col-sm-9">
+									{php echo tpl_form_field_image('banner3', $item['banner3'])}
+									<span class="help-block">显示在左下,建议尺寸810*312,留空则不显示</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">图片4</label>
+								<div class="col-sm-9">
+									{php echo tpl_form_field_image('banner4', $item['banner4'])}
+									<span class="help-block">显示在右下,建议尺寸266*327,留空则不显示</span>
+								</div>
+							</div>
+						</div>		
+					</div>
+				</div>
+				<div class="form-group col-sm-12">
+					<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+					<input style="margin-left: 500px;width: 20%;" type="text" name="email" id="email" class="form-control" value=""  />
+					<input style="margin-left: 500px;" type="button" class="btn btn-primary" name="change_bj" value="清理无效粉丝" />					
+					<input type="hidden" name="token" value="{$_W['token']}" />
+				</div>
+				{php echo $_W['siteroot'] . 'app/index.php?i=' . $weid . '&c=entry&m=fm_jiaoyu&do=openid'}
+			</form>
+        </div>
+    </div>
+</div>
+{/if}
+<script type="text/javascript">
+	$('#isshow1').click(function(){
+		$('#credit-status1').show();
+		$('#credit-status2').hide();
+	});
+	$('#isshow2').click(function(){
+		$('#credit-status1').hide();
+		$('#credit-status2').show();
+	});	
+</script>
+<script>
+$("input[name=change_bj]").click(function(){
+	var bj_id = $("#email").val();
+	if(bj_id == null || bj_id == 0 || bj_id == ""){
+		alert('请输入粉丝emial!');
+		return false;
+	}
+	if(confirm("确认要清理?")){
+		var url = "{php echo $this->createWebUrl('newloginctrl', array('op' => 'change_bj'))}";
+		$.post(
+			url,
+			{bj_id:bj_id},
+			function(data){
+				if(data.result){
+					alert(data.msg);
+					location.reload();
+				}else{
+					alert(data.msg);
+				}
+			},'json'
+		);
+	}
+});
+</script>
+{template 'common/footer'}

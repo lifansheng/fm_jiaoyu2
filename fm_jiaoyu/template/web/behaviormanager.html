@@ -1,0 +1,283 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li {if $_GPC['do']=='behaviorscore'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviorscore', array('op' => 'display', 'schoolid' => $schoolid))}">评测打分</a></li>
+            <li {if $_GPC['do']=='behaviorlog'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviorlog', array('op' => 'display', 'schoolid' => $schoolid))}">打分记录</a></li>
+            <li {if $_GPC['do']=='behaviormanager'}class="active"{/if}><a href="{php echo $this->createWebUrl('behaviormanager', array('op' => 'display', 'schoolid' => $schoolid))}">分类管理</a></li>
+		</ul>
+	</div>
+</div> 
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+.schooltip { position: absolute; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">评测分类管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="behaviormanager" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="search_name" type="text" value="{$_GPC['search_name']}">
+                    </div>	
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>				
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="search_bj_id" class="form-control">
+                            <option value="0"> 请选择班级</option>
+                            {loop $banji $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['search_bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    
+                    <div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<a class="btn btn-primary" href="{php echo $this->createWebUrl('behaviormanager', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i> 新增分类</a>
+					</div>
+				</div>					
+
+
+            </form>
+        </div>
+    </div> 
+
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+                    <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+					
+					<th style="width:40%">分类名称</th>
+					
+                    <th style="width:10%;">关联班级</th>
+					<th style="width:30%;">预设评语</th>	
+					<th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $behaviorlist $item}
+				<tr>
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					<td>{$item['sname']}</td>	
+					
+                    <td>
+                        <div><span class="show_yulan_img" style="border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white">悬浮查看</span> </div>
+                        <div class="schooltip" style="padding:10px 10px;background-color:#1b1a1ab8;width:auto;max-width: 200px;color:white;">
+                            {loop $item['bjlist'] $row_b}
+                            <span style="font-weight: bold;white-space: nowrap;">{$row_b['sname']}</span> | 
+                            {/loop}
+                        </div>
+                    </td>
+					<td>
+					    <div><span class="show_yulan_img" style="border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white">悬浮查看</span> </div>
+                        <div class="schooltip" style="padding:10px 10px;background-color:#1b1a1ab8;width:auto;width: 400px;color:white;">
+                            {loop $item['word'] $key_w $row_w}
+                            <div style="width: 100%;display: flex;" >
+                                <div style="margin-right: 5px;">{php echo $key_w+1}.</div>
+                                <div style="font-weight: bold;flex:1;white-space:normal; word-break:break-all; word-wrap:break-word;"> {$row_w} </div> 
+                            </div> 
+                            {/loop}
+                        </div>   
+                    </td>						
+									
+					<td class="qx_e_d" style="text-align:right;">
+						<a class="btn btn-default btn-sm qx_3102" href="{php echo $this->createWebUrl('behaviormanager', array('sid' => $item['sid'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_3103" href="{php echo $this->createWebUrl('behaviormanager', array('sid' => $item['sid'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+
+	var x = -190;
+	var y = -60;
+	$(".show_yulan_img").mouseover(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).show();
+		console.log(e);
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+	}).mouseout(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).hide();
+	}).mousemove(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});	
+	});
+
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的评分!');
+            return false;
+        }
+        if(confirm("确认要删除选择的评分?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('teascore', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+
+</script>
+{elseif $operation == 'post'}
+<div class="panel panel-info">
+   <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回</a></div>
+</div>
+<div class="main">
+<form action="" method="post"  class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$item['id']}" />
+		<input type="hidden" name="tid" value="{$item['tid']}" />	
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">分类名称</label>
+                    <div class="col-sm-6" >
+                        <input type="text" name="name" class="form-control" value="{$item['sname']}" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-2" >
+                        <input type="number" name="ssort" class="form-control" value="{$item['ssort']}" />
+                    </div>
+                </div>
+				<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">关联班级</label>
+                    <div class="col-sm-9 col-xs-6">
+                        <div class="input-group text-info">
+                            <label  class="checkbox-inline" style="margin-left: 10px;width: 100px;"><input type="checkbox" style="margin-top: 4px;" onclick="CheckboxAll(this)" id="check_all" />全选</label></br>
+                            {loop $banji $uni}
+                            {php $is = $this->uniarr($uniarr,$uni['sid']);}
+                                    <label class="checkbox-inline" style="margin-left: 10px;min-width: 140px;">
+                                    <input style="margin-top: 4px;" type="checkbox" class="check_bj"  name="arr[]" value="{$uni['sid']}"{if ($is)}checked="checked"{/if}> {$uni['sname']}
+                                    </label>
+                            {/loop}
+                        </div>
+                        <div class="help-block">选择要关联的班级</div>
+                    </div>
+                </div>
+                <div id="WordBox">
+                    {loop $wordlist $row_w}
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">预设评语</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="word[]" class="form-control" value="{$row_w}" />
+                        </div>
+                        <div style="height:100%;padding:5px">
+                            <span onclick="DelP(this)" style="color:#667fa0;cursor: pointer;font-size:16px" ><i class="fa fa-times-circle"></i></span>
+                        </div>
+                    </div>	
+                    {/loop}
+                </div>
+                <div id="WordBox1" style="margin-bottom: 40px;padding-left: 30%;font-size: 14px;" > 
+                    <a href="javascript:AddWord();"   ><i class="fa fa-plus-circle"></i> 添加预设评语</a>
+				</div>
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>	
+
+<script>
+    function AddWord() {
+        const addhtml = `<div class="form-group">
+                        <label class="col-xs-12 col-sm-3 col-md-2 control-label">预设评语</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="word[]" class="form-control" value=""  style=""/>
+                        </div>
+                        <div style="height:100%;padding:5px">
+                            <span onclick="DelP(this)" style="color:#667fa0;cursor: pointer;font-size:16px" ><i class="fa fa-times-circle"></i></span>
+                        </div>
+                    </div>`;
+        $("#WordBox").append(addhtml);
+    }
+
+    function DelP(e) {
+        const C = $("#WordBox").find('.form-group').length;
+        if(C <= 1){
+            alert("至少预设一条评语")
+        }else{
+            $(e).parent().parent().remove()
+        }
+    }
+
+    function CheckboxAll(e){
+        $('input.check_bj').prop('checked',e.checked)
+    }
+    
+    $(function(){
+        $('input.check_bj').click(function(){
+            let IsAllC = true
+            $('input.check_bj').each(function(){
+                if(this.checked === false){
+                    IsAllC = false
+                }
+            })
+            $('#check_all').prop('checked',IsAllC)
+        })
+    })
+</script>
+
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,1948 @@
+<input type="hidden" name="id" value="{$item['id']}" />
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<div class="material-head" style="border-bottom: 0px solid #e7e7eb;">
+	<ul class="nav nav-tabs addkc_opt">
+		<li class="baaic slide_li act" optid="baaic"><a>基本设置</a></li>
+		<li class="singup slide_li" optid="singup"><a>报名设置</a></li>
+		<li class="sign_coment slide_li" optid="sign_coment" {if $item['kc_type']==1}style="display:none"{/if}><a>评论和签到</a></li>
+		<li class="mobile slide_li" optid="mobile"><a>前端设置</a></li>
+		<li class="teacher slide_li" optid="teacher"><a>授课设置</a></li>
+		<li class="sale slide_li" optid="sale"><a>营销设置</a><span class="tips_bubbling">new</span></li>
+		<li class="tuiguang slide_li" optid="tuiguang"><a>推广员设置</a><span class="tips_bubbling">new</span></li>
+		<li class="menu slide_li" optid="menu" {if $item['kc_type']==1}style="display:block"{else}style="display:none"{/if}><a>章节管理</a></li>
+		{if $school['is_printer'] ==1}<li class="prints slide_li" optid="prints"><a>打印设置</a></li>{/if}
+		{if $tuan || $zhuli || $tuiguang}<li class="teacash slide_li" optid="teacash" {if $item['kc_type']==1 || $remindday['tx_pay'] == 2}style="display:none"{/if}><a>提现设置</a><span class="tips_bubbling">new</span></li>{/if}
+	</ul>
+</div>
+<div class="material-body" style="overflow-y: scroll;padding: 34px;height: 600px;">
+	<div class="row lists_kc">
+		<!--基本设置-->
+		<div class="tab-pane" id="baaic">
+			<div class="form-group">
+				<label class="col-sm-1 control-label"><span class="require">*</span>课程名称</label>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="name" placeholder="最长40个字，建议简短明了" value="{$item['name']}">
+				</div>
+				{if $item['kccode']}
+				<label class="col-sm-1 control-label" style="width: 200px;">代码:{$item['kccode']}</label>
+				{/if}
+			</div>
+			{if keep_Blacklist()}
+			<div class="form-group">
+				<label class="col-sm-1 control-label"><span class="require">*</span>课程缩写</label>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="kcabbr" placeholder="例：YWKC" value="{$item['kcabbr']}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label"><span class="require">*</span>课程期号</label>
+				<div class="col-sm-5">
+					<input type="text" class="form-control" name="kcnumber" placeholder="例：C01" value="{$item['kcnumber']}" maxlength="10">
+				</div>
+			</div>
+			{/if}
+			<div class="form-group">
+				<label class="col-sm-1 control-label"><span class="require">*</span>开始时间:</label>
+				<div class="col-sm-2">
+					<div class="input-group">
+					{if $item['start']}
+					 {php echo tpl_form_field_date('start', date('Y-m-d', $item['start']))}
+					 {else}
+					{php echo tpl_form_field_date('start', date('Y-m-d',TIMESTAMP))}
+					{/if}
+					</div>
+				</div>
+				<label class="col-sm-1 control-label"><span class="require">*</span>结束时间:</label>
+				<div class="col-sm-2">
+					<div class="input-group">
+					{if $item['end']}
+						{php echo tpl_form_field_date('end', date('Y-m-d', $item['end']))}
+					{else}
+						{php echo tpl_form_field_date('end', date('Y-m-d',TIMESTAMP+7*86400))}
+					{/if}
+					</div>
+				</div>
+				<div class="help-block">设置本课程时间总跨度</div>	
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">选择分类:</label>
+				<div class="col-sm-2">
+					<select name="xq" id="select_nj" class="form-control">
+						<option value="0">请选择分类</option>
+						{loop $xueqi $it}
+						<option value="{$it['sid']}" {if $it['sid'] == $parentxq } selected="selected"{/if}>{$it['sname']}</option>
+						{/loop}
+					</select>
+				</div>
+				<div class="col-sm-2">
+					<select name="sun_xq" id="select_sunnj" class="form-control">
+						<option value="">请选择子分类</option>
+						{loop $sunxueqi $vr}
+						<option value="{$vr['sid']}" {if $vr['sid'] == $item['xq_id']} selected="selected"{/if}>{$vr['sname']}</option>
+						{/loop}
+					</select>
+				</div>
+				<label class="col-sm-1 control-label">选择科目:</label>
+				<div class="col-sm-2">
+					<select name="km" class="form-control">
+						<option value="0">请选择科目</option>
+						{loop $km $it}
+						<option value="{$it['sid']}" {if $it['sid'] == $item['km_id']} selected="selected"{/if}>{$it['sname']}</option>
+						{/loop}
+					</select>
+				</div>
+			</div>
+			{if $tuiguang || $tuan || $zhuli}
+			<div class="form-group">
+				<label class="col-sm-1 control-label"><span class="require">*</span>课程类型:</label>
+				<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+					<div class="input-group">
+						<input {if $item['kc_type']==1}checked value="1"{else}value="0"{/if} {if $item}disabled{/if} id="kc_type" name="kc_type" class="weui_switch" type="checkbox"/>
+						<span class="input-group-addon" id="kc_type_word">{if $item['kc_type']==1}线上{else}线下{/if}</span>
+					</div>
+					<div class="help-block" style="width:190px">设置后不可修改</div>
+				</div>
+				{if $tuiguang}
+				<div id="st_btn_box" {if $item['kc_type']==1}style="display:none"{else}style="display:block"{/if}>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">试听课程:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $item['is_try']==1}checked value="1"{else}value="2"{/if} {if $item}disabled{/if} id="is_try" name="is_try" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="is_try_word">{if $item['is_try']==1}是{else}否{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">是否为线下试听课,设置后不可修改</div>
+					</div>
+				</div>
+				{/if}
+			</div>
+			{/if}
+			<div id="offline_div" {if $item['kc_type']==1}style="display:none"{else}style="display:block"{/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">课表模式:</label>
+					<div class="col-sm-2">
+						<select style="margin-right:15px;" name="OldOrNew" id="OldOrNew" class="form-control" {if $item} disabled{/if}> 
+							<option value="" {if !$item['OldOrNew']} selected="selected"{/if}>选择课表模式</option>
+							<option value="0" selected="selected">固定课表课程</option>
+							<!-- <option value="1" {if $item['OldOrNew'] == 1} selected="selected"{/if}>自由签到课程</option> -->
+						</select>
+						<div class="help-block">设置后不可修改</div>
+					</div>
+					<label class="col-sm-1 control-label">授课教室:</label>
+					<div class="col-sm-2">
+						<select style="margin-right:15px;" name="adrr" id="adrr" class="form-control">
+							<option value="">请选择教室</option>
+							{loop $addr $row}
+							<option value="{$row['sid']}" {if $item['adrr'] == $row['sid']} selected="selected"{/if}>{$row['sname']}</option>
+							{/loop}
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">上课提醒:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary" >
+							<input type="radio" name="is_tx" value="1" {if $item['is_tx']==1 }checked{/if}  id="sign_y2">
+							<label></label>开启
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary" >
+							<input type="radio" name="is_tx" value="2" {if empty($item['is_tx']) || $item['is_tx']==2}checked{/if} id="sign_n2">
+							<label></label>关闭
+						</div>
+					</label>
+					<div class="help-block">设置每课开始前是否模板消息提醒学生和老师/线上课只提醒直播课程</div>
+				</div>
+				<div id="tqtxsj" {if $item['is_tx'] == 1 && $item['OldOrNew'] == 0 }  style="display: block;" {else}style="display:none;" {/if}>
+					<label class="col-sm-1 control-label">提前提醒时间:</label>
+					<div class="col-sm-3">
+						<div class="input-group">		
+							<input type="number" class="form-control" name="txtime" value="{$item['txtime']}" />
+							<span class="input-group-addon">分钟</span>
+						</div>
+						<div class="help-block">已经排课的每节课开始提醒时间/线上课只提醒直播课程</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">大纲/介绍</label>
+				<div class="col-sm-9">
+					<div class="help-block">如富文本编辑器未加载，请刷新本页重试</div>
+					{php echo tpl_ueditor('dagang', $item['dagang']);}
+				</div>
+			</div>
+		</div>
+		<!--签到和评论设置-->
+		<div class="tab-pane" id="sign_coment" style="display:none">
+			<div class="form-group">
+				<label class="col-sm-1 control-label">课程评价:</label>
+				<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+					<div class="input-group">
+						<input {if $item['allow_pl']==1}checked value="1"{else}value="2"{/if} id="allow_pl"  name="allow_pl" class="weui_switch" type="checkbox"/>
+						<span class="input-group-addon">{if $item['allow_pl']==1}开启{else}停用{/if}</span>
+					</div>
+				</div>
+				<div id="plset" {if $item['allow_pl'] == 1 && $item['OldOrNew'] == 0 }  style="display: block;" {else}  style="display:none;" {/if}>
+					<!-- <label class="col-sm-1 control-label">课时评论:</label> -->
+					<!-- <div class="col-sm-1" style="padding:0px;margin-left: 25px;"> -->
+						<!-- <div class="input-group"> -->
+							<!-- <input {if $signset['allow_ksdf']==1}checked value="1"{else}value="2"{/if} id="allow_ksdf"  name="allow_ksdf" class="weui_switch" type="checkbox"/> -->
+							<!-- <span class="input-group-addon">{if $signset['allow_ksdf']==1}开启{else}停用{/if}</span> -->
+						<!-- </div> -->
+						<!-- <div class="help-block" style="width:220px">各课时师生互评分</div> -->
+					<!-- </div> -->
+					<!-- <label class="col-sm-1 control-label">课时评论:</label> -->
+					<!-- <div class="col-sm-1" style="padding:0px;margin-left: 25px;"> -->
+						<!-- <div class="input-group"> -->
+							<!-- <input {if $signset['allow_kspl']==1}checked value="1"{else}value="2"{/if} id="allow_kspl"  name="allow_kspl" class="weui_switch" type="checkbox"/> -->
+							<!-- <span class="input-group-addon">{if $signset['allow_kspl']==1}开启{else}停用{/if}</span> -->
+						<!-- </div> -->
+						<!-- <div class="help-block" style="width:220px">各课时师生互评论</div> -->
+					<!-- </div> -->
+					<!-- <label class="col-sm-1 control-label">分享评论:</label> -->
+					<!-- <div class="col-sm-1" style="padding:0px;margin-left: 25px;"> -->
+						<!-- <div class="input-group"> -->
+							<!-- <input {if $signset['allow_shera_pl']==1}checked value="1"{else}value="2"{/if} id="allow_shera_pl"  name="allow_shera_pl" class="weui_switch" type="checkbox"/> -->
+							<!-- <span class="input-group-addon">{if $signset['allow_shera_pl']==1}开启{else}停用{/if}</span> -->
+						<!-- </div> -->
+						<!-- <div class="help-block" style="width:220px">允许分享评论</div> -->
+					<!-- </div> -->
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">是否签到:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_sign" value="1" id="sign_y" {if $item['isSign']==1 }checked{/if} >
+							<label></label>签到
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_sign" value="0" id="sign_n" {if (isset($item['isSign']) && empty($item['isSign']) || empty($item))}checked{/if} >
+							<label></label>不签
+						</div>
+					</label>
+					<div class="help-block">手机端签到限制,线下课程必须开启</div>
+				</div>
+			</div>
+			<div id="tqqdfw" {if $item['isSign'] == 1 && $item['OldOrNew'] == 0 }  style="display: block;" {else}  style="display:none;" {/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">提前签到:</label>
+					<div class="col-sm-2">
+						<div class="input-group input-group-xs">
+							<input type="number" class="form-control" name="signTime" value="{$item['signTime']}" />
+							<span class="input-group-addon">分钟</span>
+						</div>
+						<div class="help-block">开课前多分钟可以签到，为空则不限制</div>
+					</div>
+					<label class="col-sm-1 control-label">刷卡时效:</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<input type="number" class="form-control" name="rechecktime" value="{$item['rechecktime']}" />
+							<span class="input-group-addon">分钟</span>
+						</div>
+						<div class="help-block">可刷卡时段内重复刷卡只算一次刷卡,可不设</div>
+					</div>
+					<label class="col-sm-1 control-label">学生确认:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $signset['stu_sign_confirm']==1}checked value="1"{else}value="2"{/if} id="stu_sign_confirm" name="stu_sign_confirm" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['stu_sign_confirm']==1}是{else}否{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">学生签到是否确认</div>
+					</div>
+				</div>	
+				<div class="form-group">
+					<label class="col-sm-1 control-label">随意签到:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_sign_old']==1}checked value="1"{else}value="2"{/if} id="tea_sign_old" name="tea_sign_old" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_sign_old']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师随意签到任何课时</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">错位签到:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_no_myks']==1}checked value="1"{else}value="2"{/if} id="tea_no_myks" name="tea_no_myks" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_no_myks']==1}是{else}否{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师签到非自己课时</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">辅导老师:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['more_tea_sign']==1}checked value="1"{else}value="2"{/if} id="more_tea_sign" name="more_tea_sign" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['more_tea_sign']==1}开启{else}关闭{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">允许课时签到助教或辅导</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">手机排课:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_mobile_pk']==1}checked value="1"{else}value="2"{/if} id="tea_mobile_pk" name="tea_mobile_pk" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_mobile_pk']==1}开启{else}关闭{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师手机端排课</div>
+					</div>
+				</div>
+				<div class="form-group">	
+					<label class="col-sm-1 control-label">代签学生:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_change_stutype']==1}checked value="1"{else}value="2"{/if} id="tea_change_stutype" name="tea_change_stutype" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_change_stutype']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师手机代签学生</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">负课签到:</label>
+					<div class="col-sm-1" style="padding:0px">
+						<div class="input-group">
+							<input {if $signset['tea_sign_fuke']==1}checked value="1"{else}value="2"{/if} id="tea_sign_fuke" name="tea_sign_fuke" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_sign_fuke']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师为没课时的学生签到</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">自定扣课:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_edit_ks']==1}checked value="1"{else}value="2"{/if} id="tea_edit_ks" name="tea_edit_ks" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_edit_ks']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师代签时自定义扣除课时</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">赠送课时:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_add_ks']==1}checked value="1"{else}value="2"{/if} id="tea_add_ks" name="tea_add_ks" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_add_ks']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师手机端给学生赠送课时</div>
+					</div>
+				</div>
+				<div class="form-group">	
+					<label class="col-sm-1 control-label">教师确认:</label>
+					<div class="col-sm-1" style="padding:0px;">
+						<div class="input-group">
+							<input {if $signset['tea_sign_confirm']==1}checked value="1"{else}value="2"{/if} id="tea_sign_confirm" name="tea_sign_confirm" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $signset['tea_sign_confirm']==1}是{else}否{/if}</span>
+						</div>
+						<div class="help-block" style="width:220px">老师签到是否需要管理审核</div>
+					</div>
+					<div id="sh_tea_box" {if $signset['tea_sign_confirm']!=1}style="display:none"{/if}>
+						<label class="col-sm-1 control-label">审核人:</label>
+						<div class="row row-fix">
+							<div class="col-xs-5 col-sm-5" style="width: 300px;">
+								<div class="input-group">
+									<input id="sh_tea_teacherids" name="sh_tea_teacherids" type="hidden" value="{$sh_signteaid}"/>
+									<input class="form-control" id="sh_tea_teachers" placeholder="审核教师签到,多选" type="text" value="{$sh_signtealist}"/>
+									<span class="input-group-btn">
+										<button class="btn btn-default" type="button" onclick="xxxz(2);">选择</button>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+		</div>
+		<!--报名设置-->
+		<div class="tab-pane" id="singup" style="display:none">
+			<!-- <div class="form-group">	
+				<label class="col-sm-1 control-label">优惠券使用:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="coupon" value="0" {if $item['coupon']==0 || empty($item['coupon'])}checked{/if}>
+							<label></label>允许
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="coupon" value="1" {if $item['coupon']==1}checked{/if}>
+							<label></label>不允许
+						</div>
+					</label>
+				</div>
+			</div> -->
+			<div class="form-group">	
+				<label class="col-sm-1 control-label">优惠券/红包使用:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="redpacket" value="0" {if $item['redpacket']==0 || empty($item['redpacket'])}checked{/if}>
+							<label></label>允许
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="redpacket" value="1" {if $item['redpacket']==1}checked{/if}>
+							<label></label>不允许
+						</div>
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">总课时:</label>
+				<div class="col-sm-2">
+						<div class="input-group">					
+						<input type="text" class="form-control" name="AllNum" value="{$item['AllNum']}" required="required" oninvalid="setCustomValidity('总课时不能为空！！');" oninput="setCustomValidity('');" />
+						<span class="input-group-addon">节</span>
+						</div>
+						<div class="help-block">预设总课时节数</div>
+				</div>		
+				<label class="col-sm-1 control-label">人数限制:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">					
+						<input type="text" class="form-control" name="minge" value="{$item['minge']}" />
+						<span class="input-group-addon">人</span>
+					 </div>
+					 <div class="help-block">输入课程限报人数</div>
+				</div>
+				<label class="col-sm-1 control-label">已报人数:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">					
+						<input type="text" class="form-control" name="yibao" placeholder="虚拟已报人数" value="{$item['yibao']}" />
+						<span class="input-group-addon">人</span>
+					 </div>
+					 <div class="help-block">虚拟报名人数不会影响真实报名</div>
+				</div>					
+			</div>
+			<div class="form-group">
+				<div id="NewType" {if $item['kc_type']==1}style="display:none"{else}style="display:block"{/if}>
+				<label class="col-sm-1 control-label">课时单价:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">
+						<span class="input-group-addon">￥</span>
+						<input type="text" class="form-control" name="RePrice" value="{$item['RePrice']}" />
+					 </div>
+					 <div class="help-block">每个课时单价</div>
+				</div>
+				<label class="col-sm-1 control-label">最低续购:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">					
+						<input type="text" class="form-control" name="ReNum" value="{$item['ReNum']}" />
+						<span class="input-group-addon">节</span>
+					 </div>
+					 <div class="help-block">续购课时最低多少</div>
+				</div>
+				</div>
+				{if $_W['isfounder'] || $_W['role'] == 'owner'}
+				<label class="col-sm-1 control-label">收款账户:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">
+						<select class="form-control" name="payweid" id="payweid">
+							<option value="0">请选择收款账户</option>
+							{loop $payweid $row}
+							<option value="{$row['uniacid']}" {if $item['payweid']==$row['uniacid']}selected{/if}>{$row['name']}</option>
+							{/loop}
+						</select>
+						<div class="help-block">不设置则付费至当前公众号</div>
+					 </div>
+				</div>
+				{else}
+					<input type="hidden" name="payweid" value="{$item['payweid']?$item['payweid']:$_W['uniacid']}" />
+				{/if}
+			</div>
+			{if $school['Is_point']==1}
+			<div class="form-group">	
+				<label class="col-sm-1 control-label">积分抵用:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">					
+						<input type="text" class="form-control" name="Point2Cost" value="{$item['Point2Cost']}" />
+						<div class="help-block">多少积分抵用1元,0则不启用</div>
+					 </div>
+				</div>	
+				<label class="col-sm-1 control-label">积分最低使用:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">					
+						<input type="text" class="form-control" name="MinPoint" value="{$item['MinPoint']}" />
+						<div class="help-block">最低使用多少积分，为零则不限制</div>
+					 </div>
+				</div>
+				<label class="col-sm-1 control-label">积分最高使用:</label>
+				<div class="col-sm-2">
+					 <div class="input-group">					
+						<input type="text" class="form-control" name="MaxPoint" value="{$item['MaxPoint']}" />
+						<div class="help-block">最高使用多少积分，为零则不限制</div>
+					 </div>
+				</div>					
+			</div>
+			{/if}
+
+			
+			{if keep_sk77()}
+			<div class="form-group" >
+				<label class="col-sm-1 control-label">过期天数:</label>
+				<div class="col-sm-3">
+					<div class="input-group">
+						<input type="text" class="form-control" name="OverTimeDay" value="{$item['overtimeday']}" />
+						<span class="input-group-addon">天</span>
+					</div>
+					<div class="help-block">购买/续购后多久过期,0则永不过期</div>
+				</div>
+			</div>
+			{/if}
+
+			{if keep_mutikc()}
+			<div class="form-group">	
+				<label class="col-sm-1 control-label">&nbsp;选择规格:</label>
+				<div class="col-sm-3" id="checkguige">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="guigetype" value="0" {if $item['guigetype']==0 || empty($item['guigetype'])}checked{/if}>
+							<label></label>单规格
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="guigetype" value="1" {if $item['guigetype']==1}checked{/if}>
+							<label></label>多规格
+						</div>
+					</label>
+				</div>
+			</div>
+			{/if}
+			<div class="form-group" id="showoneguige" {if $item['guigetype']==1}style="display:none"{/if}>	
+				<label class="col-sm-1 control-label"><span class="require">*</span>报名费用:</label>
+				<div class="col-sm-2">
+						<div class="input-group">
+						<span class="input-group-addon">￥</span>
+						<input type="text" class="form-control" name="cose" value="{$item['cose']}" />
+						</div>
+						<div class="help-block">输入课程所需费用</div>
+				</div>
+				
+				<div id="sgks_box" {if $item['kc_type']==1}style="display:none"{else}style="display:block"{/if}>
+					<label class="col-sm-1 control-label">首购课时:</label>
+					<div class="col-sm-2">
+							<div class="input-group">					
+							<input type="text" class="form-control" name="FirstNum" value="{$item['FirstNum']}" required="required" oninvalid="setCustomValidity('首购课时不能为空！！');" oninput="setCustomValidity('');" />
+							<span class="input-group-addon">节</span>
+							</div>
+							<div class="help-block">首购含有课时数</div>
+					</div>
+				</div>
+			</div>	
+			{if $guige}
+				<div class="form-group" id="showmoreguige" {if $item['guigetype']==0}style="display:none"{/if}>	
+					<input type="hidden" class="form-control" id="deletearr" name="deletearr"/>
+					{loop $guige $it}
+					<input type="hidden" class="form-control" name="old[]" />
+					<input type="hidden" class="form-control" name="guigeid_old[]" value="{$it['id']}"/>
+					<div class="form-group">	
+						<label class="col-sm-1 control-label">规格名称:</label>
+						<div class="col-sm-2">
+							<div class="input-group">					
+								<input type="text" class="form-control" name="guigename_old[]" value="{$it['name']}"/>
+							</div>
+						</div>	
+						<label class="col-sm-1 control-label">单价:</label>
+						<div class="col-sm-2">
+							<div class="input-group">					
+								<input type="text" class="form-control" name="guigeprice_old[]" value="{$it['price']}"/>
+							</div>
+						</div>
+						<label class="col-sm-1 control-label">包含课时:</label>
+						<div class="col-sm-2">
+							<div class="input-group">					
+								<input type="text" class="form-control" name="guigeksnum_old[]" value="{$it['ksnum']}"/>
+							</div>
+						</div>	
+						<label class="col-sm-1 control-label">
+							<a href="javascript:;" class="showmoreguige-del" id="delgg_{$it['id']}" data-guigeid="{$it['id']}"><i class="fa fa-times-circle"></i></a>
+						</label>	
+					</div>
+					{/loop}			
+				</div>
+			{else}
+				<div class="form-group" id="showmoreguige" {if $item['guigetype']==0}style="display:none"{/if}>	
+					<input type="hidden" class="form-control" name="new[]" />
+					<div class="form-group">	
+						<label class="col-sm-1 control-label">规格名称:</label>
+						<div class="col-sm-2">
+							<div class="input-group">					
+								<input type="text" class="form-control" name="guigename_new[]" />
+							</div>
+						</div>	
+						<label class="col-sm-1 control-label">单价:</label>
+						<div class="col-sm-2">
+							<div class="input-group">					
+								<input type="text" class="form-control" name="guigeprice_new[]" />
+							</div>
+						</div>
+						<label class="col-sm-1 control-label">包含课时:</label>
+						<div class="col-sm-2">
+							<div class="input-group">					
+								<input type="text" class="form-control" name="guigeksnum_new[]" />
+							</div>
+						</div>		
+									
+					</div>
+				</div>
+			{/if}
+			{if keep_mutikc()}
+			<div class="form-group" id="showmoreguigeadd" style="display: none;">	
+				<label class="col-sm-6 control-label">
+					<a href="javascript:;" id="showmoreguige-add"><i class="fa fa-plus-circle"></i> 添加规格</a>
+				</label>		
+			</div>
+			{/if}
+
+		</div>
+		<!--前端设置-->
+		<div class="tab-pane" id="mobile" style="display:none">
+			<div class="form-group">
+				<label class="col-sm-1 control-label">&nbsp;前端显示:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_show" value="1" {if $item['is_show']==1 || empty($item['is_show'])}checked{/if}>
+							<label></label>是
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_show" value="2" {if $item['is_show']==2}checked{/if}>
+							<label></label>否
+						</div>
+					</label>
+					<div class="help-block">手机前端是否显示:默认显示</div>
+				</div>
+				<label class="col-sm-1 control-label">&nbsp;报名弹幕:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_dm" value="1" {if $item['is_dm']==1 || empty($item['is_dm'])}checked{/if}>
+							<label></label>是
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_dm" value="2" {if $item['is_dm']==2}checked{/if}>
+							<label></label>否
+						</div>
+					</label>
+					<div class="help-block">是否显示报名弹幕,需报名大于5人生效</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">&nbsp;精品课程:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_hot" value="1" {if $item['is_hot']==1 || empty($item)}checked{/if}>
+							<label></label>是
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_hot" value="0" {if $item['is_hot']==0}checked{/if}>
+							<label></label>否
+						</div>
+					</label>
+					<div class="help-block">精品课程显示在首页，和课程详情页</div>
+				</div>
+				<label class="col-sm-1 control-label">&nbsp;课程小图:</label>
+				<div class="col-sm-4">                    
+					  {php echo tpl_form_field_images('kcthumb', $item['thumb'])}
+					<div class="help-block">推荐尺寸70*70 </div>
+				</div>
+			</div>				
+			<div class="form-group">
+				<label class="col-sm-1 control-label">&nbsp;首页推荐:</label>
+				<div class="col-sm-3">
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_tuijian" value="1" {if $item['is_tuijian']==1 || empty($item)}checked{/if}>
+							<label></label>是
+						</div>
+					</label>
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="is_tuijian" value="0" {if $item['is_tuijian']==0}checked{/if}>
+							<label></label>否
+						</div>
+					</label>
+					<div class="help-block">推荐课程在首页以大图形式展示</div>
+				</div>
+				<label class="col-sm-1 control-label">&nbsp;课程大图:</label>
+				<div class="col-sm-4">                    
+					{php echo tpl_form_field_images('bigimg', $item['bigimg'])}
+					<div class="help-block">此图显示首页推荐课程列表和课程详情页面，推荐宽高比4:3 </div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">&nbsp;前端排序:</label>
+				<div class="col-sm-2">
+					<input type="text" class="form-control" name="ssort" placeholder="请输入数值" value="{$item['ssort']}" />
+					<div class="help-block">数值越大前端显示越靠前</div>
+				</div>
+			</div>
+		</div>
+		<!--授课设置-->
+		<div class="tab-pane" id="teacher" style="display:none">
+			<div class="form-group">
+				<label class="col-sm-1 control-label">&nbsp;授课老师:</label>
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 20px;"  ></label>
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="text-align:left;width:80%;max-width: unset" id = "stu_div" >
+					{if $thisTealist}
+					{loop $thisTealist $row}
+					<span class="stuname" style="border:1px solid #e8e8e8; padding:3px 3px;white-space: nowrap;" onclick="del_stu({$row['id']})" id="span_{$row['id']}"> {$row['tname']}<input class="tidArr" tname="{$row['tname']}" type = "hidden" name="tidarr[]" value = "{$row['id']}"><i class="fa fa-times" style="font-size:13px"></i></span>
+					{/loop}
+					{else}
+					请选择授课老师，最多五个
+					{/if}
+				</label>
+			</div>
+			<div class="form-group" id="upload_list">
+				<label class="col-sm-1 control-label">&nbsp;</label>
+				<div class="col-sm-2 col-lg-2" style="width: 20%">
+					<select style="margin-right:15px;" name="select_fz" id="select_fz" class="form-control">
+						<option value=" ">请选择教师分组</option>
+						<option value="0">未分组</option>
+						{loop $fz $it}
+						<option value="{$it['sid']}">{$it['sname']}</option>
+						{/loop}
+					</select>
+				</div>
+				<label onclick="hideTeaList(this)" id="hideTlist" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;display: none"  ><i class="fa fa-caret-up"></i>  收起</label>
+			</div>
+			<div class="form-group" id="teaDIv">
+			   <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"></label>
+				<div class="col-sm-9 col-xs-6">
+					<div class="input-group text-info" id="teacherList" style="width: 700px;">
+
+					</div>
+					<div class="help-block">选择授课老师，最多五个</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">&nbsp;主讲老师:</label>
+				<div class="col-sm-3">
+					<select style="margin-right:15px;" name="maintid" id="maintid" class="form-control">
+						 <option value="0"  >请选择主讲老师</option>
+						{loop $teachers $row_z}
+						 {php $is_z = $this->uniarr($uniarr,$row_z['id']);}
+						 {if ($is_z)}
+						<option value="{$row_z['id']}" {if $item['maintid'] == $row_z['id']}selected="selected"{/if} >{$row_z['tname']}</option>
+						{/if}
+						{/loop}
+					</select>
+				</div>
+				<label class="col-sm-1 control-label">预约负责老师:</label>
+				<div class="col-sm-3">
+					<select style="margin-right:15px;" name="yytid" id="yytid" class="form-control">
+						 <option value="0"  >请选择预约负责老师</option>
+						{loop $teachers $row_yy}
+						<option value="{$row_yy['id']}" {if $item['yytid'] == $row_yy['id']}selected="selected"{/if} >{$row_yy['tname']}</option>
+						{/loop}
+					</select>
+					<div class="help-block">负责该课程预约的老师</div>
+				</div>
+			</div>
+		</div>	
+		<!--打印设置-->
+		<div class="tab-pane" id="prints" style="display:none">
+			{if $school['is_printer'] ==1}
+			<div class="form-group">
+				<label class="col-sm-1 control-label">打印订单:</label>
+				<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+					<div class="input-group">
+						<input {if $item['is_print']==1}checked value="1"{else}value="2"{/if} id="is_print"  name="is_print" class="weui_switch" type="checkbox"/>
+						<span class="input-group-addon" id="print_word">{if $item['is_print']==1}启用{else}停用{/if}</span>
+					</div>
+				</div>
+			</div>
+			<div id="print_set" {if $item['is_print'] == 1}style="display:block"{else}style="display:none"{/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">销课小票:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $item['is_print_xk']==1}checked value="1"{else}value="2"{/if} id="is_print_xk"  name="is_print_xk" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="print_xk_word">{if $item['is_print_xk']==1}打印{else}停用{/if}</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">打印机</label>
+					<div class="col-sm-9">
+						<div class="input-group text-info">
+							{loop $printers $uni}
+							{php $is = $this->uniarr($nowprints,$uni['id']);}
+									<label for="uni_{$uni['id']}" class="checkbox-inline"><input id="uni_{$uni['id']}" type="checkbox" name="printarr[]" value="{$uni['id']}"{if ($is)}checked="checked"{/if}> {$uni['name']}（{$printer_name[$uni['type']]['text']}）</label>
+							{/loop}
+						</div>
+						<div class="help-block">选择本课程小票打印设备</div>
+					</div>
+				</div>	
+			</div>
+			{/if}
+		</div>
+		<!--提现设置-->
+		<div class="tab-pane" id="teacash" style="display:none">
+			<div class="form-group">
+				<label class="col-sm-1 control-label">老师提现:</label>
+				<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+					<div class="input-group">
+						<input {if $item['tea_getcash']==1}checked value="1"{else}value="2"{/if} id="tea_getcash"  name="tea_getcash" class="weui_switch" type="checkbox"/>
+						<span class="input-group-addon" id="print_word">{if $item['tea_getcash']==1}启用{else}停用{/if}</span>
+					</div>
+				</div>
+			</div>
+			<div id="cash_set" {if $item['tea_getcash'] == 1}style="display:block"{else}style="display:none"{/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">提成规则:</label>
+					<div class="col-sm-12">
+						<label class="radio-inline">
+							<div class="radio-custom radio-primary">
+								<input type="radio" name="txtype" value="1" {if $txset['type']== 1 || empty($txset['type'])}checked{/if}>
+								<label></label>按老师签课量
+							</div>
+						</label>
+						<label class="radio-inline">
+							<div class="radio-custom radio-primary">
+								<input type="radio" name="txtype" value="2" {if $txset['type']==2}checked{/if}>
+								<label></label>按学生消课量
+							</div>
+						</label>
+						<div class="help-block">按老师签课：老师签到并被确认的课时数量。例：老师签到本课5个课时，每个课时提成100元，总提成费用=5*100<br>按学生消课：学生签到该老师签到的课时扣掉的学生课时总数,指的是学生消耗的课时数量，例：老师签到了本课时，且本课时扣掉了来上课的所有学生课时总数为10个，每个课时提成20，总提成=10*20</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">主讲单价:</label>
+					<div class="col-sm-2">
+						 <div class="input-group">
+							<span class="input-group-addon">￥</span>
+							<input type="number" class="form-control" name="fee1" value="{$txset['fee1']}" />
+						 </div>
+						 <div class="help-block">签到并被确认后主讲身份提成单价</div>
+					</div>
+					<label class="col-sm-1 control-label">助教单价:</label>
+					<div class="col-sm-2">
+						 <div class="input-group">
+							<span class="input-group-addon">￥</span>
+							<input type="number" class="form-control" name="fee2" value="{$txset['fee2']}" />
+						 </div>
+						 <div class="help-block">签到并被确认后助教身份提成单价</div>
+					</div>
+				</div>
+				<!-- <div class="form-group"> -->
+					<!-- <label class="col-sm-1 control-label">最小课时:</label> -->
+					<!-- <div class="col-sm-2"> -->
+						 <!-- <div class="input-group"> -->
+							<!-- <input type="number" class="form-control" name="min_ksnumber" value="{$txset['min_ksnumber']}" /> -->
+						 <!-- </div> -->
+						 <!-- <div class="help-block">单次提现需要满足的最小课时数量,不设则不限制</div> -->
+					<!-- </div> -->
+					<!-- <label class="col-sm-1 control-label">最大课时:</label> -->
+					<!-- <div class="col-sm-2"> -->
+						 <!-- <div class="input-group"> -->
+							<!-- <input type="number" class="form-control" name="max_ksnumber" value="{$txset['max_ksnumber']}" /> -->
+						 <!-- </div> -->
+						 <!-- <div class="help-block">单次提现允许的最大课时数量,不设则不限制</div> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<!-- <div class="form-group"> -->
+					<!-- <label class="col-sm-1 control-label">否需审核:</label> -->
+					<!-- <div class="col-sm-1" style="padding:0px;margin-left: 25px;"> -->
+						<!-- <div class="input-group"> -->
+							<!-- <input {if $txset['is_needsh']==1}checked value="1"{else}value="2"{/if} id="is_tx_shenhe"  name="is_tx_shenhe" class="weui_switch" type="checkbox"/> -->
+							<!-- <span class="input-group-addon" id="print_xk_word">{if $txset['is_needsh']==1}是{else}否{/if}</span> -->
+						<!-- </div> -->
+						
+					<!-- </div> -->
+					<!-- <div class="help-block">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;启用后请到财务管理，提现管理内审核</div> -->
+				<!-- </div> -->
+				<!-- {if $_W['isfounder'] || $_W['role'] == 'owner'} -->
+				<!-- <label class="col-sm-1 control-label">付款账户:</label> -->
+				<!-- <div class="col-sm-2"> -->
+					<!-- <select class="form-control" name="tx_payweid" id="tx_payweid"> -->
+						<!-- <option value="0">请选择收款账户</option> -->
+						<!-- {loop $payweid $row} -->
+						<!-- <option value="{$row['uniacid']}" {if $item['payweid']==$row['uniacid']}selected{/if}>{$row['name']}</option> -->
+						<!-- {/loop} -->
+					<!-- </select> -->
+					<!-- <div class="help-block">不设置则默认当前公众号，请确保所选账户有充足余额和已经配置微信支付证书</div> -->
+				<!-- </div> -->
+				<!-- {else} -->
+					<!-- <input type="hidden" name="tx_payweid" value="{$txset['payweid']?$txset['payweid']:$_W['uniacid']}" /> -->
+				<!-- {/if} -->
+			</div>
+		</div>
+		<!--营销设置-->
+		<div class="tab-pane" id="sale" style="display:none">
+			{if $tuan || $zhuli}
+			<div class="form-group">
+				<label class="col-sm-1 control-label">营销模式:</label>
+				<div class="col-sm-5">
+				{if $tuan}
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="sale_type" id="opt_tuan" value="1" {if $item['sale_type']==2}disabled{/if} {if $item['sale_type']==1}checked{/if}>
+							<label></label>团购
+						</div>
+					</label>
+				{/if}	
+				{if $zhuli}
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="sale_type" id="opt_zhuli" value="2" {if $item['sale_type']==1}disabled{/if} {if $item['sale_type']==2}checked{/if}>
+							<label></label>助力
+						</div>
+					</label>
+				{/if}
+					<label class="radio-inline">
+						<div class="radio-custom radio-primary">
+							<input type="radio" name="sale_type" id="opt_close" value="0" {if $item['sale_type']==0 || empty($item['sale_type'])}checked{/if}>
+							<label></label>关闭
+						</div>
+					</label>
+					<div class="help-block">选择一种营销模式，支持一种，选择后不可修改</div>
+				</div>
+			</div>
+			<!--团购模式-->
+			<div id="tuan_set_box" {if $item['sale_type']==1}style="display:block"{else}style="display:none"{/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">参团优惠:</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<span class="input-group-addon">￥</span>
+							<input type="text" class="form-control" name="tuan_price" value="{$saleset['price']}" />
+						</div>
+						<div class="help-block old_prcie">原价减去此优惠,需小于原价</div>
+					</div>
+					<label class="col-sm-1 control-label">团长优惠:</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<input type="text" class="form-control" name="tuan_tzyh" value="{$saleset['tuanz_price']}" />
+							<span class="input-group-addon">元</span>
+						</div>
+						<div class="help-block">不设置则无</div>
+					</div>
+					<label class="col-sm-1 control-label">成团人数:</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<input type="text" class="form-control" name="tuan_number" value="{$saleset['suc_munber']}" />
+							<span class="input-group-addon">人</span>
+						</div>
+						<div class="help-block">最少2人</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label"><span class="require">*</span>活动截止</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+						{if $saleset['endtime']}
+							{php echo tpl_form_field_date('tuan_endtime', date('Y-m-d H:i', $saleset['endtime']),true)}
+						{else}
+							{php echo tpl_form_field_date('tuan_endtime', date('Y-m-d H:i',TIMESTAMP+7*86400),true)}
+						{/if}
+						</div>
+						<div class="help-block">过期后不可参加活动</div>
+					</div>
+					<label class="col-sm-1 control-label">队伍过期:</label>
+					<div class="col-sm-5">
+						<label class="radio-inline">
+							<div class="radio-custom radio-primary">
+								<input type="radio" name="tuan_over_set" id="kc_over" value="1" {if $saleset['overtimeset']==1 || !$saleset}checked{/if}>
+								<label></label>按活动截止时间
+							</div>
+						</label>
+						<label class="radio-inline">
+							<div class="radio-custom radio-primary">
+								<input type="radio" name="tuan_over_set" id="zd_over" value="2" {if $saleset['overtimeset']==2}checked{/if}>
+								<label></label>按自定结束时间
+							</div>
+						</label>
+						<div class="help-block">设置发起一个团购的过期时间,如自定义请设置小时数</div>
+					</div>
+					<div id="over_time_box" {if $saleset['overtimeset']==2}style="display:block"{else}style="display:none"{/if}>
+						<label class="col-sm-1 control-label">过期小时:</label>
+						<div class="col-sm-2">
+							<div class="input-group">
+								<input type="text" class="form-control" name="tuan_over_time" value="{$saleset['overtime']}" />
+								<span class="input-group-addon">小时</span>
+							</div>
+							<div class="help-block" style="width: 208px;">开团后自动过期时间</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">失败续开:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $saleset['allow_again']==1}checked value="1"{else}value="2"{/if} name="fail_tuan" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="fail_tuan_word">{if $saleset['allow_again']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">失败再次开团</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">虚拟团购:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $saleset['allow_help']==1}checked value="1"{else}value="2"{/if} name="tuan_xn" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="tuan_xn_word">{if $saleset['allow_help']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">推广员虚拟帮团</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">推广海报:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $saleset['use_pop']==1}checked value="1"{else}value="2"{/if} name="use_pop_tuan" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $saleset['use_pop']==1}启用{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">是否启用推广海报</div>
+					</div>
+				</div>
+				<div class="form-group" id="tuan_pop_box" {if $saleset['use_pop']==1}style="display:block"{else}style="display:none"{/if}>
+					<label class="col-sm-1 control-label">选择海报风格:</label>
+					<div class="col-sm-5" style="overflow-y: scroll; height: 148px;margin-top: -22px;">                    
+						<div class="style_mb tuan_op_mb" mbid="1">
+							<img class="style_mb_img {if $saleset['pop_id'] == 1}checked{/if}" src="{OSSURL}public/web/images/pop1.png"/>
+							<span class="mb_name">全图风格</span>
+							<div class="icon_marsk" {if $saleset['pop_id'] == 1}style="display:block"{/if}><span class="gou wi-right"></span></div>
+						</div>
+						<div class="style_mb tuan_op_mb" mbid="2">
+							<img class="style_mb_img {if $saleset['pop_id'] == 2}checked{/if}" src="{OSSURL}public/web/images/pop2.png"/>
+							<span class="mb_name">上下风格</span>
+							<div class="icon_marsk" {if $saleset['pop_id'] == 2}style="display:block"{/if}><span class="gou wi-right"></span></div>
+						</div>
+						<input type="hidden" id="tuan_mb_id" name="tuan_mb_id" value="{$saleset['pop_id']}" />
+					</div>
+					<label class="col-sm-1 control-label">海报底图:</label>
+					<div class="col-sm-4">                    
+						{php echo tpl_form_field_images('tuan_bg', $saleset['pop_img'])}
+						<div class="help-block"></div>
+					</div>	
+				</div>
+				<!-- <div class="form-group"> -->
+					<!-- <label class="col-sm-1 control-label">海报标题:</label> -->
+					<!-- <div class="col-sm-8"> -->
+						<!-- <input class="form-control" name="tuan_share_title" placeholder="例：'xx'我为好课代言" value="{$saleset['share_title']}"/> -->
+						<!-- <div class="help-block">显示在海报上的标题</div> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<div class="form-group">
+					<label class="col-sm-1 control-label">分享文案:</label>
+					<div class="col-sm-5">
+						<textarea class="form-control" name="tuan_wenan" placeholder="例：3天速成英语口语，旅游交流无忧，突破交流障碍，出国旅行吃穿住玩，搭车，飞机，签证，路人交流用语">{$saleset['share_word']}</textarea>
+						<div class="help-block">输入分享文案，方便用户复制转发,50字以内</div>
+					</div>
+					<label class="col-sm-1 control-label">拼团规则:</label>
+					<div class="col-sm-5">
+						<textarea class="form-control" name="tuan_guize" placeholder="例：每人仅限拼团一次，不可重复参加，不可以多次申请，平团成功后不可退款，本规则解释权贵本平台所有">{$saleset['rule_word']}</textarea>
+						<div class="help-block">输入拼团规则方便用户查看,80字以内</div>
+					</div>
+				</div>
+			</div>
+			<!--助力模式-->
+			<div id="zhuli_set_box" {if $item['sale_type']==2}style="display:block"{else}style="display:none"{/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">助力优惠:</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<span class="input-group-addon">￥</span>
+							<input type="text" class="form-control" name="zhuli_price" value="{$saleset['price']}" />
+						</div>
+						<div class="help-block old_prcie">原价减去此优惠的支付价格,需小于原价</div>
+					</div>
+					<label class="col-sm-1 control-label">邀请人数:</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+							<input type="text" class="form-control" name="zhuli_number" value="{$saleset['suc_munber']}" />
+							<span class="input-group-addon">人</span>
+						</div>
+						<div class="help-block">最少2人</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label"><span class="require">*</span>活动截止</label>
+					<div class="col-sm-2">
+						<div class="input-group">
+						{if $saleset['endtime']}
+							{php echo tpl_form_field_date('zhuli_endtime', date('Y-m-d H:i', $saleset['endtime']),true)}
+						{else}
+							{php echo tpl_form_field_date('zhuli_endtime', date('Y-m-d H:i',TIMESTAMP+7*86400),true)}
+						{/if}
+						</div>
+						<div class="help-block">过期后不可参加活动</div>
+					</div>
+					<label class="col-sm-1 control-label">队伍过期:</label>
+					<div class="col-sm-5">
+						<label class="radio-inline">
+							<div class="radio-custom radio-primary">
+								<input type="radio" name="zhuli_over_set" id="kc_zhuli_over" value="1" {if $saleset['overtimeset']==1 || !$saleset}checked{/if}>
+								<label></label>按活动截止时间
+							</div>
+						</label>
+						<label class="radio-inline">
+							<div class="radio-custom radio-primary">
+								<input type="radio" name="zhuli_over_set" id="zd_zhuli_over" value="2" {if $saleset['overtimeset']==2}checked{/if}>
+								<label></label>按自定结束时间
+							</div>
+						</label>
+						<div class="help-block">设置发起一个助力活动的过期时间,如自定义请设置小时数</div>
+					</div>
+					<div id="over_zhuli_time_box" {if $saleset['overtimeset']==2}style="display:block"{else}style="display:none"{/if}>
+						<label class="col-sm-1 control-label">过期小时:</label>
+						<div class="col-sm-2">
+							<div class="input-group">
+								<input type="text" class="form-control" name="zhuli_over_time" value="{$saleset['overtime']}" />
+								<span class="input-group-addon">小时</span>
+							</div>
+							<div class="help-block" style="width: 208px;">开始助力后自动过期时间</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">失败续开:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $saleset['allow_again']==1}checked value="1"{else}value="2"{/if} name="fail_zhuli" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="fail_zhuli_word">{if $saleset['allow_again']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">助力失败后是否允许再次开组</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">虚拟助力:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $saleset['allow_help']==1}checked value="1"{else}value="2"{/if} name="zhuli_xn" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="zhuli_xn_word">{if $saleset['allow_help']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">推广员虚拟帮组</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">推广海报:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $saleset['use_pop']==1}checked value="1"{else}value="2"{/if} name="use_pop_zl" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $saleset['use_pop']==1}启用{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">是否启用推广海报</div>
+					</div>
+				</div>
+				<div class="form-group" id="zl_pop_box" {if $saleset['use_pop']==1}style="display:block"{else}style="display:none"{/if}>
+					<label class="col-sm-1 control-label">选择海报风格:</label>
+					<div class="col-sm-5" style="overflow-y: scroll; height: 148px;margin-top: -22px;">                    
+						<div class="style_mb zhuli_op_mb" mbid="1">
+							<img class="style_mb_img {if $saleset['pop_id'] == 1}checked{/if}" src="{OSSURL}public/web/images/pop1.png"/>
+							<span class="mb_name">全图风格</span>
+							<div class="icon_marsk" {if $saleset['pop_id'] == 1}style="display:block"{/if}><span class="gou wi-right"></span></div>
+						</div>
+						<div class="style_mb zhuli_op_mb" mbid="2">
+							<img class="style_mb_img {if $saleset['pop_id'] == 2}checked{/if}" src="{OSSURL}public/web/images/pop2.png"/>
+							<span class="mb_name">上下风格</span>
+							<div class="icon_marsk" {if $saleset['pop_id'] == 2}style="display:block"{/if}><span class="gou wi-right"></span></div>
+						</div>
+						<input type="hidden" id="zhuli_mb_id" name="zhuli_mb_id" value="{$saleset['pop_id']}" />
+					</div>
+					<label class="col-sm-1 control-label">海报底图:</label>
+					<div class="col-sm-3">                    
+						{php echo tpl_form_field_images('zhuli_bg', $saleset['pop_img'])}
+						<div class="help-block"></div>
+					</div>	
+				</div>
+				<!-- <div class="form-group"> -->
+					<!-- <label class="col-sm-1 control-label">海报标题:</label> -->
+					<!-- <div class="col-sm-8"> -->
+						<!-- <input class="form-control" name="zhuli_share_title" placeholder="例：对知识渴求永无止境，助我一臂之力吧" value="{$saleset['share_title']}"/> -->
+						<!-- <div class="help-block">输入分享链接海报标题</div> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<div class="form-group">
+					<label class="col-sm-1 control-label">分享文案:</label>
+					<div class="col-sm-5">
+						<textarea class="form-control" name="zhuli_wenan" placeholder="例：3天速成英语口语，旅游交流无忧，突破交流障碍，出国旅行吃穿住玩，搭车，飞机，签证，路人交流用语">{$saleset['share_word']}</textarea>
+						<div class="help-block">输入分享文案，方便用户复制转发,50字以内</div>
+					</div>
+					<label class="col-sm-1 control-label">助力规则:</label>
+					<div class="col-sm-5">
+						<textarea class="form-control" name="zhuli_guize" placeholder="例：每人仅限助力一次，不可重复参加，不可以多次申请，助力成功后不可退款，本规则解释权贵本平台所有">{$saleset['rule_word']}</textarea>
+						<div class="help-block">输入助力规则方便用户查看,80字以内</div>
+					</div>
+				</div>
+			</div>
+			{/if}
+			{if !$tuan}
+			<div class="apps_item">
+				<div class="apps_box">
+					<div class="apps_item_image mb_marsk">
+						<img src="{OSSURL}public/mobile/img/tuanapp.png" width="100%"/>
+					</div>
+					<div class="apps_item_info">
+						<div class="apps_item_name">
+							课程团购
+							<span class="yaz"></span>
+							<a class="apps_infos" style="color: red;">未安装</a>
+						</div>
+						<div class="app_info">支持团购海报，课程团购，团长优惠，团购统计，虚拟拼团</div>
+						<div class="btnlist tuan"><a class="apps_infos" style="color: red;">联系管理员安装</a></div>
+					</div>
+				</div>
+			</div>
+			{/if}
+			{if !$zhuli}
+			<div class="apps_item">
+				<div class="apps_box">
+					<div class="apps_item_image mb_marsk">
+						<img src="{OSSURL}public/mobile/img/zhuliapp.png" width="100%"/>
+					</div>
+					<div class="apps_item_info">
+						<div class="apps_item_name">
+							课程助力
+							<span class="yaz"></span>
+							<a class="apps_infos" style="color: red;">未安装</a>
+						</div>
+						<div class="app_info">支持助力海报，助力优惠，助力统计，虚拟助力</div>
+						<div class="btnlist tuan"><a class="apps_infos" style="color: red;">联系管理员安装</a></div>
+					</div>
+				</div>
+			</div>
+			{/if}
+		</div>
+		<!--推广员设置-->
+		<div class="tab-pane" id="tuiguang" style="display:none">
+			{if $tuiguang}
+			<div class="form-group">
+				<label class="col-sm-1 control-label">启用推广:</label>
+				<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+					<div class="input-group">
+						<input {if $item['allow_tuiguang']==1}checked value="1"{else}value="2"{/if}  name="allow_tuiguang" class="weui_switch" type="checkbox"/>
+						<span class="input-group-addon" id="allow_tuiguang_word">{if $item['allow_tuiguang']==1}启用{else}禁用{/if}</span>
+					</div>
+					<div class="help-block" style="width: 190px;">是否启用推广功能</div>
+				</div>
+				<div id="pt_fans_tg" {if $item['allow_tuiguang']==1}style="display:block"{else}style="display:none"{/if}>
+					<label class="col-sm-1 control-label" style="margin-left: 25px;">普通用户参与:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $tgset['allow_normal']==1}checked value="1"{else}value="2"{/if} name="allow_normal" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon" id="allow_fans_tg_word">{if $tgset['allow_normal']==1}允许{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">普通用户可以生成海报并推广,且课程前端会显示排名</div>
+					</div>
+				</div>
+			</div>
+			<div id="tuiguang_box" {if $item['allow_tuiguang']==1}style="display:block"{else}style="display:none"{/if}>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">显示排名:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $tgset['show_ranking']==1}checked value="1"{else}value="2"{/if} name="show_ranking" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $tgset['show_ranking']==1}启用{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">推广员端显示推广排名</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">任务要求:</label>
+					<div class="col-sm-2">
+						 <div class="input-group">
+							<input type="text" class="form-control" name="tg_number" value="{$tgset['tg_number']}" />
+							<span class="input-group-addon">人</span>
+						 </div>
+						 <div class="help-block" style="width: 190px;">设置每人需要完成邀请的人数</div>
+					</div>
+				</div>
+				<!-- <div class="form-group"> -->
+					<!-- <label class="col-sm-1 control-label">销售提成:</label> -->
+					<!-- <div class="col-sm-1" style="padding:0px;margin-left: 25px;"> -->
+						<!-- <div class="input-group"> -->
+							<!-- <input {if $tgset['is_royalty']==1}checked value="1"{else}value="2"{/if} name="is_royalty" class="weui_switch" type="checkbox"/> -->
+							<!-- <span class="input-group-addon">{if $tgset['is_royalty']==1}启用{else}禁用{/if}</span> -->
+						<!-- </div> -->
+						<!-- <div class="help-block" style="width: 190px;">启用后,会在推广员端显示和计算提成数据</div> -->
+					<!-- </div> -->
+					<!-- <div id="tc_type_box" {if $tgset['is_royalty']==1}style="display:block"{else}style="display:none"{/if}> -->
+						<!-- <label class="col-sm-1 control-label">提成方式:</label> -->
+						<!-- <div class="col-sm-2"> -->
+							<!-- <select name="need_done" class="form-control"> -->
+								<!-- <option value="1">需要完成任务</option> -->
+								<!-- <option value="2">无需完成任务</option> -->
+							<!-- </select> -->
+							<!-- <div class="help-block">选择一种提成计算方式</div> -->
+						<!-- </div> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<!-- <div class="form-group" id="sale_tc_box" {if $tgset['is_royalty']==1}style="display:block"{else}style="display:none"{/if}> -->
+					<!-- <label class="col-sm-1 control-label">销售提成:</label> -->
+					<!-- <div class="col-sm-3"> -->
+						 <!-- <div class="input-group"> -->
+							<!-- <input type="text" class="form-control" name="royalty" value="{$tgset['royalty']}" /> -->
+							<!-- <span class="input-group-addon">元/人</span> -->
+						 <!-- </div> -->
+						 <!-- <div class="help-block">每报名成功本课1人销售提成</div> -->
+					<!-- </div> -->
+					<!-- <label class="col-sm-1 control-label">续购课时:</label> -->
+					<!-- <div class="col-sm-3"> -->
+						 <!-- <div class="input-group"> -->
+							<!-- <input type="text" class="form-control" name="xg_royalty" value="{$tgset['xg_royalty']}" /> -->
+							<!-- <span class="input-group-addon">元/人/节</span> -->
+						 <!-- </div> -->
+						 <!-- <div class="help-block">学员转正后续购课时提成,不设则不启用</div> -->
+					<!-- </div> -->
+				<!-- </div> -->
+				<div class="form-group">
+					<label class="col-sm-1 control-label">选择推广员:</label>
+					<div class="col-sm-8">
+						<div class="row row-fix">
+							<div class="col-xs-8 col-sm-8" style="width: 800px;">
+								<div class="input-group">
+									<input id="sh_teacherids" name="sh_teacherids" type="hidden" value="{$sh_teaid}"/>
+									<input class="form-control" id="sh_teachers" type="text" value="{$sh_tealist}"/>
+									<span class="input-group-btn">
+										<button class="btn btn-default" type="button" onclick="xxxz(1);">选择</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<span class="help-block">请选择本课推广员，可多选</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-1 control-label">推广海报:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+						<div class="input-group">
+							<input {if $tgset['use_pop']==1}checked value="1"{else}value="2"{/if} name="use_pop_tg" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $tgset['use_pop']==1}启用{else}禁止{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">是否启用推广海报</div>
+					</div>
+					<label class="col-sm-1 control-label" style="margin-left: 22px;">前端报名:</label>
+					<div class="col-sm-1" style="padding:0px;margin-left: 35px;">
+						<div class="input-group">
+							<input {if $tgset['mobile_sign']==1}checked value="1"{else}value="2"{/if} name="mobile_sign" class="weui_switch" type="checkbox"/>
+							<span class="input-group-addon">{if $tgset['mobile_sign']==1}是{else}否{/if}</span>
+						</div>
+						<div class="help-block" style="width: 190px;">设置直接在前端报名的学员是否需要跟进</div>
+					</div>
+					<div id="mobile_sign_fp" {if $tgset['mobile_sign']==1}style="display:block"{else}style="display:none"{/if}>
+						<label class="col-sm-1 control-label" style="margin-left: 22px;">分配方式:</label>
+						<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+							<div class="input-group">
+								<input {if $tgset['mobile_sign_fp']==1}checked value="1"{else}value="2"{/if}  name="mobile_sign_fp" class="weui_switch" type="checkbox"/>
+								<span class="input-group-addon">{if $tgset['mobile_sign_fp']==1}顺序{else}随机{/if}</span>
+							</div>
+							<div class="help-block" style="width: 300px;">自主前端报名学员分配给推广员跟进,注意:一旦分配给推广员如设置了提成将会学员消费将会计入该推广员</div>
+						</div>
+					</div>
+				</div>
+				<div id="tg_pop_box" {if $tgset['use_pop']==1}style="display:block"{else}style="display:none"{/if}>
+					<!-- <div class="form-group"> -->
+						<!-- <label class="col-sm-1 control-label">海报标题:</label> -->
+						<!-- <div class="col-sm-8"> -->
+							<!-- <input class="form-control" name="tuiguang_share_title" placeholder="例：好课不等人，开课就差您。" value="{$tgset['share_title']}"/> -->
+							<!-- <div class="help-block">输入分享链接海报标题，30字内</div> -->
+						<!-- </div> -->
+					<!-- </div> -->
+					<div class="form-group">
+						<label class="col-sm-1 control-label">推广海报风格:</label>
+						<div class="col-sm-5" style="overflow-y: scroll; height: 148px;margin-top: -22px;">                    
+							<div class="style_mb tuiguang_op_mb" mbid="1">
+								<img class="style_mb_img {if $tgset['pop_id'] == 1}checked{/if}" src="{OSSURL}public/web/images/pop1.png"/>
+								<span class="mb_name">全图风格</span>
+								<div class="icon_marsk" {if $tgset['pop_id'] == 1}style="display:block"{/if}><span class="gou wi-right"></span></div>
+							</div>
+							<div class="style_mb tuiguang_op_mb" mbid="2">
+								<img class="style_mb_img {if $tgset['pop_id'] == 2}checked{/if}" src="{OSSURL}public/web/images/pop2.png"/>
+								<span class="mb_name">上下风格</span>
+								<div class="icon_marsk" {if $tgset['pop_id'] == 2}style="display:block"{/if}><span class="gou wi-right"></span></div>
+							</div>
+							<input type="hidden" id="tuiguang_mb_id" name="tuiguang_mb_id" value="{$tgset['pop_id']}" />
+						</div>
+						<label class="col-sm-1 control-label">海报底图:</label>
+						<div class="col-sm-3">                    
+							{php echo tpl_form_field_images('tuiguang_bg', $tgset['pop_img'])}
+							<div class="help-block"></div>
+						</div>
+						<div class="col-sm-5">
+							<textarea class="form-control" name="tuiguang_wenan" placeholder="例：3天速成英语口语，旅游交流无忧，突破交流障碍，出国旅行吃穿住玩，搭车，飞机，签证，路人交流用语">{$tgset['share_word']}</textarea>
+							<div class="help-block">输入推广文案，方便推广员复制转发,50字以内</div>
+						</div>
+					</div>	
+				</div>
+			</div>
+			{/if}
+			{if !$tuiguang}
+			<div class="apps_item">
+				<div class="apps_box">
+					<div class="apps_item_image mb_marsk">
+						<img src="{OSSURL}public/mobile/img/tuiguangapp.png" width="100%"/>
+					</div>
+					<div class="apps_item_info">
+						<div class="apps_item_name">
+							推广员系统
+							<span class="yaz"></span>
+							<a class="apps_infos" style="color: red;">未安装</a>
+						</div>
+						<div class="app_info">推广员管理，学员跟踪，推广任务管理，推广绩效管理，数据统计</div>
+						<div class="btnlist tuan"><a class="apps_infos" style="color: red;">联系管理员安装</a></div>
+					</div>
+				</div>
+			</div>
+			{/if}
+		</div>
+		<!--章节设置-->
+		<div class="tab-pane" id="menu" style="display:none">
+			<div class="form-group">
+				<label class="col-sm-1 control-label">启用章节:</label>
+				<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+					<div class="input-group">
+						<input {if $item['allow_menu']==1}checked value="1"{else}value="2"{/if} id="allow_menu"  name="allow_menu" class="weui_switch" type="checkbox"/>
+						<span class="input-group-addon" id="allow_menu_word">{if $item['allow_menu']==1}启用{else}禁用{/if}</span>
+					</div>
+					<div class="help-block" style="width: 400px;">是否启用章节功能,不启用则课时归类到"课程安排"类别</div>
+				</div>
+			</div>	
+			<div id="menu_box" {if $item['allow_menu']==1}style="display:block"{else}style="display:none"{/if}>
+				<div id="menu_box_list">
+				{if $menu_list}
+				{loop $menu_list $row}
+					<div class="form-group">
+						<label class="col-sm-1 control-label">章节:</label>
+						<a href="javascript:;" class="custom-url-del delteclassicon" data-id="{$row['id']}"><i class="fa fa-times-circle"></i></a>
+						<div class="col-sm-5">
+							<input type="hidden" name="meunid[]" value="{$row['id']}"/>
+							<input type="text" class="form-control" name="menu_name[]" placeholder="如:第一章:开发创新思维能力" value="{$row['name']}" />
+						</div>
+					</div>
+				{/loop}
+				{else}
+					<div class="form-group">
+						<label class="col-sm-1 control-label">章节:</label>
+						<a href="javascript:;" class="custom-url-del delteclassicon" data-id=""><i class="fa fa-times-circle"></i></a>
+						<div class="col-sm-5">
+							<input type="hidden" name="meunid[]" value=""/>
+							<input type="text" class="form-control" name="menu_name[]" placeholder="如:第一章:开发创新思维能力" value="" />
+						</div>
+					</div>
+				{/if}
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+					<div class="col-sm-9 col-xs-12">
+						<a id="custom-url-add"><i class="fa fa-plus-circle"></i>添加章节</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+$('#sign_y2').click(function(){
+	$('#tqtxsj').show(100)
+});
+$('#sign_n2').click(function(){
+	$('#tqtxsj').hide(100)
+});
+$('#sign_y').click(function(){
+	$('#tqqdfw').show(100)
+});
+$('#sign_n').click(function(){
+	$('#tqqdfw').hide(100)
+});
+$('#opt_tuan').click(function(){//销售模式切换
+	$('#tuan_set_box').slideDown(150)
+	$('#zhuli_set_box').slideUp(100)
+});
+$('#opt_zhuli').click(function(){
+	$('#tuan_set_box').slideUp(150)
+	$('#zhuli_set_box').slideDown(100)
+});
+$('#opt_close').click(function(){
+	$('#tuan_set_box').slideUp(100)
+	$('#zhuli_set_box').slideUp(100)
+});
+$('#zd_over').click(function(){
+	$('#over_time_box').show()
+});
+$('#kc_over').click(function(){
+	$('#over_time_box').hide()
+});
+$('#zd_zhuli_over').click(function(){
+	$('#over_zhuli_time_box').show()
+});
+$('#kc_zhuli_over').click(function(){
+	$('#over_zhuli_time_box').hide()
+});
+$('.tuan_op_mb').click(function(e){//勾选团购海报 
+	$('.icon_marsk').hide()	
+	$('.style_mb_img').removeClass('checked')
+	$(this).find('.style_mb_img').addClass('checked')
+	$(this).find('.icon_marsk').show()
+	$("#tuan_mb_id").val($(this).attr('mbid'))
+});
+$('.zhuli_op_mb').click(function(e){//勾选助力海报
+	$('.icon_marsk').hide()	
+	$('.style_mb_img').removeClass('checked')
+	$(this).find('.style_mb_img').addClass('checked')
+	$(this).find('.icon_marsk').show()
+	$("#zhuli_mb_id").val($(this).attr('mbid'))
+});
+$('.tuiguang_op_mb').click(function(e){//勾选推广海报
+	$('.icon_marsk').hide()	
+	$('.style_mb_img').removeClass('checked')
+	$(this).find('.style_mb_img').addClass('checked')
+	$(this).find('.icon_marsk').show()
+	$("#tuiguang_mb_id").val($(this).attr('mbid'))
+});	
+$('.weui_switch').click(function(){//纽扣按钮的逻辑处理
+	var name = $(this).attr("name")
+	if(name == 'allow_tuiguang'){//启用推广员
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#tuiguang_box').slideDown(100)
+			$('#pt_fans_tg').show()
+		}
+		if(thisval == 2){
+			$('#tuiguang_box').slideUp(100)
+			$('#pt_fans_tg').hide()
+		} 
+	}else if(name == 'is_tx_shenhe'){//提现是否需要审核
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"是":"否";
+	}else if(name == 'mobile_sign'){//前端报名跟进
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"是":"否";
+		if(thisval == 1){
+			$('#mobile_sign_fp').show(100)
+		}
+		if(thisval == 2){
+			$('#mobile_sign_fp').hide(100)
+		}	
+	}else if(name == 'allow_menu'){//是否允许章节
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#menu_box').slideDown(100)
+		}
+		if(thisval == 2){
+			$('#menu_box').slideUp(100)
+		}
+	}else if(name == 'is_royalty'){//切换是否提成
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#sale_tc_box').slideDown(100)
+			$('#tc_type_box').show(100)
+		}
+		if(thisval == 2){
+			$('#sale_tc_box').slideUp(100)
+			$('#tc_type_box').hide()
+		}
+	}else if(name == 'kc_type'){//切换是否线上线下
+		var thisval = $(this).prop('checked')?1:0;
+		var word = $(this).prop('checked')?"线上":"线下";
+		if(thisval == 1){
+			$('#offline_div').slideUp(100)
+			$('.menu').show(100)
+			$('#st_btn_box').hide()
+			$('#sgks_box').hide()
+			$('#NewType').hide()
+			$('.sign_coment').hide()
+			$('#sign_coment').hide()
+			$('.teacash').hide(100)
+		}
+		if(thisval == 0){
+			$('#offline_div').slideDown(100)
+			$('#sgks_box').show()
+			$('#NewType').show()
+			$('.sign_coment').show()
+			$('#sign_coment').show()
+			$('#st_btn_box').show(100)
+			$('.menu').hide(100)
+			$('.teacash').show(100)
+		}
+	}else if(name == 'use_pop_tuan'){//是否启用团购海报
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#tuan_pop_box').show(100)
+		}
+		if(thisval == 2){
+			$('#tuan_pop_box').hide(100)
+		}
+	}else if(name == 'use_pop_zl'){//是否启用助理海报
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#zl_pop_box').show(100)
+		}
+		if(thisval == 2){
+			$('#zl_pop_box').hide(100)
+		}
+	}else if(name == 'use_pop_tg'){//是否启用推广海报
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#tg_pop_box').show(100)
+		}
+		if(thisval == 2){
+			$('#tg_pop_box').hide(100)
+		}
+	}else if(name == 'is_print'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"停用";
+		if(thisval == 1){
+			$('#print_set').slideDown(100);
+		}
+		if(thisval == 2){
+			$('#print_set').slideUp(100);
+		}
+	}else if(name == 'mobile_sign_fp'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"顺序":"随机";	
+	}else if(name == 'is_try'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"是":"否";	
+	}else if(name == 'allow_normal'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"允许":"禁止";
+	}else if(name == 'is_print_xk'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"停用";
+	}else if(name == 'allow_pl'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"停用";
+		if(thisval == 1){
+			$('#plset').show(100)
+		}
+		if(thisval == 2){
+			$('#plset').hide(100)
+		}
+	}else if(name == 'fail_tuan'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+	}else if(name == 'tuan_xn'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+	}else if(name == 'fail_zhuli'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+	}else if(name == 'zhuli_xn'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+	}else if(name == 'tea_sign_confirm'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"是":"否";
+		if(thisval == 1){
+			$('#sh_tea_box').show(100);
+		}
+		if(thisval == 2){
+			$('#sh_tea_box').hide(100);
+		}
+	}else if(name == 'tea_getcash'){
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁用";
+		if(thisval == 1){
+			$('#cash_set').show(100);
+		}
+		if(thisval == 2){
+			$('#cash_set').hide(100);
+		}
+	}else{
+		var thisval = $(this).prop('checked')?1:2;
+		var word = $(this).prop('checked')?"启用":"禁止";
+	}
+	$(this).val(thisval)
+	$(this).next().text(word);
+});
+$('#select_nj').change(function(){
+	$('#select_sunnj').empty()
+	var sid = $("#select_nj option:selected").val(); 
+	$.post("{php echo $this->createWebUrl('semester',array('op'=>'getsunTypelist','schoolid'=>$schoolid))}", {'sid':sid}, function(data) {
+	var html   = '';
+	if (data != '') {
+		html += '<option value="">请选择</option>';
+		for (var i in data) {
+			html += '<option value="'+data[i].sid+'">'+data[i].sname+'</option>';
+		}
+	}else{
+		html += '<option value="">无子分类</option>';
+	}
+	$('#select_sunnj').html(html);
+	},'json');
+});
+$('.addkc_opt li').click(function(){
+	var opt = $(this).attr("optid")
+	$(this).parent().children('li').removeClass("act");
+	$(this).addClass("act")
+	$(".lists_kc").children().slideUp(200)
+	$("#"+opt).slideDown(200)
+});
+$('#select_fz').change(function(){
+	var schoolid = "{$schoolid}";
+	var fzId = $("#select_fz option:selected").attr('value');
+	if(fzId != null && fzId !=' '){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'GetTeachersByFz','schoolid'=>$schoolid))}", {'fz_id':fzId}, function(data) {
+
+			console.log(data)
+			var html   = '';
+			if (data != '') {
+				for (var i in data) {
+					var is_checked = '';
+					if($("#span_"+data[i].id).length > 0 ){
+						is_checked = 'checked';
+					}
+					html += '<label  class="checkbox-inline" style="width:14.2%;margin-left: 10px"><input type="checkbox"  onclick="check_count(this)" id="Check_'+data[i].id+'" value="'+data[i].id+'" tname="'+data[i].tname+'" style="float: none;" ><span style="margin-left:5px;">'+data[i].tname+'</span></label>';
+				}
+			}
+            $('#teacherList').html(html);
+            $("#teacherList .checkbox-inline input[type='checkbox']").each(function(){
+                let tv = $(this).val()
+                if($("#stu_div .stuname").find(`input.tidArr[value='${tv}']`).length > 0){
+                    $(this).prop("checked",true)
+                }
+            })
+			$('#teaDIv').slideDown();
+			$("#hideTlist").html('<i class="fa fa-caret-up"></i>  收起');
+			$("#hideTlist").show();
+			sildeType = 1;
+		},'json');
+	}
+});
+var sildeType = 1 ;
+var countSelectedT = {$countSelectedTea} ;
+function  hideTeaList(e) {
+	console.log(sildeType)
+	$('#teaDIv').slideToggle();
+	sildeType = sildeType == 1 ? 0 : 1;
+	if(sildeType == 1){
+	 	$(e).html('<i class="fa fa-caret-up"></i>  收起');
+	}else if(sildeType == 0){
+		$(e).html('<i class="fa fa-caret-down"></i>  展开');
+	}
+}
+
+function check_count(th){
+	let value_th = $(th).val();
+	let tName = $(th).attr(`tname`);
+
+	if($(th).is(':checked') == false){
+		del_stu(value_th)
+	}else if($(th).is(':checked') == true){
+		console.log(countSelectedT)
+
+		if(countSelectedT < 5){
+			console.log(countSelectedT)
+
+			countSelectedT = countSelectedT + 1 ;
+			let addhtml = '<span class="stuname" style="border: 1px solid #e8e8e8; padding:3px 3px;white-space: nowrap;" onclick="del_stu('+value_th+')" id="span_'+value_th+'">'+tName+'<input class="tidArr" type = "hidden" name="tidarr[]" value = "'+value_th+'" tname="'+tName+'"><i class="fa fa-times" style="font-size: 13px;"></i></span>';
+			if(countSelectedT == 1){
+				$('#stu_div').html(addhtml);
+			}else{
+				$('#stu_div').append(addhtml);
+			}
+		}else{
+			console.log(countSelectedT)
+			th.checked = false;
+			alert("对不起，一个课程最多只能指定五个授课老师");
+			return;
+		}
+	}
+	let html = ' <option value="0" >请选择主讲老师</option> ';
+	$("input.tidArr").each(function(){
+		console.log("YES");
+		var tid_j = $(this).attr("value");
+		var tname_j = $(this).attr("tname");
+		var choosetid = 0 ;
+		{if !empty($item['maintid'])}
+		choosetid = `{$item['maintid']}`;
+		{elseif empty($item['maintid']) && !empty($item['tid'])}
+		choosetid = `{$item['tid']}`;
+		{/if}
+		
+		
+			if(choosetid == tid_j){
+				html +=' <option value="'+ tid_j +'"  selected=\"selected\">'+ tname_j +'</option>';
+			} else {
+				html +=' <option value="'+ tid_j +'">'+ tname_j +'</option>';
+			}
+		});
+	$("#maintid").html(html);
+}
+
+
+function del_stu(id){
+	countSelectedT --;
+
+	$("#span_"+id).remove();
+	$("#Check_"+id).prop('checked',false);
+	$("#checkbox_"+id).attr("checked",false);
+	var text11 = $("#stu_div").text();
+	var span_length = $("#stu_div span").length;
+	console.log(countSelectedT);
+	if(span_length == 0 ){
+		var endhtml = "请选择授课老师";
+		$("#stu_div").html(endhtml);
+	}
+	let html = ' <option value="0" >请选择主讲老师</option> ';
+	$("input.tidArr").each(function(){
+		console.log("YES");
+		var tid_j = $(this).attr("value");
+		var tname_j = $(this).attr("tname");
+		var choosetid = 0 ;
+		{if !empty($item['maintid'])}
+		choosetid = `{$item['maintid']}`;
+		{elseif empty($item['maintid']) && !empty($item['tid'])}
+		choosetid = `{$item['tid']}`;
+		{/if}
+			if(choosetid == tid_j){
+				html +=' <option value="'+ tid_j +'"  selected=\"selected\">'+ tname_j +'</option>';
+			} else {
+				html +=' <option value="'+ tid_j +'">'+ tname_j +'</option>';
+			}
+		});
+	$("#maintid").html(html);
+}
+$('#custom-url-add').click(function(){
+	var html =  '<div class="form-group">'+
+				'	<label class="col-sm-1 control-label">章节:</label>'+
+				'	<a href="javascript:;" class="custom-url-del delteclassicon" onclick="del_zj(this)" data-id=""><i class="fa fa-times-circle"></i></a>'+
+				'	<div class="col-sm-5">'+
+				'		<input type="hidden" name="meunid[]" value=""/>'+
+				'		<input type="text" class="form-control" name="menu_name[]" placeholder="如:第一章:开发创新思维能力" value="" />'+
+				'	</div>'+
+				'</div>';
+	$('#menu_box_list').append(html)	
+});
+$('.custom-url-del').click(function(){
+	let dataid = $(this).attr("data-id");
+	if(dataid > 0){
+		if(confirm("此章节已创建,确定删除?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('kecheng', array('op' => 'del_menu', 'schoolid' => $schoolid))}"+"&menuid="+dataid,
+				type: "POST",
+				dataType: "json",
+				success: function (res) {
+					if(res.result){
+
+					}
+					alert(res.msg);
+				},
+				error: function(e) {
+					alert('访问网络失败');
+				}
+			});
+		$(this).parent().remove();
+		}
+	}
+});
+function del_zj(elm){
+	$(elm).parent().remove();
+}
+$(function () {
+	var url = "{$_W['attachurl']}"
+	var x = 100;
+	var y = -200;
+	$(".show_yulan_img").mouseover(function (e) {
+	var imgsrc = $(this).parent().parent().children().eq(0).val();
+	if(imgsrc.indexOf("http") > 0 ) {
+		var img = imgsrc
+	}else{
+		var img = url+imgsrc
+	}
+	var tooltip = "<div id='tooltip'><img src='" + img + "' width='300' height='auto' /></div>";
+	if(imgsrc){
+		$("body").append(tooltip);
+	}
+	$("#tooltip").css({	"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+	}).mouseout(function (e) {$("#tooltip").remove();}).mousemove(function (e) {$("#tooltip").css({	"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});	});
+})
+$(function () {
+	var x = 100;
+	var y = -200;
+	$(".style_mb_img").mouseover(function (e) {
+	var imgsrc = $(this).attr('src');
+	var img = imgsrc
+	var tooltip = "<div id='tooltip'><img src='" + img + "' width='300' height='auto' /></div>";
+	if(imgsrc){
+		$("body").append(tooltip);
+	}
+	$("#tooltip").css({	"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+	}).mouseout(function (e) {$("#tooltip").remove();}).mousemove(function (e) {$("#tooltip").css({	"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});	});
+})
+$(function(){
+	$(".edui-default").css('z-index','2050')
+})
+</script>
+
+<script>
+$("#checkguige :radio").on('click', function () {
+	var item= $(this).val();
+	if(item == 1){
+		$("#showoneguige").slideUp();
+		$("#showmoreguige").slideDown();
+		$("#showmoreguigeadd").slideDown();
+
+	}else{
+		$("#showoneguige").slideDown();
+		$("#showmoreguige").slideUp();
+		$("#showmoreguigeadd").slideUp();
+	}
+})
+
+	$('#showmoreguige-add').click(function(){
+	var html =  `<div class="form-group">	
+					<input type="hidden" class="form-control" name="new[]" />
+					<label class="col-sm-1 control-label">规格名称:</label>
+					<div class="col-sm-2">
+						<div class="input-group">					
+							<input type="text" class="form-control" name="guigename_new[]" />
+						</div>
+					</div>	
+					<label class="col-sm-1 control-label">单价:</label>
+					<div class="col-sm-2">
+						<div class="input-group">					
+							<input type="text" class="form-control" name="guigeprice_new[]" />
+						</div>
+					</div>
+					<label class="col-sm-1 control-label">包含课时:</label>
+					<div class="col-sm-2">
+						<div class="input-group">					
+							<input type="text" class="form-control" name="guigeksnum_new[]" />
+						</div>
+					</div>		
+					<label class="col-sm-1 control-label">
+						<a href="javascript:;" class="showmoreguige-del"><i class="fa fa-times-circle"></i></a>
+					</label>
+								
+				</div>`;
+			;
+	$('#showmoreguige').append(html);
+});
+
+var deletearr = [];
+$(document).on('click', '.showmoreguige-del', function(){
+	let delid = $(this).attr('data-guigeid');
+	if(delid){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('kecheng', array('op' => 'del_gg', 'schoolid' => $schoolid))}"+"&id="+delid,
+			type: "POST",
+			dataType: "json",
+			success: function (res) {
+				if(res.result){
+					alert(res.msg)
+					return false;
+				}
+				deletearr.push(delid)
+				$("#deletearr").val(deletearr)
+				$("#delgg_"+delid).parent().parent().remove();
+			},
+			error: function(e) {
+				alert('访问网络失败');
+			}
+		});
+	}else{
+		deletearr.push(delid)
+		$("#deletearr").val(deletearr)
+		$(this).parent().parent().remove();
+		console.log($(this))
+		return false;
+	}
+	
+	
+});	
+</script>

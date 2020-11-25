@@ -1,0 +1,19 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-02-10 17:21:41
+ * @LastEditTime : 2020-02-10 17:26:03
+ -->
+{loop $xclist $key $row}
+<div class="main" time="{$row['location']}"  type="{$row['type']}">
+    {if $row['is_video'] == 1}
+        <div class="album-imageBox li_video3" style="height: 95px;margin-top: 10px;margin-right: 1%;" video_url="{php echo tomedia($row['video'])}" isreport="N" style="background-image:url({OSSURL}public/mobile/img/videoicon.png;">
+            <div class="icon"></div>
+        </div>				
+    {else}
+    <div class="album-imageBox div-imgMask imageBox-margin" style="height: 95px;margin-top: 10px;margin-right: 1%;">
+        <img alt="image" class="img-pic img-check" src="{php echo tomedia($row['picurl'])}" style="height: 95px; width: 112.812px; margin-left: -9px;">
+    </div>
+    {/if}
+</div>
+{/loop}

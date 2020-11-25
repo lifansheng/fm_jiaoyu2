@@ -1,0 +1,22 @@
+{loop $list1 $key_l $item}
+<li class="CheckLog" time="{$item['location']}">
+    <div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 20px">
+        <div style="height: 40px;width:100%">
+        <img src="{php echo tomedia($item['icon'])}" style="height: 37px;width:37px;border-radius: 50%;;margin-top: 2px">
+        </div>
+        <span>{$item['sname']}</span>
+    </div>
+    <div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 60px">
+        <span>{$item['logtype']}</span> <br/>
+    </div>
+    <div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 60px">
+        <span>{$item['bjname']}</span> <br/>
+    </div>
+    <div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 60px">
+        <span>{$item['apatrment']}/{$item['aproom']}</span> <br/>
+    </div>
+    <div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 60px">
+        <span class="CheckMoreBtn" onclick="ChaKanXiangQing(`{$item['id']}`)">查看详情</span>
+    </div>
+</li>
+{/loop}

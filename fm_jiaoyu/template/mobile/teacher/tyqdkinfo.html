@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+<style>
+#birthday{border-bottom:1px solid #c6c6c6;position:relative;display:block;height:30px;line-height:30px;opacity:1;}
+#selMonth{margin-left:-40px;position:relative;z-index:10;opacity:0;}
+.item-button{position: absolute;right: 0px;border-radius: 5px;border: 1px solid #14c682;bottom: 0px;}
+.item-button a{margin: 2px;font-size: 13px;color: #6f6969;}
+input[type="radio"] + label::before {
+    content: "\a0"; /*不换行空格*/
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 18px;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 50%;
+    border: 1px solid #01cd78;
+    line-height: 1; 
+}
+input[type="radio"]:checked + label::before {
+    background-color: #01cd78;
+    background-clip: content-box;
+    width: 8px;
+    height: 8px;
+    padding: 2px;
+}
+
+input[type="checkbox"] + label::before {
+    content: "\a0"; /*不换行空格*/
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 18px;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 2px;
+    border: 1px solid #01cd78;
+    line-height: 1; 
+}
+input[type="checkbox"]:checked + label::before {
+    background-color: #01cd78;
+    background-clip: content-box;
+    width: 8px;
+    height: 8px;
+    padding: 2px;
+}
+input[type="radio"] {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+}
+
+
+.nametitle {
+    height: 45px;
+    line-height: 24px;
+    margin-top: 12px;
+    color: white;
+    font-size: 15px;
+}
+.inputclass{
+    border: none; height: 30px; font-size: 16px;border-bottom: 1px solid #c6c6c6; margin-left: 30px;
+}
+</style>
+</head>
+	<body>
+		<div class="all">
+			<div class="header mainColor" style="display: flex; height: auto;line-height: 20px;">
+				<div style="width:70px; padding:10px ">
+                    <img id="wxiconpath"  src="{php echo tomedia($student['icon'])}" style="width: 50px; height: 50px; margin-left: 10px; border-radius: 50%;"/>
+				</div>
+				<div class="nametitle">
+                    <div>{$student['s_name']}</div>
+                    <div>{$bj['sname']}</div>
+				</div>			
+			</div>
+			<div class="bangdingForm" style="margin-top: 100px;">
+				<div class="bangdingBox" style=" text-align: left;padding-left: 10px;">
+					<div id="parentBox" class="changeBox activeBox">
+						<ul>
+                            <form action="javascript: return false;" id='form'>
+                                <div style="display: flex; justify-content: space-around; flex: 1;float: left;flex-wrap: wrap;">
+                                    <div style="line-height: 30px; width: 100%; margin-top: 5%;">
+                                        <div style="float: left;">体温:</div>
+                                        <div>
+                                            <input type="text" name="tiwen" placeholder="例:36.5" value="{$yqdk['tiwen']}" class="inputclass" disabled>
+                                        </div>
+                                    </div>
+                                    {loop $yqdk['content'] $key $row}
+                                    <div style="line-height: 30px;  width: 100%; margin-top: 5%;">
+                                        <div>{php echo yqselect($key,'title')}:</div>
+                                        {php $yqdkdata = yqselect($key,'data')}
+                                        {loop $yqdkdata $key2 $item}
+                                        <div style="margin-left: 40px;">
+                                            {if yqselect($key,'type') == 'checkbox'} 
+                                                <input type="{php echo yqselect($key,'type')}" {if in_array($key2,$row)} checked {/if} disabled/>
+                                            {else}  
+                                                <input type="{php echo yqselect($key,'type')}" {if $key2 == $row} checked {/if} disabled />
+                                            {/if} 
+                                            <label for="add{$key}{$key2}">{$item}</label>
+                                        </div>
+                                        {/loop}
+                                    </div>
+                                    {/loop}
+                                </div>
+                                <li class="user_name">
+                                </li>
+                            </form>
+                        </ul>
+				</div>
+			</div>
+		</div>
+		<div id="common_progress" class="common_progress_bg"><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>
+	</body>	
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+	}
+}, 100);
+
+</script>
+<script type="text/javascript">
+function Tijiao(){
+    wxGetLocation();
+}
+
+function wxGetLocation(){
+    var form = new FormData(document.getElementById('form'));
+    wx.getLocation({
+        type: 'gcj02',
+        success: function(res) {
+            latitude = res.latitude;
+            longitude = res.longitude;
+            form.append("lat",latitude);
+            form.append("lng",longitude);
+            form.append("schoolid",`{$schoolid}`);
+            form.append("weid",`{$weid}`);
+            form.append("sid",`{$it['sid']}`);
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('comajax', array('op' => 'Addyqdk'))}",
+                type: "post",
+                data: form,
+                processData: false,
+                contentType: false,
+                success: function(result) {
+                    var data = jQuery.parseJSON(result);
+                    alert(data.msg);
+                    location.reload()
+                },
+                error: function(e) {
+                    alert('访问网络失败');
+                }
+            });
+        },
+        fail:function(){
+            ajax_stop_loading();
+            jTips("获取位置失败，请返回并重新签到");
+        }
+    });
+};
+
+</script>
+{php include $this->template('newfooter');}
+</html>

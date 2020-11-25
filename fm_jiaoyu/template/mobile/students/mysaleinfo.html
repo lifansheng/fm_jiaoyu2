@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="format-detection" content="telephone=no">
+<title>我的{$saleword}</title>
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.8.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-ui.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/down_time.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/clipboard.min.js?v=4.8"></script>
+{php include $this->template('port');}
+</head>
+<style>
+body {background-color: #fafafa;}
+
+/**按钮点击特效**/
+.mb_marsk:hover{ -webkit-mask:-webkit-linear-gradient(rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53))}
+.weui_switch {font-size: 14px;-webkit-appearance: none;-moz-appearance: none;appearance: none;position: relative;width: 48px;height: 28px;border: 1px solid #DFDFDF;outline: 0;border-radius: 16px;box-sizing: border-box;background: #DFDFDF;vertical-align: middle;float: right;top: 8px;right: 12px;}
+.weui_switch:before {content: " ";position: absolute;top: 0;left: 0;width: 46px;height: 26px;border-radius: 15px;background-color: #FDFDFD;-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.weui_switch:after {content: " ";position: absolute;top: 0;left: 0;width: 26px;height: 26px;border-radius: 15px;background-color: #FFFFFF;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.tab-nav { height: 45px; line-height: 45px; display: block; position: fixed; z-index: 1; width: 100%; margin: 0 auto; background: white;box-shadow: 0 1px 9px #dcdcdc;}
+.tab-nav-item { height: 45px; line-height: 45px; position: relative; text-align: center; color: #585858; font-size: 9px; display: block; float: left; width: 20%; }
+.tab-nav-item.tab-active a { color: #ff5b65; }
+.tab-nav-item.tab-active:before { content: ''; width: 30%; height: 1px; position: absolute; left: 50%; bottom: 0; margin-left: -15%; z-index: 4; background-color: #ff5b65; border: 1px solid #ff5b65; border-radius: 5px; }
+/**滑动切换特效**/
+.slide_li::before { content: ""; position: absolute; top: -4px; left: 100%; width: 0; height: 100%; border-bottom: 3px solid #ff5b65; transition: 0.1s all linear; }
+.slide_li.act::before { width: 30%; top: -4px; left: 0; margin-left:35%; transition-delay: 0.1s; border-bottom-color: #ff5b65;}
+.slide_li.act ~ .slide_li::before { left: 0; }
+.act a { color: #ff5b65; }
+.aui-scrollView { width: 100%; height: 100%; -webkit-box-flex: 1; -webkit-flex: 1; -ms-flex: 1; flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; position: absolute; margin-top: 45px; padding-bottom: 45px; }
+.aui-course-box .aui-course-item { box-shadow: 0 1px 9px #dcdcdc; display: block; background: #fff; border-radius: 5px; margin: 15px 15px 0 15px; padding: 15px; }
+.aui-course-box .aui-course-item .aui-flex { border-bottom: 1px dashed #d9d9d9; padding: 0 0 10px 0; }
+.aui-flex { width: 100%; display: -webkit-box; display: -webkit-flex; display: flex; -webkit-box-align: center; -webkit-align-items: center; align-items: center; padding: 15px; position: relative; }
+.aui-flex-box { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-width: 0; font-size: 14px; color: #333; }
+.aui-flex-yes { font-size: 13px; color: #666; }
+.aui-course-title { padding: 10px 0; }
+.aui-course-title h2 { font-size: 13px; margin-bottom: 6px; }
+.aui-course-title p { color: #999; font-size: 12px; }
+.aui-course-box .aui-course-item .aui-flex { border-bottom: 1px dashed #d9d9d9; padding: 0 0 10px 0; }
+.aui-flex-TUser { width: 48px; height: 48px; margin-right: 5px; }
+.aui-flex-TUser img { width: 45px; height: 45px; display: block; border: none;}
+.aui-flex-box { -webkit-box-flex: 1; -webkit-flex: 1; flex: 1; min-width: 0; font-size: 14px; color: #333; }
+.aui-course-item .aui-flex-box h3 { font-size: 11px; margin-bottom: 0; }
+.aui-course-button { padding-top: 15px; text-align: right; }
+.aui-course-button button { border-radius: 3px; font-size: 12px; padding: 5px 19px; position: relative; }
+.wiat_but{color:#444;background:#fff;border: 1px solid #cccccc;}
+.red_but{color:#fff;background:#fe5a69;border: 0px solid #cccccc;}
+.bluefont{color:#8a8989}
+.pt_midbox{width: 100%;height: 30px;text-align: right;}
+.pt_midboxspan{margin-left: 65%;font-size:13px;margin-top: 6px;}
+/**无数据空盒子**/
+.empty_box{background:#fafafa;width:100%;height:100%;margin-top:20%;    text-align: center;}
+.empty_box_imgbox{width:100%;padding-bottom: 11px;}
+.empty_box_imgbox img{width:30%;}
+.empty_button { padding-top: 15px; text-align: center; }
+.empty_button button { border-radius: 3px; font-size: 12px; padding: 5px 19px; position: relative; }
+/**团购详情**/
+.popUpBox1{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 100;}
+.trackMattes{ position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.tuanbox { position: absolute; width: 100%; z-index: 101; background-color: #f7f7f7; }
+.tuanbox_top{ width: 100%; padding: 10px; height: 125px; background-color: #fff; }
+.tuanbox_top .tuanbox_top_left{ width:30%;float:left;margin-top: 4px;}
+.tuanbox_top .tuanbox_top_left img{width:100%; }
+.tuanbox_top .tuanbox_top_right{ width: 65%; float: left; margin-left: 9px;}
+.tuanbox_top_right .tuanbox_top_title{ font-size: 13px; font-weight: bold;}
+.tuanbox_top_right .tuanbox_top_price{ margin-top: 4px; }
+.tuanbox_top_right .tuanbox_top_infos{ font-size: 11px; margin-top: 5px;}
+.now_price{ font-size: 19px; color: #f71e1e;}
+.old_price{ font-size: 12px; text-decoration: line-through; }
+.red_fontbg{ padding-left: 5px; padding-right: 5px; background-color: #fbe6e6; color: #ec4c4c; }
+.pintuan_coment {background: url({MODULE_URL}public/mobile/img/tgbj.png) no-repeat; background-size: cover; background-position: 95% center; margin-left: 2%; margin-top: 10px; width: 96%; padding: 8px; height: auto;}
+.headImg{ width: 38px; float: left; margin-left: 13px; height: 38px; border-radius: 50%;  margin: 1px 5px 2px; text-align: center;margin-top: 10px;} .headImg img{ width: 36px; height: 36px; border-radius: 50%;    margin-top: 1px;} .headImg .line-limit-length { font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.headact{background-color: #fd5151;}
+.tuanzlabe { position: relative; top: -9px; left: -8px; height: 13px; background: #8409de; color: white; display: -webkit-box; display: -moz-box; display: -ms-flexbox; -webkit-box-align: center; -moz-box-align: center; -ms-flex-align: center; -webkit-align-items: center; align-items: center; font-size: 7px; margin-left: 16px; padding: 0 4px; border-radius: 5px; } 
+.nowpt_info{width: 100%; text-align: center; font-weight: bold;margin-top: 11px;}
+.fans_boxs_pituan{ margin-top: 10px; min-height: 70px; overflow-y: scroll; }
+.lkct { width: 100%; height: 40px; font-size: 14px; color: white; text-align: center; line-height: 38px; border-radius: 40px; background: #e85e5e; }
+.btnCancelct { width: 100%; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; background: #bfbfbe; } .pt_mid_box{ width: 100%; margin-top: 9px; height: 40px; background-color: #fff; }
+.pt_mid_box:after{ content: ""; width: 8px; height: 12px; position: absolute; right: 7px; margin-top: 14px; background: url({MODULE_URL}public/mobile/img/right_arrow.png) no-repeat; background-position: center center; background-size: 8px 12px; }
+.left_title_pt{ float: left; font-size: 15px; line-height: 39px; font-weight: bold; margin-left: 12px; }
+.right_xz_pt{ float: right; margin-right: 23px; line-height: 39px; color: #656565; }
+/**团购规则弹框**/
+.popUpBox4 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }  .share_coment{width: 100%;background-color: #f1efef;margin-left: 3%;width: 90%;padding: 8px;} .btnCancelGz { width: 100px; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; background: #ff9f22; margin-left: 30%; margin-right: 10px; } .tuangou { height: 20px; background: #9834e2; color: white; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-box-align: center; -moz-box-align: center; -ms-flex-align: center; -webkit-align-items: center; align-items: center; font-size: 11px; margin-left: 5px; padding: 0 4px; border-radius: 5px; } .header_box{ width: 100%; height: auto; top: 0; background-color: #fff; } .header_conet{ padding:10px; } .circlewrap { position: relative; display: inline-block; }  .bigcircle { width: 5rem; height: 5rem; }  .circlebg, .leftcircle, .rightcircle, .circlebgtop, .number { position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto; z-index: 2; border-radius: 50%; }  .circlebg { width: 100%; height: 100%; background-color: #e6e6e6; }  .circlebgtop { z-index: 3; background-color: #e6e6e6; }  .leftcircle, .rightcircle, .circletop { height: 100%; width: 100%; }  .bigcircle .leftcircle, .bigcircle .circlebgtop, .bigcircle .rightcircle { clip: rect(0, 3rem, 6rem, 0); }  .number { z-index: 4; background-color: #fff; text-align: center; }  .bigcircle .number { height: 4.4rem; width: 4.4rem; font-size: 1.2rem; line-height: 3.2 }  .circle { -webkit-transform-origin: center; } .chengji{ text-align: center; display: inline-block; width: 100%;} .left_blur{text-align: center; position: relative; height: 117px;} .rihgt_blur {position: relative; height: 117px;} .leftspan { position: absolute; width: 56px;} .rihgtspan { width: 56px; position: absolute; }
+/**确认订单**/
+.popUpBox2{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 100;overflow-y: scroll;}
+.trackMattess{ position: absolute; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.tuanbox { position: absolute; width: 100%; z-index: 101; background-color: #f7f7f7; }
+/**底部支付按钮**/
+.pay_box_footer{ width: 100%; height: 65px; position: fixed; bottom: 0; background: white; line-height: 77px; }
+.footer_text { text-align: center; font-size: 11px; color: #b5b3b3; float: left; width: 55%; }
+.close_ddpage{ width: 11%; float: left; height: 28px; background: #a5aba5; text-align: center; font-size: 14px; color: white; line-height: 27px; margin-top: 23px; border-radius: 8px; }
+.weixin_pay_btn { width: 29%; height: 42px; background: #56c454; text-align: center; font-size: 19px; color: white; line-height: 39px; float: right; margin-right: 9px; margin-top: 16px; border-radius: 42px; }
+.prise_info{ display: inline-flex; font-size: 16px; margin-left: 3px; }
+.prise_info .prise{color: #f71e1e;font-size: 20px;}
+
+.pay_page_jf{width: 100%; margin-top: 9px; height: auto; background-color: #fff;}
+.pay_page_jf_header{width: 100%;height: 40px;}
+.pay_page_jf_header:after{ content: "积"; width: 16px; height: 16px; position: absolute; color: #fff; text-align: center; font-size: 11px; margin-top: 12px; margin-left: 3px; background: #ff9f22;border-radius: 3px;}
+.pay_page_jf_title{float: left; font-size: 15px; line-height: 39px; font-weight: bold; margin-left: 12px;}
+.right_xz_pt{float: right; margin-right: 23px; line-height: 39px; color: #656565;}
+.pay_page_myjf{width: 100%;height: 35px;font-size: 13px;line-height: 35px;}
+.pay_page_myjf_title{float: left;  margin-left: 15px;}
+.right_xz_myjf{float: right; margin-right: 46px;}
+.right_xz_myjf:before{ content: ""; width: 12px; height: 12px; position: absolute; right: 26px; margin-top: 12px; background: url({MODULE_URL}public/mobile/img/jifen.png) no-repeat; background-position: center center; background-size: 12px 12px;}
+.pay_page_myjf_use{width: 100%;height: 32px;margin-top: 10px;}
+.pay_page_myjf_use_left{float:left;margin-left: 15px;width: 20%;}
+.pay_page_myjf_use_right_box{ float: right; margin-right: 0; width: 26%; }
+.myjf_all_use{width: 100%;display: inline-flex;}
+.myjf_all_use .myjf_all_check{width: 17px;height: 17px;margin-left: 5px;background: url({MODULE_URL}public/mobile/img/radioNochecked_02.png) no-repeat; background-position: center center; background-size: 17px 17px;}
+.myjf_all_use .myjf_all_checked{width: 17px;height: 17px;margin-left: 5px;background: url({MODULE_URL}public/mobile/img/icon-checked.png) no-repeat; background-position: center center; background-size: 17px 17px;}
+.myjf_part_use{width: 100%;height: 35px;}
+.right_jf_dk_myjf{float: right; margin-right: 46px;}
+.right_jf_dk_myjf:before{ content: ""; width: 16px; height: 16px; position: absolute; right: 26px; margin-top: 10px; background: url({MODULE_URL}public/mobile/img/distribution1.png) no-repeat; background-position: center center; background-size: 16px 16px;border-radius: 3px;}
+
+.youhui{ width: 100%; margin-top: 9px;margin-bottom: 55px; height: 55px; background-color: #fff; line-height: 56px; color: #444; }
+.youhui_right{ float: right; margin-right: 31px; }
+.youhui_right .yh_pri{ color: #ea1717; }
+.youhui_right .yh_pri_info{font-size: 22px;}
+
+.nowkt_info{width: 100%; text-align: center; font-weight: bold;margin-top: 11px;}
+.pt_youhui{width: 100%; margin-top: 9px; height: auto; background-color: #fff;}
+.pay_page_pt_header{width: 100%;height: 40px;}
+.pay_page_pt_header:after{ content: "团"; width: 16px; height: 16px; position: absolute; color: #fff; text-align: center; font-size: 11px; margin-top: 12px; margin-left: 3px; background: red;border-radius: 3px;}
+.right_pt_tz_myjf{float: right; margin-right: 46px;}
+.right_pt_tz_my{float: right; margin-right: 46px;color:#a5a3a3}
+.right_pt_tz_myjf:before{ content: ""; width: 16px; height: 16px; position: absolute; right: 26px; margin-top: 10px; background: url({MODULE_URL}public/mobile/img/distribution1.png) no-repeat; background-position: center center; background-size: 16px 16px;border-radius: 3px;}
+
+.zl_youhui{width: 100%; margin-top: 9px; height: auto; background-color: #fff;}
+.pay_page_zl_header{width: 100%;height: 40px;}
+.pay_page_zl_header:after{ content: "助"; width: 16px; height: 16px; position: absolute; color: #fff; text-align: center; font-size: 11px; margin-top: 12px; margin-left: 3px; background: #3396de;border-radius: 3px;}
+.orderinfo{width: 100%; margin-top: 9px; height: auto; background-color: #fff;}
+.gw_num{margin-right: 10px; float: right; border: 1px solid #dbdbdb; width: 31%; line-height: 26px; overflow: hidden; display: inline; }
+.gw_num .num1{display: block;float: left;text-align: center;width: 100%;height:26px;font-size: 12px;line-height: 12px;border: 0;}
+
+.pay_page_stu_info{width: 100%; margin-top: 9px; height: auto; background-color: #fff;}comment
+.pay_page_stu_info_header{width: 100%;height: 40px;}
+.pay_page_stu_info_title{float: left; font-size: 15px; line-height: 39px; font-weight: bold; margin-left: 12px;}
+.pay_page_stu_info_title_change{width: 12px; height: 12px; position: absolute; right: 26px; margin-top: 12px; background: url({MODULE_URL}public/mobile/img/evaluation_edit_icon2.png) no-repeat; background-position: center center; background-size: 12px 12px;}
+.pay_page_stu_info_box{ width: 100%; height: 55px; display: inline-flex; }
+.pay_page_stu_info_leftbox{ width: 35%; height: 55px; float: left; }
+.pay_page_stu_info_img{ width: 33%; height: 43px; float: right; }
+.pay_page_stu_info_img img{ width: 100%; border-radius: 50%; position: relative; }
+.pay_page_stu_info_rihgtbox{ width: 60%; }
+.pay_page_stu_info_mobile{ line-height: 45px; margin-left: 6%; }
+/**邀请卡弹框**/
+.popContentBox_card{ position: absolute; width: 80%; margin-left: 10%; max-height: 80%; top: 46%; transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }
+.popUpBox5 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }
+.family{text-align: center;width: 100%;} .family img{width: 70%;}
+/**推广文案弹框**/
+.popUpBox6 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; } .btnshare {width: 100px;height: 31px;font-size: 14px;color: white;text-align: center;line-height: 31px;border-radius: 20px;background: #06c1ae;margin-left: 47px;} .share_coment{width: 100%;background-color: #f1efef;margin-left: 5%;width: 90%;padding: 8px;} .btnshareCancel { width: 100px; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; background: #ff9f22; margin-left: 24px; margin-right: 10px; } .tuangou { height: 20px; background: #9834e2; color: white; display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; -webkit-box-align: center; -moz-box-align: center; -ms-flex-align: center; -webkit-align-items: center; align-items: center; font-size: 11px; margin-left: 5px; padding: 0 4px; border-radius: 5px; } .header_box{ width: 100%; height: auto; top: 0; background-color: #fff; } .header_conet{ padding:10px; } .circlewrap { position: relative; display: inline-block; }  .bigcircle { width: 5rem; height: 5rem; }  .circlebg, .leftcircle, .rightcircle, .circlebgtop, .number { position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto; z-index: 2; border-radius: 50%; }  .circlebg { width: 100%; height: 100%; background-color: #e6e6e6; }  .circlebgtop { z-index: 3; background-color: #e6e6e6; }  .leftcircle, .rightcircle, .circletop { height: 100%; width: 100%; }  .bigcircle .leftcircle, .bigcircle .circlebgtop, .bigcircle .rightcircle { clip: rect(0, 3rem, 6rem, 0); }  .number { z-index: 4; background-color: #fff; text-align: center; }  .bigcircle .number { height: 4.4rem; width: 4.4rem; font-size: 1.2rem; line-height: 3.2 }  .circle { -webkit-transform-origin: center; } .chengji{ text-align: center; display: inline-block; width: 100%;} .left_blur{text-align: center; position: relative; height: 117px;} .rihgt_blur {position: relative; height: 117px;} .leftspan { position: absolute; width: 56px;} .rihgtspan { width: 56px; position: absolute; } 
+.conent_load{width: 15px; height: 19px; display: inline-block; background: url({MODULE_URL}public/mobile/img/gh_xh_wating.gif) no-repeat center center / 15px 19px; margin-left: 10px;}.coments{width:100%;height: auto;} 
+</style>
+<body class="auto_height" id="auto_height">
+{if $operation != 'tuig'}
+	<ul class="tab-nav">
+		<li class="tab-nav-item slide_li act" btnid="1" onclick="change('all',this)">
+			<a>全部</a>
+		</li>
+		<li class="tab-nav-item slide_li" btnid="2" onclick="change('unpay',this)">
+			<a>待支付</a>
+		</li>
+		<li class="tab-nav-item slide_li" btnid="3" onclick="change('ing',this)">
+			<a>{$saleword}中</a>
+		</li>
+		<li class="tab-nav-item slide_li" btnid="4" onclick="change('suc',this)">
+			<a>{$saleword}成功</a>
+		</li>
+		<li class="tab-nav-item slide_li" btnid="5" onclick="change('def',this)">
+			<a>{$saleword}失败</a>
+		</li>
+	</ul>
+	<section class="aui-scrollView">
+	{if $list}
+		<div class="aui-course-box">
+		{loop $list $row}
+			<a href="javascript:;" class="aui-course-item all_div {if $row['succes'] == 1}{if $row['orderinfo']['status'] != 2}unpay_div{else}suc_div{/if}{/if}{if $row['succes'] == 2}ing_div{/if}{if $row['succes'] == 3}def_div{/if}">
+				<div class="aui-flex">
+					<div class="aui-flex-yes" style="font-weight:bold;color:#fe5a69">{$row['texttip']}</div>
+					<div class="aui-flex-box" style="text-align: right;"><span class="bluefont lxftime" {if $row['end']}lxfday="no" endtime="{$row['end']}"{/if}></span></div>
+				</div>
+				<div class="aui-flex">
+					<div class="aui-flex-TUser">
+						<img src="{$row['icon']}" alt="">
+					</div>
+					<div class="aui-course-title">
+						<h2>{$row['kcname']}</h2>
+						<p>原价￥ {$row['cose']}</p>
+						{if $saletype == 2 && empty($row['orderinfo'])}
+							<p>{$saleword}优惠￥ {$row['price']}</p>
+						{else}
+							<p>{$saleword}优惠￥ {$row['orderinfo']['team_price']}</p>
+							{if $row['orderinfo']['team_dz_price']}<p>团长优惠￥ {$row['orderinfo']['team_dz_price']}</p>{/if}
+						{/if}
+					</div>
+				</div>
+				<div class="aui-flex pt_midbox">
+					<span class="pt_midboxspan">合计:<span style="font-weight: bold;color:#fe5a69">￥ {if $saletype == 2 && empty($row['orderinfo'])}{php echo round($row['cose']-$row['price'],2)}{else}{$row['orderinfo']['cose']}{/if}<span></span>
+				</div>
+				<div class="aui-course-button">
+					{if $row['succes'] == 1}<!--成功-->
+						<button class="wiat_but mb_marsk" onclick="teaminfo({$row['id']})">{$saleword}详情</button>
+						{if $row['orderinfo']['status'] != 2}
+						<button class="red_but weixin_pay mb_marsk" orderid="{$row['orderid']}">去支付</button>
+						{else}
+						<button class="wiat_but mb_marsk" onclick="orderinfo({$row['orderid']})">订单详情</button>
+						<button class="red_but mb_marsk" onclick="study({$row['kcid']})">立即学习</button>
+						{/if}
+					{/if}
+					{if $row['succes'] == 2}<!--进行中-->
+						<button class="wiat_but mb_marsk" onclick="teaminfo({$row['id']})">{$saleword}详情</button>
+						<button class="red_but mb_marsk" onclick="sharecard({$row['id']},{$row['kcid']})">邀请好友</button>
+					{/if}
+					{if $row['succes'] == 3}<!--失败-->
+						<button class="red_but mb_marsk" onclick="again({$row['id']})">再次{$saleword}</button>
+						{if $row['orderinfo']['status'] == 2}
+						<button class="wiat_but mb_marsk">申请退款</button>
+						{/if}
+						<button class="wiat_but mb_marsk" onclick="orderinfo({$row['orderid']})">订单详情</button>
+					{/if}
+				</div>
+			</a>
+		{/loop}	
+		</div>
+	{else}	
+		<div class="empty_box">
+			<div class="empty_box_imgbox">
+				<img src="{OSSURL}public/mobile/img/sginNoContent.png">
+			</div>
+			<span>抱歉你暂时没有{$saleword}订单哦</span>
+			<div class="empty_button">
+				<button class="red_but">去{$saleword}</button>
+			</div>
+		</div>
+	{/if}	
+	</section>
+{else}
+{/if}
+<div class="blank"></div>
+<div class="popUpBox1" style="display: none">
+	<div class="trackMattes"></div>
+	<div class="tuanbox">
+		<div class="tuanbox_top">
+			<div class="tuanbox_top_left">
+				<img src="{php echo tomedia($kcinfo['thumb'])}"/>
+			</div>
+			<div class="tuanbox_top_right">
+				<div class="tuanbox_top_title"></div>
+				<div class="tuanbox_top_price"><span class="now_price"></span><span class="old_price"></span></div>
+				<div class="tuanbox_top_infos"><span class="red_fontbg sdiin1l2"></span>&nbsp;&nbsp;<span class="red_fontbg sdiin1l3"></span></div>
+			</div>
+		</div>
+		<div class="pintuan_coment">
+			<div class="nowpt_info">还差<span class="bluefont">{$row['rest_minge']}</span>人，<span class="bluefont lxftime" lxfday="no" endtime="{php echo date('Y/m/d H:i:s',$row['endtime'])}"></span>过期失效</div>
+			<div class="fans_boxs_pituan">
+				<a class="headImg headact"><!--注意，已报参团的人可以点击查看他的报名详细，显示结果的方式类似搜索-->
+					<img src="{$row['dz_avatar']}">
+					<span class="tuanzlabe">团长</span>
+				</a>
+				{loop $row['team'] $item}
+				{if $item['ismaster'] != 1}
+				<a class="headImg headact">
+					<img src="{$item['avatar']}">
+				</a>
+				{/if}
+				{/loop}	
+				{loop $row['nobody'] $val}	
+				<a class="headImg nobody">
+					<img src="{$val['icon']}">
+				</a>
+				{/loop}
+			</div>
+		</div>
+		<div class="pt_mid_box mb_marsk">
+			<div class="left_title_pt"></div>
+			<div class="right_xz_pt">·邀请好友 ·人满生效 ·限时有效</div>
+		</div>
+		<div class="sectionContBox">
+			<div class="btnBox">
+				<div class="btnCancelct mb_marsk">关闭</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--确认订单-->
+<div class="popUpBox2" style="display: none">
+	<div class="trackMattess"></div>
+	<div class="tuanbox">
+		<div class="pay_page_stu_info">
+			<div class="pay_page_stu_info_header">
+				<div class="pay_page_stu_info_title">学生信息</div>
+			</div>
+			<div class="pay_page_stu_info_box">
+				<div class="pay_page_stu_info_leftbox">
+					<div class="pay_page_stu_info_img"><img src=""/></div>
+				</div>
+				<div class="pay_page_stu_info_rihgtbox">
+					<div class="pay_page_stu_info_mobile"></div>
+				</div>
+			</div>
+		</div>
+		<div class="pay_page_jf" style="display: none">
+			<div class="pay_page_jf_header">
+				<div class="pay_page_jf_title">积分抵用</div>
+				<div class="right_xz_pt jf_use_gz"></div>
+			</div>
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">剩余积分</div>
+				<div class="right_xz_myjf myjfpoints"></div>
+			</div>
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">本次使用</div>
+				<div class="right_xz_myjf nowuse"></div>
+			</div>
+			<div class="pay_page_myjf">
+				<input type="hidden" id="Point2Cost" value="">
+				<input type="hidden" id="MinPoint" value="">
+				<input type="hidden" id="MaxPoint" value="">
+				<input type="hidden" id="hasuserjf" value="">
+				<div class="pay_page_myjf_title">积分抵扣</div>
+				<div class="right_jf_dk_myjf">已抵扣<span class="yh_pri">-￥<span id="jf_dk"></span>元</span></div>
+			</div>
+		</div>
+		<div class="pt_youhui" style="display: none">
+			<div class="pay_page_pt_header">
+				<div class="pay_page_jf_title">拼团优惠</div>
+			</div>
+			<div class="pay_page_myjf tzyhbq">
+				<div class="pay_page_myjf_title">团长优惠</div>
+				<div class="right_pt_tz_myjf tzyhui"></div>
+			</div>
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">参团优惠</div>
+				<div class="right_pt_tz_myjf ctyouhui"></div>
+			</div>
+		</div>
+		<div class="zl_youhui" style="display: none">
+			<div class="pay_page_zl_header">
+				<div class="pay_page_jf_title">助力优惠</div>
+			</div>
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">优惠</div>
+				<div class="right_pt_tz_myjf zlyouhui"></div>
+			</div>
+		</div>
+		<div class="orderinfo">
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">订单号</div>
+				<div class="right_pt_tz_my orderid"></div>
+			</div>
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">下单时间</div>
+				<div class="right_pt_tz_my ordertiem"></div>
+			</div>
+			<div class="pay_page_myjf">
+				<div class="pay_page_myjf_title">付费时间</div>
+				<div class="right_pt_tz_my paytime"></div>
+			</div>
+		</div>
+		<div class="youhui">
+			<div class="youhui_right">已优惠<span class="yh_pri">-￥<span id="yyh"></span></span> 实付 ￥<span class="yh_pri_info" id="hjyh"></span></div>
+		</div>
+		<div class="pay_box_footer">
+			<input type="hidden" id="buyuserid" value="">
+			<div class="footer_text">1课,含{if $kcinfo['kc_type'] == 1}{$number}{else}{$kcinfo['FirstNum']}{/if}节课时<div class="prise_info">合计:<div class="prise">￥<span id="lastprice">0</span></div></div></div>
+			<div class="close_ddpage mb_marsk">取消</div>
+			<div class="weixin_pay_btn mb_marsk">提交订单</div>
+		</div>
+		<a class="F_div" style="z-index: 2;right: 20px; margin-bottom: 90px; display: block"><div class="F_div_text">关闭</div></a>
+	</div>
+</div>
+<div class="popUpBox4" style="z-index:102;display: none">
+	<div class="trackMatte"></div>
+	<div class="popContentBox" style="z-index:103;">
+		<input type="hidden" id="kcid" value="" />
+		<div class="poptitle"><span></span><p class="notifyCreateTime">请详细阅读以下规则</p></div>
+		<div class="sectionContBox" style="text-align: left;">
+			<div class="share_coment"></div>
+			<div class="btnBox" style="margin-top: 41px;">
+				<div class="btnCancelGz mb_marsk">关闭</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--邀请卡弹框-->
+<div class="popUpBox5" style="display: none">
+	<div class="trackMatte"></div>
+	<input type="hidden" id="pop_stu" value="0">
+	<div class="popContentBox_card">
+		<input type="hidden" id="kcid" value="" />
+		<input type="hidden" id="share_kcid" value="" />
+		<input type="hidden" id="share_teamid" value="" />
+		<div class="poptitle">
+		分享海报
+		<p class="notifyCreateTime">长按保存，邀请好友一起学习</p>
+		</div>
+		<div class="sectionContBox">
+			<div class="family" id="family">
+				
+			</div>
+			<div class="btnBox">
+				<div class="btnPass mb_marsk" onclick="fx(1);">查看文案</div>
+				<div class="btnPass" onclick="refrash_pop();">刷新</div>
+				<div class="btnCancel closecard mb_marsk">关闭</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--文案弹框-->
+<div class="popUpBox6" style="z-index:102;display: none">
+	<div class="trackMatte"></div>
+	<div class="popContentBox" style="z-index:103;">
+		<div class="poptitle">
+		复制文案
+		<p class="notifyCreateTime">将文字和图片一起分享,成功率翻10倍！</p>
+		</div>
+		<div class="sectionContBox" style="text-align: left;">
+			<div class="share_coment" id="share_coment"></div>
+			<div class="btnBox" style="margin-top: 41px;">
+				<div class="btnshare mb_marsk" data-clipboard-action="copy" data-clipboard-target="#share_coment" onclick="">复制文案</div>
+				<div class="btnshareCancel mb_marsk">关闭</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="top_height_blank70"></div>
+<script type="text/javascript">
+
+//打开分享卡
+function sharecard(teamid,kcid){
+	$('.popUpBox5').slideDown(200)
+	$('#share_kcid').val(kcid)
+	$('#share_teamid').val(teamid)
+	$('#family').empty()
+	let loadcont = "<div class='conent_load'></div>";
+	$('#family').append(loadcont);//加载动画
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('kcajax', array('op' => 'get_mysherecard'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {
+			userid: "{$it['id']}",
+			openid:"{$it['openid']}",
+			teamid:teamid,
+			kcid:kcid,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if(data.result){
+				$('#family').empty()
+				let picurl = decodeURIComponent(data.pic)
+				let contet = '<img onclick="wxImageShow(this);" src="'+picurl+'" />';
+				$('#family').append(contet)
+			}else{
+				$('#family').empty()
+				jTips(data.msg);
+			}
+		}
+	});
+}
+//刷新海报
+function refrash_pop(){
+	$('#family').empty()
+	let loadcont = "<div class='conent_load'></div>";
+	$('#family').append(loadcont);//加载动画
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('kcajax', array('op' => 'get_mysherecard'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {
+			userid: "{$it['id']}",
+			openid:"{$it['openid']}",
+			teamid:$('#share_teamid').val(),
+			refrash:"refrash",
+			schoolid:"{$schoolid}",
+			kcid:$('#share_kcid').val(),
+		},
+		success: function (data) {
+			if(data.result){
+				$('#family').empty()
+				let picurl = decodeURIComponent(data.pic)
+				let contet = '<img onclick="wxImageShow(this);" src="'+picurl+'" />';
+				$('#family').append(contet)
+			}else{
+				$('#family').empty()
+				jTips(data.msg);
+			}
+		}
+	});
+}
+//关闭邀请卡弹框
+$('.closecard').click(function() {
+	$('.popUpBox5').slideUp(200);
+	//$('html,body').removeClass('popNoscroll');
+});
+
+
+//复制文案
+var clipboard = new ClipboardJS('.btnshare');
+clipboard.on('success', function(e) {
+    jTips('复制成功，快去分享吧！');
+	$('.popUpBox6').hide();
+});
+clipboard.on('error', function(e) {
+	jTips('复制失败，请手动复制！');
+});
+$('.btnshareCancel').click(function() {
+	$('.popUpBox6').hide();
+});
+function fx(kcid){
+	e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('kcajax', array('op' => 'get_kc_shareword'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {
+			kcid:$('#share_kcid').val(),
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if(data.result){
+				$('#share_coment').empty()
+				$('#share_coment').text(data.shareword)
+				$('.popUpBox6').show();
+			}else{
+				jTips(data.msg);
+			}
+		}
+	});
+};
+//退款申请
+function tuifei(teamid) {
+	jConfirm('确定申请退款吗？', '确认对话框', function (r) {
+		if (r) {
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('kcajax',array('op'=>'tuif_sq'))}",
+				data: {weid: "{$weid}", schoolid: "{$schoolid}", teamid: teamid},	
+				dataType: 'json',
+				type: "post",
+				success: function (data) {
+					jTips(data.msg) 
+				}
+			});
+		}else{
+			return false;
+		}
+	})
+}
+//订单详情
+function orderinfo(orderid){
+	$('html,body').addClass('popNoscroll');
+	$('.popUpBox2').slideRightShow();
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('kcajax',array('op'=>'get_onorder_info'))}",
+		data: {weid: "{$weid}", schoolid: "{$schoolid}", orderid: orderid},	
+		dataType: 'json',
+		type: "post",
+		success: function (data) {
+			if(data.result){
+				$('.pay_page_stu_info_img img').attr("src",data.icon);
+				$('.pay_page_stu_info_mobile').text(data.s_name);
+				if(data.order.sale_type == 1){
+					$('.pt_youhui').show()
+					if(data.order.team_dz_price >= 0.01 && data.ismaster){
+						$('.tzyhbq').show()
+						$('.tzyhui').text('-￥'+data.order.team_dz_price)
+					}else{
+						$('.tzyhbq').hide()
+					}
+					$('.ctyouhui').text('-￥'+data.order.team_price)
+					$('#hjyh').text(data.order.cose)
+					$('#yyh').text(data.all_dis)
+				}
+				if(data.order.sale_type == 2){
+					$('.zl_youhui').show()
+					$('.zlyouhui').text('-￥'+data.order.team_price)
+					$('#hjyh').text(data.order.cose)
+					$('#yyh').text(data.all_dis)
+				}
+				$('.orderid').text(data.order.id)
+				$('.ordertiem').text(data.ordertiem)
+				$('.paytime').text(data.paytime)
+				if(data.order.spoint > 0){
+					$('.pay_page_jf').show()
+					$('.jf_use_gz').text(data.jfuize)
+					$('.myjfpoints').text(data.myjf)
+					$('.nowuse').text(data.order.spoint)
+					$('#jf_dk').text(data.ydk)
+				}
+				$('.pay_box_footer').hide()
+				$('.popUpBox2').slideRightShow();
+			}else{
+				jTips(data.msg) 
+			}
+		}
+	});
+}
+$('.close_ddpage, .trackMattess, .F_div').click(function() {
+	$('.popUpBox2').slideRightHide();
+	$('html,body').removeClass('popNoscroll');
+});
+
+
+//队伍详情
+function teaminfo(teamid){
+	$('html,body').addClass('popNoscroll');
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('kcajax',array('op'=>'get_onteam_info'))}",
+		data: {weid: "{$weid}", schoolid: "{$schoolid}", teamid: teamid},	
+		dataType: 'json',
+		type: "post",
+		success: function (data) {			
+			if(data.result){
+				//先修改规则弹框
+				$('.poptitle span').text(data.sale_type);
+				$('.left_title_pt').text(data.sale_type);
+				$('.share_coment').text(data.rule);
+				$('.tuanbox_top_title').text(data.kcinfo.name);
+				$('.old_price').text('￥'+data.kcinfo.cose);
+				$('.now_price').text('￥'+data.nowpirce);
+				$('.sdiin1l2').text(data.saleset.suc_munber+'组团');
+				$('.sdiin1l3').text('立省'+data.saleset.price+'元');
+				$('.nowpt_info').html(data.teaminfo.tipword);
+				$('.fans_boxs_pituan').empty()
+				if(data.kcinfo.sale_type == 1){
+					var dztitle = '团长'
+				}else{
+					var dztitle = '队长'
+				}
+				var teamlist = data.teamlist
+				var htmls = ""
+				for (var i in teamlist) {
+					var dz = ''
+					if(teamlist[i].ismaster){
+						var dz = '<span class="tuanzlabe">'+dztitle+'</span>'
+					}
+					var classdiv = 'nobody'
+					var icon = "{MODULE_URL}public/mobile/img/nobody.png";
+					if(teamlist[i].icon){
+						var classdiv = 'headact'
+						var icon = teamlist[i].icon
+					}
+					htmls += '<a class="headImg '+classdiv+'"><img src="'+icon+'">'+dz+'</a>'
+				}
+				$('.fans_boxs_pituan').html(htmls)
+				$('.popUpBox1').slideRightShow();
+			}else{
+				jTips(data.msg) 
+			}
+		}
+	});
+}
+$('.btnCancelct, .trackMattes').click(function() {
+	$('.popUpBox1').slideRightHide();
+	$('html,body').removeClass('popNoscroll');
+});
+//前往学习
+function study(kcid){
+	jConfirm('确认前往课程中心吗？', '确认对话框', function (r) {
+		if (r) {
+			location.href = "{php echo $this->createMobileUrl('myclass',array('schoolid'=> $schoolid,'userid'=> $_SESSION['user']))}";
+		}else{
+			return false;
+		}
+	})
+}
+//再次发起活动
+function again(teamid){
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('kcajax',array('op'=>'again_team'))}",
+		data: {weid: "{$weid}", schoolid: "{$schoolid}", teamid: teamid},	
+		dataType: 'json',
+		type: "post",
+		success: function (data) {
+			jTips(data.msg) 
+			if(data.result){
+				location.href = "{php echo $this->createMobileUrl('hookcom',array('goto'=> 'video_kc','schoolid'=> $schoolid))}"+"&kcid="+data.kcid;
+			}
+		}
+	});
+}
+//规则弹框
+$(".pt_mid_box").on("click",function(){
+	$('html,body').addClass('popNoscroll');
+	$('.popUpBox4').slideDown(200);
+});
+$('.btnCancelGz').click(function() {
+	$('.popUpBox4').slideUp(200);
+	$('html,body').removeClass('popNoscroll');
+});
+
+function change(type,elm){
+	var lastbtnid = $(".act").attr("btnid")
+	var thisbtnid = $(elm).attr("btnid")
+	$(".tab-nav-item").removeClass("act");
+	$(elm).addClass("act");
+	if(thisbtnid > lastbtnid){
+		$('.all_div').slideLeftHide();
+		$('.'+type+'_div').slideRightShow();
+	}else{
+		$('.all_div').slideRightHide();
+		$('.'+type+'_div').slideLeftShow();
+	}
+}
+jQuery.fn.extend({
+  slideRightShow: function() {
+	return this.each(function() {  
+		$(this).show('slide', {direction: 'right'}, 200); 
+	});  
+  },  
+  slideLeftHide: function() {  
+	return this.each(function() {  
+		$(this).hide('slide', {direction: 'left'}, 200);  
+	});  
+  },  
+  slideRightHide: function() {  
+	return this.each(function() {  
+		$(this).hide('slide', {direction: 'right'}, 200);  
+	});  
+  },  
+  slideLeftShow: function() {  
+	return this.each(function() {  
+		$(this).show('slide', {direction: 'left'}, 200);  
+	});  
+  },
+  slideBottomShow: function() {
+	return this.each(function() {  
+		$(this).show('slide', {direction: 'bottom'}, 200); 
+	});  
+  },  
+  slideBottomHide: function() {  
+	return this.each(function() {  
+		$(this).hide('slide', {direction: 'bottom'}, 200);  
+	});  
+  }
+});
+//显示大图
+function wxImageShow(elm){
+	var srcList = new Array();
+	var pic = $(elm).attr("src")
+	srcList.push(pic);
+	WeixinApi.imagePreview(pic, srcList);
+}
+var WeixinApi = (function () {
+	return {
+        imagePreview    :imagePreview
+    }; 
+    "use strict";
+    function imagePreview(curSrc,srcList) {
+        if(!curSrc || !srcList || srcList.length == 0) {
+            return;
+        }
+        WeixinJSBridge.invoke('imagePreview', {
+            'current' : curSrc,
+            'urls' : srcList
+        });
+    }
+    return {
+        version         :"2.5",
+        imagePreview    :imagePreview
+    };
+})();
+$("input,textarea,select").blur(function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+});
+</script>
+{php include $this->template('newpay');}
+{php include $this->template('footer');}
+</body>
+</html>
+<script>
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>

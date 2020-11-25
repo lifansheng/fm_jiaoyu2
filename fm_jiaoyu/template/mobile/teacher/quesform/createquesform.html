@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/web/font-awesome5/css/all.min.css?v=1" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+<style>
+    body{--TopHeight:40px}
+    .top-fix{height: var(--TopHeight);width: 100%;background-color: white;display: flex;align-items: center;box-shadow: 0 -1px 6px #b7b7b7;position: fixed;z-index: 2;}
+    .top-block{height:calc(var(--TopHeight) + 5px);width: 100%;}
+    .top-fix .flex-middle{flex: 1;text-align: center;}
+    .root *{box-sizing: border-box;}
+    .root{padding:10px}
+    .form-m .form-cell{width: 100%;}
+    .form-m .cell-title{width: 100%;height: 30px;line-height: 30px;}
+    .form-m .cell-content{border:1px solid #b9b9b9;border-radius: 5px;width: 100%;line-height: 30px;display: flex;height: 30px;overflow: hidden;margin-bottom: 10px;align-items: center;}
+    .form-m .cell-content.no-border{border:unset}
+    .form-m .cell-content.muti{height: auto;}
+    .form-m .cell-content input,.form-m .cell-content select{padding:0 5px;border:none;flex:1;height: 100%;}
+    .form-m .cell-content textarea{width: 100%;border-radius: 5px;padding:5px;border:1px solid #b9b9b9;resize: none;}
+    .form-m .cell-content span.extra{display: inline-block;height: 100%;padding:0 10px;background-color: #ebf0f3;}
+    .form-m .cell-content span.left{border-right: 1px solid  #b9b9b9;}
+    .form-m .cell-content span.right{border-left: 1px solid  #b9b9b9;}
+    .form-m .cell-content span.middle{border-left: 1px solid  #b9b9b9;border-right: 1px solid  #b9b9b9;}
+    .form-m .cell-btn{padding:3px 10px;font-size: 12px;border-radius: 5px;line-height: 18px;background-color: #49a6e8;;color:white}
+    .invite_cell{border: 1px solid #e8e8e8; padding:3px 3px;white-space: nowrap; display: inline-block; margin:3px 2px;cursor: pointer;transition: background-color .2s;line-height: 20px;}
+    .invite_cell.All{border-color: #57d1e4;}
+    #imgword{ padding:0 10px;color:red }
+    #imgword.done{color:black}
+    .fzbox,.fzbox *{box-sizing: border-box;}
+    .fzbox{width: 100%;padding:10px 20px;height: calc(100% - var(--TopHeight) );position: relative;overflow: auto;}
+    .fzbox .fz-item{display: flex;padding:0 10px;height:var(--ItemHeight);align-items: center;position: relative;--ItemHeight:40px}
+    .fzbox .inputbox{height: 100%;position: relative;}
+    input[type="checkbox"],input[type="radio"] { width: 0; height: 0; margin-right: 13px; }
+    input[type="checkbox"]::before,input[type="radio"]::before{ content:''; position: absolute; right: -10px; top:calc(var(--ItemHeight) / 2 - 8px); width: 16px; height: 16px; border-radius: 50%; border: 1px solid #999;transition: background-color 0.1s linear; }
+    input[type="checkbox"]::before{border-radius: unset;}
+    /*设置选中的input的样式*/
+    input[type="checkbox"]:checked::before,input[type="radio"]:checked::before{ background-color: #006eb2; border: 1px solid #006eb2; }
+    input[type="checkbox"]:after{position: absolute; width: 4px; height: 8px; top:calc(var(--ItemHeight) / 2 - 6px); right: -4px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg);opacity: 0;content: '';transition: all .2s linear;}
+    input[type="checkbox"]:checked::after,input[type="radio"]:checked::after {opacity: 1;}
+    input[type="radio"]:after{position: absolute; width: 6px; height: 6px;     top: calc(var(--ItemHeight) / 2 - 2px); right: -4px; border-radius: 50%; background-color: white;;opacity: 0;content: '';transition: all .2s linear;}
+    .tea-box .tea-box-title{width: 100%;height: 40px;border-bottom: 1px solid #c1c1c1;line-height: 40px;padding:0 5px;display: flex;justify-content: space-between;align-items: center;}
+    .tea-box.locked{background-color: #e0e0e0;position: relative;width: 100%;}
+    .tea-box.locked:after{position: absolute;content: "已整组邀请";font-size: 12px;right: 10px;top:0;height: 100%;line-height: 40px;}
+    .tea-box .tea-box-title i{transition: all .15s;}
+    .tea-box.locked i{display: none;}
+    .tea-box .tea-box-title.inshow i{transform: rotate(-180deg);}
+    .nj-dock{background-color: #f9f9f9;}
+    [collapse-icon]{position: absolute;right: 0;top:0;height: 100%;}
+    .collapse-title{width: 100%;height: 30px;line-height: 30px;font-weight: bold;font-size: 16px;margin:10px 0;}
+    .coll-icon{align-items: center;display: flex;color:#505050;font-size: 13px;}
+    .AddQuesBtn{display: flex;justify-content: space-around;height: 50px;align-items: center;border:1px dotted black}
+    .submit-btn{height: 40px;line-height: 40px;width: 100%;text-align: center;background-color: #41b3f5;border-radius: 5px;color:white}
+    .sortd { width: 100%; border:1px dotted #adadad;margin-bottom: 10px;}
+    .sortd .ques-content-box { width: 100%;padding:5px }
+    .ques-content-box .ques-title{width: 100%;line-height: 20px;padding:5px 0;display: flex;justify-content: space-evenly;}
+    .ques-content-box .answer-box{width: 100%;padding:5px}
+    .answer-box .answer-item{display: flex;padding-left:20px;position: relative;line-height: 25px;}
+    .answer-box.radio .answer-item:before{position: absolute;height: 12px;width: 12px;border-radius: 50%;border:1px solid #7d7d7d;margin-top: 3px;content:'';left:0;top:2px}
+    .answer-box.checkbox .answer-item:before{position: absolute;height: 12px;width: 12px;border:1px solid #7d7d7d;margin-top: 3px;content:'';left:0;top:2px}
+ 
+
+    .ques-content-box .answer-word{line-height: 20px;flex:1;margin-left: 5px;}
+
+    .sortd .ques-active-box{width: 100%;height: 40px;display: flex;justify-content: space-evenly;border-top:1px solid var(--BorderColor);--BorderColor:#c5c5c5}
+    .sortd .ques-active-box .active-btn{flex:1;line-height: 40px;color:#2c8efb;text-align: center;}
+    .sortd .ques-active-box .active-btn:not(:last-of-type){border-right: 1px solid var(--BorderColor);}
+    .drag-shadow{background-color: white !important;opacity: 1 !important;}
+    .drag-target{background-color: rgb(218, 218, 218);opacity: .4;}
+
+    .ques-edit-dock{max-height: 60vh;overflow: auto;width: 100%;}
+    .ques-edit-dock textarea[name="questitle"]{width: 100%;border:1px solid gray;padding:5px;border-radius: 5px;resize: none;}
+    .ques-edit-dock .answer-bock{width: 100%;min-height: 40px;}
+    .ques-edit-dock #outerHtml{width: 100%;background-color: gainsboro;padding:5px}
+    .ques-edit-dock .add-ans{font-size: 13px;display: flex;justify-content: space-around;height: 40px;align-items: center;margin-top: 10px;border:1px dotted gray}
+    .answer-item.inedit{line-height: 30px;display: none;margin-bottom: 10px;}
+    .answer-item.inedit input{border:1px solid gray;line-height: 25px;width: 100%;}
+    .answer-item .actbox{width: 60px;height: 25px;margin-left: 5px;display: flex;}
+    .answer-item .actbox .act{flex:1;text-align: center;}
+    .answer-item.inshow{line-height: 30px;margin-bottom: 10px;}
+    .answer-item.inedit:before, .answer-item.inshow:before{top:5px !important}
+</style>
+</head>
+    <body style="background-color: white;">
+        <div class="top-fix">
+            <div class="flex-left" onclick="window.history.back()">
+                <div style="padding:5px 10px" >
+                    <i class="fas fa-chevron-left" style="font-size: 16px;" ></i>
+                </div>
+            </div>
+            <div class="flex-middle">
+                创建问卷调查
+            </div>
+        </div>
+        <div class="top-block"></div>
+        <div class="root">
+            <form action="" class="form-m" id="formData">
+                <div data-remaster-collapse-target="basic-info" class="collapse-title">
+                    基础信息
+                    <div collapse-show-icon collapse-icon class="coll-icon"> <i class="fas fa-plus-circle"></i> 点击展开 </div>
+                    <div collapse-hide-icon collapse-icon class="coll-icon"><i class="fas fa-minus-circle"></i> 点击收起 </div>
+                </div>
+                <div data-collapse-id="basic-info">
+                        <div class="form-cell">
+                            <div class="cell-title"> 问卷标题 </div>
+                            <div class="cell-content">
+                                <input type="text" name="title" placeholder="问卷标题...">
+                            </div>
+                        </div>
+                        <div class="form-cell">
+                            <div class="cell-title"> 开始日期 </div>
+                            <div class="cell-content">
+                                <input type="date" name="start">
+                            </div>
+                        </div>
+                        <div class="form-cell">
+                            <div class="cell-title"> 结束日期 </div>
+                            <div class="cell-content">
+                                <input type="date" name="end">
+                            </div>
+                        </div>
+                        <!-- <div class="form-cell">
+                            <div class="cell-title"> 缩略图 </div>
+                            <div class="cell-content no-border">
+                                <input type="hidden" name="thumb">
+                                <div id="imgword"> 未上传 </div>
+                                <div class="cell-btn" onclick="uploadThumb(this)" >上传图片</div>
+                            </div>
+                        </div> -->
+
+                        <div class="form-cell">
+                            <div class="cell-title"> 会议描述 </div>
+                            <div class="cell-content muti no-border">
+                                <textarea name="content" placeholder="会议描述..." rows="5"></textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="form-cell">
+                            <div class="cell-title"> 发送对象 </div>
+                            <div class="cell-content">
+                                <select name="type" onchange="ChangeMtype(this)" >
+                                    <option value="1">全体师生</option>
+                                    <option value="2">全体教师</option>
+                                    <option value="3">全体家长</option>
+                                    <option value="4">指定教师分组</option>
+                                    <option value="5">指定班级</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="sendlistbox" style="display: none;">
+                            <div class="form-cell">
+                                <div class="cell-title">
+                                    <span id="sendtitle"> 分组列表</span>
+                                    <span class="cell-btn fz-btn"  style="background-color: transparent;color:#49a6e8;display: none;" data-slidefunc="ReInit('fz')" data-remaster-slide-id="fzlist">重新选择</span>
+                                    <span class="cell-btn bj-btn"  style="background-color: transparent;color:#49a6e8;display: none;" data-slidefunc="ReInit('bj')" data-remaster-slide-id="bjlist" data-slidewidth="full">重新选择</span>
+                                </div>
+                                <div class="cell-content muti">
+                                    <div id="sendlist" style="min-height: 40px;width: 100%;max-height: 100px;overflow: auto;padding:0 5px" >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-cell">
+                                <div class="cell-title"> 完成后群发 </div>
+                                <div class="cell-content">
+                                    <select name="issend">
+                                        <option value="1">是</option>
+                                        <option value="0" selected>否</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+
+                </div>
+                <div data-remaster-collapse-target="ques-info" class="collapse-title">
+                    调查内容
+                    <div collapse-show-icon collapse-icon class="coll-icon"> <i class="fas fa-plus-circle"></i> 点击展开 </div>
+                    <div collapse-hide-icon collapse-icon class="coll-icon"><i class="fas fa-minus-circle"></i> 点击收起 </div>
+                </div>
+                <div data-collapse-id="ques-info">
+                    <div id="ques-bock" >
+
+                    </div>
+            
+                    <div class="AddQuesBtn" data-remaster-slide-id="quesTypeList" data-slidefunc="ClearQuesType()" >
+                        <span><i class="fas fa-plus"></i> 新增问题</span>
+                    </div>
+                </div>
+                <div style="margin:50px 0 20px 0">
+                    <div class="submit-btn" onclick="tijiao()">提&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;交</div>
+                </div>
+            </form>
+        </div>
+        <div id="editQues" class="remaster-slide-box">
+            <div class="slide-content-box">
+                <div class="top-fix" style="position: relative;">
+                    <div class="flex-middle">
+                        编辑题目
+                    </div>
+                </div>
+                <div class="fzbox">
+                    <div class="ques-edit-dock">
+                        <textarea name="questitle"  rows="5"></textarea>
+                        <div class="answer-bock" >
+                            <div id="outerHtml">
+                            </div>
+                            <div class="add-ans" onclick="addQuesAnswer()">
+                                <span ><i class="fas fa-plus" style="font-size: 12px;"></i> 增加选项</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fz-item" style="justify-content: space-around;margin-top: 30px;">
+                        <div class="submit-btn close-re-slide" onclick="SubmitEditQues()" style="height: 30px;line-height: 30px;margin-right: 20px;"> 确&nbsp;&nbsp;&nbsp;&nbsp;定</div>
+                        <div class="submit-btn close-re-slide" style="height: 30px;line-height: 30px;background-color:#ff3e3e"> 取&nbsp;&nbsp;&nbsp;&nbsp;消</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="width: 0;height: 0;overflow: hidden;" data-remaster-slide-id="editQues" data-direction="top" id="HiddenSlideBtn"></div>
+        <div id="quesTypeList" class="remaster-slide-box">
+            <div class="slide-content-box">
+                <div class="top-fix" style="position: relative;">
+                    <div class="flex-middle">
+                        选择类别
+                    </div>
+                </div>
+
+                <div class="fzbox" >
+                    <div class="fz-item">
+                        <label for="quesType-signle" style='flex: 1;' >
+                            单选
+                        </label>
+                        <div class="inputbox">
+                            <input  id="quesType-signle" name="questype" value="1" type="radio">
+                        </div>
+                    </div>
+                    <div class="fz-item">
+                        <label for="quesType-muti" style='flex: 1;' >
+                            多选
+                        </label>
+                        <div class="inputbox">
+                            <input  id="quesType-muti"  name="questype" value="2" type="radio">
+                        </div>
+                    </div>
+                    <div class="fz-item">
+                        <label for="quesType-answer" style='flex: 1;' >
+                            问答
+                        </label>
+                        <div class="inputbox">
+                            <input  id="quesType-answer"  name="questype" value="3" type="radio">
+                        </div>
+                    </div>
+
+                    <div class="fz-item" style="justify-content: space-around;margin-top: 30px;">
+                        <div class="submit-btn" onclick="AddNewQues()" style="height: 30px;line-height: 30px;"> 确&nbsp;&nbsp;&nbsp;&nbsp;定</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="fzlist" class="remaster-slide-box " >
+            <div class="slide-content-box">
+                <div class="top-fix" style="position: relative;">
+                    <div class="flex-middle">
+                        选择分组
+                    </div>
+                </div>
+                <div class="fzbox" >
+                    {loop $FzList $fzi}
+                    <div class="fz-item">
+                        <label for="fz_{$fzi['sid']}" style='flex: 1;' >
+                            {$fzi['sname']}
+                        </label>
+                        <div class="inputbox">
+                            <input onclick="AddIdList(this,'{$fzi['sname']}','fz')" id="fz_{$fzi['sid']}" value="{$fzi['sid']}" type="checkbox">
+                        </div>
+                    </div>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+        <div id="bjlist" class="remaster-slide-box" >
+            <div class="slide-content-box">
+                <div class="top-fix" style="position: relative;">
+                    <div class="flex-left close-re-slide">
+                        <div style="padding:5px 10px"> 返回 </div>
+                    </div>
+                    <div class="flex-middle"> 选择班级 </div>
+                </div>
+                <div class="fzbox teabox">
+                    {loop $bjlist $nji}
+                    <div class="tea-box">
+                        <div class="tea-box-title" onclick="TarggleBjBox(this)">
+                        <div>{$nji['njname']}</div>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="nj-dock" style="width: 100%;padding:0 10px 0 20px;display: none;" >
+                            <div class="fz-item" style="flex-direction: row-reverse;">
+                                <remaster-switch class="check-all-remas" data-checkbox-name="123"  data-switch-func="CheckAll(e)" data-inner-text="全选" ></remaster-switch>
+                            </div>
+                            {loop $nji['bjlist'] $bji}
+                                <!-- <div>{$fzti['tname']}</div> -->
+                                <div class="fz-item">
+                                    <label for="tea_{$bji['bjid']}" style='flex: 1;'>
+                                        {$bji['bjname']}
+                                    </label>
+                                    <div class="inputbox">
+                                        <input class="bjinput" onclick="AddIdList(this,'{$bji['bjname']}','bj')" id="tea_{$bji['bjid']}" value="{$bji['bjid']}" data-bjname="{$bji['bjname']}" type="checkbox">
+                                    </div>
+                                </div>
+                            {/loop}
+                        </div>
+                    </div>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="{MODULE_URL}public/mobile/js/remaster.main.js?v=3999sd33333dsdsds.0.1"></script>
+        <script type="text/javascript" src="{MODULE_URL}public/mobile/js/Sortable.js?v=12333122333312test.0.1"></script>
+
+        <script>
+              var Edit = '0'; //编辑。（发送列表是否已有内容）
+              var quesList = []; //主要数据 数组
+              var target = {}; //当前操作的题目
+            $(function () {
+
+                //TODO:会议类型触发change事件以及动画，混用PHP
+                $("select[name='meeting-type']").val('1').change()
+
+                $("#check-all-remas").on("remaster-switch",function(Event,status){
+                })
+
+                 setTimeout(() => {
+                    //   $("select[name='type']").val(5).trigger("change")
+                    //  $("#HiddenSlideBtn").click()
+                 }, 100);
+
+                 new Sortable($('#ques-bock')[0], {
+                    handle: '.handle', // handle's class
+                    animation: 150,
+                    dragClass:'drag-shadow',
+                    chosenClass:'drag-target',
+                    onUpdate:function(){
+                        ReOrderAll()
+                    }
+                });
+            })
+
+            function ClearQuesType(){
+                $("input[name='questype']").prop("checked",false)
+            }
+
+            //重新排序
+            function ReOrderAll(){
+                $("#ques-bock").find(".sortd").each(function(){
+                    let targetid = $(this).data('targetid'),
+                        displayorder = $(this).index() + 1;
+                    $(this).find(".displayorder").text(displayorder)
+                    quesList.map(x=>{
+                        if(x.targetid === targetid){
+                            x.displayorder = displayorder
+                        }
+                    })
+                })
+                return quesList
+            }
+
+            //确定编辑完成
+            function SubmitEditQues(){
+                target.title = $("#editQues [name='questitle']").val()
+                let targetid = 0;
+                quesList.map((x,y)=>{
+                    if(x.targetid === target.targetid){
+                        quesList[y] = deepClone(target)
+                        targetid = target.targetid
+                    }
+                })
+                $(`.sortd[data-targetid='${targetid}'] .title-word`).text(target.title)
+                $(`.sortd[data-targetid='${targetid}'] .answer-box`).html('')
+
+                for (const iterator of target.anslist) {
+                    html =`<div class="answer-item">
+                                    ${iterator}
+                                </div>`;
+                    $(`.sortd[data-targetid='${targetid}'] .answer-box`).append(html)
+                }
+            }
+
+            //编辑单个选项
+            function editAnswer(e){
+                let ansindex = $(e).parents(".answer-root-bock").index()
+                let answer = target.anslist[ansindex]
+                $(e).parents('.answer-root-bock').find('.inedit').css('display','flex').find('input').val(answer)
+                $(e).parents('.answer-root-bock').find('.inshow').hide()
+
+            }
+
+            //取消编辑单个选项
+            function cancelEdit(e){
+                let ansindex = $(e).parents(".answer-root-bock").index()
+                let answer = target.anslist[ansindex]
+                $(e).parents('.answer-root-bock').find('.inedit').hide().find('input').val(answer)
+                $(e).parents('.answer-root-bock').find('.inshow').css('display','flex').find(".show-word").text(answer)
+            }
+
+            //确认编辑单个选项
+            function sureEdit(e){
+                let ansindex = $(e).parents(".answer-root-bock").index()
+                let answer = $(e).parents('.answer-root-bock').find('.inedit input').val()
+                target.anslist[ansindex] = answer;
+                $(e).parents('.answer-root-bock').find('.inedit').hide() 
+                $(e).parents('.answer-root-bock').find('.inshow').css('display','flex').find(".show-word").text(answer)
+            }
+
+            //删除单个选项
+            function deleteAnswer(e){
+                const self = e
+                let ansindex = $(e).parents(".answer-root-bock").index()
+                if(window.confirm(`确认删除选项【${target.anslist[ansindex]}】?`)){
+                    if(target.anslist.length <=2 ){
+                        alert("删除失败，至少保留两个选项");
+                        return
+                    }
+                    $(self).parents('.answer-root-bock').remove()
+                    target.anslist.splice(ansindex,1)
+                }
+            }
+
+            //新增选项
+            function addQuesAnswer(){
+                let html = `<div class="answer-root-bock">
+                                <div class="answer-item inedit">
+                                        <div style="flex:1;" >
+                                            <input type="text" value="新的选项">
+                                        </div>
+                                        <div class="actbox">
+                                            <div class="act" onclick="sureEdit(this)">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                            <div class="act" onclick="cancelEdit(this)">
+                                                <i class="fas fa-times"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="answer-item inshow">
+                                        <div class="show-word"  style="flex:1;" >
+                                            新的选项
+                                        </div>
+                                        <div class="actbox">
+                                            <div class="act" onclick="editAnswer(this)">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </div>
+                                            <div class="act" style='color:red' onclick="deleteAnswer(this)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                 $("#outerHtml .answer-box").append(html)
+                 target.anslist.push('新的选项')
+            }
+
+            //编辑题目
+            function editThisQues(targetid){
+                quesList.map(x=>{
+                    if(x.targetid === targetid){
+                        target = deepClone(x);
+                    }
+                });
+                let html = '',title = target.title;
+                $("#editQues textarea[name='questitle']").val(title)
+                    if(target.type != 3){
+                        html += `<div class="answer-box ${target.typecode}">`;
+                        for (const iterator of target.anslist) {
+                            html += `<div class="answer-root-bock">
+                                        <div class="answer-item inedit">
+                                            <div style="flex:1;" >
+                                                <input type="text" value="${iterator}">
+                                            </div>
+                                            <div class="actbox">
+                                                <div class="act" onclick="sureEdit(this)">
+                                                    <i class="fas fa-check"></i>
+                                                </div>
+                                                <div class="act" onclick="cancelEdit(this)">
+                                                    <i class="fas fa-times" ></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="answer-item inshow">
+                                            <div class="show-word"  style="flex:1;" >
+                                                ${iterator}
+                                            </div>
+                                            <div class="actbox">
+                                                <div class="act" onclick="editAnswer(this)">
+                                                    <i class="fas fa-pencil-alt"></i>
+                                                </div>
+                                                <div class="act" style='color:red' onclick="deleteAnswer(this)">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
+                            $("#editQues .answer-bock").show()
+                        }
+                        html += '</div>';
+                }else{
+                    $("#editQues .answer-bock").hide()
+                }
+                $("#outerHtml").html(html)
+               $("#HiddenSlideBtn").click()
+            }
+
+            //删除题目
+            function deleteThisQues(targetid){
+                if(!window.confirm("该操作不可撤销，是否确认删除？")){
+                    return
+                }
+                let index = 0;
+                quesList.map((x,y)=>{
+                    if(x.targetid === targetid){
+                        index = y
+                    }
+                })
+                quesList.splice(index,1)
+                $(`.sortd[data-targetid='${targetid}']`).remove()
+                ReOrderAll()
+            }
+
+            //新增题目
+            function AddNewQues(){
+                let NewestTargetId = 0;
+                    quesList.map((x)=>{
+                        if(x.targetid > NewestTargetId){
+                            NewestTargetId = x.targetid
+                        }
+                    });
+                    NewestTargetId ++;
+                let type = Number($("input[name='questype']:checked").val()),
+                    typecode = '',
+                    html = '',
+                    item = '',
+                    tt = '',
+                    displayorder = quesList.length + 1,
+                    quesitem = {
+                        targetid:NewestTargetId,
+                        type:type,
+                        displayorder:displayorder,
+                        title:''
+                    }
+                switch (type) {
+                    case 1:
+                        typecode = 'radio';
+                        quesitem.title = '单选题的题目';
+                        tt = '【单选】';
+                        quesitem.anslist = [];
+                         item = '单选题的选项';
+                        quesitem.anslist.push(item)
+                        quesitem.anslist.push(item)
+                        break;
+                    case 2:
+                        tt = '【多选】';
+                        typecode = 'checkbox';
+                        quesitem.title = '多选题的题目';
+                        quesitem.anslist = [];
+                         item = '多选题的选项';
+                        quesitem.anslist.push(item)
+                        quesitem.anslist.push(item)
+                        break;
+                    case 3:
+                        tt = '【问答】';
+                        typecode = 'answer';
+                        quesitem.title = '问答题的题目';
+                        break;
+                    default:
+                        ReTipsShow("请选择题目类型");
+                        return
+                        break;
+                }
+                quesitem.typecode = typecode;
+                let ex = '';
+                if(type != 3){
+                    ex = ` <div class="answer-box ${typecode}">
+                                <div class="answer-item">
+                                    ${quesitem.anslist[0]}
+                                </div>
+                                <div class="answer-item">
+                                    ${quesitem.anslist[1]}
+                                </div>
+                            </div>`;
+                }
+
+                html = `<div class="sortd" data-targetid="${NewestTargetId}" ques-type="${typecode}">
+                        <div class="ques-content-box" >
+                            <div class="ques-title">
+                                <div style="width: 22px;">
+                                    <span class="displayorder">${displayorder}</span>.
+                                </div>
+                                <span style="flex:1" > <span class="title-word" >${quesitem.title}</span> <span style="color:blue" > ${tt} </span></span>  
+                            </div>
+                           ${ex}
+                        </div>
+                        <div  class="ques-active-box">
+                            <div class="active-btn handle" style="color:#61bfd0">
+                                <i class="fas fa-arrows-alt "></i>   拖拽
+                            </div>
+                            <div class="active-btn" onclick="editThisQues(${NewestTargetId})">
+                                <i class="fas fa-pencil-alt"></i> 编辑
+                            </div>
+                            <div class="active-btn" style="color:red" onclick="deleteThisQues(${NewestTargetId})">
+                                <i class="fas fa-trash-alt"></i> 删除
+                            </div>
+                        </div>
+                    </div>`
+                $("#ques-bock").append(html)
+                quesList.push(quesitem)
+                $("#quesTypeList").trigger("re:close")
+            }
+
+            //全选按钮触发func
+            function CheckAll(e) {
+                if ($(e).hasClass("trued")) {
+                    $(e).parents(".tea-box").find(".inputbox input[type='checkbox']").prop("checked", true)
+                } else {
+                    $(e).parents(".tea-box").find(".inputbox input[type='checkbox']").prop("checked", false)
+                }
+                $(e).parents(".nj-dock").find(".bjinput").each(function () {
+                    let value = $(this).val(),
+                        check = $(this).prop('checked')
+                    if (check === false) {
+                        if ($(".invite_cell").find(`input[name='bjlist[]'][value='${value}']`).length !== 0) {
+                            $(".invite_cell").find(`input[name='bjlist[]'][value='${value}']`).parents(".invite_cell").click()
+                        }
+                    } else {
+                        AddIdList(this, $(this).data("bjname"), 'bj')
+                    }
+                })
+            }
+
+            WeixinJSHideAllNonBaseMenuItem();
+            /**微信隐藏工具条**/
+            function WeixinJSHideAllNonBaseMenuItem() {
+                if (typeof wx != "undefined") {
+                    wx.ready(function () {
+                        wx.hideAllNonBaseMenuItem();
+                    });
+                }
+            }
+            var images = {
+                localId: [],
+                serverId: []
+            };
+
+
+            function uploadThumb(e) {
+                wx.chooseImage({
+                    success: function (res) {
+                        images.localId = res.localIds;
+                        var obj = new Image();
+                        obj.src = res.localIds[0];
+                        wx.uploadImage({
+                            localId: images.localId[0],
+                            isShowProgressTips: 1, //// 默认为1，显示进度提示
+                            success: function (res) {
+                                $("input[name='thumb']").val(res.serverId);
+                                $("#imgword").addClass('done').text("已上传")
+                            },
+                            fail: function (res) {
+                                alert(JSON.stringify(res));
+                            }
+                        });
+                    }
+                });
+            }
+
+            //展开/缩进班级年级列表
+            function TarggleBjBox(e) {
+                if ($(e).parent().hasClass('locked')) {
+                    return
+                }
+                if ($(e).hasClass('inshow')) {
+                    $(e).removeClass("inshow")
+                    $(e).siblings().slideUp(150)
+                } else {
+                    $(e).addClass("inshow")
+                    $(e).siblings().slideDown(150)
+                }
+            }
+
+            //整理checkbox选中项
+            function ReInit(type) {
+                const selectValue = Number($("select[name='type']").val());
+
+                switch (type) {
+                    case 'fz':
+                        // if (selectValue !== 4 && Edit !== '1') {
+                        //     $("#sendlist").html('');
+                        //     Edit = '0'
+                        // }
+                        $(".fzbox .fz-item input[type='checkbox']").each(function () {
+                            let value = $(this).val()
+                            if ($(".invite_cell").find(`input[name='fzlist[]'][value='${value}']`).length !==
+                                0) {
+                                $(this).prop("checked", true)
+                            } else {
+                                $(this).prop("checked", false)
+                            }
+                        })
+                        break;
+                    case 'bj':
+                        // if (selectValue !== 5 && Edit !== '1') {
+                        //     $("#sendlist").html('');
+                        // }
+                        $(".teabox .tea-box .fz-item input[type='checkbox']").each(function () {
+                            let value = $(this).val()
+                            if ($(".invite_cell").find(`input[name='bjlist[]'][value='${value}']`).length !==
+                                0) {
+                                $(this).prop("checked", true)
+                            } else {
+                                $(this).prop("checked", false)
+                            }
+                            AllCheckStatusConfirm(this)
+                        })
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+
+            //点击添加进发送列表
+            function AddIdList(e, name, type) {
+                let value = $(e).val(),
+                    inputname = type === 'fz' ? 'fzlist' : 'bjlist',
+                    CName = type === 'fz' ? 'All' : '',
+                    checked = $(e).prop("checked")
+                if (checked === false) {
+                    $(`#sendlist input[name='${inputname}[]'][value='${value}']`).parents('.invite_cell').remove()
+                } else if(checked === true && $(`#sendlist input[name='${inputname}[]'][value='${value}']`).length === 0){
+                    let html = `<span  class="invite_cell ${CName}"  onclick="DeleteJoiner(this,'${name}')">${name}
+                                    <input class="joiner-input" type="hidden" name="${inputname}[]" value="${value}">
+                                    <i class="fa fa-times" style="font-size: 13px;"></i>
+                                </span>`;
+                    $("#sendlist").append(html)
+                }
+                 AllCheckStatusConfirm(e)
+            }
+
+            //检查当前组是否已全选
+            function AllCheckStatusConfirm(e){
+                let AllChecked = true;
+                $(e).parents(".nj-dock").find(".bjinput").each(function(){
+                    if($(this).prop("checked") === false){
+                        AllChecked = false
+                    }
+                })
+                $(e).parents(".nj-dock").find(".check-all-remas").RemasterSwitchStatus(AllChecked)
+            }
+
+            function DeleteJoiner(e) {
+                $(e).remove()
+            }
+
+            //修改发送对象时的触发
+            function ChangeMtype(e) {
+                let value = Number($(e).val())
+                switch (value) {
+                    case 4:
+                        $("#sendlistbox").slideDown(150).find("#sendtitle").text("分组列表").siblings(".fz-btn").show()
+                            .siblings(".bj-btn").hide()
+                        if (Edit === '0') {
+                            $("#sendlist").html('');
+                            $("#sendlistbox").find(".fz-btn").click()
+                        }
+                        Edit = '0'
+                        break;
+                    case 5:
+
+                        $("#sendlistbox").slideDown(150).find("#sendtitle").text("班级列表").siblings(".bj-btn").show()
+                            .siblings(".fz-btn").hide()
+                        if (Edit === '0') {
+                            $("#sendlist").html('');
+                            $("#sendlistbox").find(".bj-btn").click()
+                        }
+                        Edit = '0'
+
+                        break;
+                    default:
+                        $("#sendlistbox").slideUp(150)
+                        break;
+                }
+            }
+
+            function tijiao() {
+                if(!window.confirm("提交后不可编辑，是否确认？")){
+                    return
+                }
+                // let formData = $("#formData").serializeArray();
+                let fzlist = [];
+                $("input[name='fzlist[]']").each(function(i){
+                    fzlist.push($(this).val())
+                });
+                let bjlist = [];
+                $("input[name='bjlist[]']").each(function(i){
+                    bjlist.push($(this).val())
+                });
+                let formData = {
+                    title : $("input[name='title']").val(),
+                    start : $("input[name='start']").val(),
+                    end : $("input[name='end']").val(),
+                    content : $("textarea[name='content']").val(),
+                    type : $("select[name='type'] :selected").val(),
+                    issend : $("select[name='issend'] :selected").val(),
+                    fzlist : fzlist,
+                    bjlist : bjlist,
+                    quesList : quesList,
+                }
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('createquesform', array('op' => 'save','schoolid'=>$schoolid))}",
+                    type: "post",
+                    dataType: "json",
+                    data: formData,
+                    success: function (res) {
+                        jTips(res.msg)
+                        location.href ="{php echo $this->createMobileUrl('quesformlist', array('op' => 'display','schoolid'=>$schoolid))}"
+                    }
+                });
+            }
+        </script>
+    </body>
+
+{php include $this->template('newfooter');}
+</html>

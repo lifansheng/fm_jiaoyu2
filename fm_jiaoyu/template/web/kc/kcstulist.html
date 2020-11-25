@@ -1,0 +1,28 @@
+{loop $stuList['stulist'] $row}
+<li class="menu-item {if $row['bjname'] == '未分班'}menu-open{/if}">
+    
+    <div class="table-div table-div-menu" style="padding: 12px 37px;">
+        <div class="table-div__item name"><span style="font-weight: bolder;">{$row['bjname']}</span>&nbsp;&nbsp;&nbsp;<a onclick="checkAll(`{$row['bjid']}`)">全选</a>&nbsp;&nbsp;&nbsp;&nbsp;<a onclick="UncheckAll(`{$row['bjid']}`)">全不选</a></div>
+        <div class="table-div__item name"></div>
+        <div class="table-div__item action">
+            <div class="link-group">
+                <a href="javascript:;" class="toggle"></a>
+            </div>
+        </div>
+    </div>
+    <ul class="two nowfztea">
+        <li class="menu-item">
+            <div class="input-group text-info" style="padding: 0px 150px 0px 50px;">
+            {loop $row['stulist'] $item}
+                <label  class="checkbox-inline" style="min-width:40px;margin-left: 10px;padding-left:0px"><input type="checkbox" name='sid' allId="{$row['bjid']}" value="{$item['sid']}"style="float: none;" > {$item['s_name']}</label>
+            {/loop}
+            </div>
+        </li>
+    </ul>
+</li>
+{/loop}
+<script>
+    $('.toggle').click(function () {
+        $(this).parent().parent().parent().parent().toggleClass('menu-open')
+    })
+</script>

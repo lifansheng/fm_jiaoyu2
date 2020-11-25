@@ -1,0 +1,1309 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+.max{width:100%;height:auto;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);}
+.min{width:60px;height:auto;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);}
+.hide{display:none}
+.show{display:block}
+/**粉丝图集**/
+.zhuliclass{ float:left; margin-left: 16px;} .zlheader{ width: 25px; border-radius: 25px; margin-left: -15px;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);} .fans_box{ width: 100%; margin-top: 5px; height: 23px; } .fans_text_title{ font-size: 11px; color: #8c8787; float: left; } .pay_cose{ font-size: 12px; font-weight: bold; color: red; float: left; }
+</style>
+    <div class="panel panel-info">
+		<div class="panel-body">
+			<div class="panel-info">
+				<div class="panel-heading" style="margin-bottom: 20px;">学生筛选</div>
+				<form action="./index.php" method="get" class="form-horizontal" role="form" id="DefaultForm">
+					<input type="hidden" name="c" value="site" />
+					<input type="hidden" name="a" value="entry" />
+					<input type="hidden" name="m" value="fm_jiaoyu" />
+					<input type="hidden" name="do" value="students" />
+					<input type="hidden" name="schoolid" value="{$schoolid}" />
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">姓名</label>
+						<div class="col-sm-2 col-lg-2">
+							<input class="form-control" name="keyword" id="" placeholder="学生姓名" type="text" value="{$_GPC['keyword']}">
+						</div>
+						{if $schooltype}
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="kc_id" id="kc_id" class="form-control">
+								<option value="">课程</option>
+								{loop $allkclist $row}
+								<option value="{$row['sid']}" {if $row['sid'] == $_GPC['kc_id']} selected="selected"{/if}>{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						{else}
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="nj_id" id="xq" class="form-control">
+								<option value="">{NJNAME}</option>
+								{loop $xueqi $row}
+								<option value="{$row['sid']}" {if $row['sid'] == $_GPC['nj_id']} selected="selected"{/if}>{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="bj_id" id="bj_select" class="form-control">
+								<option value="">班级</option>
+								{loop $allbj $row}
+								<option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						{/if}
+					</div>
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">类型</label>
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="bd_type" class="form-control">
+								<option value="">状态</option>
+								<option value="1" {if $_GPC['bd_type'] == 1} selected="selected"{/if}>已绑定</option>
+								<option value="2" {if $_GPC['bd_type'] == 2} selected="selected"{/if}>未绑定</option>
+							</select>
+						</div>
+						{if !$schooltype}
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="s_type" class="form-control">
+								<option value="">类型</option>
+								<option value="1" {if $_GPC['s_type'] == 1} selected="selected"{/if}>走读</option>
+								<option value="2" {if $_GPC['s_type'] == 2} selected="selected"{/if}>住校</option>
+								<option value="3" {if $_GPC['s_type'] == 3} selected="selected"{/if}>半通</option>
+							</select>
+						</div>
+						{/if}
+						<div class="col-sm-2 col-lg-1">
+							<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+						</div>
+						{if !$_W['schooltype']}
+						<div class="col-sm-2 col-lg-1">
+							<button class="btn btn-success glow" name="outStu" value="outStu"><i class="fa fa-download"></i>导出学生</button>
+						</div>  
+						{/if}
+					</div>
+				</form>
+				<div class="alert we7-page-alert">
+					{if empty($_GPC['bj_id']) && empty($_GPC['bd_type']) && empty($_GPC['nj_id'])}
+					<p><i class="wi wi-info-sign"></i> 本校学生人数:<strong class="text-danger">{$total}个</strong></p>
+					{else}
+					<p><i class="wi wi-info-sign"></i> 检索到学生人数:<strong class="text-danger">{$total}个</strong></p>
+					{/if}
+				</div>
+			</div>
+			<div class="panel-info">
+				<div class="form-group">
+					<a class="btn btn-sm btn-primary glow qx_702" onclick="edite_stu(0)"><i class="fa fa-plus"></i> 添加学生</a>
+					<a class="btn btn-sm btn-success glow qx_703" href="javascript:;" onclick="$('.file-container').slideToggle();">批量导入</a>
+					<a class="btn btn-sm btn-primary glow qx_702" href="{php echo $this->createWebUrl('students', array('op' => 'makecode', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认？');return false;">批量生成绑定码</a>
+					<!-- {if $_W['isfounder'] || $_W['role'] == 'owner'}<a class="btn btn-success" href="{php echo $this->createWebUrl('students', array('op' => 'deleteallstudents', 'schoolid' => $schoolid))}" onclick="return confirm('您确定删除本校所有学生信息吗？此操作不可恢复，确认删除？');return false;">清空所有学生</a>{/if} -->
+					<a class="btn btn-sm btn-primary glow qx_702" href="{php echo $this->createWebUrl('students', array('op' => 'fixavatar', 'schoolid' => $schoolid))}" >修复头像</a>
+					{if !$schooltype}
+					<a class="btn btn-sm btn-primary glow qx_702" href="{php echo $this->createWebUrl('students', array('op' => 'GetAllRoomStu', 'schoolid' => $schoolid))}" >导出住校生</a>
+					{/if}
+					<a class="btn btn-sm btn-primary glow qx_705" href="javascript:;" onclick="$('.file-container_ew').slideToggle();"><i class="fa fa-qrcode"></i> 打印二维码</a>
+					<!-- {if $_W['isfounder']}<a class="btn btn-primary" href="{php echo $this->createWebUrl('students', array('op' => 'userinfo', 'schoolid' => $schoolid))}" >整理用户</a>{/if} -->
+					<a href="{php echo $this->createWebUrl('students', array('op' => 'OutBdInfo', 'schoolid' => $schoolid,'keyword'=>$_GPC['keyword'],'nj_id'=>$_GPC['nj_id'],'bj_id'=>$_GPC['bj_id'],'bd_type'=>$_GPC['bd_type'],'s_type'=>$_GPC['s_type']))}" class="btn btn-sm btn-success glow qx_704"><i class="fa fa-download"></i>导出绑定信息</a> 
+					{if is_showpf()}
+						<a class="btn btn-sm btn-success glow qx_703" href="javascript:;" onclick="$('.file-container_bj').slideToggle();">批量修改班级</a>
+						<a href="{php echo $this->createWebUrl('students', array('op' => 'OutStuInfo', 'schoolid' => $schoolid,'keyword'=>$_GPC['keyword'],'nj_id'=>$_GPC['nj_id'],'bj_id'=>$_GPC['bj_id'],'bd_type'=>$_GPC['bd_type'],'s_type'=>$_GPC['s_type']))}" class="btn btn-sm btn-success glow"><i class="fa fa-download"></i>导出学生详细信息</a>
+					{/if}
+						<a href="javascript:;" class="btn btn-sm btn-success glow" onclick="AdvancedClassFunc()">高级分班</a>
+					{if keep_Ls()}
+						<a href="javascript:;" class="btn btn-sm btn-success glow" onclick="batchBangding()">批量修改绑定码</a>
+						<a href="javascript:;" class="btn btn-sm btn-success glow" onclick="javascript:$('#overStuModal').modal('toggle');">删除过期学生</a>
+					{/if}
+
+					{if CheckXZF($schoolid)}
+						<a class="btn btn-sm btn-success glow" href="javascript:;" onclick="UpToXZF()"><i class="fa fa-cloud-upload"></i> 同步信息至校智付</a>
+					{/if}
+					
+				</div>
+				<div class="panel panel-default file-container" style="display:none;">
+					<div class="panel-body">
+						<form id="form">
+							<input name="viewfile" id="viewfile" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+							<a class="btn btn-sm btn-primary glow"><label for="unload" style="margin: 0px;padding: 0px;">上传...</label></a>
+							<input type="file" class="pull-left btn-primary glow span3" name="file" id="unload" style="display: none;" onchange="document.getElementById('viewfile').value=this.value;this.style.display='none';">
+							<a class="btn btn-sm btn-primary glow" onclick="submits('input_stu','form');">导入数据</a>
+							{if keep_sk77()}
+							<a class="btn btn-sm btn-info glow" href="../addons/fm_jiaoyu/public/example/example_students_withsell.xls"><i class="fa fa-download"></i>下载导入模板</a>
+							{else}
+							<a class="btn btn-sm btn-info glow" href="../addons/fm_jiaoyu/public/example/example_students.xls"><i class="fa fa-download"></i>下载导入模板</a>
+							{/if}
+						</form>
+					</div>
+				</div>
+				<div class="panel panel-default file-container_bj" style="display:none;">
+					<div class="panel-body">
+						<form id="form_bj">
+							<input name="viewfile_bj" id="viewfile_bj" type="text" value="" style="margin-left: 40px;" class="form-control-excel" readonly>
+							<a class="btn btn-sm btn-primary glow"><label for="unload_bj" style="margin: 0px;padding: 0px;">上传...</label></a>
+							<input type="file" class="pull-left btn-primary glow span3" name="file1" id="unload_bj" style="display: none;" onchange="document.getElementById('viewfile_bj').value=this.value;this.style.display='none';">
+							<a class="btn btn-sm btn-primary glow" onclick="submits('input_stu_bj','form_bj');">导入数据</a>
+							<button form="DefaultForm" name="out_BjExcel" value="out_BjExcel" class="btn btn-sm btn-info glow" ><i class="fa fa-download"></i>下载学生班级信息</b>
+						</form>
+					</div>
+				</div>
+				<!-- 打印学生二维码 -->
+				<div class="panel panel-default file-container_ew" style="display:none;">
+					<div class="panel-body">
+						<form  action="./index.php" method="get" class="form-horizontal" target="_blank" id="qrFrom" role="form">
+							<input type="hidden" name="c" value="site" />
+							<input type="hidden" name="a" value="entry" />
+							<input type="hidden" name="m" value="fm_jiaoyu" />
+							<input type="hidden" name="do" value="qrlist" />
+							<input type="hidden" name="schoolid" value="{$schoolid}" />
+							<input type="hidden" name="op" value="choose" />
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择班级</label>
+								<div class="col-sm-2 col-lg-2">
+									<select style="margin-right:15px;" name="bj_id_choose" id="bj_id_choose" class="form-control">
+										<option value="">请选择班级</option>
+										{loop $allbj $row}
+										<option value="{$row['sid']}" >{$row['sname']}</option>
+										{/loop}
+									</select>
+								</div>
+								<div class="col-sm-2 col-lg-2" style="margin-left:1%">
+									<a style="color:#fff" class="btn btn-sm btn-success qx_705" onclick="GetOut();">条件打印二维码</a>
+								</div>
+								<div class="col-sm-2 col-lg-2">
+									 <a class="btn btn-sm btn-success qx_705" target="_blank" href="{php echo $this->createWebUrl('qrlist', array('op' => 'display', 'schoolid' => $schoolid))}">打印所有二维码</a>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+
+	<div class="modal fade" id="AdvClassModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document" style="left:25%">
+			<form id="gjfbList" method="post" class="form-horizontal form" >
+			<div class="modal-content" >
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">高级分班</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" >目标班级</label>
+						<div class="col-sm-4">
+							<select style="margin-right:15px;" name="Adv_njSelect" class="form-control">
+								<option value="-1">请选择年级</option>
+								{loop $xueqi $row}
+								<option value="{$row['sid']}" >{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						<div class="col-sm-4">
+							<select style="margin-right:15px;" name="Adv_bjSelect" class="form-control">
+								<option value="-1">请选择班级</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" >学生所属年级</label>
+						<div class="col-sm-4">
+							<select style="margin-right:15px;" name="Adv_stuNjSelect" class="form-control" onchange="GetAdvStuList(this)">
+								<option value="0">请选择年级</option>
+								<option value="-1">未分配年级</option>
+								{loop $xueqi $row}
+								<option value="{$row['sid']}" >{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+					</div>
+					<div style="height: 400px;width: 100%;padding:10px 40px" id="Adv_stuBox" >
+						请选择欲分配学生的所属年级
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="tijiao()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="overStuModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document" style="left:25%">
+			<form method="post" class="form-horizontal form" >
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">删除毕业班级学生</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">目标班级</label>
+						<div class="col-sm-4">
+							<select style="margin-right:15px;" id="overBjId" class="form-control">
+								<option value="-1">请选择年级</option>
+								{loop $overBj $row}
+								<option value="{$row['sid']}" >{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="delOk()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="BangdingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document" style="left:25%">
+			<form id="BjCode" method="post" class="form-horizontal form" >
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">批量修改班级绑定码</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label class="col-sm-2 control-label" >选择班级</label>
+						<div class="col-sm-4">
+							<select style="margin-right:15px;" name="bangding_nj" class="form-control">
+								<option value="-1">请选择年级</option>
+								<option value="0">未分班</option>
+								{loop $xueqi $row}
+								<option value="{$row['sid']}" >{$row['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						<div class="col-sm-4">
+							<select style="margin-right:15px;" name="bangding_bj" class="form-control">
+								<option value="-1">请选择班级</option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label" >设置绑定码</label>
+						<div class="col-sm-4">
+							<input type="text" name="code" class="form-control">
+						</div>
+					</div>
+					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" onclick="tijiao2()">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+			</form>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="UpToXZFModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+		<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);width:600px;">
+			<div class="modal-content" style="border-radius: 5px;overflow: hidden;max-height: 300px;padding:40px 80px" >
+				<div style="overflow-y: auto;max-height: 220px;">
+					<div style="font-size: 120%;padding:0 10px;line-height: 26px;" id="StuSyncDoneWord">
+						
+					</div>
+					<div style="font-size: 120%;background-color: #b2ece8;padding:0 10px;border-radius: 5px;line-height: 26px;" >
+						<span id="StuSyncingWord" ></span> <i id="RSF" class="fa fa-refresh fa-spin" style="font-size: 80%;line-height: 120%;"></i>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var word = "";
+		function UpToXZF(){
+			$("#RSF").show()
+			$("#UpToXZFModal").modal("show")
+			$("#StuSyncDoneWord").html('')
+			word = "正在计算学生数据";
+			$("#StuSyncingWord").text(word)
+			setTimeout(() => {
+				AddAndBottom("正在连接校智付服务")
+				setTimeout(() => {
+				AddAndBottom("开始同步学生")
+				syncstuinfo(-1,1)
+
+
+				}, 1000);
+				
+			}, 1000);
+			// $.ajax({
+			// 	url: "{php echo $this->createWebUrl('theclass',array('schoolid'=>$schoolid,'op'=>'syncclass'))}",
+			// 	type: "post",
+			// 	dataType: "json",
+			// 	success: function (res) {
+			// 		$("#synctbhtml").text(res.msg)
+			// 		setTimeout(() => {
+			// 			$("#UpToXZFModal").modal("hide")
+			// 		}, 1000);
+			// 	},
+			// 	error: function (jqXHR, textStatus, errorThrown){
+			// 		console.log(jqXHR)
+			// 		console.log(textStatus)
+			// 		console.log(errorThrown)
+			// 		//DoSomething
+			// 	}
+			// });
+		}
+
+		function AddAndBottom(newword,type = 'normal'){
+			let A = '';
+			$("#RSF").show()
+
+			
+			$("#StuSyncDoneWord").append(`<div >${word}</div>`);
+			let ele = $("#StuSyncDoneWord").parent()[0];
+			ele.scrollTop = ele.scrollHeight;
+			word = newword
+
+			if(type === 'success'){
+				$("#RSF").hide()
+				A = `<span style="color:#6d97e6">同步成功：</span>`
+				word =  A + newword
+				$("#StuSyncingWord").html(word)
+				setTimeout(() => {
+					AddAndBottom('5秒后自动退出，或点击背景空白处退出','finish')
+				}, 1000);
+				return
+			}
+
+			if(type === 'error'){
+				$("#RSF").hide()
+				A = `<span style="color:red">同步失败：</span>`
+				word =  A + newword
+				console.log(word)
+				$("#StuSyncingWord").html(word)
+				setTimeout(() => {
+					AddAndBottom('5秒后自动退出，或点击背景空白处退出','finish')
+				}, 1000);
+				return
+			}
+
+			if(type === 'finish'){
+				$("#RSF").hide()
+				$("#StuSyncingWord").html( word)
+				setTimeout(() => {
+					$("#UpToXZFModal").modal("hide")
+				}, 5000);
+				return
+			}
+
+			$("#StuSyncingWord").html(word)
+
+		}
+
+		function syncstuinfo(total,pageindex){
+			let url = "{php echo $this->createWebUrl('students', array('schoolid' => $schoolid,'op'=>'syncstuinfo'))}";
+			$.ajax({
+				url: url,
+				type: "post",
+				dataType: "json",
+				data:{
+					total:total,
+					page:pageindex
+				},
+				success: function (res) {
+					if(res.status === true){ //同步成功
+						let pageindex = res.page
+						let total = res.total
+						let Ap = Math.ceil(total/200)
+						let Pers = Math.ceil((pageindex - 1)/Ap * 100)
+						AddAndBottom(`已同步${Pers}%`)
+						if(pageindex > Ap){
+							AddAndBottom(`所有学生均已同步完成`,'success')
+							return
+						}
+
+						syncstuinfo(total,pageindex)
+					}else{
+						AddAndBottom(res.msg,'error')
+
+					}
+				},
+				error: function (jqXHR, textStatus, errorThrown){
+					console.log(jqXHR)
+					console.log(textStatus)
+					console.log(errorThrown)
+					//DoSomething
+				}
+			});
+		}
+
+		function GetAdvStuList(e){
+			let NjId = $(e).val()
+			let url = "{php echo $this->createWebUrl('students', array('schoolid' => $schoolid,'op'=>'AdvGetStuList'))}"
+			$.ajax({
+				url: url,
+				type: "post",
+				dataType: "html",
+				data:{
+					NjId : NjId
+				},
+				success: function (res) {
+					$("#Adv_stuBox").html(res)
+				},
+				error: function (jqXHR, textStatus, errorThrown){
+					console.log(jqXHR)
+					console.log(textStatus)
+					console.log(errorThrown)
+					//DoSomething
+				}
+			});
+		}
+
+		function AdvancedClassFunc(){
+			$("select[name=Adv_stuNjSelect]").val(0)
+			$("select[name=Adv_stuNjSelect").change()
+
+			$("select[name=Adv_njSelect").val(-1)
+			$("select[name=Adv_njSelect").change()
+			$("#AdvClassModal").modal("show")
+
+			$("select[name=Adv_njSelect").off("change")
+			$("select[name=Adv_njSelect").on("change",function() {
+				let NjId = $(this).val(),classArr = []
+				let url = "{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist','schoolid'=>$schoolid))}"
+				$.ajax({
+					url: url,
+					type: "post",
+					dataType: "json",
+					data:{
+						gradeId : NjId
+					},
+					success: function (res) {
+						classArr = res.bjlist
+						let html = `<option value="-1">请选择班级</option>`
+						for(let i of classArr){
+							html += `<option value="${i.sid}">${i.sname}</option>`;
+						}
+						$("select[name=Adv_bjSelect]").html(html)
+					},
+					error: function (jqXHR, textStatus, errorThrown){
+						console.log(jqXHR)
+						console.log(textStatus)
+						console.log(errorThrown)
+					}
+				});
+
+			})
+		}
+		
+		function GetOut(){
+			var bj_id = $("#bj_id_choose").val();
+			if(bj_id== null || !bj_id){
+				alert("请选择班级");
+				return;
+			}
+			document.forms.qrFrom.submit();
+		};
+		$(document).ready(function() {
+			$("#xq").change(function() {
+				var cityId = $("#xq option:selected").attr('value');
+				var type = 1;
+				changeGrade(cityId, type, function() {
+				});
+			});
+		});
+		
+		function changeGrade(gradeId, type) {
+			//alert(cityId);
+			var schoolid = "{$schoolid}";
+			var classlevel = [];
+			//获取班次
+			$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+				data = JSON.parse(data);
+
+
+
+				classlevel = data.bjlist;
+				var htmls = '';
+				htmls += '<option value="">请选择班级</option>';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+					}
+				}
+				$('#bj_select').next().remove();
+				$('#bj_select').html(htmls);
+			});
+		}
+
+		function tijiao(){
+			let data = $('#gjfbList').serializeArray();
+			if($("select[name='Adv_bjSelect']").val() == '-1'){
+				alert('请选择目标班级');
+				return
+			}
+			$.ajax({
+				url: "{php echo $this->createWebUrl('students',array('op'=>'batchFb','schoolid'=>$schoolid))}",
+				type: "post",
+				dataType: "json",
+				data:data,
+				success: function (res) {
+					alert(res.msg)
+					$("#AdvClassModal").modal("hide")
+				},
+				error: function (jqXHR, textStatus, errorThrown){
+					console.log(jqXHR)
+					console.log(textStatus)
+					console.log(errorThrown)
+					//DoSomething
+				}
+			});
+
+		}
+	
+		function batchBangding(){
+
+			$("select[name=bangding_nj").val(-1)
+			$("select[name=bangding_nj").change()
+			$("#BangdingModal").modal("show")
+
+			$("select[name=bangding_nj").off("change")
+			$("select[name=bangding_nj").on("change",function() {
+				let NjId = $(this).val(),classArr = []
+				console.log(NjId)
+				let url = "{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist','schoolid'=>$schoolid))}"
+				$.ajax({
+					url: url,
+					type: "post",
+					dataType: "json",
+					data:{
+						gradeId : NjId
+					},
+					success: function (res) {
+						classArr = res.bjlist
+						console.log(classArr)
+						let html = `<option value="-1">请选择班级</option><option value="0">未分班</option>`
+						for(let i of classArr){
+							html += `<option value="${i.sid}">${i.sname}</option>`;
+						}
+						$("select[name=bangding_bj]").html(html)
+					}
+				});
+
+			})
+		}
+	
+		function tijiao2(){
+			let data = $('#BjCode').serializeArray();
+			if($("select[name='bangding_nj']").val() == '-1' || $("select[name='bangding_bj']").val() == '-1'){
+				alert('请选择班级年级');
+				return
+			}
+			$.ajax({
+				url: "{php echo $this->createWebUrl('students',array('op'=>'batchBangding','schoolid'=>$schoolid))}",
+				type: "post",
+				dataType: "json",
+				data:data,
+				success: function (res) {
+					alert(res.msg)
+					$("#BangdingModal").modal("hide")
+				},
+				error: function (jqXHR, textStatus, errorThrown){
+					console.log(jqXHR)
+					console.log(textStatus)
+					console.log(errorThrown)
+					//DoSomething
+				}
+			});
+
+		}
+	
+	</script>
+
+
+	{template 'public/excel_input'}
+    <div class="panel panel-default">
+		{if $schooltype}
+        <div class="panel-heading" style="font-size:13px">
+			<div class="pull-left we7-form">
+				<input id="credit1" type="radio" {if $_GPC['status'] == -1}checked="checked"{/if} onclick="changetype(-1)">
+				<label for="credit1">全部</label>
+				<input id="credit2" type="radio" {if $_GPC['status'] == 0}checked="checked"{/if} onclick="changetype(0)">
+				<label for="credit2">正式学员</label>
+				<input id="credit3" type="radio" {if $_GPC['status'] == 1}checked="checked"{/if} onclick="changetype(1)">
+				<label for="credit3">临时学员</label>
+				<script>
+					changetype = function(type) {
+						url = "{php echo $this->createWebUrl('students',array('op'=>'display','schoolid'=>$schoolid))}"+"&status="+type
+						location.href = url;
+					}
+				</script>
+			</div>
+		</div>
+		{/if}	
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+                    <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+					{if !$schooltype}<th style="width:3%">学号</th>{/if}
+					<th style="width:5%;text-align:center">姓名</th>
+					<th style="width:5%;">详情</th>
+                    {if $logo['is_stuewcode'] ==1}
+					<th style="width:8%;">二维码</th>
+					{/if}
+					{if !$schooltype}
+					<th style="width:10%;">{if !$schooltype}班级/{/if}家庭地址</th>
+					{/if}
+					{if !$schooltype}
+						{if is_showap() }
+						<th style="width:8%;">宿舍/楼栋</th>
+						{/if}
+					{/if}
+					{if keep_sk77() && $_W['schooltype']}
+					<th style="width:8%;">所属经纪人</th>
+					{/if}
+					<th style="width:6%;"></br>绑定信息</th>
+                    <th style="width:7%;">报名时间</th>
+                    {if $_W['schooltype']}
+                 	<th style="width:10%;">报名课程</th>
+                 	{/if}
+                    <th class="qx_706" style="width:5%;">录入成绩</th>
+					<th style="width:4%;">绑定码</th>
+					{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+					<th style="width:4%;">是否同步</th>
+					{/if}
+					{if ( is_showpf() || keep_DD()) && !$_W['schooltype']}
+					<th style="width:4%;">资料卡</th>
+					{/if}
+					{if keep_Ls()}
+					<th style="width:4%;">考勤推送</th>
+					{/if}
+					<th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+				</tr>
+			</thead>
+			<tbody id="stu_box">
+				{loop $list $item}
+				<tr id="stuid_{$item['id']}">
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					{if !$schooltype}
+					<td>
+                        {$item['numberid']}
+                    </td>
+					{/if}
+					<td style="text-align:center">
+                        <img style="width:50px;height:50px;border-radius:50%;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);" src="{if !empty($item['icon'])}{php echo tomedia($item['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" width="50" style="border-radius: 3px;" /></br>{$item['s_name']}
+                    </td>	
+					<td>
+					{if $item['s_type'] == 1}
+						<span class="badge badge-light-warning">走读</span>
+						{elseif $item['s_type'] == 2}
+						<span class="badge badge-light-info">住校</span>
+						{elseif $item['s_type'] == 3}
+						<span class="badge badge-light-info">半通</span>
+					{/if}
+					{if $item['sex'] == 1}<span class="badge badge-light-primary">男</span>{else}<span class="badge badge-light-success">女</span>{/if}
+					{if $item['birthdate']}
+						<span class="badge badge-light-info">{php echo (date('Y',TIMESTAMP) - date('Y',$item['birthdate']))}岁</span>
+						<span class="badge badge-light-secondary">{php echo date('Y-m-d',$item['birthdate'])}</span>
+					{/if}
+					{$item['mobile']}
+					{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+						{if  !empty($item['typt_user_id'])}
+						<span class="label label-primary">已同步</span>
+						{/if}
+					{/if}
+					</td>
+					{if $logo['is_stuewcode'] ==1}
+					<td id="ewcode{$item['id']}">
+					{if $item['img_qr']}
+						{if $item['overtime'] && $item['qrcid'] == $item['id']}
+							<img class="min" onclick="img({$item['id']})" id="img{$item['id']}" src="{php echo tomedia($item['img_qr'])}"/>
+							<br><span id="sub{$item['id']}" class="label label-warning">{$item['subnum']}次扫描</span>
+							<br><span id="day{$item['id']}" class="label label-info">{$item['restday']}天后失效</span>
+						{else}
+							<span class="label label-danger">已过期</span></br></br>
+							<a class="btn btn-default btn-sm qx_702"  title="重新生成二维码" id="recreatqr{$item['id'],}" onclick="recreate_qr({$item['id']},{$item['qrcode_id']});">重新生成</i></a>
+						{/if}
+					{else}
+						<a class="btn btn-default btn-sm qx_702"  title="生成二维码" id="creatqr{$item['id']}" onclick="creatqr({$item['id']});">生成</i></a>
+					{/if}
+                    </td>
+					{/if}
+					{if !$schooltype}
+                    <td>
+						 {if !empty($category[$item['xq_id']])}{$category[$item['xq_id']]['sname']}{/if}丨{if !empty($category[$item['bj_id']])}{$category[$item['bj_id']]['sname']}{/if}</br>
+                        </br>
+						<!-- {$item['area_addr']} -->
+                    </td>
+					{/if}	
+					{if !$schooltype}
+						{if is_showap()}
+						<td>
+							{$item['roomname']}</br>
+							{$item['apname']}
+						</td>
+						{/if}
+					{/if}
+					{if keep_sk77() && $_W['schooltype']}
+					<td>
+						{$item['sellteaname']}
+					</td>
+					{/if}
+                    <td>
+						{if $item['fanslist']}
+							<span class="zhuliclass">
+							{loop $item['fanslist'] $row}
+								<img class="zlheader" src="{$row}">
+							{/loop}
+							</span></br></br>
+							<a class="btn btn-light-secondary btn-xs qx_707" onclick="show_wxbd({$item['id']})" title="绑定信息"><i class="fa fa-wechat">&nbsp;&nbsp;{$item['wxbdrs']}人绑定</i></a>
+						{/if}
+				    </td>					
+					<td>{php echo date('Y-m-d',$item['seffectivetime'])}</td>  	
+					{if $_W['schooltype']}		
+					<td>
+						{if $item['mutikc']}
+							{loop $item['mutikc'] $row}
+								<a class="btn btn-primary btn-sm" style="padding:3px 6px;" target="_blank" href="{php echo $this->createWebUrl('kecheng', array('id' => $row['kcid'], 'op' => 'kc_info', 'schoolid' => $schoolid))}" title="{$row['kcname']}">{$row['kcname']}</br>
+									总课时：{$row['allks']}</br>
+									已用课时：{$row['hasSign']}</br>
+									{if $row['freeks']}
+									赠送课时：{$row['freeks']}</br>
+								{/if}
+								</a>
+							{/loop}
+						{else}
+						{loop $item['bmkc'] $row}
+							{$row}</br>
+						{/loop}
+						{/if}
+					</td>	
+					{/if}			
+                    <td><a class="btn btn-light-secondary btn-sm qx_706" onclick="show_cjbox({$item['id']})" title="录入成绩"><i class="fa fa-qrcode">&nbsp;录成绩</i></a></td>
+					<td>{$item['code']}</td>
+					{if ( is_showpf() || keep_DD()) && !$_W['schooltype']}
+					<td class="qx_709"><a class="btn btn-light-secondary btn-sm" onclick="show_order({$item['id']})" title="修改资料卡"><i class="fa fa-qrcode">&nbsp;资料卡</i></a></td>
+					{/if}
+					{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+					<td>
+						{if  !empty($item['typt_user_id'])}
+						<span class="label label-primary">已同步</span>
+						{/if}
+					</td>
+					{/if}
+
+					{if keep_Ls()}
+					<td style="text-align:right;">
+						<input type="checkbox" value="{$item['isopen']}" name="isopen" data-sid="{$item['id']}" {if $item['isopen'] == 1}checked{/if}>	
+					</td>
+					{/if}
+					<td class="qx_e_d" style="text-align:right;">
+						<a class="btn btn-default btn-sm qx_702" onclick="edite_stu({$item['id']})" title="编辑"><i class="fa fa-pencil"></i></a>
+						<a class="btn btn-default btn-sm qx_708" onclick="deletestu({$item['id']})" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    {if !$schooltype}
+					<div class="col-sm-2 col-lg-2" style="width:14%">
+                        <select id="bj_ids" class="form-control">
+                            <option value="0">选择班级</option>
+                            {loop $allbj $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					{/if}	
+					{if !$schooltype}<input type="button" class="btn btn-primary" name="change_bj" value="批量转移班级" />{/if}
+					{if $logo['is_stuewcode'] ==1}<input type="button" class="btn btn-primary" name="add_qr" id="add_qr" value="批量生成二维码" />{/if}
+                    <input type="button" class="btn btn-primary qx_708" name="btndeleteall" value="批量删除" />					
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<!-- 编辑或新增学生 modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="stu_edite_box" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog myModalleft">
+		<div class="loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="ed_stubox" style="max-height:unset !important;">
+			
+		</div>
+	</div>
+</div>
+<!-- 查看微信绑定信息 modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="stu_wx_box" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog myModalleft">
+		<div class="loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="wx_box" style="max-height:unset !important;">
+			
+		</div>
+	</div>
+</div>
+<!-- 查看导入成绩 modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="stu_cj_box" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog myModalleft">
+		<div class="loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="cj_stubox" style="max-height:unset !important;">
+			
+		</div>
+	</div>
+</div>
+
+
+
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<form  id="stu_infocard_form" method="post" class="form-horizontal form" >
+		<div class="modal-content" id="table_this" >
+		</div>
+		</form>
+	</div>
+</div>
+<script type="text/javascript">
+
+
+
+function show_cjbox(sid){
+	$('.loading-layer').show()
+	$('#cj_stubox').empty();
+	$('#stu_cj_box').modal('toggle');
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'stu_cjinfo','optype' => 'list_box', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			id:sid,
+		},
+		success: function(result) {
+			setTimeout(function() {
+				$('.loading-layer').hide()
+			}, 400);
+			$('#cj_stubox').html(result)
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+function one_stu(sid,type){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'display', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			one_sid:sid,
+		},
+		success: function(result) {
+			if(type == 'old'){
+				$("#stuid_"+sid).hide(100)
+				$("#stuid_"+sid).replaceWith(result)
+				$("#stuid_"+sid).show(100)
+			}else{
+				$("#stu_box").prepend(result)
+			}
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+function show_wxbd(sid){
+	$('.loading-layer').show()
+	$('#wx_box').empty();
+	$('#stu_wx_box').modal('toggle');
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'stu_bdinfo', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			id:sid,
+		},
+		success: function(result) {
+			setTimeout(function() {
+				$('.loading-layer').hide()
+			}, 400);
+			$('#wx_box').html(result)
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+
+
+function checkIdCard(idcard) {
+    const regIdCard = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+    if (!regIdCard.test(idcard)) {
+        errorMsg = '身份证号填写有误';
+        return false;
+    } else {
+        return true;
+    }
+}
+
+function edite_stu(sid){
+	$('.loading-layer').show()
+	$('#ed_stubox').empty();
+	$('#stu_edite_box').modal('toggle');
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'stu_info', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			id:sid,
+		},
+		success: function(result) {
+			setTimeout(function() {
+				$('.loading-layer').hide()
+			}, 400);
+			$('#ed_stubox').html(result)
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+function add_stu() {
+	var form = new FormData(document.getElementById('stu_info'));
+	//表单提交前的各种验证
+	var s_name = form.get('s_name')
+	if(!s_name){
+		alert('错误,请设置学生名称！');
+		return false
+	}
+	var sid = form.get('id')
+	{if !$_W['schooltype']}
+	
+		var kcabbr = form.get('s_type')
+		if(!kcabbr){
+			alert('错误,选择学生类型！');
+			return false
+		}
+		var xq = form.get('xueqi')
+		if(xq == 0){
+			alert('错误,请年级,以便管理！');
+			return false
+		}
+		var bj = form.get('bj')
+		if(bj == 0){
+			alert('错误,请班级,以便管理！');
+			return false
+		}
+	{/if}
+	
+	var code = form.get('code')
+	var mobile = form.get('mobile')
+	var numberid = form.get('numberid')
+	if(!code && !mobile && !numberid){
+		alert('抱歉,请在学号，绑定码，手机号码至少设置一种以便用户绑定');
+		return false
+	}
+	{if CheckXZF($schoolid)}
+	let identitycard = form.get('identitycard')
+	if(!identitycard || !checkIdCard(identitycard)){
+		alert('抱歉,请正确填写学生身份证号码');
+		return false
+	}
+	{/if}
+	
+	$.ajax({
+		url: "{php echo $this->createWebUrl('students', array('op' => 'post','schoolid' => $schoolid))}",
+		type: "post",
+		data: form,
+		processData: false,
+		contentType: false,
+		success: function(result) {
+			var data = jQuery.parseJSON(result);
+			alert(data.msg);
+			if(data.result){
+				$('#ed_stubox').empty();
+				$('#stu_edite_box').modal('toggle');
+				$('.loading-layer').show()
+				if(sid){
+					one_stu(sid,'old')
+				}else{
+					one_stu(data.keysid,'new')
+				}
+			}
+		},
+		error: function(e) {
+			alert('访问网络失败');
+			console.log(e)
+		}
+	});
+}
+function deletestu(sid){
+	if(confirm("确认要删除选择的学生，删除后数据不可恢复?")){
+		$.ajax({
+			url: "{php echo $this->createWebUrl('students', array('op' => 'delete', 'schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {
+				id:sid,
+			},
+			success: function(data) {
+				alert(data.msg);
+				if(data.result){
+					$('#stuid_'+sid).hide(200)
+				}
+			},
+			error: function(e) {
+				alert('访问网络失败');
+			}
+		});
+	}
+}
+function img(id){
+	$("#img"+id).toggleClass('min');
+	$("#img"+id).toggleClass('max');
+	$("#sub"+id).toggle();
+	$("#day"+id).toggle();
+}
+
+
+
+
+
+
+
+function recreate_qr(id,qrid){
+	var id = id;
+	var qrid = qrid;
+	$("#recreatqr"+id).hide();
+	$.post("{php echo $this->createWebUrl('indexajax', array('op' => 'reget_user_qr'))}",{id:id,qrid:qrid,schoolid:'{$schoolid}'}, function(data){
+		if(data.result){
+			var html = '<img class="min" onclick="img('+ id+ ')" id="img'+ id+ '" src="'+data['qrimg']+'" width="60px">';	
+			$("#ewcode"+id).empty();				
+			$("#ewcode"+id).append(html);	
+		}else{
+			$("#recreatqr"+id).show();
+			alert(data.msg);	
+		}
+	},'json');
+}
+function creatqr(id){
+	 var id = id;
+	 $("#creatqr"+id).hide();	
+	$.post("{php echo $this->createWebUrl('indexajax', array('op' => 'get_user_qr'))}",{id:id,schoolid:'{$schoolid}'}, function(data){
+		if(data.result){
+			var html = '<img class="min" onclick="img('+ id+ ')" id="img'+ id+ '" src="'+data['qrimg']+'" width="60px">';	
+			$("#ewcode"+id).empty();				
+			$("#ewcode"+id).append(html);	
+		}else{
+			$("#creatqr"+id).show();
+			alert(data.msg);	
+		}
+	},'json');	 
+}
+
+function show_order(id){
+	$("input[name='EditStuId']").val(id)
+	$.post("{php echo $this->createWebUrl('students', array('op' => 'get_infocard'))}",{id:id,schoolid:'{$schoolid}'}, function(data){
+		$('#table_this').html(data);
+	},'html');
+	$('#Modal1').modal('toggle');
+}
+
+function delOk(){
+	let bj_id = $("#overBjId").val();
+	if(bj_id == -1){
+		alert('请选择班级');
+		return
+	}
+	if(confirm("确认要删除当前班级下的学生吗?")){
+		$.post("{php echo $this->createWebUrl('students', array('op' => 'delOverStu'))}",{bj_id:bj_id,schoolid:'{$schoolid}'}, function(data){
+			alert(data.msg)
+			location.reload()
+		},'json');
+	}
+	
+}
+
+$(function(){
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1000702,1,$schoolid))}
+		$(".qx_702").hide();
+		e_d = e_d -1;
+	{/if}
+	{if !(IsHasQx($tid_global,1000703,1,$schoolid))}
+		$(".qx_703").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000704,1,$schoolid))}
+		$(".qx_704").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000705,1,$schoolid))}
+		$(".qx_705").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000706,1,$schoolid))}
+		$(".qx_706").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000707,1,$schoolid))}
+		$(".qx_707").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000709,1,$schoolid))}
+		$(".qx_709").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000708,1,$schoolid))}
+		$(".qx_708").hide();
+		e_d = e_d -1;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+    $("input[name=add_bj]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择学生!');
+            return false;
+        }
+		var bj_id = $("#bj_ids").val();
+		if(bj_id == null || bj_id == 0 || bj_id == ""){
+			alert('请选择要转移到的班级!');
+			return false;
+		}
+        if(confirm("确认要选择的学生转班?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('students', array('op' => 'add_bj', 'schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id,bj_id:bj_id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+    $("input[name=change_bj]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择学生!');
+            return false;
+        }
+		var bj_id = $("#bj_ids").val();
+		if(bj_id == null || bj_id == 0 || bj_id == ""){
+			alert('请选择要转移到的班级!');
+			return false;
+		}
+        if(confirm("确认要选择的学生转班?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('students', array('op' => 'change_bj', 'schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id,bj_id:bj_id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的学生!');
+            return false;
+        }
+        if(confirm("确认要删除选择的学生?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('students', array('op' => 'deleteall', 'schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+    $("input[name=add_qr]").click(function(){
+		$("#add_qr").hide();
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择学生!');
+            return false;
+        }
+        if(confirm("二维码批量生成过程中，请勿执行任何操作，否则会失败？")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('students', array('op' => 'makeallqr', 'schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+						$("#add_qr").show();
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+});
+
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+
+	$(':checkbox[name="isopen"]').bootstrapSwitch();
+	$(':checkbox[name="isopen"]').on('switchChange.bootstrapSwitch', function(e, state){
+		var isopen = this.checked ? 1 : 2;
+		var sid = $(this).attr('data-sid')
+		$.post("{php echo $this->createWebUrl('students', array('op' => 'lsChange','schoolid' => $schoolid))}", {isopen: isopen,sid:sid}, function(resp){
+		});
+	});	
+})
+</script>
+{/if}
+{template 'public/footer'}

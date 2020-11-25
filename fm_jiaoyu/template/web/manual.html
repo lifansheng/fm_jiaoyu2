@@ -1,0 +1,1716 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation != 'look'}
+<div class="main" style="margin:0">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                {if $ismaster || $_W['isfounder'] || $_W['role'] == 'owner'}
+                <li {if $_GPC['op']=='display'}class="active"{/if}><a href="{php echo $this->createWebUrl('manual', array('op' => 'display', 'schoolid' => $schoolid))}">校长填写</a></li>
+                {/if}
+                <li {if $_GPC['op']=='teawrite'}class="active"{/if}><a href="{php echo $this->createWebUrl('manual', array('op' => 'teawrite', 'schoolid' => $schoolid))}">老师填写</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{/if}
+{if $operation == 'display'}
+<style>
+    .jbox-content > div { margin: 10px 10px !important; }
+    .select_tpl { width: 100%; height: 380px; background-color: #fff; padding: 0 10px; }
+    .select_tpl .nav { width: 100%; border-bottom: 1px solid #02c493; }
+    .nav_select { color: #02c493; }
+    .nav .nav_item { font-size: 14px; font-weight: bold; padding-bottom: 10px; padding-right: 50px; cursor: pointer; float: left; }
+    .select_tpl .tpl_ul { width: 100%; height: 330px; overflow: hidden; overflow-y: auto; margin-top: 30px; }
+    .tpl_ul .tpl_item { display: inline-block; padding-right: 160px; width: 200px; margin-bottom: 30px; }
+    .tpl_item .tpl_img { position: relative; }
+    .tpl_item .tpl_img img { width: 100%; height: 100%; }
+    .tpl_item .tpl_name { width: 100%; font-size: 16px; text-align: center; font-weight: bold; padding: 10px 0; }
+    .tpl_item .item_btns { width: 100%; }
+    .item_btns .preview_tpl { background-color: #02c493; margin-left: 10px; margin-right: 21px; }
+    .item_btns>button { width: 80px; height: 28px; color: #fff; border-radius: 12px; border: none; cursor: pointer; }
+    .item_btns .to_making, .item_btns .ok_select_size { background-color: #ff9f22; }
+</style>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">成长手册</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="manual" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" >类型</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="xctype" class="form-control">
+                            <option value="0" {if $_GPC['xctype'] == 0}selected{/if}>请选择类型</option>
+                            <option value="1" {if $_GPC['xctype'] == 1}selected{/if}>成长手册</option>
+                            <option value="2" {if $_GPC['xctype'] == 2}selected{/if}>毕业纪念册</option>
+                        </select>
+                    </div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+                        <a class="btn btn-success" href="javascript:;" onclick="ShowGrowUpFile()"> <i class="fa fa-plus"></i> 创建</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th style="width:5%">档案名称</th>
+                            <th style="width:5%">所属期号</th>
+                            <th style="width:8%;">档案类型</th>
+                            <th style="width:8%;">是否启用</th>
+                            <th style="width:8%;">是否收费</th>
+                            <th style="width:8%;">创建时间</th>
+                            <th style="width:8%;">操作</th>
+                            <th style="width:4%;">档案进展</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                            <td>{$item['title']}</td>
+                            <td>
+                                {$item['sname']}
+                            </td>
+                            <td>
+                                {if $item['type'] == 1}成长手册{else}毕业纪念册{/if}
+                            </td>
+                            <td>
+                                {if $item['is_use'] == 1}是{else}否{/if}
+                            </td>
+                            <td>
+                                {if $item['is_cose'] == 1}是{else}否{/if}
+                            </td>
+                            <td>
+                                {php echo date('Y-m-d H:i',$item['createtime'])}
+                            </td>
+                            <td >
+                                <a href="javascript:;" style="color: #02c493;" onclick="Enable(`{$item['id']}`)">启用</a>
+                                <a href="javascript:;" style="color: #02c493;" onclick="GetGrowUpFile(`{$item['id']}`)">设置</a>
+                               
+                                <a href="{php echo $this->createWebUrl('manualgrowpage', array('id' => $item['id'], 'op' => 'display', 'schoolid' => $schoolid))}" style="color: #02c493;">编辑</a>
+                                <a href="{php echo $this->createWebUrl('manual', array('op' => 'delete', 'id' => $item['id'], 'schoolid' => $schoolid))}" onclick="return confirm('确认删除吗？');return false;" style="color: #fd5f83;">删除</a>
+                            </td>
+                            <td>
+                                {if $item['is_use'] == 1}
+                                <a href="{php echo $this->createWebUrl('manual', array('id' => $item['id'], 'op' => 'look', 'schoolid' => $schoolid))}" style="color: #02c493;">查看进展</a>
+                                {/if}
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+<!--************************创建档案弹窗**********************************-->
+<div class="modal fade" id="GrowUpFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content" style="left: 15%;">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">创建档案</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal form">
+					<input type="hidden" name="schoolid" value="{$schoolid}">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-lg-2 control-label" ><span style="color:red">*</span>档案名称</label>
+								<div class="col-sm-2 col-lg-6">
+									<input class="form-control" id="xctitle" type="text">
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label" ><span style="color:red">*</span>选择期号</label>
+								<div class="col-sm-2 col-lg-6">
+									<select style="margin-right:15px;" name="qh" class="form-control">
+                                        <option value="0">请选择期号</option>
+                                        {loop $qh $row}
+                                        <option value="{$row['sid']}">{$row['sname']}</option>
+                                        {/loop}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label"> <span style="color:red">*</span>缩略图:</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    {php echo tpl_form_field_image('thumb')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label"> <span style="color:red">*</span>分享海报:</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    {php echo tpl_form_field_image('poster')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label"><span style="color:red">*</span>语音文件</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    {php echo tpl_form_field_audio('audio')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label" >是否收费</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    <label class="radio-inline"><input type="radio" name="is_cose" value="1"/> 是</label>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <label class="radio-inline"><input type="radio" name="is_cose" value="2" checked/> 否</label>
+                                </div>
+                            </div>
+                            <div class="form-group" style="display: none;" id="IsShowCose">
+								<label class="col-lg-2 control-label" ><span style="color:red">*</span>收费金额</label>
+								<div class="col-sm-2 col-lg-6">
+									<input class="form-control" id="cose" type="number">
+								</div>
+                            </div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="NextGrowUpFile()">下一步</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="NextGrowUpFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content" style="left: 15%;">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">选择模板</h4>
+			</div>
+			<div class="modal-body">
+                <div class="select_tpl_act select_tpl boxSize">
+                    <div class="nav box">
+                        <div class="nav_item nav_select" id='isshowczxc' onclick="GetMuBan(1)">成长手册</div>
+                        <div class="nav_item" id='isshowbyjnc' onclick="GetMuBan(2)">毕业纪念册</div>
+                    </div>
+                    <ul class="tpl_ul tpl_act_ul" id="czxc">
+                    </ul>
+                    <ul class="tpl_ul tpl_act_ul" id="byjnc" style="display: none;">
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+				<button type="button" class="btn btn-primary" onclick="PrevGrowUpFile()">上一步</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--************************创建档案弹窗**********************************-->
+
+
+<!--************************修改档案信息弹窗**********************************-->
+<div class="modal fade" id="EditUpFile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content" style="left: 15%;">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" >修改档案</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal form">
+					<input type="hidden" name="schoolid" value="{$schoolid}">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-lg-2 control-label" ><span style="color:red">*</span>档案名称</label>
+								<div class="col-sm-2 col-lg-6">
+									<input class="form-control" id="exctitle" type="text">
+								</div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label" ><span style="color:red">*</span>选择期号</label>
+								<div class="col-sm-2 col-lg-6">
+									<select style="margin-right:15px;" name="eqh" class="form-control">
+                                        <option value="0">请选择期号</option>
+                                        {loop $qh $row}
+                                        <option value="{$row['sid']}">{$row['sname']}</option>
+                                        {/loop}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label"> <span style="color:red">*</span>缩略图:</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    {php echo tpl_form_field_image('ethumb')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label"> <span style="color:red">*</span>分享海报:</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    {php echo tpl_form_field_image('eposter')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label"><span style="color:red">*</span>语音文件</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    {php echo tpl_form_field_audio('eaudio')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+								<label class="col-lg-2 control-label" >是否收费</label>
+                                <div class="col-sm-2 col-lg-6">
+                                    <label class="radio-inline"><input type="radio" name="eis_cose" value="1"/> 是</label>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <label class="radio-inline"><input type="radio" name="eis_cose" value="2"/> 否</label>
+                                </div>
+                            </div>
+                            <div class="form-group" style="display: none;" id="EIsShowCose">
+								<label class="col-lg-2 control-label" ><span style="color:red">*</span>收费金额</label>
+								<div class="col-sm-2 col-lg-6">
+									<input class="form-control" id="ecose" type="number">
+								</div>
+                            </div>
+                            <input type="hidden" id="eid">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="Tijiao()">确认</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--************************修改档案信息弹窗**********************************-->
+
+<!--************************预览模板**********************************-->
+<div class="modal fade" id="LookMuBan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;top: -30px;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">预览模板</h4>
+			</div>
+			<div class="modal-body">
+                <div style="text-align: center;">
+                    <img style="width:400px" id='imgchange' src="https://manger.weimeizhan.com/attachment/images/3/2020/03/A7KgvucwGvUwwecE7vXsxGagHU9s7k.jpg">
+                </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">返回</button>
+				<button type="button" class="btn btn-primary" onclick="Prev()">上一页</button>
+				<button type="button" class="btn btn-primary" onclick="Next()">下一页</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--************************预览模板**********************************-->
+
+<!--************************启用**********************************-->
+<div class="modal fade" id="Enable" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important; margin-top: -5%;">
+	<div class="modal-dialog modal-lg" >
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle1">启用班级</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal" >
+					<div class="panel panel-default">
+						<div class="panel-body" >
+                            <div class="form-group">
+                                <label class="col-xs-12 col-sm-3 col-md-2 control-label">已启用班级</label>
+                                <div class="col-sm-8" id="EnableData">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-12 col-sm-3 col-md-2 control-label">未启用班级</label>
+                                <div class="col-sm-8" id="AbEnableData">
+                            </div>
+                        </div>
+                    </div>
+				</form>
+			</div>
+			<div class="modal-footer" style="background-color:#fff">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" onclick="AddEnable()">提交</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!--************************启用**********************************-->
+
+<script type="text/javascript">
+    var ImgList = [];
+    var imgindex = 0;
+    var mbtype = 1;
+    var EnableId = 0; //启用模板对应的id
+
+    /************************创建相册**********************************/
+    function ShowGrowUpFile(){
+        $('#GrowUpFile').modal('toggle');
+    }
+    function NextGrowUpFile(){
+        if(!$("#xctitle").val()){
+            alert('输入文档标题')
+            return
+        }
+        if($('select[name="qh"] option:selected').val() == 0){
+            alert('请选择期号')
+            return
+        }
+        if($('input[name="thumb"]').val() == 0){
+            alert('请上传缩略图')
+            return
+        }
+        if($('input[name="poster"]').val() == 0){
+            alert('请上传分享海报')
+            return
+        }
+        if($('input[name="audio"]').val() == 0){
+            alert('请上传语音文件')
+            return
+        }
+
+        if($('input[name="is_cose"]:checked').val() == 1 && ($("#cose").val() == '' || $("#cose").val() == 0)){
+            alert('请输入收费金额')
+            return
+        }
+        $('#GrowUpFile').modal('toggle');
+        $('#NextGrowUpFile').modal('toggle');
+        GetMuBan(mbtype);
+    }
+    function PrevGrowUpFile(){
+        $('#GrowUpFile').modal('toggle');
+        $('#NextGrowUpFile').modal('toggle');
+    }
+    //获取模板信息
+    function GetMuBan(type){
+        mbtype = type
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'GetMuBan','schoolid' => $schoolid,'weid'=>$weid))}", {'type': type}, function(result) {
+            let data = result.data;
+            let html = '';
+                if(data){
+                    for(let i in data){
+                        html += `<li class="tpl_item" style="padding-right:0;">
+                            <div class="tpl_img" style="width: 160px;height: 216px;display: block;margin: 0 auto;">
+                                <img src="${data[i].img}">
+                            </div>
+                            <div class="tpl_name">${data[i].title}</div>
+                            <div class="item_btns box ">
+                                <button class="preview_tpl" onclick="LookMuBan(${data[i].id})">预览模板</button>
+                                <button class="to_making" onclick="MakeMuBan(${data[i].id})">立即制作</button>
+                            </div>
+                        </li>`
+                    }
+                    // $('#NextGrowUpFile').modal('toggle');
+                    console.log(html)
+                    if(type == 1){
+                        $("#czxc").html(html)
+                        $("#czxc").show();
+                        $("#byjnc").hide();
+                        $("#isshowbyjnc").removeClass('nav_select');
+                        $("#isshowczxc").addClass('nav_select');
+                    }else if(type ==2){
+                        $("#byjnc").html(html)
+                        $("#byjnc").show();
+                        $("#czxc").hide();
+                        $("#isshowczxc").removeClass('nav_select');
+                        $("#isshowbyjnc").addClass('nav_select');
+                    }
+                }
+        },'json');
+    }
+    /************************创建相册**********************************/
+
+
+    /************************预览模板**********************************/
+    function LookMuBan(id){
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'LookMuBan','schoolid' => $schoolid,'weid'=>$weid))}", {'id': id}, function(result) {
+            ImgList = result.data;
+            $('#imgchange').attr('src',ImgList[0].thumb)
+            $('#LookMuBan').modal('toggle');
+
+        },'json');
+    }
+    function Next(){
+        imgindex++;
+        if(ImgList[imgindex]){
+            $('#imgchange').attr('src',ImgList[imgindex].thumb)
+        }else{
+            alert('这已经是最后一张了');
+            imgindex--;
+            return
+        }
+    }
+    function Prev(){
+        imgindex--;
+        if(ImgList[imgindex]){
+            $('#imgchange').attr('src',ImgList[imgindex].thumb)
+        }else{
+            alert('这已经是第一张了')
+            imgindex++;
+        }
+    }
+    /************************预览模板**********************************/
+
+    /************************制作模板**********************************/
+    function MakeMuBan(id){
+        if(!$("#xctitle").val()){
+            alert('输入标题')
+            return
+        }
+        let data = {
+            'weid'      :   `{$weid}`,
+            'qh'        :   $('select[name="qh"] option:selected').val(),
+            'title'     :   $("#xctitle").val(),
+            'is_cose'   :   $('input[name="is_cose"]:checked').val(),
+            'cose'      :   $("#cose").val(),
+            'thumb'     :   $('input[name="thumb"]').val(),
+            'poster'     :   $('input[name="poster"]').val(),
+            'audio'     :   $('input[name="audio"]').val(),
+            'id'        :   id,
+            'type'      :   mbtype,
+        };
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'MakeMuBan','schoolid' => $schoolid))}", data, function(result) {
+            alert(result.msg)
+            location.href = "{php echo $this->createWebUrl('manualgrowpage', array('op' => 'display','schoolid' => $schoolid))}"+'&id='+result.gid
+        },'json');
+    }
+    /************************制作模板**********************************/
+
+    /************************启用**********************************/
+    function Enable(id){
+        EnableId = id;
+        $('#Enable').modal('toggle');
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'Enable','schoolid' => $schoolid))}", {id:id}, function(result) {
+            let EnableData = result.data.Enable;
+            let EnableHtml = '';
+            let AbEnableData = result.data.AbEnable;
+            let AbEnableHtml = '';
+            for(i in EnableData){
+                EnableHtml += `<label class="checkbox-inline" style="width:80px;margin-left: 10px">
+                                    <input type="checkbox" style="float: none;" checked disabled/>${EnableData[i].sname}
+                                </label>`
+            }
+            $("#EnableData").html(EnableHtml)
+
+            for(i in AbEnableData){
+                AbEnableHtml += `<label class="checkbox-inline" style="width:80px;margin-left: 10px">
+                                    <input name="bjarr[]" type="checkbox" value="${AbEnableData[i].sid}" style="float: none;"/>${AbEnableData[i].sname}
+                                </label>`
+            }
+            $("#EnableData").html(EnableHtml)
+            $("#AbEnableData").html(AbEnableHtml)
+
+        },'json');
+    }
+    function AddEnable(){
+        var bjarr = '';
+		$.each($("input[name='bjarr[]']:checked"),function(){
+			bjarr += $(this).val()+',';
+        });
+        data = {
+            bjarr:bjarr,
+            id:EnableId,
+        }
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'AddEnable','schoolid' => $schoolid))}", data, function(result) {
+            alert(result.msg);
+            location.reload()
+        },'json');
+    }
+    /************************启用**********************************/
+/************************修改档案**********************************/
+function GetGrowUpFile(id){
+        $('#EditUpFile').modal('toggle');
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'GetGrowUpFile','schoolid' => $schoolid))}", {id:id}, function(result) {
+            let data = result.data;
+            $("#eid").val(data.id)
+            $("#exctitle").val(data.title)
+            $("select[name=eqh]").val(data.qhid)
+            $("input[name='ethumb']").val(data.thumb)
+            $("input[name='eposter']").val(data.poster)
+            $("input[name='eaudio']").val(data.audio)
+            $(`input[name='eis_cose'][value=${data.is_cose}]`).attr("checked",true);
+            if(data.is_cose == 1){
+                $("#EIsShowCose").show()
+                $("#ecose").val(data.cose)
+            }else{
+                $("#EIsShowCose").hide()
+                $("#ecose").val('')
+            }
+            $("input[name='ethumb']").parent().next().find('.img-responsive').attr('src',data.pic)
+            $("input[name='eposter']").parent().next().find('.img-responsive').attr('src',data.posterimg)
+        },'json');
+    }
+    function Tijiao(){
+        let data = {
+            'id'        :   $('#eid').val(),
+            'qh'        :   $('select[name="eqh"] option:selected').val(),
+            'qh'        :   $('select[name="eqh"] option:selected').val(),
+            'title'     :   $("#exctitle").val(),
+            'is_cose'   :   $('input[name="eis_cose"]:checked').val(),
+            'cose'      :   $("#ecose").val(),
+            'thumb'     :   $('input[name="ethumb"]').val(),
+            'poster'     :   $('input[name="eposter"]').val(),
+            'audio'     :   $('input[name="eaudio"]').val(),
+        };
+        $.post("{php echo $this->createWebUrl('manual', array('op' => 'EditMuBan','schoolid' => $schoolid))}", data, function(result) {
+            alert(result.msg)
+            location.reload()
+        },'json');
+    }
+    /************************修改档案**********************************/
+    /************************收费切换**********************************/
+    $("input[name=is_cose]").change(function(){
+        if($(this).val() == 1){
+            $("#IsShowCose").slideDown();
+        }else{
+            $("#IsShowCose").slideUp();
+        }
+    })
+
+    $("input[name=eis_cose]").change(function(){
+        if($(this).val() == 1){
+            $("#EIsShowCose").slideDown();
+        }else{
+            $("#EIsShowCose").slideUp();
+        }
+    })
+    /************************收费切换**********************************/
+</script>
+{elseif $operation == 'look'}
+
+<style>
+    .modal-backdrop.fade.in{ z-index: 1005 !important; }
+    .modal-backdrop.fade.in~.modal-backdrop.fade.in{ z-index: 1015 !important; }
+    input,textarea{outline: none;}
+    *{box-sizing: border-box;outline: none;}
+    *:hover,*:focus{outline: none;}
+    ul, li { list-style: none; }
+    select { -webkit-writing-mode: horizontal-tb !important; text-rendering: auto; color: -internal-light-dark-color(black, white); letter-spacing: normal; word-spacing: normal; text-transform: none; text-indent: 0px; text-shadow: none; display: inline-block; text-align: start; -webkit-appearance: none;appearance:none; box-sizing: border-box; align-items: center; white-space: pre; -webkit-rtl-ordering: logical; background-color: rgb(248, 248, 248); cursor: default; margin: 0em; font: 400 11px system-ui; border-radius: 5px; border-width: 1px; border-style: solid; border-color: rgb(166, 166, 166); border-image: initial; }
+    .pointdom{cursor: pointer;}
+    body, ul, li, a, p, span, button, input, table { margin: 0; padding: 0; }
+    body, div, span, header, footer, nav, section, aside, article, ul, dl, dt, dd, li, a, p, h1, h2, h3, h4, h5, h6, i, b, textarea, button, input, select, figure, figcaption { padding: 0; margin: 0; list-style: none; font-style: normal; text-decoration: none; border: none; font-family: "Microsoft Yahei", sans-serif; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+    ::-webkit-scrollbar-track { background-color: rgba(245,245,245,0.84); }
+    ::-webkit-scrollbar { width: 6px; background-color: rgba(245,245,245,0.84); }
+    ::-webkit-scrollbar-thumb { background-color: rgba(192,188,188,0.84); }
+    .Main { height: 100%; position: absolute; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; font-size: 16px; }
+    .TopAbsBox { width: 100%; top: 0; left: 0; z-index: 1; height: 50px; flex-shrink: 0; background-color: #41cac0; box-shadow: 2px 2px 9px #ccc; display: flex; -webkit-box-orient: horizontal; -webkit-box-direction: normal; flex-direction: row;position: relative;padding:0 40px}
+    .TopAbsBox>span{display: inline-block;margin-top: 10px;background-color: white;height: 30px;line-height: 30px;padding:0px 20px;border-radius:15px;font-size: 14px;margin-left: 10px;cursor: pointer;font-weight: bold;color:#41cac0}
+
+    .ContentBox { display: flex; height: calc(100% - 50px); }
+    .content-cell-box.left { height: 100%; width: 270px;  display: flex; flex-direction: column; }
+    .content-cell-box.right { height: 100%; width: 270px; }
+    .content-cell-box.side { position: relative; -webkit-box-shadow: 2px 2px 2px #ccc; box-shadow: 2px 2px 2px #ccc; -webkit-box-sizing: border-box; box-sizing: border-box; -ms-flex-negative: 0; flex-shrink: 0; }
+    .left-top-count { width: 100%; height: 50px; background-color: #67e6f787; display: flex; color: #4e4a4a }
+    .left-top-count .TotalCount { line-height: 30px; font-size: 14px; padding: 10px }
+    .TotalCount #AllCount { font-size: 16px; color: #31aebf; font-weight: bold; }
+    .left-top-count .UnitCount { flex: 1; display: flex; justify-content: space-evenly; }
+    .left-top-count .UnitCount>div { font-size: 14px; padding: 5px; text-align: center; }
+    .left-blow-box { flex: 1; width: 100%; overflow-y: auto; }
+    ul .page-unit { width: 100%; height: 300px; z-index: 2; position: relative; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; flex-direction: column; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; }
+    ul .page-unit-fix { z-index: 1; width: 100%; height: 300px; position: absolute; background-color: #dfe6e6; }
+    .page-unit:after{ position: absolute; z-index: 1; content:''; width: 0; height: 100%; left:0; background-color: rgba(136,169,167,0.1); transition:width 0.25s; }
+    .page-unit.act:after{ content:''; height: 0; }
+    .page-unit:hover:after{ width: 100%; transition:width 0.25s; }
+    ul .page-unit .page_pre{ position: relative;height:220px;width: 160px; }
+    .page_pre img, .page_pre .is_ok, .page_pre .is_lock { width: 100%; height: 100%; }
+    .page_pre .is_ok, .page_pre .is_lock { position: absolute; top: 0; left: 0; -webkit-box-align: center; -ms-flex-align: center; align-items: center; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; background-color: rgba(0,0,0,0.5); }
+    .page_pre .is_ok img, .page_pre .is_lock img { width: 66px; height: 66px; }
+    .is_ok.onshow,.is_lock.onshow{ display: -webkit-box; display: -ms-flexbox; display: flex; }
+    .page_pre .lock_type { width: 60px; height: 28px; line-height: 28px; text-align: center; font-size: 16px; color: #fff; background-color: #2dbdbd; position: absolute; top: .07rem; right: -.04rem; z-index: 6; border-top-left-radius: .14rem; border-bottom-left-radius: .14rem; border-top-right-radius: .05rem; }
+    .page_pre .add_page { width: .4rem; height: .4rem; position: absolute; bottom: 0; left: 50%; -webkit-transform: translate(-50%,50%); transform: translate(-50%,50%); cursor: pointer; z-index: 99; }
+    .page_num { font-size: .16rem; margin-top: .2rem; }
+    .nc_up_down {z-index:3 ;position: absolute; top: 0; width: 16px; right: .1rem; height: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -webkit-box-pack: justify; -ms-flex-pack: justify; justify-content: space-between; -webkit-box-sizing: border-box; box-sizing: border-box; padding: .3rem 0; padding-bottom: .8rem; color: #02c492; }
+    .nc_up_down span { font-size: .16rem; margin-top: .1rem; }
+    .del_page { width: .24rem; height: .28rem; position: absolute; left: .1rem; top: 50%; -webkit-transform: translateY(-50%); transform: translateY(-50%); cursor: pointer; }
+    li .is_active { background-color: #dde8ff; }
+    .nc_editor-page { position: relative; width: 100%; height: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-pack: center; -ms-flex-pack: center; justify-content: center; -webkit-box-align: center; -ms-flex-align: center; align-items: center; overflow: hidden; }
+    #zoom-div { display: none; position: absolute; top: 0; left: 0; height: 0.25rem; z-index: 168; -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+    .flexBetween { -webkit-box-pack: justify; -ms-flex-pack: justify; -moz-box-pack: justify; box-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+    .zoom-big, .zoom-small { width: 0.5rem; height: 100%; font-size: 0.14rem; background-color: rgb(12,177,129); color: #ffffff; }
+    .justify_content { -webkit-box-pack: center; -ms-flex-pack: center; -moz-box-pack: center; box-pack: center; -webkit-justify-content: center; justify-content: center; }
+    .zoom-big { border-top-left-radius: 0.4rem; border-bottom-left-radius: 0.4rem; margin-right: 0.04rem; }
+    .zoom-small { border-top-right-radius: 0.4rem; border-bottom-right-radius: 0.4rem; }
+    #tpl_mask_div { display: none; position: relative; }
+    .up_down_page { position: absolute; right: 0; bottom: 0; -webkit-transform: translateX(150%); transform: translateX(150%); }
+    .flexColumn { -webkit-box-orient: vertical; -moz-box-orient: vertical; -ms-flex-direction: column; -webkit-flex-direction: column; box-orient: vertical; flex-direction: column; }
+    .up_down_page .up_page, .up_down_page .down_page { display: inline-block; width: 0.3rem; height: 0.28rem; cursor: pointer; }
+    .up_down_page .up_page { -webkit-transform: rotateZ(180deg); transform: rotateZ(180deg); }
+    .box { display: -webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex; }
+    .right_tabs { position: absolute; left: -0.7rem; top: 0.5rem; z-index: 99; }
+    .right_tabs_items{cursor: pointer; width: 70px;height: 50px;background-color: #b4e1f3;box-shadow: -1px 1px 1px #CCB, -1px -1px 1px #ccc;border-radius:5px 0 0 5px;margin-bottom: 10px; border-right:1px solid #ccc ; transition:all 0.25s; }
+    .right_tabs_items.tabs_active{ border-right:1px solid white ; background-color: white; transition:all 0.25s; }
+    .right_tabs_content{ height: 100%; width: 100%;display: none; }
+    .right_tabs_content .content_top{ height: 50px; width: 100%; background-color: #b4e1f3; }
+    .right_tabs_content .content_content{ height: calc(100% - 50px); width: 100%; background-color: white;position: relative;}
+    .img_content_top{ text-align: center; line-height: 50px; }
+    .picture_Tag{ width: 1rem; height: .2rem; font-size: .12rem; /* color: #999; */ line-height: .2rem; text-align: center; /* background-color: #01c592; */ border: 1px solid #eee; padding: 0 .1rem; border-radius: .1rem; margin-right: .1rem; flex-shrink: 0; -webkit-box-flex-group: 0; cursor: pointer; overflow: hidden; }
+    .select-tabs-img{ width: 80%;outline: none;background-color:rgba(255,255,255,0.66);height: 25px; }
+    .content_content_slide_tabs{ height: 40px;width: 100%;display: flex;line-height: 40px; }
+    .content_content_slide_tabs>span{ padding: 0 10px;font-size: 18px; }
+    .content_slide_tabs_content{flex:1;padding:0 5px;overflow-x: hidden;position: relative;}
+    .content_slide_tabs_content>div{display: flex;height: 100%;line-height: 22px;align-items: center;position: absolute;}
+    .imgRootBox{height:calc(100% - 50px);overflow-y: auto;width: 100%;position: relative;}
+    .imgRootBox .imgbox{width: 100%;padding:10px 15px}
+
+    .imgRootBox .imgbox>img{width: 108px;height: 108px;margin-bottom: 10px;}
+    .imgRootBox .imgbox>img:nth-of-type(2n-1){margin-right: 10px;}
+
+    .del_page{z-index: 3;}
+
+    .imgRootBox .gridBox>div{width: 108px;height: 108px;float: left;margin-bottom: 10px;}
+    .imgRootBox .gridBox>div:nth-of-type(2n-1){margin-right: 10px;}
+
+
+    .loading-layer{ display: none;    position: absolute; height: 100%; width: 100%; z-index: 1; }
+    .imgRootBox.inloading>.loading-layer{ display: block !important; }
+    .content_content.inloading>.loading-layer{ display: block !important; }
+
+
+
+    .picture_Tag.pt_active{background-color: #41cac1;color:white;font-weight: bold;}
+    .title-tips{color:rgb(53, 53, 53)}
+    .content-tips{padding: 0 10px;padding-bottom: 20px;color:#505050}
+    .pageBackMask{ position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
+    .editActive{ box-shadow: 0 0 1px 2px #20decf !important; }
+    input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type="number"]{ -moz-appearance: textfield; }
+    body, div, span, header, footer, nav, section, aside, article, ul, dl, dt, dd, li, a, p, h1, h2, h3, h4, h5, h6, i, b, textarea, button, input, select, figure, figcaption { padding: 0; margin: 0; list-style: none; font-style: normal; text-decoration: none; border: none; -webkit-tap-highlight-color: transparent; -webkit-font-smoothing: antialiased; }
+    .container_score .scoreItem span { margin-left: 5%; }
+    .container_score .scoreItem .scoreItemTxt { border: none; }
+    .container_box[type=circular] { background: url({OSSURL}public/web/images/select_logo.png) no-repeat center; background-size: .4rem .4rem; }
+    .container_box{ overflow: hidden; }
+    .lock_mask { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 999; background: url({OSSURL}public/web/images/lock.png) no-repeat center center; background-size: 70px 70px; background-color: rgba(0, 0, 0, 0.5); }
+    .img_container_list .is_select { background-color: rgb(2, 196, 146); }
+    .container_score .scoreItem { width: 100%; height: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: horizontal; -webkit-box-direction: normal; -ms-flex-direction: row; flex-direction: row; overflow: hidden; }
+    .container_score .scoreItem img { height: 50%; }
+    .container_score .scoreItem .scoreItem_01 { height: 100%; width: 100%; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-align: center; -ms-flex-align: center; align-items: center; }
+    .container_score .scoreItem .scoreItemTxt { text-align: left; display: -webkit-box; display: -ms-flexbox; display: flex; -webkit-box-orient: horizontal; -webkit-box-pack: center; -webkit-box-align: center; -webkit-box-sizing: border-box; -webkit-box-align: center; -ms-flex-align: center; align-items: center;  }
+
+    #zoom-div { display: none; position: absolute; top: 0; left: 0; height: 0.25rem; z-index: 168; -webkit-transform: translateX(-50%); transform: translateX(-50%); }
+    .jbox-content > div { margin: 10px 10px !important; }
+    .select_tpl { width: 100%; height: 380px; background-color: #fff; padding: 0 10px; }
+    .select_tpl .nav { width: 100%; border-bottom: 1px solid #02c493; }
+    .nav_select { color: #02c493; }
+    .nav .nav_item { font-size: 14px; font-weight: bold; padding-bottom: 10px; padding-right: 50px; cursor: pointer; float: left; }
+    .select_tpl .tpl_ul { width: 100%; height: 330px; overflow: hidden; overflow-y: scroll; margin-top: 30px; }
+    .tpl_ul .tpl_item { display: inline-block; padding-right: 160px; width: 200px; margin-bottom: 30px; }
+    .tpl_item .tpl_img { position: relative; }
+    .tpl_item .tpl_img img { width: 100%; height: 100%; }
+    .tpl_item .tpl_name { width: 100%; font-size: 16px; text-align: center; font-weight: bold; padding: 10px 0; }
+    .tpl_item .item_btns { width: 100%; }
+    .item_btns .preview_tpl { background-color: #02c493; margin-left: 10px; margin-right: 21px; }
+    .item_btns>button { width: 80px; height: 28px; color: #fff; border-radius: 12px; border: none; cursor: pointer; }
+    .item_btns .to_making, .item_btns .ok_select_size { background-color: #ff9f22; }
+    .select_txt{border:1px solid gray}
+    .scoreInputRound{
+        position: relative;
+    }
+    .scoreInputRound.inSelect:after{
+        content: "";
+    position: absolute;
+    height: calc(100% - 4px);
+    width: calc(100% - 4px);
+    left: 2px;
+    top: 2px;
+    background-color: #12bdb2;
+    border-radius: 50%;
+    }
+    .btn_bo{position: absolute; width: 100%; height: 40px; border-radius: 0; background-color: #41cac1; border-color: #40b7af;}
+    .btn_bo:hover,.btn_bo:focus,.btn_bo:active{    background-color: #0eb3a8; border-color: #079289;outline: none;}
+
+    .modal-content{border:none ;box-shadow: none;}
+</style>
+
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">档案进展情况</div>
+        {if $ismanager}
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="manual" />
+                <input type="hidden" name="op" value="look" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <input type="hidden" name="id" value="{$_GPC['id']}" />
+                <div class="form-group" style="line-height: 28px;">
+                    <div class="col-sm-2 col-lg-2">
+                       <input type="text" name="sname" placeholder="请输入学生姓名">
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bjid" class="form-control">
+                            {loop $bj $row}
+                            <option value="{$row['sid']}" {if $bjid == $row['sid']}selected{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {/if}
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th style="width:12.5%">所属班级</th>
+                            <th style="width:12.5%">学生姓名</th>
+                            <th style="width:12.5%;">园长进展</th>
+                            <th style="width:12.5%;">老师进展</th>
+                            <th style="width:12.5%;">家长进展</th>
+                            <th style="width:12.5%;">家长电话</th>
+                            <th style="width:12.5%;">查看</th>
+                            <th style="width:12.5%;">打印pdf</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $row}
+                        <tr>
+                            <td>{$bjinfo['sname']}</td>
+                            <td>{$row['s_name']}</td>
+                            <td>{$row['yzok']}/{$row['yznum']}</td>
+                            <td>{$row['jsok']}/{$row['jsnum']}</td>
+                            <td>{$row['jzok']}/{$row['jznum']}</td>
+                            <td>{$row['mobile']}</td>
+                            <td><a href="{php echo $this->createWebUrl('manualstugrowpage', array('id' => $_GPC['id'], 'op' => 'display','sid'=>$row['sid'],'bjid'=>$row['bjid'], 'schoolid' => $schoolid))}" style="color: #02c493;">查看</a></td>
+                            {if $row['yzok'] == $row['yznum'] && $row['jsok'] == $row['jsnum'] && $row['jzok'] == $row['jznum'] && $row['isallok'] == 0 }
+                            <td>
+                                <a href="javascript:ChangeBase64('{$row['sid']}','{$row['gid']}')" style="color: #02c493;">转换</a>
+                            </td>
+                            <!-- <td><a href="{php echo $this->createWebUrl('manual', array('gid' => $row['gid'], 'op' => 'ChangePDF','sid'=>$row['sid'], 'schoolid' => $schoolid))}" style="color: #02c493;">转换</a></td> -->
+                            {elseif $row['isallok'] == 1}
+                            <td><a href="{php echo $this->createWebUrl('manual', array('op' => 'PDFDown','sid'=>$row['sid'],'gid'=>$row['gid'], 'schoolid' => $schoolid))}" style="color: #02c493;">下载</a></td>
+                            {else}
+                            <td>档案未完成
+
+                                
+                            </td>
+                            {/if}
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .ProgressModal{ position: fixed;width: 100%;height: 100%;background-color: rgba(70,70,70,0.57);top:0;left: 0;z-index: 9999;display: none; }
+    .progressBox{transform: translate(-59%,-50%);position: fixed;left:50%;top:50%;width: 600px;background-color: white;border-radius: 5px;padding: 30px;}
+    .progress_title{width: 100%;text-align: center;font-size: 16px;}
+</style>
+
+<div class="ProgressModal">
+    <div class="progressBox">
+        <div class="progress_title">
+            <span>转换中，请勿关闭浏览器</span>
+        </div>
+        <div style="width: 100%;display: flex;height: 30px;line-height: 30px;">
+           <span>进度：</span>
+           <span style="flex:1;align-items: center;padding:0 10px">
+                <div style="width: 100%;height: 10px;background-color: #efefef;margin-top: 10px;" >
+                    <div id="Pro-Now" style="width: 0%;height: 100%;background-color: #41cac0;"></div>
+                </div>
+            </span>
+           <span id="Pro-pre">100%</span>
+        </div>
+        <div style="width: 100%;display: flex;line-height: 30px;">
+            <span style="padding-right:10px">操作：</span>
+            <div style="flex: 1;"> <span id="Pro-Act" ></span> <i class="fa fa-spinner fa-pulse"></i> </div>
+         </div>
+    </div>
+</div>
+
+<div class="renderModal" style="position: fixed;z-index: 100;top:0;left:0;opacity: 0;display: none;">
+    <div id="tpl_mask_div" style="width: 1416px; height: 2000px; transform: scale(1); transform-origin: center center; display: block;background-color: white;">
+        <div>
+            <div class="tpl_page" id="tpl_page" style="width: 3000px; height: 2000px; transform: scale(1); transform-origin: center center;" >
+                <div class="pageBackMask" id="pageBackMask" style="background: url({MODULE_URL}public/web/images/pagemuban1.png) center center / 100% 100% no-repeat;">
+                </div>
+                <div class="img_container_list container_list" style="z-index: 14;position: absolute;">
+                </div>
+                <div class="title_container_list container_list" style="position:absolute;z-index:16;">
+                </div>
+                <div class="score_container_list container_list" style="position:absolute;z-index:16;">
+                </div>
+                <div class="video_container_list container_list" style="position:absolute;z-index:16;">
+                </div>
+                <div class="txt_container_list container_list" style="position:absolute;z-index:16;">
+                </div>
+                <div class="show_container_list container_list" style="position:absolute;z-index:16;">
+                </div>
+                <div class="chart_container_list container_list" style="position:absolute;z-index:16;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="re-root" style="position: fixed;width: 300px;height: 300px;top:0;left:0" >
+
+</div>
+
+<script src="{MODULE_URL}public/mobile/js/jquery-1.10.2.min.js?v=0622"></script>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>
+<script src="https://cdn.bootcss.com/html2canvas/0.5.0-beta4/html2canvas.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js?_v_=1598903772045"></script>
+
+ 
+
+<script>
+
+function ChangePre(pre,act){
+    $("#Pro-Now").animate({
+        'width':`${pre}%`
+    },150)
+    $("#Pro-pre").text(`${pre}%`)
+    $("#Pro-Act").text(act)
+}
+
+
+function ChangeBase64(sid,gid){
+    ChangePre(0,'获取数据中')
+    $(".ProgressModal").show()
+    $(".renderModal").show()
+    ChangePre(3,'获取数据中')
+    $.ajax({
+        url: "{php echo $this->createWebUrl('manual', array('op' => 'ChangePDF', 'schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data:{
+            gid:gid,
+            sid:sid
+        },
+        success: function (res) {
+            PageList = res.data
+            let AllC = PageList.length + 2
+            let i = 0;
+            SavePageBase64(i,sid,gid)
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+            //DoSomething
+        }
+    });
+}
+
+
+var SinglePageItemList = [];
+
+/*************************************************  重构开始   ******************************************************/
+ 
+//循环当前页面的每个元素 - 入口函数
+function ReRenderSiglePageItem(page_item){ //渲染中间单个页面
+        console.log(page_item)
+        return new Promise((resolve,reject) => {
+            if (!page_item) reject();
+            $(".container_list").html('');
+            let tpl_W = '1416px',tpl_H = '2000px',
+                lst_print_page_containers = [];//容器数组
+            lst_print_page_containers = page_item.data.pageData;
+            console.log("loop")
+            ReLoop(lst_print_page_containers,0).then(()=>{ resolve() })
+        })
+        
+        // $('#loading').show()
+        // return true;
+    }
+
+//重构 - 渲染圆形图片
+function renderItem_circular(ImgContainer){
+    console.log("渲染圆形图片")
+    console.log(ImgContainer)
+
+    //top:${ItemPosition.top * 4}px;left:${ItemPosition.left * 4}px;
+    let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+        ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+        ItemPosition = ImgContainer.Position
+        ItemClient = ImgContainer.Client
+        styleS =`position:absolute;z-index:${ItemPosition.zIndex}; width:${ItemClient.width * 4}px;height:${ItemClient.height * 4}px;border-radius: ${ItemClient.height * 2}px;-webkit-border-radius: ${ItemClient.height * 4}px;transform:0;-webkit-transform:0;`;
+        htmlS = `<div data-src="${ItemClient.PhotoUrl}" data-offset_value="${ItemClient.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ItemClient.ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+
+    let rootWith = ItemClient.width * 4,rootHeight = ItemClient.height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(htmlS);
+    let canvasRoot = document.createElement("canvas");
+    // let _canvas = $("#re-root")[0];
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+
+    return new Promise((resolve,reject)=>{
+        renderItem_img().then(()=>{
+            html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+                // console.log(canvas.toDataURL());
+                // document.body.appendChild(canvas);
+                let page = {
+                    top:ItemPosition.top,
+                    left:ItemPosition.left,
+                    width:ItemClient.width,
+                    height:ItemClient.height,
+                    // zindex:ItemPosition.zIndex,
+                    data:canvas.toDataURL(),
+                    type:'img_below'
+                }
+                SinglePageItemList.push(page)
+                resolve()
+            });
+        })
+    })
+}
+
+//重构 - 渲染方形图片
+function renderItem_square(ImgContainer){
+    //top:${ItemPosition.top * 4}px;left:${ItemPosition.left * 4}px;
+    let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+        ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+        ItemPosition = ImgContainer.Position
+        ItemClient = ImgContainer.Client
+        styleS =`position:absolute;z-index:${ItemPosition.zIndex};width:${ItemClient.width * 4}px;height:${ItemClient.height * 4}px;transform:0;-webkit-transform:0;`;
+        htmlS = `<div data-src="${ItemClient.PhotoUrl}" data-offset_value="${ItemClient.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+
+
+    let rootWith = ItemClient.width * 4,rootHeight = ItemClient.height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(htmlS);
+    // if(renderItem_img() === false){
+    //     return new Promise((resolve,reject)=>{
+    //         reject(error);
+    //     })
+    // }
+    let canvasRoot = document.createElement("canvas");
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+    // console.log(canvasRoot.style.width);
+    // console.log(canvasRoot.style.height);
+
+    return new Promise((resolve,reject)=>{
+        
+        renderItem_img().then(()=>{
+
+            html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+                // console.log(canvas.toDataURL());
+                // document.body.appendChild(canvas);
+                let page = {
+                    top:ItemPosition.top,
+                    left:ItemPosition.left,
+                    width:ItemClient.width,
+                    height:ItemClient.height,
+                    // zindex:ItemPosition.zIndex,
+                    data:canvas.toDataURL(),
+                    type:'img_below'
+                }
+                SinglePageItemList.push(page)
+                resolve()
+            });
+        })
+
+    })
+ 
+}
+
+//重构 - 文本容器
+function renderItem_textarea(txt_msg) {//渲染文本容器
+    // top: " + top * 4 + "px;left: " + left * 4 + "px;
+    var font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, z_index = 1, width = 100, height = 30, top = 0, left = 0, rotate = 0, area_width = 100, area_height = 100, small_font_size = 1, container_uid = '', text_container = '', text_placeholder = '请输入文字'
+    ;
+    if (txt_msg) {
+        ItemCLient = txt_msg.Client;
+        ItemPosition = txt_msg.Position;
+
+        //font_family = txt_font_family;
+        width = ItemCLient.width;
+        height = ItemCLient.height;
+        top = ItemPosition.top;
+        left = ItemPosition.left;
+        //rotate = styleObj.rotate;
+        z_index = ItemPosition.zIndex;
+        font_size = ItemCLient.fontSize;
+        line_height = ItemCLient.lineHeight  * 4;
+        typeid = ItemCLient.typeid;
+        color = ItemCLient.fontColor;
+        maxLength = ItemCLient.maxLength;
+        text_container =  ItemCLient.TextContent === undefined ? "" : ItemCLient.TextContent;
+
+        txt_msg.ContainerText ? text_placeholder = txt_msg.ContainerText : null;
+    }
+
+    var styleS =
+        "position:absolute;z-index:" + z_index +
+        ";width: " + width * 4 + "px;height: " + height * 4 + "px;"
+    var txt_style =
+        "position: absolute;z-index: 2;width:100%;height:100%;font-size:" + font_size * 4 + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+    var num_style = 'display: inline-block;position: absolute;right: 0px;bottom: 0;font-size: 12px;';
+    var txt_Html = '<textarea data-typeid="'+ typeid + '" data-container_uid="' + container_uid + '" style="' + txt_style + '" placeholder="' + text_placeholder + '" maxlength="' +maxLength + '">' + text_container + '</textarea><div class="max_num" max_num="' +maxLength + '" style="' + num_style + '">' + text_container.length + '/' + maxLength + '</div>';
+    var htmlS = '<div container_uid="' + container_uid + '" type="txt"  font_size = "' + font_size * 4 + '" class="container_box txt_box" style="' + styleS + '">' + txt_Html +
+        '</div>';
+
+
+    let rootWith = width * 4,rootHeight = height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(htmlS);
+
+    let canvasRoot = document.createElement("canvas");
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+    // console.log(canvasRoot.style.width);
+    // console.log(canvasRoot.style.height);
+
+    return new Promise((resolve,reject)=>{
+        html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+            let page = {
+                    top:top,
+                    left:left,
+                    width:width,
+                    height:height,
+                    data:canvas.toDataURL(),
+                    type:'img_up'
+                }
+            SinglePageItemList.push(page)
+            resolve()
+        });
+    })
+
+}
+
+//重构 - 渲染展示容器
+function renderItem_justshow(ShowContainer) {//渲染展示容器
+    //top: " + ItemPosition.top * 4 + "px;left:" + ItemPosition.left * 4 + "px;
+    let ItemClient = ShowContainer.Client;
+    let ItemPosition = ShowContainer.Position;
+    var area_width = 100, area_height = 100, small_font_size = 1, font_size = 12; showS = '';
+    font_size = ItemClient.fontSize;
+    if(ItemClient.showInfo == "schoolQrcode" || ItemClient.showInfo == "schoolLogo"){
+        showS = '<img src = "' + `${ItemClient.showTitle}` + '" style="width:100%;height:100%;">';
+    }else{
+        showS = ItemClient.showTitle;
+    }
+    var styleS =
+        "position:absolute;z-index:" + ItemPosition.zIndex +
+        ";width: " + ItemClient.width * 4 + "px;height: " + ItemClient.height * 4 + "px;transform:rotate(0deg);-webkit-transform:rotate(0deg);text-align: center;"
+    var txt_style =
+        "position: absolute;z-index: 2;width:" + 100 + "%;height:" + 100 + "%;font-size:" + ItemClient.fontSize * 4 + "px;color:" + ItemClient.fontColor + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+    var txt_Html = '<div style="' + txt_style + '">' + showS + '</div>';
+    var htmlS = '<div type="show" font_size = "' + font_size * 4 + '" show_type="' + ItemClient.showInfo + '" class="container_box" style="' + styleS + '">' +
+        txt_Html +
+        '</div>';
+    let rootWith = ItemClient.width * 4,rootHeight = ItemClient.height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(htmlS);
+
+    let canvasRoot = document.createElement("canvas");
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+    // console.log(canvasRoot.style.width);
+    // console.log(canvasRoot.style.height);
+
+    return new Promise((resolve,reject)=>{
+        html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+            let page = {
+                    top:ItemPosition.top,
+                    left:ItemPosition.left,
+                    width:ItemClient.width,
+                    height:ItemClient.height,
+                    data:canvas.toDataURL(),
+                    type:'img_up'
+                }
+            SinglePageItemList.push(page)
+
+            resolve()
+        });
+    })
+}
+
+//重构 - 渲染视频容器
+function renderItem_video(VideoContainer){ //渲染视频容器
+    //top: ${ItemPosition.top * 4}px;left: ${ItemPosition.left * 4}px;
+    let ItemClient = VideoContainer.Client
+    let ItemPosition = VideoContainer.Position
+    let dd = 0;
+    let m = '';
+    if(ItemClient.width > ItemClient.height){
+        dd = ItemClient.height
+        m = `margin-left:calc(50% - ${dd * 2}px )`
+    }else {
+        dd = ItemClient.width
+        m = `margin-top:calc(50% - ${dd * 2}px )`
+
+    }
+    let IsValue = Boolean(ItemClient.videoQrUrl)
+    let html = `<div type="video" isvalue="${IsValue}" class="container_box video_box" style="position:absolute;z-index:${ItemPosition.zIndex}; width: ${ItemClient.width * 4}px;height: ${ItemClient.height * 4}px;transform:rotate(0);-webkit-transform:rotate(0);">
+            <div style="display:flex;flex-direction:column;height:100%;width:100%;text-align:center">
+            <img draggable="false" src="${ItemClient.videoQrUrl || 'https://manger.weimeizhan.com/addons/fm_jiaoyu/public/web/images/qrcode_example.png'}"   style="width: 100%;object-fit: contain; height:1px; flex: 1;margin-bottom:4px; "/>
+            <div class="videocom"  style="border-top: 1px solid #c1c1c1;width: 100%; top: 170px; padding: 3px; font-size:${ItemClient.fontSize * 4}px; color:${ItemClient.fontColor}; line-height:${ItemClient.lineHeight * 4}px;white-space: normal; word-break: break-all; word-wrap: break-word;"> <textarea style="height:100%;width:100%;overflow:hidden;resize:none;background-color: transparent;" maxlength="${ItemClient.maxLength}" type="text">${ItemClient.description}</textarea> </div>
+        </div>
+        </div>`;
+    
+        
+    let rootWith = ItemClient.width * 4,rootHeight = ItemClient.height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(html);
+    //不知道干嘛的
+    $("#re-root .video_box").find('img').each(function(){
+        let W = $(this)[0].clientWidth;
+        let H = $(this)[0].clientHeight;
+        let src = $(this).attr("src")
+        let dd = 0,m = '';
+        if(W > H){
+            dd = H
+            m = ` margin-left:calc(50% - ${W/2}px) `
+        }else{
+            dd = W
+            m = ` margin-top:calc(50% - ${H/2}px) `
+        }
+        html = `
+            <div style="margin-bottom: 4px; " >
+                <img src="${src}" style="width:${dd}px;height:${dd}px;${m}" />
+            </div>
+        `
+        $(this).parent().prepend(html)
+        $(this).remove()
+        console.log(W)
+        console.log(H)
+    })
+    //不知道干嘛的  结束
+    let canvasRoot = document.createElement("canvas");
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+    // console.log(canvasRoot.style.width);
+    // console.log(canvasRoot.style.height);
+
+    return new Promise((resolve,reject)=>{
+        html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+            let page = {
+                    top:ItemPosition.top,
+                    left:ItemPosition.left,
+                    width:ItemClient.width,
+                    height:ItemClient.height,
+                    data:canvas.toDataURL(),
+                    type:'img_up'
+                }
+            SinglePageItemList.push(page)
+            resolve()
+        });
+    })
+
+}
+
+//重构 - 渲染 chart容器
+function renderItem_chart(ChartContainer){ //渲染chart容器
+    //top:${ItemPosition.top * 4}px;left:${ItemPosition.left * 4}px;
+    ItemPosition = ChartContainer.Position
+    ItemClient = ChartContainer.Client
+    styleS =`background:  no-repeat center;background-size:90%;background-color:${ItemClient.ChartBgColor};position:absolute;z-index:${ItemPosition.zIndex}; width:${ItemClient.width * 4}px;height:${ItemClient.height * 4}px;border: 1px solid black;`;
+
+    htmlS = `<div  data-container_uid ="${ChartContainer.tagid}" data-chart_type="${ItemClient.ChartType}" data-ChartBgColor="${ItemClient.ChartBgColor}" data-time_start="${ItemClient.start}" data-time_end="${ItemClient.end}"  type="chart" class="container_box chart_box" style="${styleS}"></div>`;
+
+    let rootWith = ItemClient.width * 4,rootHeight = ItemClient.height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(htmlS);
+    // if(renderItem_chart_box() === false){
+    //     return new Promise((resolve,reject)=>{
+    //         reject(error);
+    //     })
+    // }
+    let canvasRoot = document.createElement("canvas");
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+    // console.log(canvasRoot.style.width);
+    // console.log(canvasRoot.style.height);
+
+    return new Promise((resolve,reject)=>{
+        renderItem_chart_box().then(()=>{
+            html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+                let page = {
+                    top:ItemPosition.top,
+                    left:ItemPosition.left,
+                    width:ItemClient.width,
+                    height:ItemClient.height,
+                    data:canvas.toDataURL(),
+                    type:'img_up'
+                }
+                SinglePageItemList.push(page)
+                resolve()
+            });
+        })
+    })
+}
+
+//重构 - 渲染评分容器
+function renderItem_score(score_msg) {//渲染评分容器
+    var z_index = 0, width = 0, height = 0, top = 0, left = 0, rotate = 'rotate(0deg)', container_type = '', font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, area_width = 1, area_height = 1, small_font_size = 1, _ary;
+    let ItemClient = score_msg.Client;
+    let ItemPosition = score_msg.Position;
+    width = ItemClient.width * 4;
+    height = ItemClient.height * 4;
+    top = ItemPosition.top * 4;
+    left = ItemPosition.left * 4;
+    let lineHeight = ItemClient.lineHeight * 4
+    z_index = ItemPosition.zIndex;
+    color = ItemClient.fontColor;
+    font_size = Number(ItemClient.fontSize) * 4;
+    score_content = ItemClient.scoreData
+    var styleS, htmlS, imgS = '';
+    styleS ="position:absolute;z-index:" + z_index +";width: " + width + "px;height: " + height + "px;transform:" + rotate + ";-webkit-transform:" + rotate + ";";
+    score_styleS ="font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;transform:scale(" + small_font_size + ");-webkit-transform:scale(" + small_font_size + ");display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-pack:center;width:100%;line-height: " + lineHeight +" px;"
+
+    let ItemWidth = 100 / (score_content.length + 1)
+    for(let IIs in score_content){
+        let InputRound = 'scoreInputRound'
+        if(ItemClient.setValue === Number(IIs)){
+            InputRound += ' inSelect'
+        }
+
+        let ImgBoxS = '';
+        let TxtBoxS = '';
+        if(ItemClient.scoreImgData[IIs] !== ''){
+            ImgBoxS = ` <img src="${ItemClient.scoreImgData[IIs]}" style="margin-right:5px;height:${font_size + 3}px;width:${font_size + 3}px">`;
+        }
+        if(score_content[IIs] !== ''){
+            TxtBoxS = ` <span class="scorecom" style="color:${color};line-height: ${lineHeight}px;font-size:${font_size}px;">${score_content[IIs]}</span>`
+        }
+        imgS += ` <div class="scoreItem_01" style="width:${ItemWidth}%">
+        ${ImgBoxS}
+        <div class="${InputRound}" data-setValue="${IIs}" style="height: ${font_size + 1}px;width: ${font_size + 1}px;border-radius: 50%;border:1px solid gray;background-color:white"></div>
+            ${TxtBoxS}
+        </div>`;
+    }
+
+    htmlS = '<div  class="container_box container_score" style="' + styleS + '">' +
+            '   <li  draggable="false" class="scoreItem" style="display:flex;align-items:center">' +
+            '       <div class="scoreItemTxt" data-font_size="' + font_size + '" style="width:'+ItemWidth + '%;position:relative;"><input style="' + score_styleS + '" placeholder="评分项名称" value="' + ItemClient.title + '"></input></div>' + imgS +
+            '   </li>' +
+            '</div>';
+
+    let rootWith = ItemClient.width * 4,rootHeight = ItemClient.height * 4;
+    $("#re-root").css({
+        'width':rootWith,
+        'height':rootHeight
+    }).html(htmlS);
+
+    let canvasRoot = document.createElement("canvas");
+    let _canvas = $("#re-root")[0];
+    let scaleValue = 0.5;
+    var w = parseInt(window.getComputedStyle(_canvas).width);
+    var h = parseInt(window.getComputedStyle(_canvas).height);
+    //将canvas画布放大若干倍，然后盛放在较小的容器内，就显得不模糊了
+    canvasRoot.width = w;
+    canvasRoot.height = h;
+    canvasRoot.style.width = w  + "px";
+    canvasRoot.style.height = h  + "px";
+    // console.log(canvasRoot.style.width);
+    // console.log(canvasRoot.style.height);
+
+    return new Promise((resolve,reject)=>{
+        html2canvas(document.querySelector('#re-root'), { canvas: canvasRoot }).then(function(canvas) {
+            let page = {
+                    top:ItemPosition.top,
+                    left:ItemPosition.left,
+                    width:ItemClient.width,
+                    height:ItemClient.height,
+                    data:canvas.toDataURL(),
+                    type:'img_up'
+                }
+                SinglePageItemList.push(page)
+            resolve()
+        });
+    })
+}
+
+//重构 - 循环当前页面的所有元素
+function ReLoop(value,index){
+    let maxLength = value.length;
+    return new Promise((resolve,reject)=>{
+        if(index >= maxLength){
+            resolve({status:true,msg:'finish'});
+        }else{
+            v = value[index];
+            // console.log(`renderItem_${v.itemType}(v)`)
+            let res = eval(`renderItem_${v.itemType}(v)`)
+            console.log(res)
+            res.then((res)=>{
+                ReLoop(value,index+1).then(()=>{
+                    resolve({status:true,msg:'finish'});
+                })
+            })
+        }
+    })
+}
+
+//重构 - 渲染图片本体
+function renderItem_img() {//渲染图片
+    let img_box_elm = Dom = $("#re-root .img_box");
+    let photoUrl = $(Dom).data('src');
+    console.log($(Dom))
+    if (!photoUrl) { return false; }
+    let box_W = $(Dom).width(),box_H = $(Dom).height(),offset_value = $(Dom).data('offset_value'),left = 0,top = 0,img = new Image();
+    img.src = photoUrl;
+    // 使用promise 异步，以保证当前操作完成后才执行接下来的操作
+    return new Promise((resolve,reject)=>{
+        img.onload = function () {
+        let container_uid = Number($(img_box_elm).css('z-index')),
+            zoom_num = $(img_box_elm).data('zoom_num'),
+            zoom_size, imgW, imgH,
+            width = img.width,
+            height = img.height,kW = box_W,kH = box_H;
+        if (height * kW / width > kH) {
+            zoom_size = kW / width / 0.9;//容器的宽除以图片的宽除以0.9
+            imgW = width * zoom_size//图片按0.9缩放后的宽
+            imgH = height * zoom_size//图片按0.9缩放后的高
+        } else {
+            zoom_size = kH / height / 0.9;//容器的宽除以图片的宽除以0.9
+            imgW = width * zoom_size//图片按0.9缩放后的宽
+            imgH = height * zoom_size//图片按0.9缩放后的高
+        }
+        if (offset_value) {
+            let offset_value_ary = offset_value.split(',');
+            left = offset_value_ary[0] * imgW * zoom_num;
+            top = offset_value_ary[1] * imgH * zoom_num;
+        }
+        $(img_box_elm).html("<img class='targetObj' data-width='" + imgW + "'  data-height='" + imgH + "' style='position: relative;width:" + imgW * zoom_num + "px;height:" + imgH * zoom_num + "px;left:" + left + "px;top:" + top + "px;' src='" + photoUrl + "'ondragstart='return false' />");
+        console.log("re")
+        let $targetObj = $(img_box_elm).find(".targetObj");
+        let page_instance_uid = $('.nc_page_ul .act').data('tagid');
+        let page_item_data = '';
+        showLoad = false;
+        resolve(); // 返回异步成功
+    }
+    })
+}
+
+//重构 - 渲染charts本体
+function renderItem_chart_box(){ // 生成chart图表
+    let v = $("#re-root .chart_box");
+    var start = $(v).attr('data-time_start');
+    var end = $(v).attr('data-time_end');
+    var charttype = $(v).attr('data-chart_type');
+    var ChartBgColor = $(v).attr('data-ChartBgColor') === undefined ? '#ffffff' :  $(v).attr('data-ChartBgColor')  ;
+    console.log(ChartBgColor)
+
+    let W = $(v).css("width")
+    let H = $(v).css("height")
+    let ChartData = {
+        'start' : start,
+        'end' : end,
+        'type' : charttype,
+        'sid' : `{$_GPC['sid']}`,
+    }
+    return new Promise((resolve,reject)=>{
+        $.post("{php echo $this->createWebUrl('indexajax',array('op'=>'GetChart','schoolid'=>$schoolid))}",ChartData,function(datas){
+            var ds;
+            if(datas.type == 1){
+                ds = PieOption['copywebzzfb'];
+                ds.legend = {
+                    textStyle:{
+                        fontSize:8
+                    },
+                    itemWidth:8,
+                    itemHeight:8,
+                };
+                ds.legend.data = datas.title;
+                ds.series[0].data = datas.data;
+            }else if (datas.type == 2){
+                ds = PieOption['webchartstumc_new'];
+                ds.xAxis [0].data = datas.date;
+                ds.legend.data = datas.ds.legend
+                ds.series = datas.series
+                ds.series.map((x,y)=>{
+                    ds.series[y]['label'] = { //每个点上显示数值
+                        show: true,
+                        color:'#333',
+                        fontSize:8,
+                        formatter: function (value,x) {
+                            return Number(value.data).toFixed(1);
+                        }
+                    }
+                })
+            }
+            ds.backgroundColor = ChartBgColor
+
+            var myChart = echarts.init($(v)[0]);
+            console.log(ChartBgColor)
+            myChart.setOption(ds,true);
+            resolve()
+            $(window).resize(myChart.resize);
+        },'json');
+    })
+
+}
+
+function SavePageBase64(index,sid,gid){
+    let AllC = PageList.length + 2;
+
+    if(index >= PageList.length){ //完成后，就应该是生成PDF,将 CreatePDFFile 解除注释
+        ChangePre(((AllC - 1)/AllC*100).toFixed(2),'保存数据中')
+        CreatePDFFile(sid,gid)
+        return false
+    }
+
+    let i = index,pageid = PageList[index]['id']
+    ChangePre(((i+1)/AllC*100).toFixed(2),`正在处理第${i+1}页`)
+    SinglePageItemList = [];
+    ReRenderSiglePageItem(PageList[index]).then(()=>{
+        //TODO:
+        $.ajax({
+            url: "{php echo $this->createWebUrl('manual', array('op' => 'MakePDF', 'schoolid' => $schoolid))}",
+            type: "post",
+            dataType: "json",
+            data:{'SinglePageItemList':SinglePageItemList,'pageid':pageid},
+            success: function (res) {
+                // console.log(res)
+                // return
+                SavePageBase64(index + 1,sid,gid)
+            },
+            error: function (jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+            }
+        });
+        console.log(SinglePageItemList) //单个页面的数据
+        // SavePageBase64(index + 1,sid,gid)
+    })
+    return
+
+  
+
+}
+
+/*******************************************************    重构结束   ************************************************/
+function CreatePDFFile(sid,gid){
+    $.ajax({
+        url: "{php echo $this->createWebUrl('manual', array('op' => 'CreatePDFFile', 'schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data:{
+            sid:sid,
+            gid:gid
+        },
+        success: function (res) {
+            console.log(res)
+            ChangePre(100,'转换完成,1秒后刷新页面')
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000);
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+            //DoSomething
+        }
+    });
+}
+
+
+</script>
+
+<!-- 整个页面容器渲染相关操作 -->
+<script>
+    var edianji;
+    //模拟测试数据
+
+    var PageList = []
+    var DelArrId = []
+
+
+
+    //模拟当前档案未启用
+    var isEnable = false;
+    //模拟当前档案未保存
+    var IsSave = false;
+    var selectLock = false; //当这个值为true时，禁止选择左侧
+    //auth 1校长 2老师 3家长
+    var current_page_data = null;
+    var dragSrc
+    var ox,oy;
+    var is_input_change = false;
+
+ 
+ 
+ 
+
+     
+ 
+
+    $(function(){
+        var PageState = {
+            ActPageOrder : 0,
+        }
+
+
+    })
+   
+
+
+</script>
+
+{elseif $operation == 'teawrite'}
+<div class="main">
+    {if $ismanager}
+    <div class="panel panel-info">
+        <div class="panel-heading">成长手册</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="manual" />
+                <input type="hidden" name="op" value="teawrite" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-lg-1 control-label" >选择老师</label>
+                    <div class="col-lg-2">
+                        <select style="margin-right:15px;" name="tid" class="form-control">
+                            {loop $teachers $row}
+                            <option value="{$row['id']}" {if $row['id'] == $tid}selected{/if}>{$row['tname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+					<div class="col-lg-2" style="margin-left:50px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {/if}
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                            <th style="width:5%">档案名称</th>
+                            <th style="width:8%;">档案类型</th>
+                            <th style="width:8%;">班级名称</th>
+                            <th style="width:8%;">园长启用时间</th>
+                            <th style="width:8%;">发送状态</th>
+                            <th style="width:8%;">购买人数</th>
+                            <th style="width:8%;">操作</th>
+                            <th style="width:4%;">档案进展</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {loop $list $item}
+                        <tr>
+                            <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                            <td>
+                                {$item['title']}
+                            </td>
+                            <td>
+                                {$item['type']}
+                            </td>
+                            <td>
+                                {$item['bjname']}
+                            </td>
+                            <td>
+                                {$item['createtime']}
+                            </td>
+                            <td>
+                                {$item['sendnum']}个已发送/共{$item['sendcount']}个学生
+                            </td>
+                            <td>
+                                {$item['ordernum']}
+                            </td>
+                            <td >
+                                <a href="{php echo $this->createWebUrl('manualbjgrowpage', array('id' => $item['id'], 'op' => 'display','bjid'=>$item['bjid'], 'schoolid' => $schoolid))}" style="color: #02c493;">编辑</a>
+                            </td>
+                            <td>
+                                <a href="{php echo $this->createWebUrl('manual', array('id' => $item['id'], 'op' => 'look','bjid'=>$item['bjid'], 'schoolid' => $schoolid))}" style="color: #02c493;">查看</a>
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+                {$pager}
+            </form>
+        </div>
+    </div>
+</div>
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,103 @@
+{if $operation == 'type_info'}
+<div class="modal-header">                
+	<h4 class="modal-title" style="    color: #444;" id="myModalLabel">编辑子分类</h4>
+</div>
+<div class="modal-body" style="height:100%;overflow-y: scroll; max-height: 87%;">
+   <form id="type_info">
+		<input type="hidden" name="parentid" value="{$sid}" />	
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<!--修改结束-->
+				<div id="custom-url">     
+                    {if !empty($kcclass)}
+                    {loop $kcclass $row}
+                        <div class="form-group">
+                            <input type="hidden" name="sid[]" value="{$row['sid']}" />
+                            <label class="col-sm-2 col-lg-2">分类</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" name="ssort[]" placeholder="排序" class="form-control" value="{$row['ssort']}" />
+                            </div>
+                            <div class="col-sm-5 col-lg-5">    
+                                <input type="text" name="catename[]" placeholder="子分类名称" class="form-control" value="{$row['sname']}" />
+                            </div>
+                            <div class="col-sm-1">
+								<a class="" onclick="del({$row['sid']},this)"><i class="fa fa-times-circle"></i></a>
+							</div>	
+                        </div>
+                     {/loop}   
+					{else}
+						<div class="form-group">
+                            <input type="hidden" name="new[]" value="" />
+                            <label class="col-sm-2 col-lg-2">分类</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="" />
+                            </div>
+                            <div class="col-sm-5 col-lg-5">    
+                                <input type="text" name="catenamet_new[]" placeholder="子分类名称" class="form-control" value="" />
+                            </div>
+                            <div class="col-sm-1">
+								<a href="javascript:;" class="custom-url-del"><i class="fa fa-times-circle"></i></a>
+							</div>	
+						</div>
+                    {/if}
+                </div>	 
+                <div class="panel panel-default">  
+                    <div class="clearfix template"> 
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+                            <div class="col-sm-9 col-xs-12">
+                                <a href="javascript:;" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加分类</a>
+                                <span class="help-block">可添加多个子分类</span>
+                            </div>
+                        </div>	
+                    </div>	
+                </div>  
+			</div>
+		</div>
+	</form>
+</div>
+<div class="modal-foot">
+	<a class="btn btn-primary" style="color: #fff;" onclick="add_suntype();">提交</a>
+	<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+</div>
+<script type="text/javascript">
+function del(sid,elm) {
+    var truthBeTold = window.confirm('确认要删除已保存子分类吗 ?'); 
+    var url = "{php echo $this->createWebUrl('semester',array('op'=>'del_suntype','schoolid' => $schoolid))}";
+    var submitData = {
+            sid:sid,
+            schoolid:"{$schoolid}",
+    };
+    if (truthBeTold) {
+        $.post(url, submitData, function(data) {
+                alert(data.msg)
+                if(data.result){
+                    $(elm).parent().parent().remove()
+                }
+        },'json');
+    }
+}
+$('#custom-url-add').click(function(){
+	var html =  '<div class="form-group">'+
+                     '   <input type="hidden" name="new[]" value="" />'+
+                     '   <label class="col-sm-2 col-lg-2">分类</label>'+
+                     '   <div class="col-sm-4 col-lg-4">'+
+                     '       <input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="" />'+
+                     '   </div>'+
+                     '   <div class="col-sm-5 col-lg-5">'+
+                     '       <input type="text" name="catenamet_new[]" placeholder="子分类名称" class="form-control" value="" />'+
+                     '   </div>'+
+                     '    <div class="col-sm-1">'+
+                    '        <a href="javascript:;" class="custom-url-del"><i class="fa fa-times-circle"></i></a>'+
+                    '   </div>'+
+				    '</div>';
+			;
+	$('#custom-url').append(html);
+});
+$(document).on('click', '.remind-reply-del, .comment-reply-del, .times-del, .custom-url-del', function(){
+    $(this).parent().parent().remove();
+    return false;
+});
+</script>
+{/if}

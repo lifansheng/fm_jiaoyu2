@@ -1,0 +1,436 @@
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+    <style type="text/css">
+    @charset "UTF-8";
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide:not(.ng-hide-animate) {display: none !important;}
+    ng\:form {display: block;}
+    @media screen {.smnoscreen {display: none}}
+    @media print {.smnoprint {	display: none}}
+    @font-face {
+    font-family: 'FontAwesome';
+    src: url("{MODULE_URL}public/mobile/css/fontawesome-webfont-b64d4ac71dc58ef78afbc23d0aee020d.eot?v=4.2.0");
+    src: url("{MODULE_URL}public/mobile/css/fontawesome-webfont-b64d4ac71dc58ef78afbc23d0aee020d.eot?#iefix&v=4.2.0") format("embedded-opentype"), url("{MODULE_URL}public/mobile/css/fontawesome-webfont-7b07ce57a267815b7902936332129d46.woff?v=4.2.0") format("woff"), url("{MODULE_URL}public/mobile/css/fontawesome-webfont-9fdf91a58be546aefdb0d503cc72528a.ttf?v=4.2.0") format("truetype"), url("{MODULE_URL}public/mobile/css/fontawesome-webfont-3f8802daf26a29590af69a9be2630c82.svg?v=4.2.0#fontawesomeregular") format("svg");
+    font-weight: normal;
+    text-decorationnone;
+    font-style: normal
+    }
+        .check_this{background:url({MODULE_URL}public/mobile/img/be_choose_icon_02.png) right center;background-size:20px 15px;-moz-background-size:63px 100px; /* 老版本的 Firefox */background-repeat:no-repeat;size: 10px}
+        .name{line-height: 20px;}
+    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta content="telephone=no" name="format-detection">
+    <title>学校列表</title>
+    <link href="{MODULE_URL}public/mobile/css/weixin.css?ver=1" media="all" rel="stylesheet">
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery.js"></script>
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak={$set['baidumapapi']}&s=1"></script>
+    <script type="text/javascript" src="{OSSURL}public/mobile/js/postion.js"></script>
+</head>
+<body>
+    <div style="height: 100%;" class="ng-scope">
+        <div class="ddb-secondary-nav-header ng-isolate-scope" style="top:0px" on-pickup="onPickupFilter">
+            <div class="ddb-tab-bar">
+                {if $citys}
+                <div class="ddb-tab-item ng-scope">
+                    <a href="javascript:;" class="ng-binding" id="cityid_title">按城市</a>
+                    <i class="fa fa-caret-down"></i>
+                </div>
+                {/if}
+                <div class="ddb-tab-item ng-scope">
+                    <a href="javascript:;" class="ng-binding" id="areaid_title">按区域</a>
+                    <i class="fa fa-caret-down"></i>
+                </div>
+                <div class="ddb-tab-item ng-scope">
+                    <a href="javascript:;" class="ng-binding" id="typeid_title">按类型</a>
+                    <i class="fa fa-caret-down"></i>
+                </div>
+                <div class="ddb-tab-item ng-scope" ng-repeat="pane in panes" ng-class="{active:pane.selected}"
+                     ng-click="toggle(pane)">
+                    <a href="javascript:;" class="ng-binding" id="sortid_title">按距离</a>
+                    <i class="fa fa-caret-down"></i>
+                </div>
+            </div>
+            <div class="ddb-box filter-nav-box ng-hide" ng-show="mask" ng-click="select()">
+                <div class="box-mask"></div>
+            </div>
+            <div class="filter-nav-menu" ng-transclude="">
+                {if $citys}
+                <div class="ddb-nav-pane ng-isolate-scope ng-hide">
+                    <div class="sub-pane cur-sub-pane ng-scope ng-isolate-scope" >
+                        <ul class="citytype ng-scope">
+                            <li class="sub-item active check_this" data-id="0" onclick="regetdata('cityid',0,this);">
+                                <div class="name ng-binding ">所有城市</div>
+                            </li>
+                            {loop $citys $row}
+                            <li class="sub-item ng-scope" data-id="{$row['id']}" onclick="regetdata('cityid',{$row['id']},this);">
+                                <div class="name ng-binding">{$row['name']}</div>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                </div>
+                {/if}
+                <div class="ddb-nav-pane ng-isolate-scope ng-hide">
+                    <div class="sub-pane cur-sub-pane ng-scope ng-isolate-scope" >
+                        <ul class="areatype ng-scope">
+                            <li class="sub-item active check_this allarea" data-id="0" onclick="regetdata('areaid',0,this);">
+                                <div class="name ng-binding ">所有区域</div>
+                            </li>
+                            {loop $area $item}
+                            <li class="sub-item ng-scope areali" parentid="{$item['parentid']}"  onclick="regetdata('areaid',{$item['id']},this);">
+                                <div class="name ng-binding">{$item['name']}</div>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                </div>
+                <div class="ddb-nav-pane ng-isolate-scope ng-hide">
+                    <div class="sub-pane cur-sub-pane ng-scope ng-isolate-scope">
+                        <ul class="shoptype ng-scope">
+                            <li class="sub-item active check_this" data-id="0" onclick="regetdata('typeid',0,this);">
+                                <div class="name ng-binding ">所有类型</div>
+                            </li>
+                            {loop $shoptypes $item}
+                            <li class="sub-item ng-scope" data-id="{$item['id']}" onclick="regetdata('typeid',{$item['id']},this);">
+                                <div class="name ng-binding">{$item['name']}</div>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                </div>
+                <div class="ddb-nav-pane ng-isolate-scope ng-hide">
+                    <div class="sub-pane cur-sub-pane ng-scope ng-isolate-scope" >
+                        <ul class="shopsort ng-scope">
+                            <li class="sub-item " data-id="0" onclick="regetdata('sortid',0,this);">
+                                <div class="name ng-binding ">默认</div>
+                            </li>
+                            <li class="sub-item ng-scope active check_this" data-id="2" onclick="regetdata('sortid',1,this);">
+                                <div class="name ng-binding ">距离最近</div>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--footer-->
+        <div id="ddb-delivery-branch-index" style="padding-top: 45px;" class="main-view ng-scope" >
+            {loop $restlist $item}
+            <div class="morelist branch-item ng-scope">
+                <input id="showlan" type="hidden" value="{$item['lng']},{$item['lat']}"/>
+                <a class="branch-info " href="{php echo $this->createMobileUrl('detail', array('schoolid' => $item['id']), true)}">
+                    <div class="branch-image">
+                        <img src="{php echo tomedia($item['logo']);}">
+                    </div>
+                    <div class="delivery-info">
+                        <div class="first-line">
+                            <div class="name ng-binding">{$item['title']}</div>
+                            {if $item['is_hot'] != 1}
+                            <div class="tag label-red ng-scope">招生中</div>
+                            {/if}
+                            <div class="tag label-green ng-scope">{$item['leixing']}</div>
+                            <div class="distance right ng-binding" id="shopspostion"></div>
+                        </div>
+                        <div class="second-line">
+                            <div class="comment-level red">
+                                <div class="ng-isolate-scope">
+                                    <?php for($i=0;$i < $item['level']; $i++){ ?>
+                                    <i class="fa fa-star-o ng-scope"></i>
+                                    <?php }?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="third-line">
+                            <div class="time ng-hide" ng-show="branch.delivery_times.length &gt; 0">
+                                <i class="fa fa-clock-o"></i>
+                                电话
+                            </div>
+                            <div class="fee ng-binding">
+                                <span class="ng-binding ng-scope">{$item['tel']}</span>
+                                <span class="spliter"></span>
+                                <span class="ng-binding ng-scope">{$item['city']}{$item['quyu']}</span>
+                                <span class="spliter"></span>
+                            </div>
+                            <div class="address ng-binding">{$item['address']}</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {/loop}
+        </div>
+        <input type="hidden" id="curlat" name="curlat" value=""/>
+        <input type="hidden" id="curlng" name="curlng" value=""/>
+        <input type="hidden" id="isposition" name="isposition" value="{$isposition}" />
+        <input type="hidden" id="cururl" name="cururl" value="{php echo $this->createMobileurl('wapindex', array(), true)}" />
+    </div>
+    </div>
+    <script src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js"></script>
+    <script language="javascript">
+        var scroll_load_obj = null;
+        common_ajax_callback = false; //全局变量 在公共模板页定义 表示是否用公共的 ajax 成功回调和失败回调 ，这里设置为false 不使用公共回调
+        //scroll_load_obj在页面的js中定义，全局变量。
+        //var scroll_load_obj = null;
+        function scroll_list_to_detail_cache_on(cache_page_name) {
+            // 开启缓存开关
+            sessionStorage.setItem("cache_html_switch_" + cache_page_name, true);
+        }
+        function scroll_list_to_cache_off(cache_page_name) {
+            // 关闭缓存开关
+            sessionStorage.removeItem("cache_html_switch_" + cache_page_name);
+        }
+        function Scroll_load(param) {
+            //this.limit = (sessionStorage.getItem('limit' + param.page_name)) ? (sessionStorage.getItem('limit' + param.page_name) || param.pageSize || '0') : (param.pageSize || '0');
+            this.limit = param.pageSize || '10';
+            this.pageSize = param.pageSize || 10;
+            this.ajax_switch = param.ajax_switch || true;
+            this.ul_box = param.ul_box || '.listContent';
+            this.li_item = param.li_item || '.listContent .leave_main';
+            this.ajax_url = param.ajax_url || '';
+            this.after_ajax = param.after_ajax || null;
+            this.page_name = param.page_name || "";
+        }
+        Scroll_load.prototype.load_init = function () {
+            var self = this;
+            scroll_load_obj = this;
+            $('body').append('<div class="has_show_over" style="clear:both;height:45px;line-height:45px"><div class="jzz_div"><div class="jzz jzz_over"><div class="pir"><img src="{MODULE_URL}public/mobile/img/p_jzz.png" /></div><div class="jzz_text"></div></div></div></div>');
+            sessionStorage.removeItem('cache_html_switch_' + self.page_name);
+            //如果进入页面时获取的数据已经获取完了，则无操作
+            if (($(self.li_item).length % self.pageSize != 0) || $(self.li_item).length == 0) {
+                $(".jzz_text").text(''); //数据已加载完毕
+            } else {
+                //如果进入页面时获取的数据没有获取完，则将scroll_fun 绑定到 window 的 scroll 里
+                $(window).on("scroll", scroll_fun); //pei 改 移到else里面
+            }
+        };
+        function scroll_fun() {
+            // var bottom = $(".has_show_over");
+            var winHeight = window.innerHeight || document.documentElement.clientHeight,
+                scrollTop = document.body.scrollTop || document.documentElement.scrollTop,
+                documentHeight = $(document).height();
+            //将当前的浏览器滚动的高度存在浏览器缓存变量scroll_top
+            sessionStorage.setItem('scroll_top' + scroll_load_obj.page_name, scrollTop);
+            //判断是否滚到差不多浏览器底部
+            if (parseInt(winHeight) + parseInt(scrollTop) + 5 > parseInt(documentHeight)) {
+                var self = scroll_load_obj;
+                /*这里是为了防止切换类型后下拉无操作所以注释掉，如果页面无类型变换的下拉则不能注释掉,否则将会产生无效操作*/
+                //$(window).off("scroll", scroll_fun);
+                /* 如果A类型拉到底了再切换类型，将会自动执行一次下拉操作，这里的check_und 和 is_ajax_check 用来处理*/
+                let check_und = $(self.ul_box).children('div').eq($(self.ul_box).children('div').length-1).attr('time');
+                let is_ajax_check = true;
+                //如果是切换类型时的自动操作，则is_ajax_check 为 false
+                if(typeof(check_und) == "undefined"){
+                    is_ajax_check = false;
+                }
+                if (self.ajax_switch) {
+                    //这里做ajax
+                    self.ajax_switch = false;  //把ajax锁关了防止不断ajax
+                    $('.has_show_over').animate({height:"45px"});
+                    $(".jzz").removeClass('jzz_over');
+                    $('.jzz_text').text('加载中');
+                    var post_data = {
+                        limit: $(self.ul_box).children('div').eq($(self.ul_box).children('div').length-1).attr('time'),
+                        lat : $('#curlat').val(),
+                        lng : $('#curlng').val(),
+                        sortid:ajax_data.sortid,
+                        cityid:ajax_data.cityid,
+                        areaid:ajax_data.areaid,
+                        typeid:ajax_data.typeid,
+                    };
+                    $.ajax({
+                        type: 'POST',
+                        url: self.ajax_url,
+                        data: post_data,
+                        dataType: "html",
+                        success: function (data) {
+                            //载入更多内容
+                            console.log(is_ajax_check);
+                            if ($.trim(data)) {
+                                if(is_ajax_check){
+                                    $(self.ul_box).append(data);
+                                    //如果是自动执行的下拉操作，则不将获取的数据显示出来，进而不会出现重复数据
+                                    //TODO:: 最好是找到为什么会自动执行下拉操作
+                                }else{
+                                    self.ajax_switch = true;
+                                }
+                                sessionStorage.setItem('cache_html' + self.page_name, $(self.ul_box).html());
+                                self.limit = parseInt(self.limit) + self.pageSize;
+                                sessionStorage.setItem('limit' + self.page_name, self.limit);
+                                if (typeof (self.after_ajax) != 'undefined') { self.after_ajax(); }
+                                if (parseInt(self.limit) > $(self.li_item).length) {
+                                    $(".jzz").addClass('jzz_over');
+                                    $('.jzz_text').text('加载中');
+                                    sessionStorage.setItem('ajax_switch' + self.page_name, self.ajax_switch);
+                                    /*需要将这句注释掉，否则切换类型时会出现下拉无反应的情况*/
+                                    //$(window).off("scroll", scroll_fun);
+                                    $('.has_show_over').animate({height: 0});
+                                    self.ajax_switch = true;
+                                } else {
+                                    $(window).on("scroll", scroll_fun);
+                                    self.ajax_switch = true;
+                                }
+                            } else {
+                                //真正数据获取完了其实是执行到这里的
+                                $(".jzz").addClass('jzz_over');
+                                $('.jzz_text').text('数据已加载完毕');
+                                sessionStorage.setItem('ajax_switch' + self.page_name, self.ajax_switch);
+                                $(window).off("scroll", scroll_fun);
+                                $('.has_show_over').animate({height: 0});
+                            }
+                        },
+                        error: function () {
+                            jTips('加载失败！');
+                            $(window).on("scroll", scroll_fun);
+                            self.ajax_switch = true;
+                        }
+                    }) //ajax结束
+                }
+            }
+        };
+
+
+        new Scroll_load({
+            "limit": "0",
+            "pageSize": 8,
+            "ajax_switch": true,
+            "ul_box": ".main-view",
+            "li_item": ".main-view .branch-item",
+            "ajax_url": "{php echo $this->createMobileUrl('wapindex', array('schoolid' => $schoolid,'op'=>'ajaxdata'), true)}",
+            "page_name": "teacher_notify",
+            "after_ajax": function () {
+                let curlat = $('#curlat').val();
+                let curlng = $('#curlng').val();
+                $(".morelist").each(function() {
+                    var ShopLngLat = $(this).find("#showlan").val();
+                    var InputOF = ShopLngLat.indexOf(",");
+                    var InputOFLast = ShopLngLat.length;
+                    var ShopLng = ShopLngLat.slice(0, InputOF);
+                    var ShopLat = ShopLngLat.slice(InputOF + 1, InputOFLast);
+                    var dis111 = distanceByLnglat(curlng, curlat, ShopLng, ShopLat);
+                    $(this).find("#shopspostion").html(dis111 + "公里");
+                });
+            }
+        }).load_init();
+        var ajax_data = {
+            cityid:{$cityid},
+            areaid:{$areaid},
+            typeid:{$typeid},
+            sortid:{$sortid},
+        };
+
+        function regetdata(type,id,e){
+            $("#"+type+"_title").html($(e).children().html());
+            scroll_load_obj.ajax_switch = true;
+            $(window).on("scroll", scroll_fun);
+            console.log( scroll_load_obj.ajax_switch);
+            let curlat = $('#curlat').val();
+            let curlng = $('#curlng').val();
+            ajax_data[type] = id;
+            if(type == 'cityid'){
+                ajax_data.areaid=0;
+                $("#areaid_title").html("所有区域");
+                if(id != 0){
+                    $("li.areali.active.check_this").toggleClass('active check_this');
+                    $("li.areali").hide();
+                    $("li[parentid="+id+"]").show();
+                    $(".allarea").addClass('active check_this');
+                }else{
+                    $("li.areali").show();
+                    $("li.areali.active.check_this").toggleClass('active check_this');
+                    $(".allarea").addClass('active check_this');
+                }
+            }
+            ajax_data.lat = curlat;
+            ajax_data.lng = curlng;
+            console.log(ajax_data);
+             $(e).parent().find(".active.check_this").toggleClass('active check_this');
+            $(e).toggleClass('active check_this');
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('wapindex',array('op'=>'firstdata','schoolid'=>$schoolid))}",
+                type: "POST",
+                data:ajax_data,
+                dataType: "html",
+                success: function (res) {
+                    $('#ddb-delivery-branch-index').html(res);
+                    let curlat = ajax_data.lat;
+                    let curlng = ajax_data.lng;
+                    scroll_load_obj.ajax_switch = true;
+                    $(window).on("scroll", scroll_fun);
+                    $(".morelist").each(function() {
+                        var ShopLngLat = $(this).find("#showlan").val();
+                        var InputOF = ShopLngLat.indexOf(",");
+                        var InputOFLast = ShopLngLat.length;
+                        var ShopLng = ShopLngLat.slice(0, InputOF);
+                        var ShopLat = ShopLngLat.slice(InputOF + 1, InputOFLast);
+                        var dis111 = distanceByLnglat(curlng, curlat, ShopLng, ShopLat);
+                        $(this).find("#shopspostion").html(dis111 + "公里");
+                    });
+                }
+            });
+            $(".filter-nav-menu > .ddb-nav-pane").addClass('ng-hide').eq($('.ddb-tab-bar .ddb-tab-item').index(this)).addClass('ng-hide');
+            $(".ddb-box").addClass('ng-hide');
+        }
+
+        $('.ddb-tab-bar .ddb-tab-item').click(function () {
+            $(".filter-nav-menu > .ddb-nav-pane").addClass('ng-hide').eq($('.ddb-tab-bar .ddb-tab-item').index(this)).removeClass('ng-hide');
+            $(".ddb-box").removeClass('ng-hide');
+        });
+
+        $('.ddb-box').click(function () {
+            $(".filter-nav-menu > .ddb-nav-pane").addClass('ng-hide').eq($('.ddb-tab-bar .ddb-tab-item').index(this)).addClass('ng-hide');
+            $(".ddb-box").addClass('ng-hide');
+        });
+
+        $(function() {
+            var geolocation;
+             geolocation = new BMap.Geolocation();
+            if (document.location.href.indexOf("/shop/all/") == 0) {
+                geolocation = null
+            };
+            geolocation.getCurrentPosition(function(r) {
+                var _this = this;
+                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                    locLng = r.point.lng;
+                    locLat = r.point.lat;
+                    $("#curlat").val(locLat);
+                    $("#curlng").val(locLng);
+                    lat = locLat;
+                    lng = locLng;
+                    $.ajax({
+                        url: "{php echo $this->createMobileUrl('wapindex',array('op'=>'firstdata','schoolid'=>$schoolid))}",
+                        type: "POST",
+                        data:{
+                            lat:locLat,
+                            lng:locLng
+                        },
+                        dataType: "html",
+                        success: function (res) {
+                            
+                            $('#ddb-delivery-branch-index').html(res);
+                            let curlat = lat;
+                            let curlng = lng;
+                            scroll_load_obj.ajax_switch = true;
+                            $(window).on("scroll", scroll_fun);
+                            $(".morelist").each(function() {
+                                var ShopLngLat = $(this).find("#showlan").val();
+                                var InputOF = ShopLngLat.indexOf(",");
+                                var InputOFLast = ShopLngLat.length;
+                                var ShopLng = ShopLngLat.slice(0, InputOF);
+                                var ShopLat = ShopLngLat.slice(InputOF + 1, InputOFLast);
+                                var dis111 = distanceByLnglat(curlng, curlat, ShopLng, ShopLat);
+                                $(this).find("#shopspostion").html(dis111 + "公里");
+                            });
+                        }
+                    });
+                } else {
+                    $(".morelist").each(function() {
+                        $(this).find("#shopspostion").html("无法获取距离" + _this.getStatus() + "");
+                    });
+                }
+            }, {
+                enableHighAccuracy: true
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<link type="text/css" rel="stylesheet" href="./resource/components/switch/bootstrap-switch.min.css">
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+ <style>
+	 .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {color: #fff;background: #a0053b;}
+
+.cLine {
+    overflow: hidden;
+    padding: 5px 0;
+  color:#000000;
+}
+.alert {
+padding: 8px 35px 0 10px;
+text-shadow: none;
+-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+background-color: #f9edbe;
+border: 1px solid #f0c36d;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+color: #333333;
+margin-top: 5px;
+}
+.alert p {
+margin: 0 0 10px;
+display: block;
+}
+.alert .bold{
+font-weight:bold;
+}
+ </style>
+
+{if $operation == 'post'}
+
+{elseif $operation == 'display'}
+
+<div class="cLine">
+    <div class="alert">
+    <p><span class="bold">说明：</span>
+  
+    </p>
+    </div>
+</div>
+<div class="panel panel-default">
+	<div class="table-responsive panel-body">
+		<table class="table">
+			<thead>
+				<tr>
+					<!-- <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th> -->
+					<th style="width: 8%;">发送人</th>
+					<th style="width: 8%;">接收人</th>
+					<th style="width: 38%;">留言</th>		
+					<th class="qx_1902" style="width: 38%;">回复</th>				 
+					<th class="qx_e_d" style="text-align:right;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<!-- <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td> -->
+					<td>
+						{$item['sname']}
+					</td>
+					<td>
+						{$item['tname']}
+					</td>
+					<td>
+						{$item['beizhu']}
+					</td>
+					<td  class="qx_1902">
+						{if empty($item['huifu'])}
+						<textarea name="huifu"  id="huifu" style="resize: none;width: 100%;"></textarea>
+						{else}
+								{$item['huifu']}
+						{/if}
+					</td>										
+					<td class="qx_e_d" style="text-align:right;">
+						{if empty($item['huifu'])}
+						<a class="btn btn-default btn-sm qx_1902"  onclick="huifu({$item['id']})" title="回复"><i class="fa fa-pencil"></i></a>
+						{/if}
+						<a class="btn btn-default btn-sm qx_1903" href="{php echo $this->createWebUrl('yzxx', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除录？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+$(function(){
+	var e_d = 2 ;
+	{if (!(IsHasQx($tid_global,1001902,1,$schoolid)))}
+		$(".qx_1902").hide();
+		e_d = e_d -1 ;
+	{/if}
+	{if (!(IsHasQx($tid_global,1001903,1,$schoolid)))}
+		$(".qx_1903").hide();
+		e_d = e_d -1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});
+	function huifu(id){
+		var huifu = $("#huifu").val();
+		
+			$.ajax({
+				url: "{php echo $this->createWebUrl('indexajax', array('op' => 'huifu_mail'), true)}",
+				type: "post",
+				dataType: "json",
+				data: {
+					id:id,
+					huifu:huifu,
+					schoolid:{$schoolid},
+					weid:{$weid}
+				},
+				success: function (data) {
+					alert(data.msg);
+					//console.log(data.msg);
+					if(data.result == true){
+						window.location.reload();
+					}
+				}
+			});
+	}
+</script>
+{$pager}
+{/if}
+{template 'public/footer'}

@@ -1,0 +1,213 @@
+
+     <style>
+        .MC_items{display: flex;height:50px;align-items: center;border-bottom:1px solid rgb(243, 243, 243)}
+        .MC_items .leftBox{flex:1;display: flex;align-items: center;}
+        .MC_items .leftBox .ImgSpan{display: inline-block;height: 50px;margin-right: 5px;}
+        .MC_items .leftBox .ImgSpan>img{width: 50px;height: 50px;}
+        .MC_items .leftBox .font1{font-size: 16px;}
+        .MC_items .rightBox{color: #766a6a;font-size: 14px;}
+        
+     </style>
+
+{if keep_MC()}
+<div style="width: 100%;background-color: white;padding:0 10px;margin-top: 10px;" >
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonCamera.png" draggable="false"></span>
+            <span class="font1">晨检照片</span> 
+        </div>
+        <div class="rightBox">
+           {if $mcdata['userPhoto']} <span style="color:#499eec"  onclick="look(`{$mcdata['userPhoto']}`)">点击查看照片</span> {else}<span style="color:gray">--</span>{/if}
+        </div>
+    </div>
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonTemp.png" draggable="false"></span>
+            <span class="font1">体温</span> 
+        </div>
+        <div class="rightBox">
+            {if !empty($mcdata['tiwen'])}<span>{$mcdata['tiwen']} ℃</span>{else}<span style="color:gray">--</span>{/if}
+        </div>
+    </div>
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonHeight.png" draggable="false"></span>
+            <span class="font1">身高</span> 
+        </div>
+        <div class="rightBox">
+            {if !empty($mcdata['height'])}<span>{php echo intval($mcdata['height'])}cm</span>{else}<span style="color:gray">--</span>{/if}
+        </div>
+    </div>
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonWeight.png" draggable="false"></span>
+            <span class="font1">体重</span> 
+        </div>
+        <div class="rightBox">
+            {if !empty($mcdata['weight'])}<span>{php echo round($mcdata['weight'],2)}kg</span>{else}<span style="color:gray">--</span>{/if}
+        </div>
+    </div>
+    
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonMouth.png" draggable="false"></span>
+            <span class="font1">口检</span> 
+        </div>
+        <div class="rightBox">
+            <span  >{if $mcdata['mouth'] == 1}未见异常{elseif $mcdata['mouth'] == 2}异常{else}--{/if} {if $mcdata['mouthPhoto']} <span style="color:#499eec"  onclick="look(`{$mcdata['mouthPhoto']}`)">点击查看照片</span> {/if} </span>
+        </div>
+    </div>
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonHand.png" draggable="false"></span>
+            <span class="font1">手检</span> 
+        </div>
+        <div class="rightBox">
+            <span  >{if $mcdata['herpes'] == 1}未见异常{elseif $mcdata['herpes'] == 2}异常{else}--{/if} {if $mcdata['handPhoto']} <span style="color:#499eec" onclick="look(`{$mcdata['handPhoto']}`)">点击查看照片</span> {/if} </span>
+        </div>
+    </div>
+    
+    <!-- <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonEyes.png" draggable="false"></span>
+            <span class="font1">视力</span> 
+        </div>
+        <div class="rightBox">
+            <span  >左： {php echo !empty($mcdata['lefteye'])?$mcdata['lefteye']:'--'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 右：{php echo !empty($mcdata['righteye'])?$mcdata['righteye']:'--'}</span>
+        </div>
+    </div> -->
+    <div class="MC_items"> 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonCough.png" draggable="false"></span>
+            <span class="font1">咳嗽</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['cough'] == 0}--{elseif $mcdata['cough'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonBand.png" draggable="false"></span>
+            <span class="font1">外伤</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['trauma'] == 0}--{elseif $mcdata['trauma'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonNail.png" draggable="false"></span>
+            <span class="font1">指甲</span> 
+        </div>
+        <div class="rightBox">
+            <span  >{if $mcdata['nail'] == 1}未见异常{elseif $mcdata['nail'] == 2}异常{else}--{/if}</span>
+        </div>
+    </div>
+
+    
+</div>
+
+
+<div style=" text-align: center; margin-top: 20px; color: #969292; font-size: 14px;" onclick="showEcharts()" id="showHtml">展开图表</div>
+<div style="text-align: center;margin: 0.5rem;height: 0;overflow: hidden;" id="echarts">
+    <div id="echarts-pie-chart-mobilestumc" style="width: 100%;height:300px;"></div>
+    <div id="echarts-pie-chart-tiwenmc" style="width: 100%;height:300px;"></div>
+    <div id="echarts-pie-chart-eye" style="width: 100%;height:300px;"></div>
+</div>
+
+{else}
+<div style="width: 100%;background-color: white;padding:0 10px;margin-top: 10px;" >
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonCamera.png" draggable="false"></span>
+            <span class="font1">晨检照片</span> 
+        </div>
+        <div class="rightBox">
+        {if $mcdata['userPhoto']} <span style="color:#499eec"  onclick="look(`{$mcdata['userPhoto']}`)">点击查看照片</span> {else}<span style="color:gray">--</span>{/if}
+        </div>
+    </div>
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonTemp.png" draggable="false"></span>
+            <span class="font1">体温</span> 
+        </div>
+        <div class="rightBox">
+            {if !empty($mcdata['tiwen'])}<span>{$mcdata['tiwen']} ℃</span>{else}<span style="color:gray">--</span>{/if}
+        </div>
+    </div>
+
+    <div class="MC_items"> 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonCough.png" draggable="false"></span>
+            <span class="font1">咳嗽</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['cough'] == 0}--{elseif $mcdata['cough'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonBand.png" draggable="false"></span>
+            <span class="font1">外伤</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['trauma'] == 0}--{elseif $mcdata['trauma'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonPuke.png" draggable="false"></span>
+            <span class="font1">呕吐</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['vomit'] == 0}--{elseif $mcdata['vomit'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonDiarrhea.png" draggable="false"></span>
+            <span class="font1">腹泻</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['diarrhea'] == 0}--{elseif $mcdata['diarrhea'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+
+    <div class="MC_items" > 
+        <div class="leftBox">
+            <span class="ImgSpan"><img src="{MODULE_URL}public/mobile/img/mc_icon/cartoonHeadache.png" draggable="false"></span>
+            <span class="font1">头痛</span> 
+        </div>
+        <div class="rightBox">
+            <span>{if $mcdata['headache'] == 0}--{elseif $mcdata['headache'] == 1}未见异常{else}异常{/if}</span>
+        </div>
+    </div>
+</div>
+
+{/if}
+
+
+ <script>
+    function look(img){
+        $(".ShowPostBox").addClass('InShow')
+        $(".SPB-content").find('img').attr('src',img);
+    }
+    var isShow = 1;
+    function showEcharts(){
+        if(isShow == 0){
+            $("#echarts").animate({'height':0},300);
+            $("#showHtml").html(`展开图表`)
+            isShow = 1;
+        }else{
+            $("#echarts").animate({'height':900},300);
+            $("#showHtml").html(`收起图表`)
+            isShow = 0;
+        }
+    }
+ </script>

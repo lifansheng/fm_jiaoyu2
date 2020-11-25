@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$language['checkcard_title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mGrzx.css?v=4.8" />
+<style>
+.user_info {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 9999;font-size: 20px;color: #fe6700;}
+.user_info>div {position: absolute;left: 6%;right: 6%;top: 9%;padding: 0 20px;background-color: #fff;padding-bottom: 33px;padding-top: 10px;border-radius: 5%;}
+.user_name {text-align: left;color: #666;font-size: 14px;}
+.btn {height: 44px;display: block;background-color: #7bb52d;font: 20px "黑体";text-align: center;color: #fff;cursor: pointer;}
+.user_info>div>span {display: inline-block;width: 30px;height: 30px;background: #fff;font-size: 24px;color: #aaa;-webkit-border-radius: 100%;-moz-border-radius: 100%;-o-border-radius: 100%;border-radius: 100%;line-height: 30px;text-align: center;position: absolute;top: -15px;right: -15px;
+font-family: 宋体b8b\4f53;cursor: default;}
+.user_name > input {display: block;width: 100%;border-radius: 3px;height: 44px; margin-bottom: 10px;border: 1px solid #ccc;font-size: 16px }
+.user_name > select {display: block;width: 100%;height: 44px;border-radius: 3px; margin-bottom: 10px;border: 1px solid #ccc; text-align: left;color: #666;font-size: 14px;}
+.close_pupop_c {width: 200px; margin: 0 auto;}
+.close_pupop_button {width: 90px;height: 30px;border-radius: 5px;line-height: 30px;font-size: 16px;text-align: center;float: left;}
+.close_pupop_button_1 {background: #e74580;color: #fff;}
+.close_pupop_button_2 {background: #56c454;color: #fff;margin-left: 20px;}
+</style>
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+{php include $this->template('port');} 
+</head>
+<body>
+<div class="all" style="padding-bottom:55px;">
+	<div class="stuBox">
+		<div class="stuInfo">
+			<div class="parentHeader">
+				<img alt="" src="{if !empty($student['icon'])}{php echo toimage($student['icon'])}{else}{php echo toimage($school['spic'])}{/if}" />
+			</div>
+			<div class="stuInfoCenter">
+				<div id="parentName" class="stuName">
+					<label class="m_r_10">&nbsp;{$student['s_name']}</label>
+				</div>
+				<div class="stuCampusAndBjname">
+					<span>已绑定{$num}张</span>
+				</div>
+			</div>
+		</div>
+		<div class="stuServer">
+			<label>考勤</label>
+			<div class="server">
+				<span>{$checktotal}次</span>
+			</div>
+			<div class="unbound" onclick="exchange();">记录</div>
+		</div>
+	</div>
+	<div class="parentBox">
+		<ul>
+		{loop $list $item}
+			<li>
+				<div class="parentInfo">
+					<div class="left">
+					  <input type="hidden" id="bigImage" name="bigImage"/>	
+					  {if keep_Ls()}
+					  <!-- TODO:keep_Ls()定制功能 -->
+					  <div class="stuHeader_new" {if $schoolset['addedinfo'] == 1}onclick="uploadImg(this,{$item['id']});"{/if}>
+						<img src="{if !empty($item['spic'])}{php echo tomedia($item['spic'],false,true)}{else}{OSSURL}public/mobile/img/boyteacher.jpg{/if}"/>
+					  </div>
+					  {else}
+					  <div class="stuHeader_new" onclick="uploadImg(this,`{$item['id']}`);">
+						<img src="{if !empty($item['spic'])}{php echo tomedia($item['spic'],false,true)}{else}{OSSURL}public/mobile/img/boyteacher.jpg{/if}"/>
+					  </div>
+					  {/if}
+					  
+					  <div class="stuName_new">
+						{$item['pname']}
+					  </div>
+					</div>
+					<div class="center">
+						<div class="lineInfo">
+							<span class="colorInfo green" style="background-color: #14c682;color:#fff;!important">使用者</span>
+							<span class="normalInfo">关系:						
+							{if $item['pard'] == 1}本人{/if}
+							{if $item['pard'] == 2}妈妈{/if}
+							{if $item['pard'] == 3}爸爸{/if}
+							{if $item['pard'] == 4}爷爷{/if}
+							{if $item['pard'] == 5}奶奶{/if}
+							{if $item['pard'] == 6}外公{/if}
+							{if $item['pard'] == 7}外婆{/if}
+							{if $item['pard'] == 8}叔叔{/if}
+							{if $item['pard'] == 9}阿姨{/if}
+							{if $item['pard'] == 10}其他{/if}
+						    </span>
+						</div>					
+						<div class="lineInfo">
+							<span class="colorInfo green" style="background-color: #14c682;color:#fff;!important">已绑定</span>
+							<span class="normalInfo">卡号:{$item['idcard']}</span>
+						</div>
+						<div class="lineInfo">
+						{if $school['is_cardpay'] ==1}
+							<span class="colorInfo red" style="background-color: {if $item['severend']>TIMESTAMP}#14c682;{else}#fc5b5b;{/if}color:#fff;!important">
+								{if $item['severend']>TIMESTAMP}
+								服务中
+								{else}
+								已到期
+								{/if}
+							</span>
+							<span class="normalInfo">{php echo date('Y-m-d', $item['severend'])}到期</span>
+						{else}
+							<span class="colorInfo red" style="background-color: #14c682;color:#fff;!important">服务中</span>
+							<span class="normalInfo">{php echo date('Y-m-d', $item['createtime'])}绑定</span>						
+						{/if}	
+						</div>
+					</div>
+					{if getoauthurl() != "weixin.appzenka.com"}
+					{if $schoolset['is_unbind'] == 1}
+					<div class="righta">
+						<a onclick="jiebang({$item['id']});">解绑</a>
+					</div>
+					{/if}
+					{/if}
+					{if $school['is_cardpay'] == 1}
+					<div class="rightb">
+						<a onclick="gopay({$item['id']});">续费</a>
+					</div>
+					{/if}	
+				</div>
+			 </li>
+		{/loop}
+		{if !empty($list)}
+			<li class="no_padding">
+				<span class="l"></span>
+				<span class="remind">
+					<i><img alt="" src="{OSSURL}public/mobile/img/ico_attention.png" /></i>
+					<label>{$language['checkcard_tip']}</label>
+				</span>
+			</li>
+		{/if}	
+		</ul>
+	</div>
+	<div class="payWeixt">
+		<a id="bangding">绑定新卡</a>	
+	</div>
+    <div class="user_info" id="user_info1" style="display:none;">
+	   <div>
+			<ul>
+				<p>绑定考勤卡</p>
+				<li class="user_name">
+				关系
+					<select  id="guanxi">
+						<option value="" >{$language['checkcard_bdtip1']}</option>
+						<option value="1" >本人</option>
+						<option value="2" >妈妈</option>
+						<option value="3" >爸爸</option>
+						<option value="4" >爷爷</option>
+						<option value="5" >奶奶</option>
+						<option value="6" >外公</option>
+						<option value="7" >外婆</option>
+						<option value="8" >叔叔</option>
+						<option value="9" >阿姨</option>		
+						<option value="10" >其他</option>
+					</select>
+				   <input type="hidden" name="guanxi" id="guanxi" value="" />			
+				</li>
+				<li class="user_name">
+				  姓名
+					<input type="text" placeholder="请输入本卡使用者姓名" name ="username" id="username" value="">  
+				</li>				
+				<li class="user_name">
+				  卡号
+					<input type="text" placeholder="请输入您的考勤卡号" name ="munber" id="munber" value="">  
+				</li>						
+				<div class="close_pupop_c">
+					<div id="bdax" class="close_pupop_button close_pupop_button_1 float_l">确定</div>
+					<div id="close" class="close_pupop_button close_pupop_button_2 float_l">取消</div>
+				</div>
+			</ul>
+	   </div>
+    </div>
+	
+</div>
+{php include $this->template('footer');}	
+</body>
+<script type="text/javascript">
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+		document.title="绑卡记录";
+	}
+}, 100);
+$("input,textarea,select").blur(function(){
+	document.body.scrollTop = document.documentElement.scrollTop = 0;
+});
+</script>
+<script type="text/javascript">
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+$("#close").on('click', function () {
+	$('#user_info1').hide();
+});
+function exchange(){
+	location.href = "{php echo $this->createMobileUrl('calendar', array('schoolid' => $schoolid,'userid'=>$it['id']), true)}";
+}
+function gopay(cardid){
+	var submitData = {
+				weid:"{$weid}",
+				schoolid:"{$schoolid}",
+				sid:"{$it['sid']}",
+				userid:"{$it['id']}",
+				uid:"{$it['uid']}",
+				bj_id:"{$student['bj_id']}",
+				id:cardid,
+				openid:"{$openid}",
+	};
+	jConfirm("确认要续费吗？", "删除确定对话框", function (isConfirm) {	
+		if (isConfirm) {
+			$.post("{php echo $this->createMobileUrl('payajax',array('op'=>'xuefeiidcard'))}",submitData, function(data) {
+				if (data.result) {
+					location.href = data.msg;
+				} else {
+					jTips(data.msg);
+				}
+			},'json');
+		}
+	});
+}
+function jiebang(id) {
+	var submitData = {
+				openid   : "{$openid}",
+				id       : id
+	};
+	jConfirm("确认解除绑定？", "删除确定对话框", function (isConfirm) {
+		if (isConfirm) {
+			$.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'jbidcard'))}",submitData, function(data) {
+				if (data.result) {
+					jTips(data.msg);
+					location.reload();
+				} else {
+					jTips(data.msg);
+				}
+			},'json');
+		}
+	});
+}
+</script>
+<script type="text/javascript">
+	$(function ($) {
+		WeixinJSHideAllNonBaseMenuItem();
+		//弹出	
+		$("#bangding").on('click', function () {
+            $('#user_info1').show();
+		});
+		$("#clos").on('click', function () {
+            $('#user_info1').hide();
+		});	
+		//文本框不允许为空---按钮触发	
+		$("#bdax").on('click', function () {
+			var pard =  $("#guanxi").val(); 
+			var munber = $("#munber").val();
+			var username = $("#username").val();
+		     data = {
+				weid:"{$weid}",
+				schoolid:"{$schoolid}",
+				sid:"{$it['sid']}",
+				userid:"{$it['id']}",
+				uid:"{$it['uid']}",
+				bj_id:"{$student['bj_id']}",
+				idcard:munber,
+				pard:pard,
+				username:username,
+				openid:"{$openid}",
+				'json':''
+            }
+			if (munber == "" || munber == undefined || munber == null) {
+            jTips('请输入卡号！');
+            return false;
+			}
+						
+			if (pard == "" || pard == undefined || pard == null) {
+            jTips('{$language['checkcard_bdtip1']}！');
+            return false;
+			}
+			jConfirm("确认要新增本卡吗？", "删除确定对话框", function (isConfirm) {
+				if (isConfirm) {
+					$.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'bangdingcardjl'))}",data,function(data){
+						if(data.result){
+							jTips(data.msg);
+							location.reload();
+						}else{
+							jTips(data.msg);
+						}
+					},'json');	
+				} else $('#user_info1').hide();
+			});	
+		});		
+	});
+</script>
+<script>
+var images = {
+	    localId: [],
+	    serverId: []
+};
+
+function uploadImg(node,id){
+
+	wxChooseImage(id);
+}
+
+/**
+ * 微信选择图片
+ */
+function wxChooseImage(id){
+	wx.chooseImage({
+		success: function (res) {
+			images.localId = res.localIds;
+			var obj=new Image();
+			obj.src=res.localIds[0];
+			imagesUploadWx(id);
+		}
+	});
+};
+
+function imagesUploadWx(id) {
+  wx.uploadImage({
+	localId: images.localId[0],
+	isShowProgressTips:1,//// 默认为1，显示进度提示
+	success: function (res) {
+		$("#bigImage").val(res.serverId);
+		saveImage(id);
+	},
+	fail: function (res) {
+	  alert(JSON.stringify(res));
+	}
+  });
+};
+
+function saveImage(id) {
+	var url = "{php echo $this->createMobileUrl('indexajax',array('op'=>'changePimg'))}";
+	var submitData = {
+			bigImage:$("#bigImage").val(),
+			id:id,
+	};
+	$.post(url, submitData, function(data) {
+		if (data.result) {
+			jTips(data.msg);
+			location.reload();
+		} else {
+			jTips(data.msg);
+		}
+	},'json');
+}
+</script>
+</html>

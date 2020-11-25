@@ -1,0 +1,353 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li {if $_GPC['do']=='yqdkgather'}class="active"{/if}><a href="{php echo $this->createWebUrl('yqdkgather', array('op' => 'display', 'schoolid' => $schoolid))}">打卡统计</a></li>
+                <li {if $_GPC['do']=='yqdk'}class="active"{/if}><a href="{php echo $this->createWebUrl('yqdk', array('op' => 'display', 'schoolid' => $schoolid))}">打卡记录</a></li>
+            </ul>	
+        </div>
+    </div>
+</div>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.flot.js?v=2.1.4"></script>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/mc_yqdk.js"></script>	
+<style>
+    *{box-sizing: border-box;}
+</style>
+<div class="clearfix" style="background-color: #fff;">
+    <div class="row">
+        <div class="col-md-8" >
+            <div class="panel panel-default">
+                <div class="chart-title  ng-binding" style="padding: 13px 10px;font-size: 16px;">全校14天内疫情打卡情况</div>
+               
+                <div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;">
+                    <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                    <div class="echarts" id="echarts-pie-chart-dknum"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" >
+            <div class="form-horizontal form panel panel-default">
+                <span style="display: block; padding-top: 30px;font-size: 16px;">今日疫情打卡统计</span>
+                <div class="form-group" style="margin-bottom:1px;">
+                    <select style="width: 147px;float: right;margin-right: 16px;margin-top: -24px;" class="form-control" onchange="sel_change(this,'yqdk')">
+
+                    {loop $AllNj $row}
+                        <option value="{$row['sid']}">{$row['sname']}</option>
+                    {/loop}	
+                    </select>
+                </div>
+                
+                <div style="padding: 20px; height: 338px; display: block; overflow-y: scroll;">
+                    <table class="table table-hover">
+                        <thead class="navbar-inner">
+                            <tr>
+                                <th style="width:30%">班级</th>
+                                <th style="width:30%">已检测</th>
+                                <th style="width:30%">未检测</th>
+                            </tr>
+                        </thead>
+                        <tbody id='bjmclist'>
+                            {loop $nowbj $row}
+                            <tr>
+                                <td>
+                                    <span class="td_tnam" style="width:100%;">{$row['sname']}</span>
+                                </td>
+                                <td>
+                                    {$row['mcsum']}人
+                                </td>
+                                <td>
+                                    {$row['nomcsum']}人
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"  style="background-color: #fff; margin-top: 20px">
+    <div class="row">
+        <div class="col-md-6" style="margin-left: -15px;">
+            <div class="col-md-6"  >
+                <div class="panel panel-default">
+                    <div class="chart-title  ng-binding" style="padding: 13px 30px;font-size: 14px;">全校14日正常体温趋势</div>
+                    
+                    <div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;margin-top: 20px;margin-left: 30px;">
+                        <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                        <div class="echarts"  style="height:100px;"  id="echarts-pie-chart-tiwennum"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6" style="margin-left: -34px;" >
+                <div class="panel panel-default">
+                    <div class="chart-title  ng-binding" style="padding: 13px 30px;font-size: 14px;">全校14日发热体温趋势</div>
+                    <div class="form-group" style="margin-bottom:1px;">
+                        <select style="width: 115px; float: right; margin-right: 15px; margin-top: -40px;" class="form-control" onchange="sel_change(this,'yqtiwen')">
+                        {loop $AllNj $row}
+                            <option value="{$row['sid']}">{$row['sname']}</option>
+                        {/loop}	
+                        </select>
+                    </div>
+                    <div class="panel-body text-center" style="padding: 1px;height: 357px;position: relative;margin-top: 20px; margin-left: 30px;">
+                        <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                        <div class="echarts" style="height:100px;" id="echarts-pie-chart-notiwennum"></div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="form-group" style="height: 236px; display: block; overflow-y: scroll; position: absolute; top: 180px; border: 1px solid #cecebf; width: 88%; margin-left: 20px;">
+                
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                        <tr>
+                            <th style="width:25%">班级(今日统计)</th>
+                            <th style="width:25%">正常人数</th>
+                            <th style="width:25%">异常人数</th>
+                            <th style="width:25%">未测人数</th>
+                        </tr>
+                    </thead>
+                    <tbody id='yqtiwenlist'>
+                        {loop $nowbj $row}
+                        <tr>
+                            <td>
+                                <span class="td_tnam" style="width:100%;">{$row['sname']}</span>
+                            </td>
+                            <td>
+                                {$row['mcsum']}人
+                            </td>
+                            <td>
+                                {$row['nomcsum']}人
+                            </td>
+                            <td>
+                                {$row['nomcsum']}人
+                            </td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-6" style="margin-left: 15px;">
+            <div class="form-horizontal form panel panel-default">
+                <span style="font-size: 14px; display: block; padding: 16px;">全校疫情(症状)统计</span>
+                <div class="form-group" style="margin-bottom:1px;">
+                    <select style="width: 115px; float: right; margin-right: 30px; margin-top: -40px;" class="form-control" id="day">
+                        <option value="0">今天</option>
+                        <option value="6">7日内</option>
+                        <option value="13">14天内</option>
+                    </select>
+                </div>
+                <div class="panel-body text-center" style="padding: 1px;height: 370px;position: relative;">
+                    <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                    <div class="echarts" id="echarts-pie-chart-d"></div>
+                </div>
+            </div>
+        </div>   
+    </div>
+</div>
+
+<div class="clearfix" style="margin-top: 20px">
+    <div class="row">
+        {loop $AllSelect $key $row}
+            {if $row['type'] == 'radio'}
+            <div class="col-md-4">
+                <div class="form-group" style="margin-left: 400px;margin-top: 15px;position: absolute;">
+                    <select style="width: 115px;" class="form-control" onchange="sel_day(this,`{$key}`)">
+                        <option value="0">今天</option>
+                        <option value="6">7日内</option>
+                        <option value="13">14天内</option>
+                    </select>
+                </div>
+                <div class="form-horizontal form panel panel-default" style="padding-left: 15px;padding-top: 60px;">
+                    <div class="panel-body text-center" style="padding: 1px;height: 370px;position: relative;">
+                        <div class="global-loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png"> </div> </div>
+                        <div class="echarts" id="echarts-pie-chart-{$key}"></div>
+                    </div>
+                </div>
+            </div>   
+            {/if}
+        {/loop}
+    </div>
+</div>
+{template 'public/footer'}
+<script src=" https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+
+<script type="text/javascript">
+$(function(){
+    GetDkNumData()
+    GetNormalTiWenData()
+    GetNoNormalTiWenData()
+    GetYqDData()
+})
+$(function(){
+    {loop $AllSelect $key $row}
+        {if $row[type] == 'radio'}
+        GetComData(`{$key}`)
+        {/if}
+    {/loop}
+})
+$("#day").change(function() {
+    GetYqDData();
+});
+//按日期筛选疫情共有数据
+function sel_day(obj,type){
+    let day = $(obj).val();
+    GetComData(type,day);
+}
+
+//获取打卡数据
+function GetDkNumData() {
+    let bj_id = $("#bj_id option:selected").attr('value');
+	GetChartDataDefault('dknum',{bj_id:bj_id},true,function(data, type){
+		let datas = $.parseJSON(data);
+        let ds = PieOption[type];
+		ds.xAxis [0].data = datas.createdate;
+		ds.series[0].data = datas.dkcount;
+		ds.series[1].data = datas.nodkcount;
+		var myChart = echarts.init($('#echarts-pie-chart-dknum')[0]);
+		myChart.setOption(ds);
+		$(window).resize(myChart.resize);
+
+	});
+}
+//获取正常体温人数图标
+function GetNormalTiWenData() {
+	GetChartDataDefault('tiwennum','',true,function(data, type){
+		let datas = $.parseJSON(data);
+        let ds = PieOption[type];
+		ds.xAxis.data = datas.createdate;
+		ds.series[0].data = datas.normal;
+		var myChart = echarts.init($('#echarts-pie-chart-tiwennum')[0]);
+		myChart.setOption(ds);
+		$(window).resize(myChart.resize);
+
+	});
+}
+//获取异常体温人数图标
+function GetNoNormalTiWenData() {
+	GetChartDataDefault('notiwennum','',true,function(data, type){
+		let datas = $.parseJSON(data);
+        let ds = PieOption[type];
+		ds.xAxis.data = datas.createdate;
+		ds.series[0].data = datas.nonormal;
+		var myChart = echarts.init($('#echarts-pie-chart-notiwennum')[0]);
+		myChart.setOption(ds);
+		$(window).resize(myChart.resize);
+
+	});
+}
+//获取正常体温人数图标
+function GetComData(type,day = null) {
+    GetChartDataDefault(type,{day:day},true,function(data, type){
+        let datas = $.parseJSON(data);
+        let ds = PieOption[type];
+        ds.title.text = datas.data[type].title;
+        ds.legend.data = datas.data[type].name;
+        ds.series[0].data = datas.data[type].data;
+        var myChart = echarts.init($('#echarts-pie-chart-'+type)[0]);
+        myChart.setOption(ds);
+        $(window).resize(myChart.resize);
+    });
+}
+//获取正常体温人数图标
+function GetYqDData(reloadthis = false) {
+    let day = $("#day option:selected").attr('value');
+	GetChartDataDefault('d',{day:day},true,function(data, type){
+ 
+		let datas = $.parseJSON(data);
+        let ds = PieOption[type];
+        ds.legend.data = datas.data.d.title;
+		ds.series[0].data = datas.data.d.data;
+		 myChart = echarts.init($('#echarts-pie-chart-d')[0]);
+        myChart.setOption(ds, true);
+		$(window).resize(myChart.resize);
+
+	});
+}
+
+//根据类型获取数据
+function GetChartDataDefault(type,trans_params = {},IsDfFunc = false,callback){
+ 
+    $(`#echarts-pie-chart-${type}`).prev().show()
+    var schoolid = "{$schoolid}";
+    var url = "{php echo $this->createWebUrl('yqdkgather');}";
+    var stat_params = {
+        'op' : type,
+        'schoolid' : schoolid
+    };
+    let params = $.extend(false, {}, trans_params, stat_params);
+  
+    $.post(url, params, function(data){
+        if(IsDfFunc === false){
+            var data = $.parseJSON(data);
+            var ds = PieOption[type];
+            ds.series[0].data = data.message.message;
+            var pieChart = echarts.init($(`#echarts-pie-chart-${type}`)[0]);
+            pieChart.setOption(ds);
+            $(window).resize(pieChart.resize);
+        }else{
+            callback(data,type);
+        }
+        $(`#echarts-pie-chart-${type}`).prev().hide()
+    
+    });
+}
+
+//年级
+function sel_change(obj,type){
+	let schoolid = `{$schoolid}`
+	let nj_id = $(obj).val();
+	$.post("{php echo $this->createWebUrl('yqdkgather',array('op'=>'GetBjYqdkList'))}", {'nj_id': nj_id, 'type': type, 'schoolid': schoolid}, function(data) {
+		data = JSON.parse(data);
+		bjmclist = data.data;
+        if(type == 'yqdk'){
+            var htmls = '';
+            if (bjmclist != '') {
+                for (var i in bjmclist) {
+                    htmls += `<tr>
+                                <td>
+                                    <span class="td_tnam" style="width:100%;">${bjmclist[i]['sname']}</span>
+                                </td>
+                                <td>
+                                    ${bjmclist[i]['mcsum']}人
+                                </td>
+                                <td>
+                                    ${bjmclist[i]['nomcsum']}人
+                                </td>
+                            </tr>`;
+                }
+            }
+            $('#bjmclist').html(htmls);	
+        }else if(type == 'yqtiwen'){
+            var htmls = '';
+            if (bjmclist != '') {
+                for (var i in bjmclist) {
+                    htmls += `<tr>
+                            <td>
+                                <span class="td_tnam" style="width:100%;">${bjmclist[i]['sname']}</span>
+                            </td>
+                            <td>
+                                ${bjmclist[i]['normal']}人
+                            </td>
+                            <td>
+                                ${bjmclist[i]['nonormal']}人
+                            </td>
+                            <td>
+                                ${bjmclist[i]['noexamine']}人
+                            </td>
+                        </tr>`;
+                }
+            }
+            $('#yqtiwenlist').html(htmls);	
+        }
+        
+	});
+}
+
+</script>
+

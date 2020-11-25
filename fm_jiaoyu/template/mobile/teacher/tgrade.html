@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<link rel="stylesheet" href="{OSSURL}public/mobile/css/resetnew.css">
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab.css?v=1?v=1111" />
+<script src="{MODULE_URL}public/mobile/js/scroll.muti.common.js "></script>
+{php echo register_jssdks();}
+{php include $this->template('shoucecss');}
+<style type="text/css">
+	.selectList {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 30;font-size: 20px;color: #fe6700;}
+.selectList .single {position: absolute;left: 6%;right: 6%;top: 5%;padding: 0 20px;background-color: #fff;padding-bottom: 33px;padding-top: 10px;}
+.selectList ul {width: 100%;height: auto;overflow: auto;}
+.selectList ul li {height: 50px;line-height: 50px;border-bottom: 1px solid #e9e9e9;padding: 0 10px;}
+.selectList ul li span.le {height: 50px;line-height: 50px;float: left;font-size: 16px;}
+.selectList ul li span.ri {float: right;height: 50px;line-height: 50px;font-size: 16px;}
+
+.header { width: 100%; height: 50px; line-height: 50px; position: fixed; z-index: 1000; top: 0; left: 0; box-shadow: 0 0 2px 0px rgba(0,0,0,0.3),0 0 6px 2px rgba(0,0,0,0.15); }
+.header .l { width: 50px; height: 50px; line-height: 50px; color: white; position: absolute; left: 0; top: 0; } 
+.header .m { width: 100%; height: 50px; line-height: 50px; text-align: center; color: white; font-size: 18px; } 
+.header .r { width: 50px; height: 50px; line-height: 50px; position: absolute; right: 0; top: 0; } 
+.mainColor { background: {$school['headcolor']} !important; } 
+.header .l a { font-size: 18px; color: white; display: block; width: 100%; height: 100%; text-align: center; }
+.head_til img{width: 25px;height: 25px;display: inline-block;float: left;border-radius: 40px;}
+body {background-color: #f7f7f7;}
+.bottom_control_row .prev_btn1 {margin: 15px 5px 15px 35px;float: left;width: 100px;background-color: #e5457f;border-radius: 3px;line-height: 35px;height: 35px;text-align: center;}
+.bottom_control_row .prev_btn1 a, .bottom_control_row .next_btn a {color: #fff;}
+.bottom_control_row .prev_btn2 {margin: 15px 5px 15px 35px;float: left;width: 100px;background-color: #e5457f;border-radius: 3px;line-height: 35px;height: 35px;text-align: center;}
+.bottom_control_row .prev_btn2 a, .bottom_control_row .next_btn a {color: #fff;}
+
+.click {width: auto;height: 27px;right: 0;top: 93px;background-color: #ceb750;border-radius: 50px 0 0 50px;z-index: 2; position: fixed;}
+.font_icon{width: 15px;margin-top: 6px;margin-left: 7px;margin-right: 2px;}
+.useredits{line-height: 28px;float: right;margin-right: 4px;color:#fff}
+.stuimg{ border-radius: 50%;margin-left:1px;margin-right:5px;width: 50px; height: 50px;float: left;}
+.stutext{float: left;}
+.stutitle{max-width:100%;height: 25px; line-height: 25px; font-size: 14px; color:gray; float: left; overflow: hidden; text-overflow:ellipsis;white-space: nowrap}
+
+#bg_star{width: 60px;float: left;height: 16px;background: url("{MODULE_URL}public/mobile/img/star_show_gray.png");}
+#over_star{height:16px;background:url("{MODULE_URL}public/mobile/img/star_show_red.png") no-repeat;}
+
+
+.manual_visible_box{padding:0;margin-bottom: 10px;}
+.manual_main_box2{border:unset;border-radius: 10px;box-shadow: 0px 0px 5px 2px #d4d4d4;}
+.manual_main1{background-color: #f7f7f7;padding:10px 10px}
+.bottom_control_row{background-color: #f7f7f7}
+.kcinfo_ul li{height: 20px;}
+.zhujiang{font-size: 12px;padding:2px 10px;background-color: #5a9cff;border-radius: 5px;line-height: 16px;display: inline-block;height: 16px;color:white;font-weight: bold;margin-left: 10px }
+ .head_til{color:#343434}
+
+
+ 
+</style>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+{php include $this->template('port');}
+<title>{$school['title']}</title>
+</head>
+<body>
+<div class="All">
+    <a class="click" id="Changesf" style="top:55px">
+        <img class="font_icon" src="{MODULE_URL}public/mobile/img/change_image.png"></img><div class="useredits">切换课程</div>
+    </a>
+
+    <div class="manual_main1">
+        <div id="main" >
+            <div class="count_tit" style="color:#3e3e3e;text-align: unset;font-size: 20px;padding:10px 0;font-weight: bold;padding-left: 10px">平均得分</div>
+        </div>
+        <div class="manual_visible_box" >
+            <div class="manual_main_box2">
+                <div class="head_til" style="border-bottom: unset;">
+                    <div id="wrap" class="count_inf wrap" style="min-width:unset;">
+                        <dl id="main">
+                            {if $kcid != -1}
+                            <dd class="count_inf" style="min-height: 67px;">
+                                <div class="teacher" style="padding-bottom: 10px;">
+                                    <div style=" background-image:url({if !empty($kcinfo['thumb'])}{php echo tomedia($kcinfo['thumb']);}{else}{php echo tomedia($school['tpic']);}{/if})"></div>
+                                </div>
+                                <ul class="kcinfo_ul">
+                                    <li style="font-size: 120%;height: 24px;font-weight: bold">{$kc['name']} </li>
+                                    <li> <label>授课科目：</label> {$category[$kc['km_id']]['sname']} </li>
+                                    <li> <label>授课教室：</label> {$category[$kc['adrr']]['sname']} </li>
+                                </ul>            
+                                <div style="clear:both"></div>
+                            </dd> 
+                            {/if}
+                            <dd style="border-bottom: unset;">
+                                <ul>
+                                    {loop $pfxmAVG $row1}
+                                    <div style='width: 100%;height: 20px;'>
+                                        <div style="float: left;padding-right:10px;">{$row1['avgname']}</div>
+                                        <div id="bg_star" >
+                                            <div id="over_star" style="width:{php echo $row1['avg'] *12}px"></div>
+                                        </div>
+                                        <label style="font-size:15px;font-weight: normal;">&nbsp;{$row1['avg']}分</label>
+                                    </div>
+                                    {/loop}
+                                </ul>            
+                            </dd> 
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="manual_main1">
+        <div id="main" >
+            <div class="count_tit" style="color:#3e3e3e;text-align: unset;font-size: 20px;padding:10px 0;font-weight: bold;padding-left: 10px">评价详情</div>
+        </div>
+        <div id="loopdata" style="margin-bottom: 80px">
+            {loop $kcpingjia $key_l $item}
+            <div class="manual_visible_box loopcell" time="{$key_l}" kcid="{$kcid}">
+                <div class="manual_main_box2" >
+                    <div class="head_til" style="border-bottom: unset;">
+                        <div id="wrap" class="count_inf" style="min-width:unset;">
+                            <dl id="main">
+                                <dd class="count_inf">
+                                    <ul>
+                                        <li>
+                                            <label>评价人：</label>
+                                            {$item['s_name']}
+                                        </li>
+                                        <li>
+                                            <label>评分时间：</label>
+                                            {$item['createtime']}
+                                        </li>
+                                        {loop $item['pfxm'] $row}
+                                        <div style='width: 100%;height: 20px;'>
+                                            <div style="float: left;padding-right:10px;">{$row['sname']}</div>
+                                            <div id="bg_star" >
+                                                <div id="over_star" style="width:{php echo $row['star'] *12}px"></div>
+                                            </div>
+                                            <label style="font-size:15px;font-weight: normal;">&nbsp;{$row['star']}分</label>
+                                        </div>
+                                        {/loop}
+                                        <div style="padding: 10px; border: 1px dashed #c9c9c9; box-sizing: border-box;">
+                                            <span style="font-size: 15px;color:#6363d4;font-weight:bold">课程评价:</span></br>
+                                            <span>{$item['content']}</span>
+                                        </div>
+                                        
+                                    </ul>            
+                                    <div style="clear:both"></div>
+                                </dd> 
+                            
+                            </dl>
+                        </div>
+                    </div>
+                    
+                    <div class="blank"></div>
+                    <div class="small_blank"></div>
+                </div>
+            </div>
+            
+            {/loop}  
+        </div>
+    <div class="clear"></div>
+    </div>
+</div>
+
+
+<div class="selectList" id="selectList" style="z-index:100000;display:none;">
+    <div class="single" style="z-index:100000;border-radius: 5%;">
+        <ul>
+            <span style="color:#444;font-size: 16px;line-height: 30px;height: 30px;font-weight: bold">选择课程</span>
+            <div style="overflow-x: hidden;overflow-y: auto;max-height:360px;">
+            {loop $AllKc $row}
+            <li onclick="isSelect(`{$row['id']}`,`{$row['schoolid']}`);">
+                <img src="{php echo tomedia($row['thumb'])}" class="stuimg">
+                <div class="stutext">
+                    <div class="stutitle">课程：{$row['name']}</div>
+                </div>
+            </li>
+            {/loop}
+            </div>
+        </ul>
+    </div>
+</div>
+
+</body>
+{php include $this->template('newfooter');}
+</html>
+<script>
+ $("#Changesf").on('click', function () {
+    $('html,body').addClass('ovfHiden');
+    $('#selectList').show();
+});
+
+$("#selectList").on('click', function () {
+    $('#selectList').hide();
+    $('html,body').removeClass('ovfHiden');
+});
+function isSelect(kcid,schoolid){
+    location.href = "{php echo $this->createMobileUrl('tgrade')}"+ '&kcid=' + kcid + '&schoolid=' + schoolid;
+}
+
+new Scroll_load({
+    "limit": "0",
+    "ajax_switch": true,
+    "ul_box": "#loopdata",
+    "li_item": "#loopdata .loopcell",
+    'param' : ['time','kcid'],
+    "ajax_url": "{php echo $this->createMobileUrl('tgrade', array('schoolid' => $schoolid,'op'=>'scroll_more' ), true)}",
+    "page_name": "teacher_notify",
+    "after_ajax": function () {
+    }
+}).load_init();
+
+</script>
+	

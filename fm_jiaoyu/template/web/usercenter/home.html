@@ -1,0 +1,836 @@
+<div class="loading-layer" id="left_bigload" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+<!--我的授课情况 仅培训模式-->
+{if $schooltype}
+<div class="col-xs-12" {if !$kcid} style="display:none"{/if}>
+	<div class="loading-layer" id="kc_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+	<div class="card widget-user-details">
+		<div class="card-header">
+			<div class="card-title-details d-flex align-items-center">
+				<div class="bg-rgba-primary p-25 mr-2 ml-0" style="height: 61px; width: 105px;overflow: hidden;">
+					<img class="img-fluid" id="kc_thumb" src="{OSSURL}public/mobile/img/181547187714_.pic_hd@2x.png" alt="img placeholder" height="100" width="100">
+				</div>
+				<div>
+					<h2 class="mt-0 mb-0" style="font-size: 23px;" id="kcname"></h2>
+					<div class="card-subtitle" id="kchtml"></div>
+				</div>
+			</div>
+			<div class="heading-elements">
+				<li class="dropdown cursor-pointer float-right">
+					<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+						<span class="badge badge-light-primary badge-xs">切换</span>
+						<i class="pl-1 fa fa-ellipsis-v"></i>
+					</span>
+					<ul class="dropdown-menu color-gray dropdown-menu-right" role="menu">
+					{loop $myKcList $key $row}
+						<li onclick="ChoseThisBj(`{$row['id']}`,'kc',this)">
+							<a>{$row['name']}{$row['status']}</a>
+						</li>
+						<li class="divider"></li>
+					{/loop}	
+					</ul>
+				</li>
+			</div>
+		</div>
+		<div class="card-content">
+			<div class="card-body">
+				<div class="table-responsive ps">
+					<table class="table table-borderless">
+						<tbody>
+							<tr>
+								<td class="pb-0 pl-0"><strong>&nbsp;状态</strong></td>
+								<td class="pb-0 pl-0"><strong>已排课</strong></td>
+								<td class="pb-0"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;授课老师</strong></td>
+								<td class="pb-0 pl-0"><strong>学生人数</strong></td>
+								<td class="pb-0 pl-0"><strong>我总签课</strong></td>
+								<td class="pb-0 pl-0"><strong>我签主讲</strong></td>
+								<td class="pb-0 pl-0"><strong>我签助教</strong></td>
+								<td class="pb-0"><strong>签我课时</strong></td>
+							</tr>
+							<tr>
+								<td class="pl-0">
+									<div class="badge badge-light-primary text-bold-500 py-50" id="kcstatus"></div>
+								</td>
+								<td class="pl-0" id="AllNum">
+									{$kcinfo['AllNum']}节
+								</td>
+								<td>
+									<ul class="list-unstyled users-list m-0  d-flex align-items-center" id="tealist">
+									</ul>
+								</td>
+								<td id="stunum"></td>
+								<td>
+									<div class="badge badge-light-primary text-bold-500 py-50 tips" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="含我签到所有课时包括主讲辅导身份签到" id="qdnum"></div>
+								</td>
+								<td id="zjqdnum"></td>
+								<td id="fdqdnum"></td>
+								<td><div class="badge badge-light-danger text-bold-500 py-50 tips" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="学生上我签到的课时扣除的总课时" id="costnum"></div></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div><div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div></div>
+					<span>我的授课进度</span>
+					<div class="progress progress-bar-primary progress-sm mt-1">
+						<div class="progress-bar progress-label" id="jdtsj" role="progressbar" aria-valuenow="{$jdtsj}" style="width:1%"></div>
+					</div>
+					<span>签我课时：指学生签到我的课程所扣除的学生课时总数<br>进度说明：我的课程总数为，排课时主讲老师为自己的所有课程，上课进度为，我签到排课时候为自己的课程的所有已签课程</span>
+			</div>
+		</div>
+		<div class="card-footer d-flex justify-content-between border-top">
+			<div class="d-flex">
+				<div class="d-inline-flex align-items-center info mr-2">
+					<i class="fa fa-star mr-25"></i>
+					<small id="pf"></small>
+				</div>
+				<div class="d-inline-flex align-items-center info">
+					<i class="fa fa-comment mr-25"></i>
+					<small id="pl"></small>
+				</div>
+			</div>
+			<div>
+				<a class="btn btn-primary cursor-pointer glow" id="new_attr" target="_blank">详&nbsp;&nbsp;&nbsp;&nbsp;情</a>
+			</div>
+		</div>
+	</div>
+</div>
+{/if}
+<div class="col-xs-4">
+	<!-- 班级通知 -->
+	<div class="card">
+		<div class="card-content">
+			<div class="loading-layer" id="bjtz_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+			<div class="card-body" style="min-height: 248px;">
+				<h2 class="card-title mb-1"><span class="bullet bullet-primary bullet-sm"></span> 班级通知
+					<li class="dropdown cursor-pointer float-right">
+						<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<span class="badge badge-light-primary badge-xs">{$nowbjname}</span>
+							<i class="pl-1 fa fa-ellipsis-v"></i>
+						</span>
+						<ul class="dropdown-menu color-gray dropdown-menu-right" role="menu">
+						{loop $bjlists $key $row}
+							<li onclick="ChoseThisBj({$row['sid']},'bjtz',this)"><a>{$row['sname']}{if $row['is_over'] == 2}(已结业){/if}</a></li><li class="divider"></li>
+						{/loop}
+						</ul>
+					</li>
+				</h2>
+				<ul class="list-unstyled bjtz_box mb-0" style="max-height: 230px; overflow-y: auto;">
+
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- 作业通知 -->
+	<div class="card">
+		<div class="card-content">
+			<div class="loading-layer" id="zuoye_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+			<div class="card-body" style="min-height: 307px;">
+				<h2 class="card-title mb-1"><span class="bullet bullet-warning bullet-sm"></span> 作业通知
+					<li class="dropdown cursor-pointer float-right">
+						<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<span class="badge badge-light-warning badge-xs">{$nowbjname}</span>
+							<i class="pl-1 fa fa-ellipsis-v"></i>
+						</span>
+						<ul class="dropdown-menu color-gray dropdown-menu-right" role="menu">
+						{loop $bjlists $key $row}
+							<li onclick="ChoseThisBj({$row['sid']},'zuoye',this)"><a>{$row['sname']}{if $row['is_over'] == 2}(已结业){/if}</a></li><li class="divider"></li>
+						{/loop}
+						</ul>
+					</li>
+				</h2>
+				<ul class="list-unstyled zytz_box mb-0" style="max-height: 230px; overflow-y: auto;">
+
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- 校园通知 -->
+	<div class="card">
+		<div class="card-content">
+			<div class="loading-layer" id="xytz_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+			<div class="card-body">
+				<h2 class="card-title mb-1"><span class="bullet bullet-warning bullet-sm"></span> 校园通知</h2>
+				<ul class="list-unstyled xytz_box mb-0" style="max-height: 230px; overflow-y: auto;">
+
+				</ul>
+			</div>
+		</div>
+	</div>
+	<!-- 校长信箱 -->
+	{if $myteacherinfo['status'] == 2}
+	<div class="card">
+		<div class="card-content">
+			<div class="card-body" style="min-height: 300px;">
+				<h2 class="card-title mb-1"><span class="bullet bullet-primary bullet-sm"></span> 校长信箱
+					<li class="dropdown cursor-pointer float-right">
+						<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<span class="badge badge-light-primary badge-xs">全部</span>
+							<i class="pl-1 fa fa-ellipsis-v"></i>
+						</span>
+						<ul class="dropdown-menu color-gray dropdown-menu-right" role="menu">
+							<li onclick="ChoseThisBj(0,'xzxx',this)"><a>全部</a></li>
+							<li class="divider"></li>
+							<li onclick="ChoseThisBj(1,'xzxx',this)"><a>未回复</a></li>
+							<li class="divider"></li>
+							<li onclick="ChoseThisBj(2,'xzxx',this)"><a>已回复</a></li>
+						</ul>
+					</li>
+				</h2>
+				<ul class="list-unstyled mb-0 xzxx_list_box" style=" max-height: 400px;overflow-y:scroll">
+					
+					<!-- <div class="user-profile-event xzxx_box mt-1 border-bottom reply_xx">
+						<div class="d-flex align-items-center">
+							<div class="chip">
+								<div class="chip-body">
+									<div class="avatar">
+										<img class="img-fluid" src="http://v.bootstrapmb.com/2020/7/akhot8348/app-assets/images/portrait/small/avatar-s-2.jpg" alt="generic img placeholder" height="20" width="20">
+									</div>
+									<span class="chip-text" style="margin-left:-4px">小明妈妈</span>
+								</div>
+							</div>
+							<small>三年级二班 5-16 10:00</small>
+						</div>
+						<p class="text-muted font-small-2">	报告校长，王老师总是喜欢打人</p>
+						<div class="timeline-content mb-1">
+							<span class="badge badge-light-primary badge-xs">王老师:</span>
+							<p class="text-muted font-small-2">您好家长，我们马上加强教师队伍素质教育</p>
+						</div>
+					</div>
+					<div class="user-profile-birthday-image text-center p-2"><img class="img-fluid no_conmentimg" src="{OSSURL}public/mobile/img/no_data_icon.png" alt="image"></div> -->
+				</ul>
+			</div>
+		</div>
+	</div>
+	{/if}
+</div>
+<div class="col-xs-8">
+	<!-- 发班级圈 -->
+	<div class="card">
+		<div class="card-content">
+			<div class="card-body">
+				<a class="btn btn-light-primary btn-success btn-sm active mr-1 mb-1" id="feed-tab">
+					<i class="fa fa-wechat"></i> 
+					{if $_W['schooltype']}
+						校园动态
+					{else}
+						{if $school['bjqstyle'] == 'new'}班级圈{else}校园动态{/if}
+					{/if}
+				</a>
+				<div class="tab-content pl-0">
+					<div class="tab-pane active" id="user-status" aria-labelledby="user-status-tab" role="tabpanel">
+						<div class="row pl-2">
+							<div class="col-12">
+								<div class="form-group display_fixed">
+									<div class="col-sm-1 col-2">
+										<div class="avatar">
+											<img src="{$mythumb}" alt="user image" width="32" height="32">
+											<span class="avatar-status-online"></span>
+										</div>
+									</div>
+									<div class="col-sm-11 col-10">
+										<textarea class="form-control border-0 shadow-none" id="user-post-textarea" rows="3" placeholder="赶快分享精彩内容到班级圈吧..."></textarea>
+									</div>
+									<div class="col-sm-11 col-10">
+										<div class="input-group multi-img-details" id="bjq_pic">
+
+										</div>
+										<div class="input-group multi-img-details" id="vod_li">
+
+										</div>
+									</div>
+								</div>
+								<hr>
+								<div class="card-footer p-0">
+									<i class="cursor-pointer fa fa-image font-medium-5 text-muted mr-1 pt-50" onclick="uploadMultiImage(this);" data-toggle="tooltip" data-placement="top" title="" data-original-title="上传图片"></i>
+									<i class="cursor-pointer fa fa-film font-medium-5 text-muted mr-1 pt-50" onclick="showVideoDialog(this,{'direct':true,'multi':false,'type':'video','fileSizeLimit':5120000});" data-toggle="tooltip" data-placement="top" title="" data-original-title="上传视频/音频仅支持MP3,MP4"></i>
+									<span class="float-sm-right d-flex flex-sm-row flex-column justify-content-end">
+										<input type="hidden" id="bjqstyle" value="{$school['bjqstyle']}">
+										{if !$_W['schooltype']}
+											{if $school['bjqstyle'] == 'new'}
+											<input type="hidden" id="nowbjq_setid" value="{$bj_id}">
+											<button class="btn btn-light-primary mr-0 my-1 my-sm-0 mr-sm-1 dropdown">
+												<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">{$nowbjname}</span>
+												<ul class="dropdown-menu color-gray dropdown-menu-right" role="menu">
+													{loop $bjlists $key $row}
+														<li onclick="ChoseThisBj({$row['sid']},'bjq',this)"><a>{$row['sname']}{if $row['is_over'] == 2}(已结业){/if}</a></li><li class="divider"></li>
+													{/loop}
+												</ul>
+											</button>
+											{/if}
+										{/if}
+										
+										<button class="btn btn-primary glow" onclick="sendbjq()">发&nbsp;&nbsp;&nbsp;送</button>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 学生进离校情况 公立模式-->
+	{if !$schooltype}
+	<div class="card">
+		<div class="card-content">
+			<div class="loading-layer" id="xsjlx_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+			<div class="card-body">
+				<h2 class="card-title mb-1"><span class="bullet bullet-info bullet-sm"></span> 今日学生进离校
+					<li class="dropdown cursor-pointer float-right">
+						<span class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+							<span class="badge badge-light-info badge-xs">{$nowbjname}</span>
+							<i class="pl-1 fa fa-ellipsis-v"></i>
+						</span>
+						<ul class="dropdown-menu color-gray dropdown-menu-right" role="menu">
+							{loop $bjlists $key $row}
+								<li onclick="ChoseThisBj({$row['sid']},'xsjlx',this)"><a>{$row['sname']}{if $row['is_over'] == 2}(已结业){/if}</a></li><li class="divider"></li>
+							{/loop}
+						</ul>
+					</li>
+				</h2>
+				<hr>						
+				<ul class="list-unstyled mb-0">
+					<div class="jl_box">
+						<div class="jl_leftbox">
+							<span class="btn btn-light-primary btn-lg glow cursor-pointer mr-1 mt-2 mr-sm-1 active" typename="jx_boxs">进&nbsp;&nbsp;&nbsp;校</span>
+							<span class="btn btn-light-warning btn-lg glow cursor-pointer mt-1 mr-sm-1" typename="lx_boxs">离&nbsp;&nbsp;&nbsp;校</span>
+							<span class="btn btn-light-danger btn-lg glow cursor-pointer mt-1 mr-sm-1" typename="qj_boxs">请&nbsp;&nbsp;&nbsp;假</span>
+						</div>
+						<div class="jl_rigntbox">
+							<div class="stu_boxs">
+								<div class="loading-layer" id="xsjlx_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+								<div class="qdbox">
+
+								</div>
+								
+							</div>
+						</div>
+					</div>
+				</ul>
+			</div>
+		</div>
+	</div>
+	{/if}
+	<!-- 文章系统 -->
+	<div class="card">
+		<div class="card-header border-bottom d-flex justify-content-between align-items-center">
+			<h5 class="card-title"><span class="bullet bullet-success bullet-sm"></span> 校园文章</h5><small class="text-muted">显示最近5条,更多手机端查看</small>
+		</div>
+		<div class="loading-layer" id="xinwen_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="card-content">
+			<div class="card-body d-flex py-1 xinwenlist">
+				<span class="btn btn-primary btn-lg glow cursor-pointer margin-auto pl-4 pr-4" typename="gonggao"><i class="fa fa-desktop"></i> 校园公告</span>
+				<span class="btn btn-white btn-lg glow cursor-pointer margin-auto pl-4 pr-4" typename="xinwen"><i class="fa fa-rss-square"></i> 校园新闻</span>
+				<span class="btn btn-white btn-lg glow cursor-pointer margin-auto pl-4 pr-4" typename="wenzhang"><i class="fa fa-file-text-o"></i> 精选文章</span>
+			</div>
+		</div>
+		<div class="main-wrapper-content m-1">
+			<div class="wrapper-content" style="max-height: 800px; overflow-y: scroll;">
+				<div class="accordion collapse-icon accordion-icon-rotate" id="gonggao" data-toggle-hover="true">
+				{loop $gonggao $row}
+					<div class="card mb-0 collapse-header">
+						<div id="heading{$row['id']}" class="card-header cursor-pointer" data-toggle="collapse" data-target="#accordion{$row['id']}" aria-expanded="false" aria-controls="accordion{$row['id']}" role="tablist">
+							<div class="media d-flex align-items-center mb-1">
+								<a>
+									<img src="{if !empty($row['thumb'])}{php echo tomedia($row['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}" class="rounded" alt="group image" height="64" width="64">
+								</a>
+								<div class="media-body ml-1">
+									<h4 class="media-heading">{$row['title']}</h4>
+									{if !empty($row['author'])}<span class="badge badge-light-primary mr-1">{$row['author']}</span>{else}<span class="badge badge-light-primary mr-1">{$school['title']}</span>{/if}
+									<small class="text-muted">{php echo date('Y-m-d',$row['createtime'])}</small>
+								</div>
+								<i class="fa fa-plus-circle text-primary d-flex align-items-center btn-lg"></i>
+							</div>
+						</div>
+						<div id="accordion{$row['id']}" role="tabpanel" data-parent="#gonggao" aria-labelledby="heading{$row['id']}" class="collapse" aria-expanded="false" style="">
+							<div class="card-content border-bottom">
+								<div class="card-body">{php echo htmlspecialchars_decode($row['content'])}</div>
+								<div class="card-footer d-flex pb-0">
+									<div class="d-flex align-items-center" onclick="dianzan({$row['id']},this)">
+										<i class="fa {if $row['isDz']}fa-heart{else}fa-heart-o{/if} cursor-pointer danger dzicon"></i><p class="cursor-pointer mb-0 ml-1 dznumber">{$row['dznum']}</p>
+									</div>
+									<div class="d-flex align-items-center ml-2">
+										<i class="fa fa-comment-o warning"></i><span class="ml-1 lynumber">{$row['count']}</span>
+									</div>
+								</div>
+								<div class="form-group row align-items-center px-1">
+									<div class="col-2 col-sm-1">
+										<div class="avatar">
+											<img src="{$mythumb}" alt="avtar images" width="32" height="32"><span class="avatar-status-online"></span>
+										</div>
+									</div>
+									<div class="col-sm-9 col-10 mt-2"><textarea class="form-control" id="user-comment-textarea" rows="1" placeholder="输入您的评价内容.."></textarea></div>
+									<div class="col-3 col-sm-2 mt-2"><button class="btn btn-primary btn-sm" onclick="huifu_wenz({$row['id']},this)">发送</button></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{/loop}
+				</div>
+				<div class="accordion collapse-icon accordion-icon-rotate" id="xinwen" data-toggle-hover="true" style="display:none">
+				{loop $xinwen $row}
+					<div class="card mb-0 collapse-header">
+						<div id="heading{$row['id']}" class="card-header cursor-pointer" data-toggle="collapse" data-target="#accordion{$row['id']}" aria-expanded="false" aria-controls="accordion{$row['id']}" role="tablist">
+							<div class="media d-flex align-items-center mb-1">
+								<a>
+									<img src="{if !empty($row['thumb'])}{php echo tomedia($row['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}" class="rounded" alt="group image" height="64" width="64">
+								</a>
+								<div class="media-body ml-1">
+									<h4 class="media-heading">{$row['title']}</h4>
+									{if !empty($row['author'])}<span class="badge badge-light-primary mr-1">{$row['author']}</span>{else}<span class="badge badge-light-primary mr-1">{$school['title']}</span>{/if}
+									<small class="text-muted">{php echo date('Y-m-d',$row['createtime'])}</small>
+								</div>
+								<i class="fa fa-plus-circle text-primary d-flex align-items-center btn-lg"></i>
+							</div>
+						</div>
+						<div id="accordion{$row['id']}" role="tabpanel" data-parent="#xinwen" aria-labelledby="heading{$row['id']}" class="collapse" aria-expanded="false" style="">
+							<div class="card-content border-bottom">
+								<div class="card-body">{php echo htmlspecialchars_decode($row['content'])}</div>
+								<div class="card-footer d-flex pb-0">
+									<div class="d-flex align-items-center" onclick="dianzan({$row['id']},this)">
+										<i class="fa {if $row['isDz']}fa-heart{else}fa-heart-o{/if} cursor-pointer danger dzicon"></i><p class="cursor-pointer mb-0 ml-1 dznumber">{$row['dznum']}</p>
+									</div>
+									<div class="d-flex align-items-center ml-2">
+										<i class="fa fa-comment-o warning"></i><span class="ml-1 lynumber">{$row['count']}</span>
+									</div>
+								</div>
+								<div class="form-group row align-items-center px-1">
+									<div class="col-2 col-sm-1">
+										<div class="avatar">
+											<img src="{$mythumb}" alt="avtar images" width="32" height="32"><span class="avatar-status-online"></span>
+										</div>
+									</div>
+									<div class="col-sm-9 col-10 mt-2"><textarea class="form-control" id="user-comment-textarea" rows="1" placeholder="输入您的评价内容.."></textarea></div>
+									<div class="col-3 col-sm-2 mt-2"><button class="btn btn-primary btn-sm" onclick="huifu_wenz({$row['id']},this)">发送</button></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{/loop}
+				</div>
+				<div class="accordion collapse-icon accordion-icon-rotate" id="wenzhang" data-toggle-hover="true" style="display:none">
+				{loop $wenzhang $row}
+					<div class="card mb-0 collapse-header">
+						<div id="heading{$row['id']}" class="card-header cursor-pointer" data-toggle="collapse" data-target="#accordion{$row['id']}" aria-expanded="false" aria-controls="accordion{$row['id']}" role="tablist">
+							<div class="media d-flex align-items-center mb-1">
+								<a>
+									<img src="{if !empty($row['thumb'])}{php echo tomedia($row['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}" class="rounded" alt="group image" height="64" width="64">
+								</a>
+								<div class="media-body ml-1">
+									<h4 class="media-heading">{$row['title']}</h4>
+									{if !empty($row['author'])}<span class="badge badge-light-primary mr-1">{$row['author']}</span>{else}<span class="badge badge-light-primary mr-1">{$school['title']}</span>{/if}
+									<small class="text-muted">{php echo date('Y-m-d',$row['createtime'])}</small>
+								</div>
+								<i class="fa fa-plus-circle text-primary d-flex align-items-center btn-lg"></i>
+							</div>
+						</div>
+						<div id="accordion{$row['id']}" role="tabpanel" data-parent="#wenzhang" aria-labelledby="heading{$row['id']}" class="collapse" aria-expanded="false" style="">
+							<div class="card-content border-bottom">
+								<div class="card-body">{php echo htmlspecialchars_decode($row['content'])}</div>
+								<div class="card-footer d-flex pb-0">
+									<div class="d-flex align-items-center" onclick="dianzan({$row['id']},this)">
+										<i class="fa {if $row['isDz']}fa-heart{else}fa-heart-o{/if} cursor-pointer danger dzicon"></i><p class="cursor-pointer mb-0 ml-1 dznumber">{$row['dznum']}</p>
+									</div>
+									<div class="d-flex align-items-center ml-2">
+										<i class="fa fa-comment-o warning"></i><span class="ml-1 lynumber">{$row['count']}</span>
+									</div>
+								</div>
+								<div class="form-group row align-items-center px-1">
+									<div class="col-2 col-sm-1">
+										<div class="avatar">
+											<img src="{$mythumb}" alt="avtar images" width="32" height="32"><span class="avatar-status-online"></span>
+										</div>
+									</div>
+									<div class="col-sm-9 col-10 mt-2"><textarea class="form-control" id="user-comment-textarea" rows="1" placeholder="输入您的评价内容.."></textarea></div>
+									<div class="col-3 col-sm-2 mt-2"><button class="btn btn-primary btn-sm" onclick="huifu_wenz({$row['id']},this)">发送</button></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				{/loop}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+show_bjtz()
+show_zytz()
+show_xytz()
+kcid = `{$kcid}`;
+openid = `{$openid}`
+jlxbjid = `{$bj_id}`
+tid = `{$nowtid}`
+userid = `{$userid}`
+tname = `{$myteacherinfo['tname']}`;
+//各种card 右侧的切换按钮
+function ChoseThisBj(bj_id,type,elm) {
+	var word =  $(elm).text()
+	if(type == 'bjq'){ //班级圈底部选择班级
+		$(elm).parent().prev().text(word)
+		$('#nowbjq_setid').val(bj_id)
+	}
+	if(type == 'bjtz'){//班级通知
+		$('#nowbjid').val(bj_id)
+		show_bjtz()
+		$(elm).parent().prev().children(".badge").text(word)
+	}
+	if(type == 'zuoye'){//作业通知
+		$('#nowbjid').val(bj_id)
+		show_zytz()
+		$(elm).parent().prev().children(".badge").text(word)
+	}
+	if(type == 'xsjlx'){//进离校通知
+		$("#xsjlx_load").show()
+		$(elm).parent().prev().children(".badge").text(word)
+		jlxbjid = bj_id
+		show_xsjlx()
+	}
+	if(type == 'kc'){//切换课程
+		kcid = bj_id;
+		show_kcinfo()
+	}
+	if(type == 'xzxx'){//切换校长信息
+		$(elm).parent().prev().children(".badge").text(word)
+		$(".xzxx_box").show()
+		if(bj_id == 1){
+			$(".unreply_xx").show()
+			$(".reply_xx").hide()
+		}
+		if(bj_id == 2){
+			$(".reply_xx").show()
+			$(".unreply_xx").hide()
+		}
+		show_xzxx(bj_id)
+	}
+}
+function show_bjtz(){
+	$("#bjtz_load").show()
+	let bj_id = $('#nowbjid').val()
+	$('.bjtz_box').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'notcie','tztype'=>'1','page'=>'list','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {bj_id:bj_id},
+		success: function (result) {
+			if (result) {
+				$("#bjtz_load").hide()
+				$('.bjtz_box').html(result)
+			}
+		}
+	});
+}
+function show_zytz(){
+	$("#zuoye_load").show()
+	let bj_id = $('#nowbjid').val()
+	$('.zytz_box').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'notcie','tztype'=>'3','page'=>'list','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {bj_id:bj_id},
+		success: function (result) {
+			if (result) {
+				$("#zuoye_load").hide()
+				$('.zytz_box').html(result)
+			}
+		}
+	});
+}
+function show_xytz(){
+	$("#xytz_load").show()
+	$('.xytz_box').empty()
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'notcie','tztype'=>'2','page'=>'list','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {type:2},
+		success: function (result) {
+			if (result) {
+				$("#xytz_load").hide()
+				$('.xytz_box').html(result)
+			}
+		}
+	});
+}
+//获取课程信息
+$(function(){
+	show_kcinfo()
+	show_xzxx(0)
+	show_xsjlx()
+})
+
+function show_xzxx(type){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'getxzxx','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {type:type},
+		success: function (result) {
+			let data = result.data;
+			let xzxxhtml = '';
+			if(data){
+				for(let item of data){
+					let huifuhtml = '';
+					if(!item.huifu){
+						huifuhtml = `<div class="form-group row align-items-center px-0">
+							<div class="col-sm-1 col-2">
+								<div class="avatar">
+									<img src="{$mythumb}" alt="avtar images" width="32" height="32"><span class="avatar-status-online"></span>
+								</div>
+							</div>
+							<div class="col-sm-8 col-10 mt-2 ml-1"><input type="text" class="form-control" placeholder="回复......."></div>
+							<div class="col-sm-2 col-3 mt-2"><div class="btn btn-primary btn-sm glow cursor-pointer" onclick="reply_xzxx_btn(${item.id},this)"><i class="fa fa-paper-plane"></i></div></div>
+						</div>`;
+					}else{
+						huifuhtml = `<div class="timeline-content mb-1">
+							<span class="badge badge-light-primary badge-xs">${item.tname}:</span>
+							<p class="text-muted font-small-2">${item.huifu}</p>
+						</div>`
+					}
+					xzxxhtml += `<div class="user-profile-event xzxx_box mt-1 border-bottom unreply_xx">
+						<div class="d-flex align-items-center">
+							<div class="chip">
+								<div class="chip-body">
+									<div class="avatar">
+										<img class="img-fluid" src="${item.icon}" alt="generic img placeholder" height="20" width="20">
+									</div>
+									<span class="chip-text" style="margin-left:-4px">${item.sname}</span>
+								</div>
+							</div>
+							<small>${item.bjname} ${item.time}</small>
+						</div>
+						<p class="text-muted font-small-2">	${item.beizhu}</p>
+						${huifuhtml}
+					</div>`
+				}
+
+			}else{
+				xzxxhtml = `<div class="user-profile-birthday-image text-center p-2"><img class="img-fluid no_conmentimg" src="{OSSURL}public/mobile/img/no_data_icon.png" alt="image"></div>`
+			}
+			$(".xzxx_list_box").html(xzxxhtml)
+		}
+	});
+}
+
+
+function show_kcinfo(){
+	//$("#kc_load").show()
+	let tid = `{$nowtid}`
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'getkcinfo','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {kcid:kcid,tid:tid},
+		success: function (result) {
+			//$("#kc_load").hide()
+			$("#kc_thumb").attr('src',result.kcinfo.thumb)
+			$("#kchtml").html(`本课程共有${result.teanum}位老师参与授课，招收学生${result.stunum}名`)
+			$("#kcname").html(`${result.kcinfo.name}`)
+			$("#kcstatus").html(result.kcstatus)
+			$("#AllNum").html(result.kcinfo.AllNum+'节')
+			let tealist = result.tealist;
+			let teahtml = '';
+			for(let item of tealist){
+				teahtml += `<li class="avatar pull-up">
+								<img class="media-object rounded-circle" src="${item.thumb}" alt="Avatar" height="30" width="30">
+							</li>`
+			}
+
+			$("#tealist").html(teahtml)
+			$("#stunum").html(result.stunum+'人')
+			$("#qdnum").html(result.qdinfo.qdnum+'节')
+			$("#zjqdnum").html(result.qdinfo.zjqdnum+'节')
+			$("#fdqdnum").html(result.fdqdnum+'节')
+			$("#costnum").html(result.qdinfo.costnum+'个课时')
+			$("#pf").html(result.pj.pf+'次打分')
+			$("#pl").html(result.pj.pl+'次打分')
+			let jdtsj = 0;
+			let jdtwidth = 0;
+			if(result.jdtsj == 0){
+				jdtwidth = 1
+				jdtsj = 0;
+			}else if (result.jdtsj > 100){
+				jdtsj = 100
+				jdtwidth = 100
+			}else{
+				jdtsj = parseInt(result.jdtsj);
+				jdtwidth = parseInt(result.jdtsj);
+			}
+			$("#jdtsj").attr("aria-valuenow",jdtsj);
+			$("#jdtsj").css("width",jdtwidth+'%');
+			let url = `{php echo $this->createWebUrl('kecheng', array('op'=>'kc_info','schoolid' => $schoolid))}&id=`+result.kcinfo.id
+			$("#new_attr").attr("href",url);
+		}
+	});
+}
+
+//班级圈发送
+function sendbjq(){
+	let bjqpic = []; //图片
+	let bjqvod = $("#bjqvod").val(); //视频
+	let content = $("#user-post-textarea").val(); //视频
+	let tid = `{$nowtid}`; //视频
+	let nowbjq_setid = $("#nowbjq_setid").val()
+	$("input[name='bjqpic[]']").each(function(){
+		bjqpic.push($(this).val())
+	})
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'savebjq','schoolid' => $schoolid,'weid'=>$weid))}",
+		type: "post",
+		dataType: "json",
+		data:{bjqpic:bjqpic,bjqvod:bjqvod,content:content,tid:tid,nowbjq_setid:nowbjq_setid},
+		success: function (res) {
+			if(!res.result){
+				ReToastGlobal(res.info)
+				return
+			}
+			change_left('bjq')
+		}
+	});
+}
+//文章点赞或取消赞
+function dianzan(id,elm){
+	let dznumb = $(elm).find('.dznumber');
+	let dzicon = $(elm).find('.dzicon');
+	if(dzicon.hasClass('fa-heart-o')){
+		dzicon.removeClass('fa-heart-o')
+		dzicon.addClass('fa-heart')
+		dznumbs = parseInt(dznumb.text())+1
+		//点赞
+		$.ajax({
+			url: "{php echo $this->createWebUrl('usercenter', array('op'=>'savedz','schoolid' => $schoolid,'weid'=>$weid))}",
+			type: "post",
+			dataType: "json",
+			data:{id:id,openid:openid},
+			success: function (res) {
+				ReToastGlobal(res.msg)
+			}
+		});
+	}else{
+		dzicon.removeClass('fa-heart')
+		dzicon.addClass('fa-heart-o')
+		dznumbs = parseInt(dznumb.text())-1
+		$.ajax({
+			url: "{php echo $this->createWebUrl('usercenter', array('op'=>'savedz','schoolid' => $schoolid,'weid'=>$weid))}",
+			type: "post",
+			dataType: "json",
+			data:{id:id,openid:openid},
+			success: function (res) {
+				ReToastGlobal(res.msg)
+			}
+		});
+	}
+	dznumb.text(dznumbs)
+}
+//发送文章评论
+function huifu_wenz(id,elm){
+	var message = $(elm).parent().prev().children().val();
+	var openid = `{$openid}`
+	if (message != "") {
+		var checkfilter = filters(message)
+		if(checkfilter == true){
+			
+			$.ajax({
+				url: "{php echo $this->createWebUrl('usercenter', array('op'=>'savewenz','schoolid' => $schoolid,'weid'=>$weid))}",
+				type: "post",
+				dataType: "json",
+				data:{id:id,content:message,openid:openid,userid:userid,tname:tname},
+				success: function (res) {
+					ReToastGlobal(res.msg)
+					if(!res.result){
+						return
+					}
+					var lynumb = $(elm).parent().parent().prev().find('.lynumber');
+					newnub = parseInt(lynumb.text())+1
+					lynumb.text(newnub)
+					$(elm).parent().prev().children().val('')
+				}
+			});
+		}else{
+			ReToastGlobal("请遵守国家法律法规，请勿发布暴力、谣言、色情等言论。正文内容含有非法词语：" + message);
+		}
+	}else{
+		ReToastGlobal("请输入您的评价内容")
+	}
+}
+//切换文章
+$('.xinwenlist .btn').click(function() {
+	let type = $(this).attr("typename")
+	$(".xinwenlist .btn").each(function () {
+		if(!$(this).hasClass('btn-white')){
+			$(this).addClass("btn-white")
+		}
+		$(this).removeClass("btn-primary")
+	});
+	if(!$(this).hasClass('btn-primary')){
+		$(this).addClass('btn-primary')
+		$(this).removeClass("btn-white")
+	}
+	$('.accordion').slideUp(200)
+	$('#'+type).slideDown(200)
+});
+function show_xsjlx(){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'getjlxstulist','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {bjid:jlxbjid},
+		success: function (html) {
+			$('.qdbox').html(html)
+			$("#xsjlx_load").hide()
+		}
+	});
+}
+//学生进离校切换按钮
+$(".jl_leftbox span").click(function(){
+	$(".jl_leftbox span").removeClass("active")
+	$(this).addClass("active")
+	var type = $(this).attr("typename")
+	$(".jlxtypebox").hide()
+	if(type=="jx_boxs"){
+		$("#jx_boxs").show(200)
+	}
+	if(type=="lx_boxs"){
+		$("#lx_boxs").show(200)
+	}
+	if(type=="qj_boxs"){
+		$("#qj_boxs").show(200)
+	}
+});
+
+//校长信息留言回复
+function reply_xzxx_btn(id,elm){
+	var message = $(elm).parent().prev().children().val();
+	if (message != "") {
+		var checkfilter = filters(message)
+		if(checkfilter == true){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('usercenter', array('op'=>'savehuifu','schoolid' => $schoolid,'weid'=>$weid))}",
+				type: "post",
+				dataType: "json",
+				data:{id:id,huifu:message,userid:userid,tname:tname},
+				success: function (res) {
+					ReToastGlobal(res.msg)
+					if(!res.result){
+						return
+					}
+					var html = '<div class="timeline-content mb-1"><span class="badge badge-light-primary badge-xs">{$myteacherinfo['tname']}:</span><p class="text-muted font-small-2">'+message+'</p></div>';
+					$(elm).parent().parent().replaceWith(html);
+				}
+			});
+			
+		}else{
+			ReToastGlobal("请遵守国家法律法规，请勿发布暴力、谣言、色情等言论。正文内容含有非法词语：" + message);
+		}
+	}else{
+		ReToastGlobal("请输入回复文字内容")
+	}
+}
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>

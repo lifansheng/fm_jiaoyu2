@@ -1,0 +1,373 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<div class="panel panel-info">
+	<div class="panel-body">
+	   {php echo $this -> set_tabbar($action1, $schoolid, $_W['role'], $_W['isfounder'], $_W['schooltype']);}
+	</div>
+</div>
+<ul class="nav nav-tabs">
+    <li class="qx_edit {if $operation == 'post'}active{/if}"><a href="{php echo $this->createWebUrl('semester', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i>添加</a></li>
+    <li {if $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('semester', array('op' => 'display', 'schoolid' => $schoolid))}"><i class="fa fa-cog"></i> {if $schooltype}课程分类{else}年级管理{/if}</a></li>
+</ul>
+ <style>
+.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+.alert p {margin: 0 0 10px;display: block;}
+.alert .bold{font-weight:bold;}
+ </style>
+<div class="cLine">
+    <div class="alert">
+    <p><span class="bold">使用方法：</span>
+   {if $schooltype}
+   填写课程分类,如 小升初，爵士舞，初升高....<br/>
+   <strong><font color='red'>特别提醒: 当你删除该项的时候,该项下相关的所有数据都会被删除,请谨慎操作!以免丢失数据!</font></strong> 
+   {else}
+   填写年级管理,如 小班，中班，大班，一年级管理,二年级管理,初一，初二，高一，高二，大一，大二....<br/>
+   <strong><font color='red'>特别提醒: 当你删除该年级管理项的时候,该{年级管理项下相关的所有数据都会被删除,请谨慎操作!以免丢失数据!</font></strong>
+   {/if}
+    </p>
+    </div>
+</div>
+{if $operation == 'post'}
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">{if $schooltype}课程分类{else}年级管理{/if}编辑</div>
+            <div class="panel-body">
+				<div id="custom-url">
+				{if $semester}
+					<input type="hidden" name="old" value="111" />
+					<div class="form-group">
+						<label class="col-sm-2" style="width:5%">排序</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort" placeholder="排序" class="form-control" value="{$semester['ssort']}" />
+						</div>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="catename" placeholder="{if $schooltype}课程分类{else}年级管理{/if}名称" class="form-control" value="{$semester['sname']}" />
+						</div>
+						<div class="col-sm-2 col-lg-2" id="sxname">
+							<select name="tid" class="form-control select" style="display:none">
+
+							</select>
+							<input type="text" placeholder="主任或管理" class="form-control sxword" value="{if $tname}{$tname['tname']}{/if}"/>
+						</div>
+						<div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">	
+							<span class="btn btn-default"><i class="fa fa-search"></i></span>
+						</div>	
+						{if keep_Blacklist()}
+						<div class="col-sm-2 col-lg-2" >
+							<input type="text" name="njabbr" placeholder="年级缩写" class="form-control" value="{$semester['njabbr']}"/>
+						</div>
+						{/if}					
+					</div>
+				{else}
+					<input type="hidden" name="new[]" value="111" />
+					<div class="form-group">
+						<label class="col-sm-2" style="width:5%">排序</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="{$semester['ssort']}" />
+						</div>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="catename_new[]" placeholder="{if $schooltype}课程分类{else}年级管理{/if}名称" class="form-control" value="{$semester['sname']}" />
+						</div>
+						<div class="col-sm-2 col-lg-2" id="sxname">
+							<select name="tid_new[]" class="form-control select" style="display:none">
+
+							</select>
+							<input type="text" placeholder="主任或管理" class="form-control sxword" value="{if $tname}{$tname['tname']}{/if}"/>
+						</div>
+						<div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">	
+							<span class="btn btn-default"><i class="fa fa-search"></i></span>
+						</div>	
+						{if keep_Blacklist()}
+						<div class="col-sm-2 col-lg-2" >
+							<input type="text" name="njabbr_new[]" placeholder="年级缩写" class="form-control" value="{$semester['njabbr']}"/>
+						</div>
+						{/if}					
+					</div>				
+				{/if}	
+                </div>	
+				<div class="clearfix template"> 
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+						<div class="col-sm-9 col-xs-12">
+							<a href="javascript:;" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加{if $schooltype}课程分类{else}年级管理{/if}</a>
+						</div>
+					</div>	
+				</div>				
+            </div>
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script>
+$('#custom-url-add').click(function(){
+	var html =  '<div class="form-group">'+
+				'<input type="hidden" name="new[]" value="111" />	'+
+				'		<label class="col-sm-2" style="width:5%">排序</label>'+
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="" />'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<input type="text" name="catename_new[]" placeholder="{if $schooltype}课程分类{else}年级管理{/if}名称" class="form-control" value="" />'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2" id="sxname">'+
+				'			<select name="tid_new[]" class="form-control select" style="display:none">'+
+				'			</select>'+
+				'			<input type="text" placeholder="班主任或管理" class="form-control sxword" value="{if $tname}{$tname['tname']}{/if}"/>'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">'+
+				'			<span class="btn btn-default"><i class="fa fa-search"></i></span>'+
+				'		</div>'+
+				{if keep_Blacklist()}
+				'<div class="col-sm-2 col-lg-2" >'+
+					'<input type="text" name="njabbr_new[]" placeholder="年级缩写"  class="form-control"  />'+
+				'</div>'+
+				{/if}	
+				'	<div class="col-sm-1" style="margin-top:5px">'+
+				'   	<a href="javascript:;" class="custom-url-del"><i class="fa fa-times-circle"></i></a>'+
+				'	</div>'+
+				'</div>';
+			;
+	$('#custom-url').append(html);
+});
+$(document).on('click', '.custom-url-del', function(){
+	$(this).parent().parent().remove();
+	return false;
+});	
+$(document).on('click', '.btn-default', function(){
+	var t = $(this).parent().parent().children();
+	var want = t.find('input[class*=sxword]');
+	var selectdiv = t.find('select[class*=select]');
+	
+	var tname = want.val();
+	want.hide();
+	selectdiv.show();
+	
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	html1 += '<select id="schoolid"><option value="">请选择老师</option>';
+	if(tname != ''){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getallteacher'))}", {'tname': tname,schoolid:schoolid}, function(data) {
+				data = JSON.parse(data);
+			if(data.result == true){	
+				classlevel = data.teachcers;		
+				var html = '';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						html += '<option value="' + classlevel[i].id + '">' + classlevel[i].tname + '</option>';
+					}
+				}
+				selectdiv.html(html);
+			}else{
+				selectdiv.hide();
+				want.show();
+				alert(data.msg);
+			}
+		});	
+	}else{
+		var html1 = ''+
+								{loop $allls $it}
+				'					<option value="{$it['id']}">{$it['tname']}</option>'+
+								{/loop}
+				'';
+		selectdiv.html(html1);
+	}
+});	
+</script>
+{elseif $operation == 'display'}
+
+
+
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+			<a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i>刷新</a>
+			{if CheckXZF($schoolid)}
+			<a class="btn btn-success" href="javascript:;" onclick="UpToXZF()"><i class="fa fa-cloud-upload"></i> 同步信息至校智付</a>
+			{/if}
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+					    <th style="width:100px;">序号</th>
+                        <th>{if $schooltype}课程分类{else}年级管理{/if}名称</th>
+						<th>{if $schooltype}课程分类{else}年级管理{/if}主任(或管理员)</th>
+						{if !$schooltype}<th>本年级人数</th>{/if}
+						<th>{if $schooltype}下属课程{else}下属班级{/if}</th>
+						<th class="qx_00214">{if !$schooltype}是否毕业{else}是否禁用{/if}</th>
+						{if $schooltype}<th>子分类</th>{/if}
+						{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+						<th class="qx_00214">是否已同步</th>
+						{/if}
+                        <th class="qx_e_d" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $semester $row}
+                    <tr>
+					    <td><div class="type-parent">{$row['ssort']}</div></td>
+                        <td><div class="type-parent">{$row['sname']}&nbsp;&nbsp;</div></td>
+						<td><div class="type-parent">{$row['tname']}&nbsp;&nbsp;</div></td>
+						{if !$schooltype}<td><span class="label label-info">{$row['renshu']}人</span></td>{/if}
+						<td><span class="label label-info">{$row['bjsm']}个</span></td>
+						<td class="qx_00214"><input type="checkbox" value="{$row['is_over']}" name="is_over[]" data-id="{$row['sid']}" {if $row['is_over'] == 2}checked{/if}></td>
+						{if $schooltype}
+							<td>
+								<span class="btn btn-info btn-xs" onclick="edite_suntype({$row['sid']})">{$row['suntype']}个 <i class="fa fa-bars"></i></span>
+							</td>
+						{/if}
+						{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+						<td>
+							{if  !empty($row['typt_id'])}
+							<span class="label label-primary">已同步</span>
+							{/if}
+						</td>
+						{/if}
+                        <td style="text-align:right;" class="qx_e_d"><a class="btn btn-default btn-sm qx_edit" href="{php echo $this->createWebUrl('semester', array('op' => 'post', 'sid' => $row['sid'], 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_delete" href="{php echo $this->createWebUrl('semester', array('op' => 'delete', 'sid' => $row['sid'], 'schoolid' => $schoolid))}" onclick="return confirm('确认删除此分类吗？');return false;" title="删除"><i class="fa fa-times"></i></a></td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+<!-- 编辑或查看子分类modal -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="sun_edite_box" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog myModalleft">
+		<div class="loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="ed_typebox">
+			
+		</div>
+	</div>
+</div>
+
+
+
+<div class="modal fade" id="UpToXZFModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);width:600px;margin-top:60px;">
+		<div class="modal-content" style="height: 150px;border-radius: 5px;overflow: hidden;" >
+			<div class="loading-layer">
+				<div class="NS"> <img src="{OSSURL}public/web/images/blue_four_round.png"> </div>
+				<div id="tbhtml" style="font-size: 120%;margin-top: 10px;">同步中。。。</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+
+
+function UpToXZF(){
+	$("#UpToXZFModal").modal("show")
+	$.ajax({
+		url: "{php echo $this->createWebUrl('semester',array('schoolid'=>$schoolid,'op'=>'syncgrade'))}",
+		type: "post",
+		dataType: "json",
+		success: function (res) {
+			$("#tbhtml").text(res.msg)
+			setTimeout(() => {
+				$("#UpToXZFModal").modal("hide")
+			}, 1000);
+		},
+		error: function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR)
+			console.log(textStatus)
+			console.log(errorThrown)
+			//DoSomething
+		}
+	});
+}
+
+function add_suntype() {
+	var form = new FormData(document.getElementById('type_info'));
+	//表单提交前的各种验证	
+	$.ajax({
+		url: "{php echo $this->createWebUrl('semester', array('op' => 'add_suntype','schoolid' => $schoolid))}",
+		type: "post",
+		data: form,
+		processData: false,
+		contentType: false,
+		success: function(result) {
+			var data = jQuery.parseJSON(result);
+			alert(data.msg);
+			if(data.result){
+				location.reload()
+			}
+		},
+		error: function(e) {
+			alert('访问网络失败');
+			console.log(e)
+		}
+	});
+}
+function edite_suntype(sid){
+	$('.loading-layer').show()
+	$('#ed_typebox').empty();
+	$('#sun_edite_box').modal('toggle');
+	$.ajax({
+		url: "{php echo $this->createWebUrl('semester', array('op' => 'type_info', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			sid:sid,
+		},
+		success: function(result) {
+			setTimeout(function() {
+				$('.loading-layer').hide()
+			}, 400);
+			$('#ed_typebox').html(result)
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+$(document).ready(function() {
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1000212,1,$schoolid))}
+		$(".qx_edit").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1000214,1,$schoolid))}
+		$(".qx_00214").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1000213,1,$schoolid))}
+		$(".qx_delete").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});	
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+	{if (IsHasQx($tid_global,1000214,1,$schoolid))}
+	$(':checkbox[name="is_over[]"]').bootstrapSwitch();
+	$(':checkbox[name="is_over[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+		var is_over = this.checked ? 2 : 1;
+		var id = $(this).data('id');
+		$.post("{php echo $this->createWebUrl('semester', array('op' => 'change_over','schoolid' => $schoolid))}", {is_over: is_over, id: id}, function(resp){
+			setTimeout(function(){
+				//location.reload();
+			}, 500)
+		});
+	});
+	{/if}
+});
+</script>
+{/if}
+
+{template 'public/footer'}

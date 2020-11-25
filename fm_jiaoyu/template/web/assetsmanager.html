@@ -1,0 +1,267 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			{if IsHasQx($tid_global,1004301,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsmanager'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsmanager', array('op' => 'display', 'schoolid' => $schoolid))}">库存管理</a></li>
+			{/if}
+			{if IsHasQx($tid_global,1004311,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsuselog'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsuselog', array('op' => 'display', 'schoolid' => $schoolid))}">领用记录</a></li> 
+			{/if}
+			{if IsHasQx($tid_global,1004321,1,$schoolid) }
+			<li {if $_GPC['do']=='assetsfixlog'}class="active"{/if}><a href="{php echo $this->createWebUrl('assetsfixlog', array('op' => 'display', 'schoolid' => $schoolid))}">维修记录</a></li>
+			{/if}
+		</ul>
+	</div>
+</div>
+<link rel="stylesheet" href="{MODULE_URL}public/web/css/magnific-popup.css">
+{if $operation == 'display'}
+<script>
+//require(['bootstrap'],function($){
+//	$('.btn,.tips').hover(function(){
+//		$(this).tooltip('show');
+//	},function(){
+//		$(this).tooltip('hide');
+//	});
+//});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">库存管理</div>
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="assetsmanager"/>
+				<input type="hidden" name="op" value="display"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="type" value="{$_GPC['type']}"/>
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按公物名称</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="name" id="" type="text" value="{$_GPC['name']}">
+                    </div>	
+					<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+                    <div class="col-sm-2 col-lg-2 qx_4302">
+						<a class="btn btn-primary" href="{php echo $this->createWebUrl('assetsmanager', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i>添加公物</a>
+					</div>
+					<div class="col-sm-2 col-lg-2 qx_4303">
+						<button class="btn btn-success qx_2303" name="out_put" value="output"><i class="fa fa-download"></i>导出至EXECL</button>
+					</div>
+						
+			 
+				</div>
+			</form>
+		</div>		
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th class='with-checkbox' style="width: 20px;"><input type="checkbox" class="check_all" /></th>
+							<th style="width:100px">排序 </th>
+							<th style="width:8%">缩略图</th>
+							<th  >名称</th>
+							<th style="width:8%">类型</th>
+							<th style="width:6%;">基础库存</th>
+							<th style="width:10%;">报废数量</th>
+							<th style="width:10%;">已领用数量</th>
+							<th style="width:8%;">可用数量</th>
+							<th class="qx_e_d" style="text-align:right; width:10%;">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+							<tr>
+								<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+								<td> {$item['ssort']} </td>
+								<td><img src="{php echo tomedia($item['thumb'])}" width="50px"></td>
+								<td> {$item['name']} </td>
+								
+								<td>
+								{if $item['type'] == 1}
+									非消耗品
+								{else}
+									消耗品
+								{/if}
+								</td>
+								<td>{$item['basicnum']}</td>
+								<td>{$item['wastenum']}</td>
+								<td>{$item['takenum']}</td>
+								<td>{$item['restnum']}</td>
+								<td class="qx_e_d" style="text-align:right;">		
+									<a class="btn btn-default btn-sm qx_4302" href="{php echo $this->createWebUrl('assetsmanager', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}"  title="编辑"><i class="fa fa-edit"></i></a>		
+									<a class="btn btn-default btn-sm qx_4304" href="{php echo $this->createWebUrl('assetsmanager', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+						{/loop}
+					</tbody>
+					<tr>
+						<td colspan="10">
+							<input name="token" type="hidden" value="{$_W['token']}" />
+							<input type="button" class="btn btn-primary qx_2304" name="btndeleteall" value="批量删除" />
+						</td>
+					</tr>
+				</table>
+			{$pager}
+			</form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+	 
+
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1004302,1,$schoolid))}
+		$(".qx_4302").hide();
+		e_d = e_d -1  ;
+	{/if}
+	{if !(IsHasQx($tid_global,1004303,1,$schoolid))}
+		$(".qx_4303").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1004304,1,$schoolid))}
+		$(".qx_4304").hide();
+		e_d = e_d -1  ;
+	{/if}
+	 
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的数据!');
+            return false;
+        }
+        if(confirm("确认要删除选择的数据?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('assetsmanager', array('op' => 'deleteall','schoolid' => $schoolid))}";
+			$.ajax({
+				url: url,
+				type: "post",
+				dataType: "json",
+				data:{idArr:id},
+				success: function (res) {
+					alert(res.msg);
+					window.location.reload();
+				}
+			});
+        }
+	});
+	
+	 
+
+});
+</script>
+
+{else if $operation == 'post'}
+<div class="panel panel-info">
+    <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回库存管理</a></div>
+</div>
+<div class="main">
+	<form action="" method="post" class="form-horizontal form"	enctype="multipart/form-data">
+		<div class="panel panel-default">
+			<div class="panel-body" >
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>公物名称</label>
+					<div class="col-sm-4 col-xs-4">
+						<input type="text" name="assets_name" class="form-control" value="{$item['name']}"  />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>排序:</label>
+                     <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+						<input type="text" name="ssort" class="form-control" value="{$item['ssort']}" />
+                        </div>
+				    </div>
+                </div>
+                
+                <div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>物品类型:</label>
+                     <div class="col-sm-9 col-lg-2" >
+						<select style="margin-right:15px;" id="assets_type" name="assets_type" class="form-control">
+							<option value="1" {if $item['type'] == 1} selected="selected"{/if}>非消耗品</option>
+							<option value="2" {if $item['type'] == 2} selected="selected"{/if}>消耗品</option>
+						</select>
+                    </div>
+                    <div class="help-block">消耗品无需归还，非消耗品有归还操作</div>
+				</div>
+		 
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>缩略图</label>
+					<div class="col-sm-4 col-xs-4">
+						{php echo tpl_form_field_image('assetsthumb', $item['thumb'])}
+						<div class="help-block">图片尺寸必须为400*400 </div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>描述</label>
+					<div class="col-sm-9">
+					   {php echo tpl_ueditor('content', $item['disc']);}
+					</div>
+				</div>
+ 	
+			    <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">基础库存:</label>
+                    <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+							<input type="number" name="basic_num" class="form-control" value="{$item['basicnum']}" />
+                        </div>
+				    </div>
+				    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">已报废数量:</label>
+                    <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+							<input type="number" name="waste_num" class="form-control" value="{$item['wastenum']}" />
+                        </div>
+                    </div>
+                    <div class="help-block">实际库存为：基础库存 - 已报废数量</div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">计量单位:</label>
+                    <div class="col-sm-2 col-lg-2">
+				        <div class="input-group">
+							<input type="text" name="danwei" class="form-control" value="{$item['danwei']}" />
+                        </div>
+				    </div>
+				    <div class="help-block">计量单位，如： 个 ，台 等</div>
+			    </div>
+            </div>
+		</div>
+		<div class="form-group col-sm-12">
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+		</div>
+	</form>
+</div>
+
+ 
+
+{/if}
+<script type="text/javascript">
+		$(document).ready(function() {
+            $('.gallery-link').magnificPopup({type:'image'});
+        });
+</script>
+{template 'public/footer'}

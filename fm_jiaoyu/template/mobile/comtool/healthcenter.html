@@ -1,0 +1,123 @@
+<div class="data_box">
+    <div class="data_box_top">
+        <div class="box_top_left"><span>进校</span></div>
+        <div class="box_top_right">
+            <div class="top_right_ul">
+                <ul>正常</ul>
+                <ul>异常</ul>
+            </div>
+            <div class="top_right_ul">
+                <ul>{$InToSchoolCheckIsNormal['normal']}</ul>
+                <ul>{$InToSchoolCheckIsNormal['abnormal']}</ul>
+            </div>
+        </div>
+    </div>
+    <div class="data_box_mid">
+        <div class="mid_top">
+            <div class="mid_ul">
+                <ul>总人数</ul>
+                <ul>已检查</ul>
+                <ul>未检查</ul>
+                <ul>检查率</ul>
+            </div>
+        </div>	
+        <div class="mid_bot">
+            <div class="mid_ul">
+                <ul>{$AllNum}</ul>
+                <ul>{$InToSchoolCheck}</ul>
+                <ul>{$InToSchoolNoCheck}</ul>
+                <ul>{$InToSchoolCheckRate}</ul>
+            </div>
+        </div>
+    </div>
+    <div class="data_box_bot">
+        <div class="box_bot_btn" onclick="gotodetail(1)">查看详情</div>
+    </div>
+</div>
+<div class="data_box">
+    <div class="data_box_top">
+        <div class="box_top_left"><span>体检</span></div>
+        <div class="box_top_right">
+            <div class="top_right_ul">
+                <ul>正常</ul>
+                <ul>异常</ul>
+            </div>
+            <div class="top_right_ul">
+                <ul>{$Reoort['CheckupIsNormal']['normal']}</ul>
+                <ul>{$Reoort['CheckupIsNormal']['abnormal']}</ul>
+            </div>
+        </div>
+    </div>
+    <div class="data_box_mid">
+        <div class="mid_top">
+            <div class="mid_ul">
+                <ul>总学生</ul>
+                <ul>已检查</ul>
+                <ul>未检查</ul>
+                <ul>检查率</ul>
+            </div>
+        </div>	
+        <div class="mid_bot">
+            <div class="mid_ul">
+                <ul>{$AllStu}</ul>
+                <ul>{$Reoort['Checkup']}</ul>
+                <ul>{$NoCheckup}</ul>
+                <ul>{$CheckupRate}</ul>
+            </div>
+        </div>
+    </div>
+    <div class="data_box_bot">
+        <div class="box_bot_btn" onclick="gotodetail(3)">查看详情</div>
+    </div>
+</div>
+<div class="data_box">
+    <div class="data_box_top">
+        <div class="box_top_left"><span>离校</span></div>
+        <div class="box_top_right">
+            <div class="top_right_ul">
+                <ul>正常</ul>
+                <ul>异常</ul>
+            </div>
+            <div class="top_right_ul">
+                <ul>{$LeaveSchoolIsNormal['normal']}</ul>
+                <ul>{$LeaveSchoolIsNormal['abnormal']}</ul>
+            </div>
+        </div>
+    </div>
+    <div class="data_box_mid">
+        <div class="mid_top">
+            <div class="mid_ul">
+                <ul>总人数</ul>
+                <ul>已检查</ul>
+                <ul>未检查</ul>
+                <ul>检查率</ul>
+            </div>
+        </div>	
+        <div class="mid_bot">
+            <div class="mid_ul">
+                <ul>{$AllNum}</ul>
+                <ul>{$LeaveSchoolCheck}</ul>
+                <ul>{$LeaveSchoolNoCheck}</ul>
+                <ul>{$LeaveSchoolCheckRate}</ul>
+            </div>
+        </div>
+    </div>
+    <div class="data_box_bot">
+        <div class="box_bot_btn" onclick="gotodetail(2)">查看详情</div>
+    </div>
+</div>
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#date").val(`{$date}`)
+    $("#time").html(`{$time}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+    function gotodetail(leixing){
+        window.location.href = "{php echo $this->createMobileUrl('tempcenter', array('schoolid' => $schoolid), true)}"+'&leixing='+leixing
+    }
+</script>

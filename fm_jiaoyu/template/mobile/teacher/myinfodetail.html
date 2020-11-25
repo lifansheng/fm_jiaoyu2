@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mNewMsg.css?v=4.8" />	
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=4.81022"></script>
+{php include $this->template('port');}
+</head>
+<body>
+<div class="all">
+	<form id ="myinfo_form" action="javascript:sendSubmitBtn();">
+		<div class="msgBox">
+			<div class="timeBox">
+				<span class="l">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</span>
+				<span class="r"><input name="tname" class="start" type="text" value="{$myinfo['tname']}"  required="required" oninvalid="javascript:jTips('姓名不能为空！');" oninput="setCustomValidity('');"></span>
+			</div>
+			<div class="timeBox">
+				<span class="l">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+				<span class="c" >                    
+					<select name="sex" id="sex"  class="start" style="border: 1px solid #e1e1e1">
+					     <option value="0" {if $myinfo['sex'] == 0}selected{/if}>女</option>
+				         <option value="1" {if $myinfo['sex'] == 1}selected{/if}>男</option>
+				     </select>
+			    </span>	
+			</div>
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:200px"> <a style="color:red">*</a>基础信息 <a style="color:#25bebf" onclick="$('#main_info').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="main_info" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>出生日期：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="出生日期" name="birthdate" id="birthdate" value="{php echo date('Y-m-d',$myinfo['birthdate'])}" />
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"style="padding-top:10px;width:100px"><a style="color:red">*</a>身&nbsp;&nbsp;份&nbsp;证：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="身份证号码" name="idcard" id="idcard" value="{$myinfo['idcard']}" required="required" oninvalid="javascript:$('#main_info').slideDown();setCustomValidity('身份证号码不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"style="padding-top:10px;width:100px"><a style="color:red">*</a>籍&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;贯：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="籍贯" name="jiguan" id="jiguan" value="{$myinfo['jiguan']}" required="required" oninvalid="javascript:$('#main_info').slideDown();setCustomValidity('籍贯不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"style="padding-top:10px;width:100px"><a style="color:red">*</a>民&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;族：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="民族" name="minzu" id="minzu" value="{$myinfo['minzu']}" required="required" oninvalid="javascript:$('#main_info').slideDown();setCustomValidity('民族不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"style="padding-top:10px;width:100px"><a style="color:red">*</a>政治面貌：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="政治面貌" name="zzmianmao" id="zzmianmao" value="{$myinfo['zzmianmao']}" required="required" oninvalid="javascript:$('#main_info').slideDown();setCustomValidity('政治面貌不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">现&nbsp;&nbsp;住&nbsp;址：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="现住址" name="address" id="address" value="{$myinfo['address']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="邮箱" name="email" id="email" value="{$myinfo['email']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"style="padding-top:10px;width:100px"><a style="color:red">*</a>手&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;机：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="手机" name="mobile" id="mobile" value="{$myinfo['mobile']}" required="required" oninvalid="javascript:$('#main_info').slideDown();setCustomValidity('手机号码不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+			</div>
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l" style="width:200px"><a style="color:red">*</a>第一学历 <a style="color:#25bebf" onclick="$('#first_xueli').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="first_xueli" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="第一学历" name="first_xl" id="first_xl" value="{$myotherinfo['first_xl']}" required="required" oninvalid="javascript:$('#first_xueli').slideDown();setCustomValidity('第一学历不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>专&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="专业" name="first_zy" id="first_zy" value="{$myotherinfo['first_zy']}" required="required" oninvalid="javascript:$('#first_xueli').slideDown();setCustomValidity('专业不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>毕业院校：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="毕业院校" name="first_yx" id="first_yx" value="{$myotherinfo['first_yx']}" required="required" oninvalid="javascript:$('#first_xueli').slideDown();setCustomValidity('毕业院校不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>毕业时间：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="毕业时间" name="first_bytime" id="first_bytime" value="{$myotherinfo['first_bytime']}" />
+					</span>
+				</div>
+			</div>
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:200px"><a style="color:red">*</a>最高学历 <a style="color:#25bebf" onclick="$('#top_xueli').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="top_xueli" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="最高学历" name="top_xl" id="top_xl" value="{$myotherinfo['top_xl']}" required="required" oninvalid="javascript:$('#top_xueli').slideDown();setCustomValidity('最高学历不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>专&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="专业" name="top_zy" id="top_zy" value="{$myotherinfo['top_zy']}" required="required" oninvalid="javascript:$('#top_xueli').slideDown();setCustomValidity('专业不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>毕业院校：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="毕业院校" name="top_yx" id="top_yx" value="{$myotherinfo['top_yx']}" required="required" oninvalid="javascript:$('#top_xueli').slideDown();setCustomValidity('毕业院校不能为空！！！');" oninput="setCustomValidity('');"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;width:100px"><a style="color:red">*</a>毕业时间：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="毕业时间" name="top_bytime" id="top_bytime" value="{$myotherinfo['top_bytime']}" />
+					</span>
+				</div>
+			</div>
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:200px">主要学习简历 <a style="color:#25bebf" onclick="$('#main_study').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div class="textInfo" id="main_study" style="border-top: 1px solid #e1e1e1;display:none;">
+				<textarea rows="8" cols="" style="padding:unset" id="main_study_jl" name="main_study_jl"  placeholder="请输入主要学习简历">{$myotherinfo['main_study_jl']}</textarea>
+			</div>
+			
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:250px">工作职称与相关 <a style="color:#25bebf" onclick="$('#work_kind').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="work_kind" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">参工日期：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="何时参加工作" name="time2work" id="time2work" value="{$myotherinfo['time2work']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">任教学科：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="任教学科" name="tea_subject" id="tea_subject" value="{$myotherinfo['tea_subject']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="职称" name="zhicheng" id="zhicheng" value="{$myotherinfo['zhicheng']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">评审时间：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="评审时间" name="zc_pstime" id="zc_pstime" value="{$myotherinfo['zc_pstime']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">聘任时间：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="聘任时间" name="zc_prtime" id="zc_prtime" value="{$myotherinfo['zc_prtime']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">专技职务</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="专业技术职务" name="zjzhiwu" id="zjzhiwu" value="{$myotherinfo['zjzhiwu']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">评审时间：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="评审时间" name="zjzw_pstime" id="zjzw_pstime" value="{$myotherinfo['zjzw_pstime']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">聘任时间：</span>
+					<span class="r">
+						<input class="start" type="date" placeholder="聘任时间" name="zjzw_prtime" id="zjzw_prtime" value="{$myotherinfo['zjzw_prtime']}"/>
+					</span>
+				</div>
+			</div>
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:200px">主要工作简历 <a style="color:#25bebf" onclick="$('#main_work').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div class="textInfo" id="main_work" style="border-top: 1px solid #e1e1e1;display:none;">
+				<textarea rows="8" cols="" style="padding:unset;" id="main_work_jl"  name="main_work_jl" placeholder="请输入主要工作简历">{$myotherinfo['main_work_jl']}</textarea>
+			</div>
+			
+			
+			
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:250px">教师资格证 <a style="color:#25bebf" onclick="$('#jszgz').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="jszgz" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">种&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="教师资格证种类" name="jszg_type" id="jszg_type" value="{$myotherinfo['jszg_type']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">证书编号：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="证书编号" name="jszgzs_num" id="jszgzs_num" value="{$myotherinfo['jszgzs_num']}"/>
+					</span>
+				</div>
+			</div>
+			
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:250px">普通话证 <a style="color:#25bebf" onclick="$('#pth').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="pth" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="普通话等级" name="pth_level" id="pth_level" value="{$myotherinfo['pth_level']}"/>
+					</span>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l" style="padding-top:10px;">证书编号：</span>
+					<span class="r">
+						<input class="start" type="text" placeholder="证书编号" name="pthzs_num" id="pthzs_num" value="{$myotherinfo['pthzs_num']}"/>
+					</span>
+				</div>
+			</div>
+			<div class="timeBox" style="border-bottom:unset">
+				<span class="l"  style="width:250px">业绩证书相关 <a style="color:#25bebf" onclick="$('#work_price').slideToggle()">点击展开/缩入</a></span>
+			</div>
+			<div id="work_price" style="display:none">
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:250px">&nbsp;优质课一 <a style="color:#25bebf" onclick="$('#yzk1').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="yzk1" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="优质课一级别" name="yzk1_level" id="yzk1_level" value="{$myotherinfo['yzk1_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="优质课一等次" name="yzk1_rank" id="yzk1_rank" value="{$myotherinfo['yzk1_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="yzk1_org" id="yzk1_org" value="{$myotherinfo['yzk1_org']}"/>
+						</span>
+					</div>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:250px">&nbsp;优质课二 <a style="color:#25bebf" onclick="$('#yzk2').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="yzk2" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="优质课二级别" name="yzk2_level" id="yzk2_level" value="{$myotherinfo['yzk2_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="优质课二等次" name="yzk2_rank" id="yzk2_rank" value="{$myotherinfo['yzk2_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="yzk2_org" id="yzk2_org" value="{$myotherinfo['yzk2_org']}"/>
+						</span>
+					</div>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:250px">&nbsp;综合表彰一 <a style="color:#25bebf" onclick="$('#zhbz1').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="zhbz1" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="综合表彰一级别" name="zhbz1_level" id="zhbz1_level" value="{$myotherinfo['zhbz1_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="综合表彰一等次" name="zhbz1_rank" id="zhbz1_rank" value="{$myotherinfo['zhbz1_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="zhbz1_org" id="zhbz1_org" value="{$myotherinfo['zhbz1_org']}"/>
+						</span>
+					</div>
+				</div>
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:250px">&nbsp;综合表彰二 <a style="color:#25bebf" onclick="$('#zhbz2').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="zhbz2" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="综合表彰二级别" name="zhbz2_level" id="zhbz2_level" value="{$myotherinfo['zhbz2_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="综合表彰二等次" name="zhbz2_rank" id="zhbz2_rank" value="{$myotherinfo['zhbz2_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="zhbz2_org" id="zhbz2_org" value="{$myotherinfo['zhbz2_org']}"/>
+						</span>
+					</div>
+				</div>
+				
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:250px">&nbsp;教科研一 <a style="color:#25bebf" onclick="$('#jky1').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="jky1" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="教科研一级别" name="jky1_level" id="jky1_level" value="{$myotherinfo['jky1_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="教科研一等次" name="jky1_rank" id="jky1_rank" value="{$myotherinfo['jky1_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="jky1_org" id="jky1_org" value="{$myotherinfo['jky1_org']}"/>
+						</span>
+					</div>
+				</div>
+				
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:250px">&nbsp;教科研二 <a style="color:#25bebf" onclick="$('#jky2').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="jky2" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="教科研二级别" name="jky2_level" id="jky2_level" value="{$myotherinfo['jky2_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="教科研二等次" name="jky2_rank" id="jky2_rank" value="{$myotherinfo['jky2_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="jky2_org" id="jky2_org" value="{$myotherinfo['jky2_org']}"/>
+						</span>
+					</div>
+				</div>
+				
+				
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:auto">&nbsp;其他证书（辅导、论文等）一 <a style="color:#25bebf" onclick="$('#qtzs1').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="qtzs1" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="证书一级别" name="qtzs1_level" id="qtzs1_level" value="{$myotherinfo['qtzs1_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="证书一等次" name="qtzs1_rank" id="qtzs1_rank" value="{$myotherinfo['qtzs1_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="qtzs1_org" id="qtzs1_org" value="{$myotherinfo['qtzs1_org']}"/>
+						</span>
+					</div>
+				</div>	
+				
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:auto">&nbsp;其他证书（辅导、论文等）二 <a style="color:#25bebf" onclick="$('#qtzs2').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="qtzs2" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="证书二级别" name="qtzs2_level" id="qtzs2_level" value="{$myotherinfo['qtzs2_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="证书二等次" name="qtzs2_rank" id="qtzs2_rank" value="{$myotherinfo['qtzs2_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="qtzs2_org" id="qtzs2_org" value="{$myotherinfo['qtzs2_org']}"/>
+						</span>
+					</div>
+				</div>
+				
+				<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+					<span class="l"  style="width:auto">&nbsp;其他证书（辅导、论文等）三 <a style="color:#25bebf" onclick="$('#qtzs3').slideToggle()">点击展开/缩入</a></span>
+				</div>
+				<div id="qtzs3" style="display:none">
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">级&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="证书三级别" name="qtzs3_level" id="qtzs3_level" value="{$myotherinfo['qtzs3_level']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">等&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;次：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="证书三等次" name="qtzs3_rank" id="qtzs3_rank" value="{$myotherinfo['qtzs3_rank']}"/>
+						</span>
+					</div>
+					<div class="timeBox" style="padding-top:10px;margin-top:unset;border-bottom:unset;border-top:unset">
+						<span class="l" style="padding-top:10px;">发证单位：</span>
+						<span class="r">
+							<input class="start" type="text" placeholder="发证单位" name="qtzs3_org" id="qtzs3_org" value="{$myotherinfo['qtzs3_org']}"/>
+						</span>
+					</div>
+				</div>
+				
+			</div>
+			
+			
+			
+			<div class="msgSubmit">
+				<button  class="mainColor">提交</button>
+			</div>
+		</div>
+		</form>
+	</div>
+</body>
+<script>
+
+
+
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+	}
+}, 100);
+ 
+function show_first_xl(){
+	$("#first_xueli").show();
+
+}
+ 
+ 
+</script>
+<script type="text/javascript">
+var PB = new PromptBox();
+
+function sendSubmitBtn(){
+	var form =document.querySelector("#myinfo_form");
+	var formdata=new FormData(form);
+	$.ajax({
+		url:"{php echo $this->createMobileUrl('techerajax',array('op'=>'set_myinfo','tid'=>$it['tid'],'schoolid'=>$schoolid))}",
+		type:"post",
+		data:formdata,
+		processData:false,
+		contentType:false,
+		success:function(data){
+		datas = JSON.parse(data);
+			jTips(datas.msg);
+			console.log(datas);
+			window.location.href = "{php echo $this->createMobileUrl('myschool',array('schoolid'=>$schoolid))}";
+		},
+		error:function(e){
+			jTips("修改失败，请重试！！");
+		}
+	});
+		
+}
+</script>
+{php include $this->template('newfooter');}
+</html>

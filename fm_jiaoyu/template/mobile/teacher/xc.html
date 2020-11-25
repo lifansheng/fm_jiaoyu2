@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbumForm.css?v=5.00716" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/swiper.min.css?v=5.0" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bjqCss.css?v=4.9">
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+</head>
+<body>
+<!-- Swiper -->
+<style>
+
+.slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;}
+.slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+.slide_left_menu {right: 0;background-color: #fff;z-index: 999;min-height: 300px;margin: 50px;}
+.slide_left_menu_til {height: 40px;line-height: 40px;box-sizing: border-box;padding: 0 40px 0 15px;position: relative;font-size: 16px;}
+.slide_left_menu_ul {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+.slide_left_menu_ul li {height: 50px;line-height: 50px;font-size: 16px;width: 100%;box-sizing: border-box;overflow: hidden;position: relative;}
+.imageBox {
+    width: 100%;
+    overflow: hidden;
+    margin: 0px auto;
+}
+.imagePage {
+    position: relative;
+    width: 25%;
+    float: left;
+}
+.imageTotalBox {
+    position: relative;
+}
+.addImages {
+    width: 86%;
+    margin: 10px 5px 10px 5px;
+}
+.imageTotal {
+    position: absolute;
+    left: 29%;
+    bottom: 12%;
+    color: #fff;
+}
+.boxImages {
+    height: 65px;
+    width: 86%;
+    margin-top: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+.swiper-slide{text-align:center;background:#000;display:-webkit-box;display:-ms-flexbox;display:-webkit-flex;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;-webkit-align-items:center;align-items:center;}
+.image-check {background: url({OSSURL}public/mobile/img/check_icon_on.png);top: 5%;right: 6.7%;z-index: 3;position: absolute;width: 25%;height: 25%;background-size: 100% 100%;display: none;}
+.image-all-checked {
+background: url({OSSURL}public/mobile/img/icon-checked.png);
+background-size: 100% 100%;
+border: none;}
+.header{background:{$school['headcolor']} !important;}
+/*  */
+</style>
+<div class="swiper-container" style="display:none">
+    <div class="swiper-wrapper">
+        <div class="swiper-slide"></div>
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination"></div>
+</div>
+<div class="all">
+	<div id="BlackBg" class="BlackBg"></div>
+	<div id="titlebar" class="header mainColor">
+		<div class="l"><a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a></div>
+		<div class="m"><span style="font-size: 18px">相册图片</span></div>
+	</div>
+	<div id="titlebar_bg" class="_header"></div>
+	<div class="album-title">
+		{if keep_MC()}
+		<div class="album-title-left" style="width: 40%;">
+			<span class="album-name">{$name['s_name']}</span>
+			<span class="album-total">{if $type ==1}{$total}张{else if $type ==0}班级圈相册{else if $type ==2}由本班老师上传{/if}</span>
+		</div>
+		<div class="album-title-right" style="width: 45%;">
+			<!-- TODO:执行上传图片 -->
+			<button class="album-button" style="margin-right: 5px; width: 45%;" onclick="UploadImg()">上传图片</button>
+			<button id="albumButton" class="album-button" style="width: 45%;">管理</button>
+		</div>
+		{else}
+		<div class="album-title-left">
+			<span class="album-name">{$name['s_name']}</span>
+			<span class="album-total">{if $type ==1}{$total}张{else if $type ==0}班级圈相册{else if $type ==2}由本班老师上传{/if}</span>
+		</div>
+		<div class="album-title-right">
+			<button id="albumButton" class="album-button">管理</button>
+		</div>
+		{/if}
+		
+		<div class="cl"></div>
+	</div>
+	{if $type !=2}
+	<div class="album-info">
+		<span class="album-time">最后更新 : <span id="albumLastTime">{php echo date('Y-m-d',$last['createtime'])}</span></span>
+	</div>
+	{/if}
+	<div id="albumBox" class="album-box parent"></div>
+	<div class="cl" style="padding-bottom: 30px;"></div>
+	<div class="album-bottom" style="z-index:999;">
+		<button id="albumDelBtn" class="album-btn album-del-btn">删除</button>
+		<div class="album-all-btn">全选<span id="albumAllBtn" class="image-all-check"></span></div>
+	</div>
+	</div>
+<input type="hidden" id="scsid" value="{$scsid}" />
+<input type="hidden" id="sid" value="{$it['sid']}" />
+<input type="hidden" id="param_tagid" value="0" />
+<input type="hidden" id="dellimg" value="{php echo $this->createMobileUrl('dongtaiajax', array('schoolid' => $schoolid, 'op' => 'dellimg'))}" />
+<!-- 上传照片弹窗 -->
+<div class="slide_left_menu_bg">
+	<div class="slide_left_menu">
+		<div class="slide_left_menu_til">上传图片</div>
+			<div class="xcBody">
+				<div class="xcShareBox">
+					<div class="r">
+						<div id="imageBox" class="imageBox">
+							<div id="imageBoxBody"><div id="DivFixedPosition"></div><div class="imagePage"><div class="imageTotalBox"><img alt="image" id="addImages" onclick="wxChooseImage()" src="{OSSURL}public/mobile/img/insertImage.png" class="addImages"><div class="imageTotal">(0/9)</div></div></div>
+						</div>
+						<div id="pic" class="pic parent">
+							
+						</div>
+						<div class="sendInfo wot pr">
+							<a href="javascript:sendPhoto();" class="sendBtn brSmall f15 db c2" >确定</a>
+							<a href="javascript:hidediv();" class="sendBtn cancelNewBtn brSmall f15 db c2" >取消</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=5.00311"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/swiper.jquery.min.js?v=5.0"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/imageUtil.js?v=5.00111"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/datetimeUtil.min.js?v=5.00311"></script>
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+		document.title="相册图片";
+	}
+}, 100);
+var sxc = `{php echo  $this->createMobileUrl('xc', array('schoolid' => $schoolid, 'getalist' => 1, 'type' => $_GPC['type'], 'ctype' => $_GPC['ctype'], 'sid' => $_GPC['sid'], 'bj_id' => $_GPC['bj_id'] ))}`;
+var PB = new PromptBox();
+var dateTimesUtil = new dateTime();
+var mySwiper;
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+// 图片放大
+function arrIndex(item, arr) {
+    if (arr.indexOf) {
+        index = arr.indexOf(item);
+    } else {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] == item) {
+                return i;
+            }
+        }
+    }
+    return index;
+}
+function wxImageShow(node){
+	var srcList = new Array();
+	var imgs = $(node).closest('.parent').find("img");
+	var curSrc = $(node).find("img")[0]['src'].split("@");
+	var curImgIndex=0;
+	for(i=0;i<imgs.length;i++){
+		var imgsrc = imgs[i]['src'].split("@");
+		
+			srcList.push(imgsrc[0]);
+		
+		if(curSrc[0]==imgsrc[0]){
+			curImgIndex=i;
+		}
+	}
+	if ($(".swiper-container").length > 0) {
+		$(".swiper-container").css("display", "block");
+		mySwiper = new Swiper('.swiper-container', {
+			pagination: '.swiper-pagination',
+			paginationClickable: true,
+			spaceBetween: 30,
+		});
+		mySwiper.removeAllSlides();// 移除所有slides
+		
+		var maxWidth = document.body.clientWidth;
+		var maxHeight = document.body.clientHeight;
+		var scale = maxWidth / maxHeight;
+		
+		for (var i = 0; i < srcList.length; i++) {
+			var theImage = new Image();
+			theImage.src = srcList[i];
+			var style;
+			if (theImage.width / theImage.height > scale) {
+				style = "width:100%;";
+			} else {
+				style = "height:100%;";
+			}
+			mySwiper.appendSlide('<div class="swiper-slide" onclick="hideSwiper();"><img style="' + style + '" src="' + srcList[i] + '"/></div>');// 添加slide到slides的结尾 , 可以是HTML元素或slide数组
+		}
+		var curIndex = arrIndex(curSrc[0], srcList);
+		mySwiper.slideTo(curIndex, 0, false);// 切换到当前slide
+		$(window).scrollTop(0);
+		document.body.style.overflow = 'hidden';
+	}
+}
+function hideSwiper() {
+	mySwiper.destroy(true, true);
+	$(".swiper-container").css("display", "none");
+	document.body.style.overflow = 'visible';
+}
+
+//上传图片
+function UploadImg(){
+	$(".slide_left_menu_bg").addClass("show_menu_bg");
+}
+
+
+var WXChooseImageCount = 9;
+var oss = '{OSSURL}';
+var images = {
+	localId: [],
+	serverId: []
+};
+
+function hidediv(){
+	$(".slide_left_menu_bg").removeClass("show_menu_bg");
+}
+/**
+ * 新增图片
+ */
+ function addImages(base64){
+	var DivFixedPosition = document.getElementById("DivFixedPosition");
+	var imageBoxBody = document.getElementById("imageBoxBody");
+	var imagePage = document.createElement("div");
+	imagePage.setAttribute("class","imagePage");
+	imageBoxBody.insertBefore(imagePage,DivFixedPosition);
+	$(imagePage).html('<img alt="image" src="'+base64+'"  class="boxImages baseUploadImg"><span class="deleteImage" style= "background: url(http://weimeizhanoss.oss-cn-shenzhen.aliyuncs.com/public/mobile/img/deleteImage.png); background-size: 100%;display: inline;float: right;height: 25%;position: absolute;right: 0px;width: 25%;z-index: 4;" onclick="deleteImage(this)"></span>');
+	setImageHeight();
+	imagesTotal()
+}
+/**
+ * 计算图片数量
+ */
+ function imagesTotal(){
+	$(".imageTotal").html('('+$(".deleteImage").length+'/9)');
+	$(".imageTotal").length<9 && $(".imageTotal").show();
+	$(".deleteImage").length!= 0 && $(".addImages").show();
+	$(".deleteImage").length==9 && $(".addImages,.imageTotal").hide();
+}
+/**
+ * 删除图片
+ * @param span
+ */
+ function deleteImage(span){
+	//todo删除图片
+	var deleteNode = span.parentNode;
+	var arrayIndex = $.inArray($(span.parentNode).find('img').attr("src"),images.localId)
+	images.localId.splice(arrayIndex,1);
+	images.serverId.splice(arrayIndex,1);
+	deleteNode.parentNode.removeChild(span.parentNode);
+	imagesTotal();
+}
+/**
+ * 微信选择图片
+ */
+ function wxChooseImage(){
+		wx.chooseImage({
+			count: WXChooseImageCount,
+			sizeType: ['compressed'],
+			success: function (res) {
+				setTimeout(function(){
+					images.localId = images.localId.concat(res.localIds);
+					imagesUploadWx(res.localIds);
+				},1000)
+			}
+		});
+};
+function imagesUploadWx(localIds) {
+	var i = 0, length = localIds.length;
+    PB.prompt("开始上传照片","forever");
+	function upload() {
+	      wx.uploadImage({
+	        localId: localIds[i],
+	        isShowProgressTips:0,//// 默认为1，显示进度提示
+	        success: function (res) {
+	        	setTimeout(function(){
+	        		addImages(localIds[i]);
+	  	          i++;
+	  	          PB.prompt("已完成上传 "+(i)+"/"+length,"forever");
+	  	          images.serverId.push(res.serverId);
+	  	          if($(".deleteImage").length==9){
+	  	        	  PB.prompt("上传图片最多9张！")
+	  	        	  return;
+	  	          }
+	  	          if (i < length) {
+	  	            upload();
+	  	          }
+	  	          if(i==length){
+	  	        	  PB.prompt("已完成上传");
+	  	          }
+	        	},1000)
+	        },
+	        fail: function (res) {
+	          alert(JSON.stringify(res));
+	        }
+	      });
+	    }
+	upload();
+};
+/**
+ * 设置图片的高
+ */
+function setImageHeight(){
+	var imageWidth = $(".boxImages")[0].offsetWidth;
+	$(".boxImages").height(imageWidth);
+}
+function sendPhoto(){
+	var photoUrls = images.serverId.join(',');
+	if (confirm("确定提交吗?")) {
+		PB.prompt("提交中，请稍等~","forever");
+		var submitData = {
+			weid:"{$weid}",
+			bj_id : `{$_GPC['bj_id']}`,
+			sid : `{$_GPC['sid']}`,
+			userid : `{$userid['id']}`,
+			type : "{$_GPC['type']}",
+			ctype : "{$_GPC['ctype']}",
+			schoolid : "{$schoolid}",
+			photoUrls : photoUrls,
+		};
+	    $.post("{php echo $this->createMobileUrl('comajax',array('op'=>'AddPhoto'))}",submitData,function(data){
+            if(data.result){
+                PB.prompt(data.msg);
+				location.reload()
+            }else{
+				PB.prompt(data.msg);
+            }
+		},'json'); 		
+	}
+}
+</script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/tokenfield.min.js"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/mAlbumForm.js?v=5.00813"></script>
+</html>

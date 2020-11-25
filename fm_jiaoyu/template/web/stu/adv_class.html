@@ -1,0 +1,136 @@
+<!--
+ * @Discription:
+ * @Author: Hannibal·Lee
+ * @Date: 2020-06-09 11:13:31
+ * @LastEditTime: 2020-06-09 15:03:23
+-->
+
+<style>
+    .BjLi.InHide{overflow: hidden; transition: all 0.3s;background-color: white;border-bottom: 1px solid #e2e2e2;}
+    .BjLi.InShow{transition: all 0.3s;background-color: #f9f9f9;border-bottom: 1px solid #e2e2e2;}
+
+    .BjLi.InShow .ArrowI{transform: rotate(180deg); transition: all 0.3s;}
+    .BjLi.InHide .ArrowI{transform: rotate(0); transition: all 0.3s;}
+
+    .BjLi.InHide .StatusSpan::before{
+        content:"展开"
+    }
+    .BjLi.InShow .StatusSpan::before{
+        content:"收起"
+    }
+    .BjLi.InHide .BjLi-title:hover{background-color: #eeeeee; transition: all 0.2s 0.15s;}
+    .BjLi.InHide .BjLi-title{background-color: white; transition: all 0.2s;}
+    .BjLi-title{height: 45px;width: 100%;line-height:45px;padding-left: 10px;}
+    .BjLi-title~div{display: none;}
+</style>
+{if $NjId == 0}
+    <div style="width: 100%;line-height: 30px;font-size: 16px;" >
+        请选择欲分配学生的所属年级
+    </div>
+
+
+
+{elseif $NjId == -1}
+    <div style="width: 100%;height: 100%;overflow-y: auto;padding:0 10px" >
+        <div class="BjLi InHide" style="width: 100%;" >
+            <div class="BjLi-title" onclick="ToggleOpen(this)">
+                <span style="font-weight: bold;">未分配年级</span>
+                <span style="margin-left: 10px;cursor: pointer;" onclick="CheckAll(this)">全选</span>
+                <span style="margin-left: 5px;cursor: pointer;" onclick="unCheckAll(this)">全不选</span>
+                <span class="StatusSpan" style="float: right;">  <i class="fa fa-angle-down ArrowI"></i> </span>
+            </div>
+            <div >
+                <div class="input-group text-info" style="padding: 0px 20px 0px 20px;width: 100%;">
+                {loop $StuList $row_s}
+                    <label class="checkbox-inline" style="margin-left: 10px;padding-left:0px;width: calc(20% - 25px);height: 30px;">
+                        <input type="checkbox" name="sid[]" allid="0" value="{$row_s['id']}" style="margin-top: 3px;margin-left: -17px;">
+                        <span>{$row_s['s_name']}</span>
+                    </label>
+                {/loop}
+                </div>
+            </div>
+        </div>
+    </div>
+{else}
+    <div style="width: 100%;height: 100%;overflow-y: auto;padding:0 10px" >
+        {if !empty($HasNone)}
+        <div class="BjLi InHide" style="width: 100%;" >
+            <div class="BjLi-title" onclick="ToggleOpen(this)">
+                <span style="font-weight: bold;">未分配班级</span>
+                <span style="margin-left: 10px;cursor: pointer;" onclick="CheckAll(this)">全选</span>
+                <span style="margin-left: 5px;cursor: pointer;" onclick="unCheckAll(this)">全不选</span>
+                <span class="StatusSpan" style="float: right;">  <i class="fa fa-angle-down ArrowI"></i> </span>
+            </div>
+            <div >
+                <div class="input-group text-info" style="padding: 0px 20px 0px 20px;width: 100%;">
+                {loop $StuList $row_s}
+                    {if $row_s['bj_id'] == 0}
+                    <label class="checkbox-inline" style="margin-left: 10px;padding-left:0px;width: calc(20% - 25px);height: 30px;">
+                        <input type="checkbox" name="sid[]" allid="0" value="{$row_s['id']}" style="margin-top: 3px;margin-left: -17px;">
+                        <span>{$row_s['s_name']}</span>
+                    </label>
+                    {/if}
+                {/loop}
+                </div>
+            </div>
+        </div>
+        {/if}
+        {loop $BjList $row_b}
+
+        <div class="BjLi InHide" style="width: 100%;" >
+            <div class="BjLi-title" onclick="ToggleOpen(this)">
+                <span style="font-weight: bold;">{$row_b['sname']}</span>
+                <span style="margin-left: 10px;cursor: pointer;" onclick="CheckAll(this)">全选</span>
+                <span style="margin-left: 5px;cursor: pointer;" onclick="unCheckAll(this)">全不选</span>
+                <span class="StatusSpan" style="float: right;">  <i class="fa fa-angle-down ArrowI"></i> </span>
+            </div>
+            <div >
+                <div class="input-group text-info" style="padding: 0px 20px 0px 20px;width: 100%;">
+                {loop $StuList $row_s}
+                    {if $row_s['bj_id'] == $row_b['sid']}
+                    <label class="checkbox-inline" style="margin-left: 10px;padding-left:0px;width: calc(20% - 25px);height: 30px;">
+                        <input type="checkbox" name="sid[]" allid="0" value="{$row_s['id']}" style="margin-top: 3px;margin-left: -17px;">
+                        <span>{$row_s['s_name']}</span>
+                    </label>
+                    {/if}
+                {/loop}
+                </div>
+            </div>
+        </div>
+
+        {/loop}
+    </div>
+
+{/if}
+
+<script>
+
+    function CheckAll(e){
+        event.stopPropagation()
+
+        if($(e).parent().parent().hasClass("InShow")){
+            $(e).parent().next().find("input[type=checkbox]").prop("checked",true)
+        }
+       
+    }
+
+    function unCheckAll(e){
+        event.stopPropagation()
+
+        if($(e).parent().parent().hasClass("InShow")){
+            $(e).parent().next().find("input[type=checkbox]").prop("checked",false)
+        }
+    }
+
+    function ToggleOpen(e){
+        let Target = $(e).parent();
+        if(Target.hasClass("InHide")){
+            $(e).next().slideDown(150)
+        }else{
+            $(e).next().slideUp(150)
+        }
+            Target.toggleClass("InHide")
+            Target.toggleClass("InShow")
+           
+    }
+</script>

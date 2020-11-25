@@ -1,0 +1,105 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-02-14 16:41:20
+ * @LastEditTime : 2020-02-15 16:42:05
+ -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+</head>
+<style type="text/css">
+			.stu-info{
+				background-image: url('{OSSURL}public/mobile/img/bg@3x.png');
+				background-size: 100% 100%;
+				margin: 0;
+				padding-top: 2.5rem;
+				border-radius: 0;
+				width:100%;
+				height: 12rem;
+				text-align: center;
+				color:white;
+			}
+			.stu-info img{
+				width: 3rem;
+				height: 3rem;
+			}
+			.stu-info h4{
+				color:white;
+				font-size: 0.7rem;
+				margin-top: 0.1rem;
+				margin-bottom: 0.1rem;
+			}
+			.stu-info p{
+				color:white;
+				font-size: 0.5rem;
+				margin-bottom: 0.1rem;
+			}
+
+			.BigDiv{
+				display: flex; 
+				width: 100%;
+				flex-flow: row wrap;
+			}
+			.middleDiv{
+				width: 33%;
+				margin-top: 5%;
+				text-align: center;
+			}
+			.font1 {
+				font-size: 0.7rem;
+				color: #766a6a;
+				font-weight: bold;
+				padding: 0.1rem 0;
+			}
+			.font2 {
+				color: #00B7F3;
+			}
+</style>
+<body >
+	<div class="stu-info">
+		<img src="{php echo tomedia($student['icon'])}" style="border-radius: 50%">
+		<h4 >{$student['s_name']}</h4>
+		<p >{$bj['sname']}</p>
+	</div>
+	<div class="BigDiv" >
+		<div class="middleDiv">
+			<span class="font1">体温</span> <br>
+			<span class="font2">{$mcdata['tiwen']} ℃</span>
+		</div>
+		<div class="middleDiv">
+			<span class="font1">口腔</span> <br>
+			<span class="font2">{if $mcdata['mouth'] == 1}正常{else}不正常{/if}</span>
+		</div>
+		<div class="middleDiv">
+			<span class="font1">身高</span> <br>
+			<span class="font2">{$mcdata['height']}cm</span>
+		</div>
+		<div class="middleDiv">
+			<span class="font1">体重</span> <br>
+			<span class="font2">{$mcdata['weight']}KG</span>
+		</div>
+		<div class="middleDiv">
+			<span class="font1">左眼视力</span> <br>
+			<span class="font2">{$mcdata['lefteye']}</span>
+		</div>
+		<div class="middleDiv">
+			<span class="font1">右眼视力</span> <br>
+			<span class="font2">{$mcdata['righteye']}</span>
+		</div>
+	</div>
+	<div class="imgBox">
+		<img id="errImg" src="" alt="">
+		<p id="errMsg" style="color:#ffffff"></p>
+	</div>
+	<div style="text-align: center;margin: 0.5rem">
+		<img src="{OSSURL}public/mobile/img/181547187714_.pic_hd@2x.png" style="height: 5rem;width: 6rem">
+	</div>
+</body>
+</html>

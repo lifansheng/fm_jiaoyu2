@@ -1,0 +1,77 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-05-30 11:19:29
+ * @LastEditTime: 2020-06-08 17:55:05
+--> 
+<style>
+    .datas_ul.blackUI:nth-of-type(even){
+        background-color: #fff;
+    }
+    .datas_ul.blackUI:nth-of-type(odd){
+        background-color: #edfffd !important;
+    }
+    .datas_ul ul{
+        color: unset !important;
+    }
+
+    .blackUI ul>div:nth-child(odd){
+        border-bottom: 1px solid #e6e6e6;
+    }
+    .datas_ul *{
+        font-size: 12px !important;
+    }
+</style>
+<div class="datas_ul wihtUI" >
+    <ul  style="width: 25%;">年级</ul>
+    <ul>类型</ul>
+    <ul>人数</ul>
+    <ul>在校</ul>
+    <ul>离校</ul>
+    <ul>请假</ul>
+</div>
+<div id="ajax_datas">
+    {loop $list $row}
+        <div class="datas_ul blackUI" onclick="gotodetail(`{$row[sid]}`)">
+            <ul style="width: 25%;">{$row['sname']}</ul>
+            <ul style="line-height: 20px;padding:4px 0 ;">
+                <div>走读</div>
+                <div>住校</div>
+            </ul>
+            <ul style="line-height: 20px;padding:4px 0 ">
+                <div>{$row['DayStu']['count']}</div>
+                <div>{$row['Boarder']['count']}</div>
+            </ul>
+            <ul style="line-height: 20px;padding:4px 0 ">
+                <div>{$row['DayStu']['attendance']}</div>
+                <div>{$row['Boarder']['attendance']}</div>
+            </ul>
+            <ul style="line-height: 20px;padding:4px 0 ">
+                <div>{$row['DayStu']['absence']}</div>
+                <div>{$row['Boarder']['absence']}</div>
+            </ul>
+            <ul style="line-height: 20px;padding:4px 0 ">
+                <div>{$row['DayStu']['leave']}</div>
+                <div>{$row['Boarder']['leave']}</div>
+            </ul>
+        </div>
+    {/loop}
+</div>
+
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#timehtml").html(`{$time}`)
+    $("#date").val(`{$date}`)
+    $("#time").val(`{$time}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+    
+    function gotodetail(njid){
+        window.location.href = "{php echo $this->createMobileUrl('tkqbjstatistics', array('schoolid' => $schoolid), true)}"+'&njid='+njid
+    }
+</script>

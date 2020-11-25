@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="format-detection" content="telephone=no">
+<title>{$title}</title>
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/common.css" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+</head>
+<body>
+<style>
+.mainColors{ width: 100%; color: #444; height: 45px; line-height: 45px; background-color: #fff; display: flex; text-align: center; font-size: 14px; z-index: 3; }
+.headerContent{ width: 100%; color: #444; height: 45px; line-height: 45px; display: flex; text-align: center; background: #fff; font-size: 15px; margin-top: 10px; z-index: 3; }
+.select_last_left{ width:20% }
+.select_date{ width:60% }
+.select_next_right{ width:20% }
+.ref_data{ width: 100%; height: auto; background-color: #ffffff; margin-top: 10px; }
+.ref_top{ margin-left: 21px; padding-top: 10px; font-size: 15px; font-weight: bold; }
+.ref_bot{ line-height: 40px; display: flex; width: 100%; color: #b1b0b0; }
+.ref_lfet{ left: 15px; width: 40%; margin-left: 35px; }
+.ref_right{ right: 10px; width: 46%; text-align: right; }
+.refclassL{ position: relative; }
+.refclassR{ position: relative; }
+.refclassL:before { content: ""; width: 16px; height: 16px; position: absolute; top: 0px; left: -18px; background: url({OSSURL}public/mobile/img/59ddef4d7a25b_70.png) no-repeat; background-position: center center; background-size: 16px 16px; }
+.refclassR:before { content: ""; width: 16px; height: 16px; position: absolute; top: 0px; left: -18px; background: url({OSSURL}public/mobile/img/59ddef4d7a25b_88.png) no-repeat; background-position: center center; background-size: 16px 16px; }
+
+.data_bot{ line-height: 26px; display: flex; width: 100%;}
+.data_lfet{ left: 15px; width: 40%; margin-left: 35px; }
+.data_right{ width: 46%; text-align: left; margin-left: 35px;}
+.temp_data{ width: 100%; background-color: #ffffff; height: auto; margin-top: 15px; min-height: 200px; padding-bottom: 19px;margin-bottom: 15px;}
+.temp_data2{ width: 100vw; background-color: #ffffff; height: auto;  min-height: 270px;}
+
+/**滑动切换特效**/
+.slide_li::before { content: ""; position: absolute; top: 0; left: 100%; width: 0; height: 100%; border-bottom: 3px solid {$school['headcolor']}; transition: 0.1s all linear; }
+.slide_li.act::before { width: 25%; top: 0; left: 0; margin-left:38%; transition-delay: 0.1s; border-bottom-color: {$school['headcolor']};}
+.slide_li.act ~ .slide_li::before { left: 0; }
+/**顶部切换**/
+.headers{ background-color: #fff; width: 100%; height: auto; position: fixed; top: 0px; z-index: 2;box-shadow: 0px 1px 0px rgba(136, 136, 136, 0.43);} 
+.op_boxs{position: relative; width: 100%; display: inline-flex; text-align: center; height: 40px;} 
+.op_boxs .opt_btn{ list-style: none; width: 50%;  font-size: 17px;line-height: 40px; display: inline-block; text-decoration: none; color: #333; position: relative; margin-bottom: 4px;}
+.op_boxs .act{color: {$school['headcolor']};} 
+
+.record_search_box {
+    width: 30%;
+    height: 20px;
+    box-sizing: border-box;
+    position: relative;
+    background-color: #fff;
+    margin-top: 5px;
+    height: 35px;
+    line-height: 35px;
+    font-size: 16px;
+}
+.record_search_box .time_box {
+    text-align: center;
+    width: 100%;
+    height: 1.6rem;
+    box-sizing: border-box;
+    background-color: #fff;
+    float: left;
+    border: none;
+    position: relative;
+}
+.record_search_box .time_box input {
+    height: 25px;
+    line-height: 25px;
+    font-size: 14px;
+    -webkit-appearance: none;
+    border: none;
+    width: 100%;
+    text-align: center;
+    color: #666;
+}
+.checkact{
+	background: #56c454;
+    color: #fff;
+    padding: 0px 10px;
+}
+.zzfbqkdiv{
+	display: flex; width: 260px; justify-content: space-around; border: 1px solid #56c454; border-radius: 5px; color: #56c454; margin: 10px 0px 0px 20px;
+}
+.zzfbqkdiv div{
+	border-right: 1px solid #56c454;
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+.zzfbqkdiv div:last-child{
+	border-right: none;
+}
+.TrendDiv{
+	display: flex; width: 260px; justify-content: space-around; border: 1px solid #56c454; border-radius: 5px; color: #56c454; margin: 10px 0px 0px 20px;
+}
+.TrendDiv div{
+	border-right: 1px solid #56c454;
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+.TrendDiv div:last-child{
+	border-right: none;
+}
+.TeaSick{
+	display: flex; width: 260px; justify-content: space-around; border: 1px solid #56c454; border-radius: 5px; color: #56c454; margin: 10px 0px 0px 20px;
+}
+.TeaSick div{
+	border-right: 1px solid #56c454;
+    width: 100%;
+    padding: 2px;
+    text-align: center;
+}
+.TeaSick div:last-child{
+	border-right: none;
+}
+
+.temp_data{ width: 100%; background-color: #ffffff; height: auto; margin-top: 15px; min-height: 200px; position: absolute;margin-bottom:75px }
+.datas_ul{ position: relative; margin-right: 15px; margin-left: 15px; line-height: 48px; display: flex; }
+.blackUI{background-color: #f5f4f4;}
+.wihtUI{background-color: #ffffff;}
+.datas_ul ul{width:15%;text-align:center;overflow:hidden;white-space:nowrap;text-overflow: ellipsis;}
+.datas_ul ul:first-child{width:30%}
+.datas_ul ul:nth-child(1){font-weight:bold}
+.datas_ul ul:nth-child(4){color: red}
+.datas_ul ul:nth-child(5){color: red}
+.datas_ul:first-child{margin-top:15px}
+.datas_ul:last-child{margin-bottom:15px}
+</style>
+
+<div>
+	<div class="headerContent">  
+		<div class="select_last_left" id="prev_day">
+			<div class="next_right" onclick="prev()">< 前一天</div>
+		</div>
+		<div class="record_search_box" style="position: relative;">
+			<div class="time_box" style="position: absolute;z-index: 2;opacity: 0;">
+				<input type="date" id="date" onchange="getKqList()">
+			</div>
+			<div class="time_box">
+				<span id="dayhtml">{php echo date('Y-m-d',TIMESTAMP)}</span>
+			</div>
+		</div>
+
+		<div class="record_search_box" style="position: relative;">
+			<div class="time_box" style="position: absolute;z-index: 2;opacity: 0;">
+				<input type="time" id="time" onchange="getKqList()">
+			</div>
+			<div class="time_box">
+				<span id="timehtml">{php echo date('H:i',TIMESTAMP)}</span>
+			</div>
+		</div>
+		<div class="select_next_right" id="next_day">
+			<div class="next_right" onclick="next()">后一天 ></div>
+		</div>
+	</div>
+	<div class="ref_data">
+		<div class="ref_bot">
+		</div>
+	</div>
+	
+</div>
+<header class="mainColors">
+	<div class="op_boxs">
+		<li class="opt_btn slide_li act" onclick="top_change(1,this)">考勤图表</li>
+		<li class="opt_btn slide_li " onclick="top_change(2,this)">数据列表</li>
+		<li class="opt_btn slide_li " onclick="top_change(3,this)">请假列表</li>
+	</div>
+</header>
+<div class="temp_data databoxs" id="datapanel" style="display:none">
+    
+</div>
+
+<div class="temp_data databoxs" id="QjPanel" style="display:none">
+    
+</div>
+
+<div class="databoxs" id="Echarts">
+
+    <div class="temp_data" style="padding-bottom: 0px;">
+		<div class="ref_top">走读生在校情况</div>
+		<div>
+			<div id="echarts-pie-chart-zdsTj" style="width: 100vw;height:200px; margin-top: 10px;"></div>
+		</div>
+		<div class="ref_top">住校生在校情况</div>
+		<div>
+			<div id="echarts-pie-chart-zxsTj" style="width: 100vw;height:200px; margin-top: 10px;"></div>
+		</div>
+	</div>
+
+</div>
+
+<input id="nowtime" value="{php echo date('Y-m-d',TIMESTAMP)}" type="hidden">
+{php include $this->template('port');} 
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/mc_yqdk.js?v=2020060800"></script>	
+<script src=" https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+<script type="text/javascript">
+function top_change(type,elm){
+    $('.databoxs').hide()
+	if(type == 1){
+		getEcharts()
+		$("#Echarts").show()
+	}
+	if(type == 2){
+        getKqList()
+		$("#datapanel").show()
+	}
+	if(type == 3){
+		GetQjList();
+		$("#QjPanel").show()
+	}
+	$(".opt_btn").removeClass("act");
+	$(elm).addClass("act");
+}
+
+/***********日期选择***********/
+var selectday = 0;
+function prev(){
+	selectday --;
+	if($("#Echarts").is(":hidden")){
+		getKqList()
+	}else{
+		getEcharts()
+	}
+} 
+function next(){
+	selectday ++;
+	if($("#Echarts").is(":hidden")){
+		getKqList()
+	}else{
+		getEcharts()
+	}
+} 
+/***********日期选择***********/
+/***********获取图表数据***********/
+
+getEcharts()
+function getEcharts(){
+	let date = $("#dayhtml").html();
+	let time = $("#timehtml").html();
+	ajax_start_loading("获取数据中")
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tkqstatistics',array('op'=>'getEcharts','schoolid'=>$schoolid))}",
+		type: "POST",
+		data: { 'selectday': selectday, 'date': date, 'time': time },
+		dataType: "json",
+		success: function (datas) {
+			selectday = 0; //对前后一天进行清0
+			ajax_stop_loading()
+			//走读生数据统计
+			let zdsTj = datas.zdsTj;
+			let zdsEcharts = PieOption['kqecharts'];
+			zdsEcharts.legend.data = zdsTj.title;
+			zdsEcharts.series[0].data = zdsTj.data;
+			var myChart2 = echarts.init($('#echarts-pie-chart-zdsTj')[0]);
+			myChart2.setOption(zdsEcharts);
+			$(window).resize(myChart2.resize);
+
+			//住校生数据统计
+			let zxsTj = datas.zxsTj;
+			let zxsEcharts = PieOption['kqecharts'];
+			zxsEcharts.legend.data = zxsTj.title;
+			zxsEcharts.series[0].data = zxsTj.data;
+			var myChart2 = echarts.init($('#echarts-pie-chart-zxsTj')[0]);
+			myChart2.setOption(zxsEcharts);
+			$(window).resize(myChart2.resize);
+			//是否能点击后一天
+			if(`${datas.istrue}` == 'true'){
+				html = `<div class="next_right" onclick="next()">后一天 ></div>`
+			}else{
+				html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+			}
+			$("#next_day").html(html)
+			//给日前复制
+			$("#dayhtml").html(`${datas.date}`)
+    		$("#date").val(`${datas.date}`)
+
+			$("#timehtml").html(`${datas.time}`)
+    		$("#time").val(`${datas.time}`)
+		}
+	});
+}
+/***********获取图表数据***********/
+/***********获取列表数据***********/
+
+function getKqList(){
+	let date = $("#date").val()
+	$("#dayhtml").text(date)
+	let time = $("#time").val();
+	$("#timehtml").text(time)
+	ajax_start_loading("获取数据中")
+    $.post("{php echo $this->createMobileUrl('tkqstatistics', array('op' => 'getKqList', 'schoolid' => $schoolid))}",{'date' : date,'time' : time,'selectday':selectday}, function(data){
+		selectday = 0; //对前后一天进行清0
+		$("#datapanel").html(data)
+		ajax_stop_loading()
+	},'html');
+	
+}
+/***********获取列表数据***********/
+
+function GetQjList(){
+	let date = $("#dayhtml").html();
+	let time = $("#time").val();
+	ajax_start_loading("获取数据中")
+    $.post("{php echo $this->createMobileUrl('tkqstatistics', array('op' => 'getQjList', 'schoolid' => $schoolid))}",{'date' : date,'selectday':selectday,'time' : time}, function(data){
+		selectday = 0; //对前后一天进行清0
+		$("#QjPanel").html(data)
+		ajax_stop_loading()
+	},'html');
+}
+
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>
+{php include $this->template('newfooter');} 
+</body>
+</html>

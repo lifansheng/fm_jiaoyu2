@@ -1,0 +1,75 @@
+<!--
+* @Discription:  
+* @Author: Hannibal·Lee
+* @Date: 2020-02-14 16:41:20
+ * @LastEditTime: 2020-02-28 10:01:01
+-->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+</head>
+<style type="text/css">
+  .record_search_box {
+    width: 90%;
+    margin-top: 5px;
+    height: 35px;
+    line-height: 35px;
+    border: 1px solid #ccc;
+    text-align: center;
+    margin-left: 5%;
+}
+</style>
+<body >
+    <div class="record_search_box">
+        <select name="qh_id" id="qh_id" style="font-size: 16px;" onchange="search()">
+            {loop $qh $row}
+                <option value="{$row['sid']}" {if $this_qhid == $row['sid']}selected{/if}>{$row['sname']}</option>
+            {/loop}
+        </select>
+    </div>
+    <div class="chart-title  ng-binding" style="padding: 4px 10px;"><i class="middle-time-change" id="s_name"></i>
+    <div id="echarts-pie-chart-mobilestumc" style="width: 100%;height:300px;"></div>
+</body>
+{php include $this->template('footer');}
+</html>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/echarts-all.js?v=2.1.4"></script>	
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>	
+<script>
+    //默认进入取一个学生的数据
+    $(function(){
+        search()
+    })
+
+    function search(){
+        var sid = `{$_GPC['sid']}`
+        var qh_id = $("#qh_id").val()
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('mcechars',array('op'=>'GetStuMcData','schoolid'=>$schoolid))}",
+            type: "POST",
+            data: {sid:sid,qh_id:qh_id},
+            dataType: "json",
+            success: function (datas) {
+                let ds = PieOption['stumc'];
+                // console.log(ds)
+                ds.xAxis [0].data = datas.date;
+                ds.series[0].data = datas.height;
+                ds.series[1].data = datas.weight;
+                ds.series[2].data = datas.tiwen;
+                ds.series[3].data = datas.lefteye;
+                ds.series[4].data = datas.righteye;
+                var myChart = echarts.init($('#echarts-pie-chart-mobilestumc')[0]);
+                myChart.setOption(ds);
+                $(window).resize(myChart.resize);
+                $("#s_name").html(datas.student.s_name+'的晨检情况')
+                $(".global-loading-layer").hide()
+            }
+        });
+    }
+</script>

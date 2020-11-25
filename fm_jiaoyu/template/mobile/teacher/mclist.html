@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbum.css?v=5.00716" />	
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+    {php include $this->template('port');}
+</head>
+<style type="text/css">
+    .isoverflow{overflow: hidden;}
+    .tips_desc { font-size: 1rem; padding: 1.30rem 0 0.1rem 1.4rem; color: #666; }
+    .sick_list li { overflow: hidden; height: 5rem; box-sizing: border-box; padding: 10px 10px 0 10px; margin:10px 5px; padding: 0.58rem 0.4rem; background-color: #fff; position: relative; border-radius: 0.5rem; display: flex; }
+    .sick_list li .user_img { float: left; margin-right: 1rem; }
+    .sick_list li .user_img img { width: 3.92rem; height: 3.92rem; border-radius: 50%; }
+    .sick_list li .user_name { float: left; padding-left: 0.4rem; width: 75%; }
+    .sick_list li .user_name .user_name_1 { line-height: 1.6rem; font-size: 1rem; color: #333; }
+    .sick_list li .user_name .user_name_1 .u_class { font-size: 0.6rem; color: #666; }
+    .sick_list li .user_name .user_name_2 { line-height: 1.3rem; color: #ff9f22; }
+    .sick_list li .user_name .user_name_3 { font-size:12px; color: #a1a1a1; }   
+    .reveal-modal {visibility: hidden;top: 10%; left: 2%;right:2%;background: #fff ;position: fixed;z-index: 101;    padding: 25px 18px 38px;}
+	.reveal-modal.small{ width: 200px; margin-left: -140px;}
+	.reveal-modal.medium{ width: 400px; margin-left: -240px;}
+	.reveal-modal.large{ width: 600px; margin-left: -340px;}
+	.reveal-modal.xlarge{ width: 800px; margin-left: -440px;}
+    .record_list li .user_img { width: 0.92rem; height: 0.92rem; }
+    .record_list li .user_img img { width: 0.92rem; height: 0.92rem; vertical-align: top; }
+    .record_list li .user_name { width: 1.6rem; height: 0.92rem; overflow: hidden; float: left; padding-left: 0.25rem; }
+    .record_list li .user_name .user_name_1 { line-height: 0.46rem; font-size: 0.3rem; color: #333; }
+    .record_list li .user_name .user_name_2 { line-height: 0.46rem; font-size: 0.24rem; color: #666; }
+    .record_list li .record_btn_1 { width: 1.5rem; height: 0.6rem; float: right; color: white; background-color: #ffa022; font-size: 0.26rem; line-height: 0.6rem; margin: 0.16rem 0.1rem; text-align: center; border-radius: 0.3rem 0.3rem 0.3rem 0.3rem; }
+    .user_name { height: 50px; text-align: left; color: #666; font-size: 14px; }
+	.user_name > input { float: right; display: block; width: 70%; border-radius: 3px; height: 34px; padding: 0 10px; margin-bottom: 10px; border: 1px solid #e4dede; box-sizing: border-box; }
+	.user_name > select { float: right; display: block; width: 70%; height: 34px; border-radius: 3px; padding: 0 10px; margin-bottom: 10px; border: 1px solid #ccc; -webkit-box-sizing: border-box; box-sizing: border-box; text-align: left; color: #666; font-size: 14px; }
+	.close_pupop_c { width: 200px; margin: 0 auto; }
+	.close_pupop_button_1 { background: #e74580; color: #fff; }
+	.close_pupop_button { width: 90px; height: 30px; border-radius: 5px; line-height: 30px; font-size: 16px; text-align: center; }
+	.close_pupop_button_2 { background: #56c454; color: #fff; margin-left: 20px; }
+	.reveal-modal-bg { position: fixed; height: 100%; width: 100%; background: #000; background: rgba(0,0,0,.3); z-index: 100; display: none; top: 0; left: 0; }
+	.float_l { float: left; }
+     .user_name_1 { line-height: 2rem; font-size: 1rem; color: #333; }
+    .user_name_2 { line-height: 0.7rem; font-size: 0.7rem; color: #666; }
+    .record_btn_1 { width: 3rem; height: 1.5rem; color: white; background-color: #ffa022; font-size: 0.7rem; line-height: 1.5rem; text-align: center; border-radius: 10px; float: right; margin-top: -20px; }
+</style>
+<body>
+
+<div class="all">	
+    <div class="header mainColor" style="z-index: 10;">
+		<div class="m"><span style="font-size: 18px">{$nowbj['sname']} - {if $_GPC['type'] == 1} 已检测列表 {else} 未检测列表 {/if} </span></div>
+		<div class="r">
+		</div>
+    </div>
+    <div style="width: 100%;height: 30px;background-color: white;margin-top: 60px;line-height: 30px;padding:0 10px;">
+        日期：{php echo date("Y年m月d日",$createdate)}
+    </div>
+    <div style="width: 100%;height:16px;background-color: white;line-height: 16px;padding:0 10px;font-size: 10px;color:gray">
+        正常体温参考值：35.5℃ - 37.5℃
+    </div>
+    <div>
+        <ul class="sick_list" >
+            {loop $checklist $key $row}
+            <li class="main" time="{$key}">
+                <div class="user_img">
+                    <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}">
+                </div>
+                <div class="user_name">
+                    <div class="user_name_1">
+                        <span class="u_name">{$row['s_name']}&nbsp;&nbsp;</span>
+                        <span class="u_class">{$nowbj['sname']}</span>
+                    </div>
+                    {if $_GPC['type'] == '1'}
+                        {if $row['tiwen'] < 35.5 || $row['tiwen'] >37.5}
+                        <div class="user_name_2">
+                            {$row['tiwen']}℃
+                        </div>
+                        {else}
+                        <div>
+                            {$row['tiwen']}℃
+                        </div>
+                        {/if}
+                    
+                        <div class="user_name_3">
+                            检测时间：{php echo date("H:i",$row['createtime'])} 
+                        </div>
+                        <div class="record_btn_1" onclick="ShowAddModal(this,`{$row['id']}`)">修改</div>
+                    {else}
+                        <div class="user_name_2">
+                            未检查
+                        </div>
+                        <div class="user_name_3">
+                            电话:<a href="{$row['mobile']}" style="display:initial;font-size: 0.6rem; color: #a1a1a1;">{$row['mobile']}</a>
+                        </div>
+                    {/if}
+                </div>
+            </li>
+            {/loop}
+        </ul>
+    </div>
+</div>
+
+<div id="myModal" class="reveal-modal">
+	<ul style="max-height: 60vh; overflow-y: auto;">
+        {if keep_MC()}
+		<li class="user_name">
+		<label style="line-height: 34px;">身&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;高:</label>
+			<input type="number" placeholder="例:130" id="height">
+		</li>
+		<li class="user_name">
+            <label style="line-height: 34px;">体重(KG):</label>
+            <input type="number" placeholder="例:36" id="weight">
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">左眼视力:</label>
+            <input type="text" placeholder="例:4.2" id="lefteye">
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">右眼视力:</label>
+            <input type="text" placeholder="例:5.0" id="righteye">
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">体&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;温:</label>
+            <input type="text" placeholder="例:36.5" id="tiwen">
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">口&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;腔:</label>
+            <select class="feedback_title" id="mouth">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">疱&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;疹:</label>
+            <select class="feedback_title" id="herpes">
+                <option value="0">未检测</option>
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">手掌疱疹:</label>
+            <select class="feedback_title" id="handHerpes">
+                <option value="0">未检测</option>
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">指&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;甲:</label>
+            <select class="feedback_title" id="nail">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        {/if}
+        <li class="user_name">
+            <label style="line-height: 34px;">咳&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;嗽:</label>
+            <select class="feedback_title" id="cough">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">呕&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;吐:</label>
+            <select class="feedback_title" id="vomit">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">外&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;伤:</label>
+            <select class="feedback_title" id="trauma">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">腹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泻:</label>
+            <select class="feedback_title" id="diarrhea">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">感&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;冒:</label>
+            <select class="feedback_title" id="cold">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <li class="user_name">
+            <label style="line-height: 34px;">头&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;痛:</label>
+            <select class="feedback_title" id="headache">
+                <option value="1">正常</option>
+                <option value="2">异常</option>
+            </select>
+        </li>
+        <input type="hidden" id ='id'>
+	</ul>
+	<div class="close_pupop_c">
+		<div id="tijiao1" class="close_pupop_button close_pupop_button_1 float_l">确定</div>
+		<div id="close" class="close-reveal-modal close_pupop_button close_pupop_button_2 float_l">取消</div>
+	</div>
+</div>	
+<div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
+</body>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=5.00311"></script>
+<script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+{php include $this->template('newfooter');}
+</html>
+<script>
+// function gomcdetail(sid){
+//     location.href = "{php echo $this->createMobileUrl('mcdetail', array('schoolid' => $schoolid), true)}"+ '&sid=' + sid;
+// }
+
+$(".reveal-modal-bg").click(function(){
+	$("#myModal").css('visibility','none');
+	$("#myModal").hide();
+    $(".reveal-modal-bg").css('display','none');
+    $("body").removeClass('isoverflow');
+})
+$("#close").click(function(){
+	$("#myModal").css('visibility','none');
+	$("#myModal").hide();
+    $(".reveal-modal-bg").css('display','none');
+    $("body").removeClass('isoverflow');
+})
+
+function ShowAddModal(e,id){
+    e = window.event;
+    e.stopPropagation();
+    e.preventDefault();
+    let schoolid = `{$schoolid}`
+	$("#myModal").show();
+    $("#myModal").css('visibility','visible');
+    $("body").addClass('isoverflow');
+	$(".reveal-modal-bg").css('display','block');
+    $.post("{php echo $this->createMobileUrl('techerajax', array('op' => 'GetOneMC'))}",{'id':id,'schoolid':schoolid}, function(data){
+		if(data.result){
+            newdata = data.data
+            $("#height").val(newdata.height)
+            $("#weight").val(newdata.weight)
+            $("#lefteye").val(newdata.lefteye)
+            $("#righteye").val(newdata.righteye)
+            $("#tiwen").val(newdata.tiwen)
+            $("#cough").val(newdata.cough)
+            $("#vomit").val(newdata.vomit)
+            $("#trauma").val(newdata.trauma)
+            $("#diarrhea").val(newdata.diarrhea)
+            $("#cold").val(newdata.cold)
+            $("#headache").val(newdata.headache)
+            $("#mouth").val(newdata.mouth)
+            $("#herpes").val(newdata.herpes)
+            $("#handHerpes").val(newdata.handHerpes)
+            $("#nail").val(newdata.nail)
+            $("#id").val(newdata.id)
+		}
+	},'json');	
+}
+
+$("#tijiao1").click(function(){
+    data = {
+        'height'    :   $("#height").val(),
+        'weight'    :   $("#weight").val(),
+        'lefteye'   :   $("#lefteye").val(),
+        'righteye'  :   $("#righteye").val(),
+        'tiwen'     :   $("#tiwen").val(),
+        'mouth'     :   $("#mouth").val(),
+        'id'        :   $("#id").val(),
+        'cough'     :   $("#cough").val(),
+        'vomit'     :   $("#vomit").val(),
+        'trauma'    :   $("#trauma").val(),
+        'diarrhea'  :   $("#diarrhea").val(),
+        'cold'      :   $("#cold").val(),
+        'headache'  :   $("#headache").val(),
+        'herpes'    :   $("#herpes").val(),
+        'handHerpes':   $("#handHerpes").val(),
+        'nail'      :   $("#nail").val(),
+        'schoolid'  :   `{$schoolid}`,
+    }
+    $.post("{php echo $this->createMobileUrl('techerajax', array('op' => 'EditMC'))}",data, function(data){
+        if(data.result){
+            alert(data.msg);	
+            location.reload()
+        }else{
+            alert(data.msg);	
+        }
+    },'json');	
+})
+
+// 底部加载更多
+new Scroll_load({
+    "limit": "0",
+    "pageSize": 28,
+    "ajax_switch": true,
+    "ul_box": ".sick_list",
+    "li_item": ".sick_list .main",
+    'param' : ['time'],
+    "ajax_url": "{php echo $this->createMobileUrl('mclist', array('schoolid' => $schoolid, 'bj_id' => $bj_id,'op'=>'scroll_more', 'mtype'=>$_GPC['type'], 'createdate' => $_GPC['createdate']))}",
+    "page_name": "parent_home_index",
+    "after_ajax": function () {
+    }
+}).load_init();
+</script>

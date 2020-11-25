@@ -1,0 +1,155 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+            <li {if $_GPC['do']=='ddscorelog' || $_GPC['do']=='ddecharts'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddscorelog', array('op' => 'display', 'schoolid' => $schoolid))}">打分记录</a></li>
+			<li {if $_GPC['do']=='ddcheckscore'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddcheckscore', array('op' => 'display', 'schoolid' => $schoolid))}">考核打分</a></li>
+            <li {if $_GPC['do']=='ddscorecategory'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddscorecategory', array('op' => 'display', 'schoolid' => $schoolid))}">评分项</a></li>
+		</ul>
+	</div>
+</div>
+
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/jquery.flot.js?v=2.1.4"></script>
+
+<div class="panel panel-info">
+    <div class="panel-heading">班级考核统计分析</div>
+    <div class="panel-body">
+        <form action="./index.php" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="c" value="site" />
+            <input type="hidden" name="a" value="entry" />
+            <input type="hidden" name="m" value="fm_jiaoyu" />
+            <input type="hidden" name="do" value="ddecharts" />
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="col-sm-3 col-lg-3">
+                {php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+            </div>
+            <label class="col-lg-2 control-label" style="width: 100px;">按班级</label>				
+            <div class="col-sm-2 col-lg-2">
+                <select style="margin-right:15px;" name="bjid" class="form-control">
+                    {loop $bjlist $row}
+                    <option value="{$row['sid']}" {if $row['sid'] == $_GPC['bjid']} selected="selected"{/if}>{$row['old_sname']}</option>
+                    {/loop}
+                </select>
+            </div>
+            <div class="col-sm-2 col-lg-2">
+                <button class="btn btn-default" onclick='search()'><i class="fa fa-search"></i>搜索</button>
+            </div>
+            <div class="col-sm-2 col-lg-2">
+                <div class="form-group">
+                    <div class="col-sm-2 col-lg-2">
+                        <!-- <button class="btn btn-success qx_605" name="out_putcode" value="out_putcode"><i class="fa fa-download"></i>导出</button> -->
+                    </div>  
+                </div> 
+            </div>
+        </form>
+    </div>
+</div> 
+
+
+	
+<div class="clearfix">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title" style="border-color: #e7eaec;border-style: solid solid none;">
+                    <h5>班级考核情况分析图</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-pie-chart-a"></div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col-sm-6">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title" style="border-color: #e7eaec;border-style: solid solid none;">
+                    <h5>每季度情况比例</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="echarts" id="echarts-pie-chart-b"></div>
+                </div>
+            </div>
+        </div> -->
+  </div>
+</div>
+<div id="container" style="height: 100%"></div>
+{template 'public/footer'}
+<script type="text/javascript">
+ 
+op_a = {
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data:[]
+    },
+    
+    xAxis: {
+        type: 'category',
+        data: [],
+        axisTick:{
+            show:false //不显示刻度线
+        },
+    },
+    yAxis: [{
+        type: 'value',
+             axisTick:{
+            show:false //不显示刻度线
+        },
+        splitLine:{ //网格线样式
+            show:true,
+            lineStyle:{
+                color:['#ededed'],
+                type:'dashed'
+            }
+        },
+        axisLabel: {
+            formatter: '{value} 分'
+        }
+    },{
+        type: 'value',
+             axisTick:{
+            show:false //不显示刻度线
+        },
+        axisLine:{
+            lineStyle:{
+                color:'#f1a375'
+            }
+        },
+        splitLine:{ //网格线样式
+            show:true,
+            lineStyle:{
+                color:['#ededed'],
+                type:'dotted'
+            }
+        },
+        axisLabel: {
+            formatter: '{value} 分'
+        }
+    }],
+    series: []
+};
+ 
+require(['echarts'],function(echarts){
+    var myChart_a = echarts.init($("#echarts-pie-chart-a")[0]);
+    let bjid = `{$_GPC['bjid']}` ? `{$_GPC['bjid']}` : `{$bjlist[0]['sid']}`;
+    $.ajax({
+        url: "{php echo $this->createWebUrl('ddecharts',array('op'=>'GetData','schoolid'=>$schoolid,'starttime'=>$starttime,'endtime'=>$endtime))}",
+        type: "POST",
+        data: {bjid:bjid},
+        dataType: "json",
+        success: function (res) {
+            op_a.xAxis.data = res.return_data_a.xAxis_data;
+            op_a.series = res.return_data_a.series;
+            op_a.legend.data = res.return_data_a.title;
+            if (op_a && typeof op_a === "object") {
+                myChart_a.setOption(op_a, true);
+            }
+
+        }
+    });
+})
+
+</script>
+ 

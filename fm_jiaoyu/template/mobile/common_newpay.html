@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$title}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<script src="{MODULE_URL}public/mobile/js/jquery.js"></script>
+{php echo register_jssdks();}
+</head>
+<body style="background-color: WHITE">
+    <div id="readyword" style="width:100%;height: 60px;margin-top:30vw;font-size: 20px;text-align: center">
+        微信支付准备中，请稍后
+    </div>
+</body>
+</html>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/mui.js?v=3"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/newutil.js?v=3"></script>
+<script>
+//发起微信支付，微信支付依赖于 WeixinJSBridge 组件，所以发起时应该在ready事件中进行
+ 
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	$('#readyword').text('准备完成，请支付');
+	newutil.pay({
+		orderFee  : '{$_GPC['fee']}',
+		payMethod : 'wechat',
+		orderTitle: '{$_GPC['title']}',
+		orderTid  : '{$_GPC['ordertid']}',
+		module    : 'fm_jiaoyu',
+		payweid   : "{$_GPC['payweid']}",
+		success : function(result) {
+			alert('支付成功');
+			location.href = '{$_GPC['jumpurl']}'
+		},
+		fail : function(result) {
+            alert('fail : ' + result.message);
+            if('not' !== '{$_GPC['delorder']}'){
+                del_thisorder('{$_GPC['orderid']}','{$_GPC['is_newstu']}')
+            }
+			javascript:history.go(-1);
+		},
+		complete : function(result) {
+			if(result.errno != 0){
+                if('not' !== '{$_GPC['delorder']}'){
+					$.ajax({
+						url: "{php echo $this->createMobileUrl('payajax',array('op'=>'check_orderpay'))}",
+						dataType: "json",
+						data:{
+							orderid:'{$_GPC['orderid']}',
+						},
+						success: function (res) {
+							if(res.result){
+								 del_thisorder('{$_GPC['orderid']}','{$_GPC['is_newstu']}')
+								location.reload();
+							}				
+						}
+					});
+                }
+				setTimeout(() => {
+					javascript:history.go(-1);
+				}, 300);
+			}
+		}
+	});          
+});
+function del_thisorder(orderid,is_newstu){
+    $.ajax({
+        url: "{php echo $this->createMobileUrl('payajax', array('op'=>'del_ordertid'))}",
+        dataType: 'json',
+        data:{
+			orderid:orderid,
+            is_newstu:is_newstu,
+        },
+        success:function(data){
+
+        }
+    });                   
+}
+</script>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{MODULE_URL}public/mobile/css/mAlbum.css?v=5.00716" />
+    <link type="text/css" rel="stylesheet" href="{MODULE_URL}public/mobile/css/greenStyle.css?v=5.00120" />
+    <link type="text/css" rel="stylesheet" href="{MODULE_URL}public/mobile/css/new_yab1.css?v=5.00120" />
+    <link type="text/css" rel="stylesheet" href="{MODULE_URL}public/web/font-awesome5/css/all.min.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+</head>
+<style type="text/css">
+    .aui-grids{ position: relative; overflow: hidden; background-color: #fff; margin: 0px 10px 0px 10px; }
+    .aui-grids-item{ height: 75px; width: 25%; float: left; position: relative; z-index: 0; padding: 0.4rem 0; font-size: 0.85rem; text-align: center; color: #fff; background-color: #fff; }
+    .aui-grids-item span{ text-align: center; width: 100%; display: block; color: #323232; font-size: 14px; }
+    .aui-grids-image a span img{ width: 40px; height: 40px; display: block; border: none; margin: 0 auto; border-radius: 50%; }
+    .block-box{width: 100%;padding:0 10px}
+    .block-box .block-title{font-size: 16px;line-height: 40px;font-weight: bold;}
+    .meeting-item{background-color: white;min-height: 30px;box-shadow: 3px 2px 2px 0px #d6d6d6;padding:10px;border-radius: 5px;margin-bottom: 10px;position: relative;}
+    .meeting-info{display: flex;align-items: center;padding:10px 0}
+    .meeting-info .thumb{width: var(--ImgWidth);--ImgWidth:50px}
+    .meeting-info .thumb img{width: var(--ImgWidth);height: var(--ImgWidth); }
+    .meeting-info .text{flex:1;padding:0 0  0 10px;width: 100%;}
+    .meeting-info .text .text-item{font-size: 13px;line-height: 20px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width: 100%;}
+    .meeting-type{display: inline-block;font-size: 12px;padding:2px 5px;border-radius: 5px;line-height: 14px;}
+    .meeting-type.type-1{color: var(--Color);border:1px solid var(--Color);--Color:#8c8cfb}
+    .meeting-type.type-2{color: var(--Color);border:1px solid var(--Color);--Color:#35c11c}
+    .meeting-action{padding-top: 5px;height: 30px;text-align: right;border-top: 1px solid #f1f1f1;}
+    .meeting-action .action-btn{display: inline-block;padding:2px 10px;border-radius: 5px;color:white;}
+    .BlockTitle{color: #666666; font-size: 16px; padding: 10px;border-bottom: 1px solid #f1f1f1;display: flex;align-items: center;}
+    .BlockContent{padding-top: 10px;}
+    .BlockTitle .fa-minus,.BlockTitle.slide .fa-plus{display: inline-block;}
+    .BlockTitle .fa-plus,.BlockTitle.slide .fa-minus{display: none;}
+    .aui-grids-item{width:calc(25% - 4px);margin: 2px;border-radius:5px 0 0 5px;transition:all .15s;}
+    .aui-grids-item.InShow{box-shadow: 0 0 3px 0px black;z-index: 1;}
+    .CheckDetailDiv{position: absolute; height:100%; width: 0; border-radius:0 5px 5px 0; left:100%; top: 0px;display: flex;transition: all .15s;background-color: white;overflow: hidden;}
+    .aui-grids-item:after{content:"";width: 4px;height: 100%;background-color: white;    position: absolute;top:0;right: 0;}
+    .aui-grids-item:nth-of-type(4n - 1):after,.aui-grids-item:nth-of-type(4n):after{left: 0;}
+    .aui-grids-item:nth-of-type(4n - 1) ,.aui-grids-item:nth-of-type(4n){border-radius:0 5px 5px 0; }
+    .aui-grids-item:nth-of-type(4n - 1) .CheckDetailDiv,.aui-grids-item:nth-of-type(4n) .CheckDetailDiv{right: 100%;left:unset;border-radius:5px 0 0 5px;}
+
+    .CheckInfo{width: 100%;overflow: hidden;color: black;min-width: 200px;text-align: left;}
+    .aui-grids-item.InShow .CheckDetailDiv{box-shadow: 0 0 3px 0px black;width: 200%;}
+    .CheckInfo.ckt{color:gray}
+
+    .title-name{font-size: 12px;line-height: 20px;position: relative;display: inline-block;width: 40% !important;}
+	.title-name:after{content:"";position: absolute;height: 8px;width: 8px;border-radius: 50%;top:7px;left:0px;}
+	.tea-title:after{background-color: rgb(0, 159, 233);}
+	.stu-title:after{background-color:#ffb161;}
+
+    .joiner-box{display: flex;padding-left: 10px;}
+    .joinlist{flex:1}
+    .joinlist span{white-space: nowrap;margin-right: 10px;position: relative;}
+    .joinlist span:not(:last-of-type):after{content:'';width: 1px;height: 60%;background-color: gray;top:20%;right: -5px;position: absolute;}
+
+    #showContent i{transition: .15s;}
+    #showContent.inshow i{transform: rotate(180deg);}
+</style>
+<body>
+
+<div class="all">
+	<div class="block-box today" style="margin-top:10px">
+        <div class="block-content">
+            <div class="meeting-item">
+                <div class="meeting-info">
+                    <div class="text">
+                        <div class="text-item">会议名称：{$meeting['title']}</div>
+                        <div class="text-item">发起人：{$meeting['username']} </div>
+                        <div class="text-item">会议类型：{if $meeting['type'] == 1}<span class="meeting-type type-1">教师会议</span>{else}<span class="meeting-type type-2">家长会议</span>{/if} </div>
+                        <div class="text-item">起止时间： <span style="color:gray"> {php echo date("m-d H:i",$meeting['starttime'])} 至 {php echo date("m-d H:i",$meeting['endtime'])}</span></div>
+                        {if $meeting['type'] == 1}
+                        <div class="text-item">与会人员</div>
+                        <div class="joiner-box">
+                            <div>分组：</div>
+                            <div class="joinlist">
+                                {loop $fzlist $fi}
+                                <span>{$fi['sname']}</span>
+                                {/loop}
+                            </div>
+                        </div>
+                        <div class="joiner-box">
+                            <div>教师：</div>
+                            <div class="joinlist">
+                                {loop $tealist $ti}
+                                <span>{$ti['tname']}</span>
+                                {/loop}
+                            </div>
+                        </div>
+                        {else}
+                        <div class="text-item">班级：{$bjlist}</div>
+                        {/if}
+                        <div class="text-item" style="text-align: right;"> <span id="showContent">查看详情 <i class="fas fa-angle-double-down"></i> </span></div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div  style="margin: 10px 10px;padding-bottom: 20px;display: none;background-color: white;" id="content">
+        <div class="Block">
+            <div class="BlockContent Che">
+                <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                    {php echo htmlspecialchars_decode($meeting['content'])}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="aui-grids aui-grids-image" style="margin: 10px 10px;padding-bottom: 20px;">
+            <div class="Block">
+                <div class="BlockTitle" style=" color: #40a8e8;" onclick="SwitchSlideBlock(this)">
+                    <span style="flex:1"> 已点到</span>
+                    <i class="fas fa-minus" style="margin-right: 10px;font-size: 14px;"></i>
+                    <i class="fas fa-plus" style="margin-right: 10px;font-size: 14px;"></i>
+                </div>
+                <div class="BlockContent Che">
+                    {loop $newsignlist $row}
+                    <a href="javascript:;" onclick="ShowCheckInfo(this)" class="aui-grids-item" id="hide_{$row['id']}">
+                        <div class="CheckDetailDiv">
+                            <div style="width: 100%;height: 100%;padding:10px">
+                                <div  class="CheckInfo" >
+                                    <div>{$row['title']}</div>
+                                </div>
+                                <div  class="CheckInfo" >
+                                    <div>
+                                        <span class="title-name tea-title">{$row['tips']}</span></div>
+                                </div>
+                                <div class="CheckInfo ckt" >
+                                    <div>{$row['createtime']}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span>
+                            <img src="{$row['icon']}">
+                        </span>
+                        <span class="aui-grids-item-text">{$row['username']}</span>
+                    </a>
+                    {/loop}
+                    {if count($newsignlist) == 0}
+                    <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                        暂无签到
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+        <div class="aui-grids aui-grids-image">
+            <div class="Block">
+                <div class="BlockTitle" onclick="SwitchSlideBlock(this)">
+                    <span style="flex:1"> 未点到</span>
+                    <i class="fas fa-minus" style="margin-right: 10px;font-size: 14px;" ></i>
+                    <i class="fas fa-plus" style="margin-right: 10px;font-size: 14px;" ></i>
+                </div>
+                <div class="BlockContent NotC">
+                    {loop $nosignlist $row}
+                    <a href="javascript:;" class="aui-grids-item" id="hide_{$row['id']}">
+                        <span>
+                            <img src="{$row['icon']}">
+                        </span>
+                        <span class="aui-grids-item-text">{$row['username']}</span>
+                    </a>
+                    {/loop}
+                </div>
+                {if count($nosignlist) == 0}
+                    <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                        暂无签到
+                    </div>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function SwitchSlideBlock(e) {
+        $(e).toggleClass("slide")
+        $(e).siblings(".BlockContent").slideToggle(150)
+    }
+    $("#showContent").click(function(){
+        $("#content").slideToggle(150);
+        $(this).toggleClass('inshow');
+    })
+    function ShowCheckInfo(e){
+        $(e).addClass("InShow")
+        setTimeout(() => {
+            $("body").on("click",function(){
+                $(".InShow").removeClass("InShow")
+                setTimeout(() => {
+                    $("body").off("click")
+                }, 100);
+                console.log("1")
+            }) 
+        }, 100);
+    }
+</script>
+{php include $this->template('newfooter');}
+</html>
+

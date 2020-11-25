@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/kqtjCss.css?v=5.1"/>
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/vue.min.js"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery.reveal.js"></script>
+{php include $this->template('port');}
+<style>
+    .arrange-detail>ol {box-sizing: border-box;}
+    .form-order>.form-line {margin-bottom: 5px;}
+    .form-order>.form-line {margin-bottom: 12px;margin-top: 12px;}
+    .btnthis {height: 30px;background-color: #7bb52d;font: 16px "黑体";text-align: center;color: #fff;cursor: pointer;border-radius:10px}
+    .div_closd{margin-left:13%; width:30%;color: #fff;background-color: #f1ad31;border-color: #f1ad31;float:left;line-height:30px}
+    .div_sure{margin-right:13%; width:30%;float:right;line-height:30px}
+    .ovfHiden{overflow:hidden}
+    .startdate{width: 60%;margin: 3px 0px;height: 30px;line-height: 30px;border: 1px solid #e1e1e1;border-radius: 3px;font-size: 14px;background-attachment: fixed;text-align: center;padding: 0;margin: 0;outline-style: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-appearance: none;}
+    .trhead{height:30px}
+    .thhead{background:white;float:left;height:40px;line-height:40px;text-align:center;font-size:16px;}
+    .td_mutirow{background:white;border-bottom:1px solid #EDEEF0;border-right:1px solid #EDEEF0;}
+    .tdsinglerow{background:white;height:30px;line-height:30px;border-bottom:1px solid #EDEEF0;}
+    .SelectInRange{text-align:center;text-align-last:center;width:90%;margin:8px;height:30px;border-radius: 3px;}
+    .reveal-modal-bg {position: fixed;height: 100%;width: 100%;background: rgba(0,0,0,0.25);z-index: 105;display: none;top: 0;left: 0; }
+    .reveal-modal {top:50px !important;visibility: hidden; background: #fff ;position: fixed;z-index: 101;padding: 25px 18px 38px;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; -moz-box-shadow: 0 0 10px rgba(0,0,0,.4);-webkit-box-shadow: 0 0 10px rgba(0,0,0,.4);-box-shadow: 0 0 10px rgba(0,0,0,.4);}
+    .Select-event{display: inline-block;height: 32px;border:1px solid #D7d7d7;line-height: 32px;width:72px;border-radius:4px;margin-right:8px;text-align:center}
+    .CheckTypes{width:25%;margin-right: 5%;}
+    .EVENT-SELECT{background-color: rgba(38, 123, 255, 0.2);border-color:#0885ff !important }
+    .CheckObj{padding:1px 3px;border-radius: 5px;font-size: 12px}
+    #attendance{margin-left: 3px;box-shadow:2px 2px 10px #c1c1c1;border-radius: 5px;width:98%;height:100px;padding-top:10px;float: unset}
+    .CheckLog{width:100%;height: 60px;border-top: 1px solid #e6e6e6;background-color: white}
+    .CheckMoreBtn{border:1px solid #1b90d4;border-radius: 5px;padding:1px 3px}
+    .search_btn{
+        width: 35px;
+        height: 35px;
+        background: url(https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/manual_search_icon.png) no-repeat center;
+        background-size: 35px;
+        position: absolute;
+        right: 15px;
+        top: 75px;
+    }
+</style>
+</head>
+<body id="kqtjbody">
+	<div id="attendance">
+        <!-- <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;"> 
+            <span style="font-size: 16px;" >阈值提醒列表</span>     
+        </div> -->
+
+        <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;margin-bottom: 5%"> 
+            <span style="float:left" >请选择类型:</span> 
+            <span style="display:block;float:left">
+                <select v-model="type" class="Select-event" style="position: absolute; width:45%;" >
+                    <option value="1">按月</option>
+                    <option value="2">按季度</option>
+                    <option value="3">半年</option>
+                    <option value="4">全年月</option>
+                </select>   
+            </span> 
+        </div>
+
+        <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;"> 
+            <span style="float:left" >请选择年份:</span> 
+            <span style="display:block;float:left">
+                <select v-model="year" class="Select-event" style="position: absolute; width:45%;" >
+                    <?php
+                        $statyyear = 1980;
+                        $nowyear = date(Y,time());
+                        $endyear = $nowyear + 3;
+                        for($i = $statyyear; $i <= $endyear; $i++){
+                            $selected = '';
+                            if($i == $nowyear){
+                                $selected = 'selected';
+                            }
+                        echo ' <option value="'.$i.'" >'.$i.'年</option>';
+                        }
+                    ?>
+                </select>   
+            </span> 
+        </div>
+        <div class="search_btn" @click="ChangeDone()"></div>
+	</div>
+
+	<div id="cool_tkpi_bot">
+
+    </div>
+			
+    <script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+    <script language="javascript">
+
+function backToTOP(){
+	$('html,body').animate({
+        'scrollTop':0
+    },100)
+}
+
+$("body").append('<div id="common_progress" class="common_progress_bg" style=""><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>');
+
+function ajax_start_loading(text) {
+    $("#common_progress").css("display", "block");
+    $("body").css("position", "fixed");
+    $(".common_progress").css("margin-left", $(window).width() / 2 - 80);
+    if (text) {
+        $("#common_progress span").text(text);
+    }
+}
+
+function ajax_stop_loading() {
+    $("#common_progress").hide();
+    $("body").css("position", "static");
+}
+
+var TopVue = new Vue({
+	el: '#attendance' ,
+	data: function () {
+		return{
+			type: '1',
+			KcList: [],
+			year: `{$year}`,
+			DoneData : {
+				type: '',
+				year: `{$year}`,
+			},
+		}
+	},
+    created:function(){
+        //为了在内部函数能使用外部函数的this对象，要给它赋值了一个名叫self的变量。
+        var self = this;
+        $.ajax({
+            url:"{php echo $this->createMobileUrl('tkpi', array('op' => 'GetFirstData','schoolid' => $schoolid))}",
+            type: 'get',
+            data: {},
+            dataType: 'html'
+        }).then(function (res) {
+            $("#cool_tkpi_bot").html(res)
+        })
+    },
+	methods:{
+		ChangeDone:function(){
+			let self = this;
+			ajax_start_loading("获取数据中");
+            self.DoneData.year = self.year;
+            self.DoneData.type = self.type
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('tkpi', array('schoolid' => $schoolid,'op'=>'GetFirstData' ), true)}",
+				data : self.DoneData,	
+				dataType: 'html',
+				type: "post",
+				success: function (data) {
+					$("#cool_tkpi_bot").html(data);
+					ajax_stop_loading();
+				}
+			});	
+		}
+	},
+})
+ 
+</script>	
+{php include $this->template('newfooter');}
+</body>
+</html>

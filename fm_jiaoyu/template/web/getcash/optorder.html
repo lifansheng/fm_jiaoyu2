@@ -1,0 +1,319 @@
+	<div class="modal-header" style="color: black;">					
+		<h4 class="modal-title" id="ModalTitle">处理订单</h4>	
+	</div>
+	<div class="modal-body wizard">
+		<div class="stepss clearfix pl-4">
+			<ul role="tablist">
+				<li role="tab" class="first {$fri}" id="conent-tab" data-toggle="tab" href="#conent" aria-controls="conent" role="tab" aria-selected="false">
+					<a id="steps-uid-3-t-0" class="text-decoration-none cursor-pointer">
+						<span class="step">
+							<i class="step-icon {$friicon}"></i>	
+						</span> 
+						<span id="shword">{if $order['approval']}{if $order['approval'] == 1}已拒绝{/if}{if $order['approval'] == 2}已审核{/if}{else}未审核{/if}</span>
+					</a>
+				</li>
+				<li role="tab" class="{$sec}" id="paybox-tab" data-toggle="tab" href="#paybox" aria-controls="paybox" role="tab" aria-selected="false">
+					<a id="steps-uid-3-t-1" class="text-decoration-none cursor-pointer">
+						<span class="step">
+							<i class="step-icon {$secicon}"></i>
+						</span>
+						<span id="payword">{if !empty($order['paytid'])}财务拨款{else}待拨款{/if}</span>
+					</a>
+				</li>
+				<li role="tab" class="last {$thi}" id="result-tab" data-toggle="tab" href="#result" aria-controls="result" role="tab" aria-selected="false">
+					<a id="steps-uid-3-t-2" class="text-decoration-none cursor-pointer">
+						<span class="step">
+							<i class="step-icon {$thiicon}"></i>
+						</span>
+						<span id="dzword">{if $order['dztime']}到账{else}未到账{/if}</span>
+					</a>
+				</li>
+			</ul>
+			<span class="text-danger">点击进度条，可查看各进度详情</span>
+		</div>
+		<div class="tab-content chat-profile-rightover pl-0" style="max-height:500px;overflow-y: scroll;width:100%">
+			<div class="tab-pane active pl-0" id="conent" aria-labelledby="conent-tab" role="tabpanel">
+				<div class="card-body pl-5 pr-5">
+					{if $order['approval'] == 0}
+					<label class="app-file-label">提现申请，订单信息</label>
+					<div class="d-flex justify-content-between align-items-center mt-75">
+						<p><i class="fa fa-check-circle"></i> 是否审核</p>
+						<div class="mr-5" id="shbtnbox">
+							<span type="button" class="btn btn-primary btn-sm cursor-pointer glow" onclick="shpass({$order['id']},'pass')">通过</span>
+							<span type="button" class="btn btn-danger btn-sm cursor-pointer glow" onclick="shpass({$order['id']},'defail')">拒绝</span>
+						</div>
+					</div>
+					<div class="col-sm-11 col-10 mt-1" id="shrankbox">
+						<textarea class="form-control border-1 shadow-none" id="shrank" rows="3" placeholder="非必填，审核理由,输入100字以内..."></textarea>
+					</div>
+					{else}
+					<label class="app-file-label">审核信息</label>
+					<div class="d-flex justify-content-between align-items-center mt-75">
+						<div class="chip">
+							<div class="chip-body">
+								<div class="avatar">
+									<img class="img-fluid" src="{$shicon}" alt="generic img placeholder" height="20" width="20">
+								</div>
+								<span class="chip-text" style="margin-left:-4px">{$shname}</span>
+							</div>
+						</div>
+						<div class="mr-5">
+							{if $order['shtime']}{php echo date('Y.m.d H:i',$order['shtime'])}{/if} 
+							{if $order['approval'] == 1}<span class="badge badge-danger"><i class="fa fa-ban"></i> 拒绝</span>{/if}
+							{if $order['approval'] == 2}<span class="badge badge-success"><i class="fa fa-check-circle"></i> 通过</span>{/if}
+						</div>
+					</div>
+					<div class="col-sm-11 col-11">
+						<div class="timeline-content">备注：{$order['shrank']}</div>
+					</div>
+					{/if}
+					<label class="app-file-label mt-1">订单信息</label>
+					<div class="d-flex justify-content-between align-items-center mt-75"><p><i class="fa fa-file-word-o"></i> 订单号</p><p class="font-weight-bold">{$_GPC['orderid']}</p></div>
+					<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-user"></i> 申请人{if $order['tid']}<span class="badge badge-light-primary">师</span>{/if}</p><p class="font-weight-bold">{$username}</p></div>
+					<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-file-sound-o"></i> 真实姓名</p><p class="font-weight-bold">{$order['realname']}</p></div>
+					<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-phone"></i> 手机号码</p><p class="font-weight-bold">{$order['mobile']}</p></div>
+					<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-rmb"></i>  提现金额</p><p class="font-weight-bold danger"><strong>{$order['oldfee']}元</strong></p></div>
+					<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-rmb"></i>  申请时间</p><p class="font-weight-bold">{php echo date('Y.m.d H:i',$order['createtime'])}</p></div>
+					<div class="col-sm-11 col-11">
+						<div class="chip">
+							<div class="chip-body">
+								<div class="avatar">
+									<img class="img-fluid" src="{$usericon}" alt="generic img placeholder" height="20" width="20">
+								</div>
+								<span class="chip-text" style="margin-left:-4px">{$username}</span>
+							</div>
+						</div>
+						<div class="timeline-content">留言：{$order['contrank']}</div>
+					</div>
+				</div>
+			</div>
+			<div class="tab-pane pl-0" id="paybox" aria-labelledby="paybox-tab" role="tabpanel">
+				<div class="card-body pl-5 pr-5">
+					{if empty($order['paytid'])}
+					<label class="app-file-label">拨款操作</label>
+					<div class="d-flex justify-content-between align-items-center mt-75">
+						<p class="primary">提现金额：{$order['oldfee']}元</p>
+						<div class="danger">
+							到账金额
+							<label class="radio-inline">
+								<input class="form-control" id="dzfee" type="number" value="{$order['oldfee']}"/>
+							</label>
+						</div>
+					</div>
+					<div class="d-flex justify-content-between align-items-center mt-75">
+						<p><i class="fa fa-check-circle"></i> 付款方式</p>
+						<div class="mr-5" id="paybtnbox">
+							<label class="radio-inline">
+								<div class="radio-custom radio-primary">
+									<input type="radio" name="pytpe" value="1" {if $order['paytype']== 0 || empty($item['paytype'])}checked{/if} id="weixin">
+									<label></label>微信付款
+								</div>
+							</label>
+							<label class="radio-inline">
+								<div class="radio-custom radio-primary">
+									<input type="radio" name="pytpe" value="2" {if $order['paytype']==1}checked{/if} id="cash">
+									<label></label>现金付款
+								</div>
+							</label>
+							<label class="radio-inline">
+								<div class="radio-custom radio-primary">
+									<input type="radio" name="pytpe" value="3" {if $order['paytype']==1}checked{/if} id="other">
+									<label></label>其他方式
+								</div>
+							</label>
+						</div>
+						<input id="paytype" type="hidden" value="1"/>
+					</div>
+					{if $_W['isfounder'] || $_W['role'] == 'owner'}
+					<div class="col-sm-12 col-12 mt-1" id="payweidset" {if $order['paytype']== 1 || empty($item['paytype'])}style="display:block"{else}style="display:none"{/if}>
+						<div class="form-group">										
+							<label class="col-xs-3" style="padding-top:5px">付款账户</label>
+							<div class="col-sm-6">
+								<select class="form-control" id="payweid">
+									<option value="0">请选择收款账户</option>
+									{loop $allpayweid $row}
+									<option value="{$row['uniacid']}" {if $ruleset['payweid']== $row['uniacid']}selected{/if}>{$row['name']}{if $ruleset['payweid'] == $row['uniacid'] && !empty($ruleset['payweid'])} (预设){/if}</option>
+									{/loop}
+								</select>
+							</div>
+						</div>
+					</div>
+					{else}
+						<input type="hidden" id="payweid" value="{$ruleset['payweid']?$ruleset['payweid']:$_W['uniacid']}" />
+					{/if}
+					<div class="col-sm-11 col-10 mt-1" id="payrankbox">
+						<textarea class="form-control border-1 shadow-none" id="payrank" rows="3" placeholder="非必填，付款备注,输入100字以内...">已设为微信付款到用户零钱,请用户手机端点击提款</textarea>
+					</div>
+					{else}
+					<label class="app-file-label">拨款信息</label>
+					<div class="d-flex justify-content-between align-items-center mt-75">
+						<div class="chip">
+							<div class="chip-body">
+								<div class="avatar">
+									<img class="img-fluid" src="{$payicon}" alt="generic img placeholder" height="20" width="20">
+								</div>
+								<span class="chip-text" style="margin-left:-4px">{$payname}</span>
+							</div>
+						</div>
+						<div class="mr-5">
+							{if $order['paytime']}{php echo date('Y.m.d H:i',$order['paytime'])}{/if}
+						    {if $order['paytype'] == 1}<span class="badge badge-success"><i class="fa fa-check-circle">&nbsp;微信付款</i></span>{/if}
+							{if $order['paytype'] == 2}<span class="badge badge-warning"><i class="fa fa-check-circle">&nbsp;现金付款</i></span>{/if}
+							{if $order['paytype'] == 3}<span class="badge badge-primary"><i class="fa fa-check-circle">&nbsp;其他方式</i></span>{/if}
+						</div>
+					</div>
+					<div class="d-flex justify-content-between align-items-center mt-75">
+						<p class="primary">到账金额：<strong  class="font-weight-bold danger">{$order['fee']}</strong> 元</p>
+					</div>
+					<div class="col-sm-11 col-11">
+						<div class="timeline-content">备注：{$order['payrank']}</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+			<div class="tab-pane pl-0" id="result" aria-labelledby="result-tab" role="tabpanel">
+				<div class="card-body pl-5 pr-5">
+					<label class="app-file-label">收款信息</label>
+					<div class="d-flex justify-content-between align-items-center mt-75"><p><i class="fa fa-user"></i> 真实姓名</p><p class="font-weight-bold">{$order['realname']}</p></div>
+					<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-phone"></i> 手机号码</p><p class="font-weight-bold">{$order['mobile']}</p></div>
+					<div class="d-flex justify-content-between align-items-center">
+						<p><i class="fa fa-tag"></i> 支付账户</p>
+						<p class="font-weight-bold">{if $order['paytype'] == 1}{$payweid['name']}{/if}{if $order['paytype'] == 2}现金付款{/if}{if $order['paytype'] == 3}其他方式{/if}</p>
+					</div>
+					{if $order['dztime']}
+						<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-clock-o"></i> 到账时间</p><p class="font-weight-bold">{php echo date('Y.m.d H:i',$order['dztime'])}</p></div>
+					{/if} 
+				</div>
+			</div>
+		</div>
+	</div>				
+	<div class="modal-footer">	
+		<button type="button" class="btn btn-default" id="close_modal" data-dismiss="modal">关闭</button>
+		{if $order['approval'] == 2 && $order['status'] == 0}<button type="button" class="btn btn-primary qx_6005" id="qx_6005" onclick="paybtn({$order['id']})" >确认付款</button>{/if}
+	</div>
+<script>
+//付款
+function paybtn(orderid){
+	var fee = $("#dzfee").val()
+	var payweid = $("#payweid").val()
+	var paytype = $("#paytype").val()
+	var payrank = $("#payrank").val()
+	var r = confirm("操作后不可修改，您确认拨款本次申请吗？");
+	if(fee < 0.01){
+		ReToastGlobal('抱歉，到账金额不能低于1分')
+		return false
+	}
+	if (r == true) {
+		$.ajax({
+			url: "{php echo $this->createWebUrl('getcash', array('op'=>'pay','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {orderid:orderid,paytype:paytype,payrank:payrank,payweid:payweid,fee:fee},
+			success: function (result) {
+				ReToastGlobal(result.msg)
+				if (result.result) {
+					if(paytype == 1){
+						$('#dzword').text('未到账')
+						$('#paybox-tab').addClass('done')
+						$('#paybox-tab').children().children().children().addClass('fa-check-circle')
+						$('#paybox-tab').children().children().children().removeClass('fa-clock-o')
+						$('#result-tab').addClass('current')
+						$('#result-tab').removeClass('disabled')
+						$('#result-tab').children().children().children().addClass('fa fa-clock-o')
+					}else{
+						$('#paybox-tab').addClass('done')
+						$('#paybox-tab').children().children().children().addClass('fa-check-circle')
+						$('#paybox-tab').children().children().children().removeClass('fa-clock-o')
+						$('#paybox').hide()
+						$('#result').show()
+						$('#result-tab').addClass('done')
+						$('#result-tab').removeClass('disabled')
+						$('#result-tab').children().children().children().addClass('fa fa-check-circle')
+						$('#dzword').text('已到账')
+						$('.opt_'+orderid).hide()
+					}
+					$('.qx_6005').hide()
+					$('#payword').text('财务拨款')
+					 $("#dzfee").attr("disabled",true);
+					 $("#weixin").attr("disabled",true);
+					 $("#cash").attr("disabled",true);
+					 $("#other").attr("disabled",true);
+					 $("#payweid").attr("disabled",true);
+					 $("#payrank").attr("disabled",true);
+				}
+			}	
+		});
+	}
+}
+//审核
+function shpass(orderid,type){
+	if(type == 'pass'){
+		var r = confirm("您确认通过本申请吗,通过后不能修改");
+	}
+	if(type == 'defail'){
+		var r = confirm("您确认拒绝本申请吗,拒绝后不能修改");
+	}
+	if (r == true) {
+		var shrank = $('#shrank').val()
+		$.ajax({
+			url: "{php echo $this->createWebUrl('getcash', array('op'=>'PassOrder','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {orderid:orderid,approval:type,shrank:shrank},
+			success: function (result) {
+				ReToastGlobal(result.msg)
+				if (result.result) {
+					var html1 = '';var html2 = '';
+					//$('#conent-tab').removeClass('current')
+					if(type == 'pass'){
+						html1 = '<span class="badge badge-success"><i class="fa fa-check-circle"></i> 通过</span>'
+						$('#conent-tab').addClass('done')
+						$('#conent-tab').children().children().children().addClass('fa-check-circle')
+						$('#conent-tab').children().children().children().removeClass('fa-clock-o')
+						$('#paybox-tab').removeClass('disabled')
+						$('#paybox-tab').addClass('current')
+						$('#shword').text('已审核')
+						$('#paybox-tab').children().children().children().addClass('fa fa-clock-o')
+						{if ($tid_global == 'founder' || $tid_global == 'owner' || $tid_global == 'vice_founder' || IsHasQx($tid_global,1006005,1,$schoolid) )}
+							var paybtn = '<button type="button" class="btn btn-primary qx_6005" id="qx_6005" onclick="paybtn('+orderid+')" >确认付款</button>'
+							$('.modal-footer').append(paybtn)
+							$('#conent').removeClass('active')
+							$('#conent').hide()
+							$('#paybox').addClass('active')
+							$('#paybox').show()
+						{/if}
+					}
+					if(type == 'defail'){
+						$('#shword').text('未审核')
+						html2 = '<span class="badge badge-danger"><i class="fa fa-ban"></i> 拒绝</span>'
+						$('#conent-tab').children().children().children().addClass('fa-ban')
+						$('#conent-tab').children().children().children().removeClass('fa-clock-o')
+					}
+					html2 = '<div class="timeline-content">留言：'+shrank+'</div>'
+					$('#shbtnbox').html(html1)
+					$('#shrankbox').html(html2)
+				}
+			}	
+		});
+	}
+}
+$('#weixin').click(function(){
+	$('#payweidset').show();
+	$("#paytype").val(1)
+	$("#payrank").val('已设为微信付款到用户零钱,请用户手机端点击提款')
+});
+$('#cash').click(function(){
+	$('#payweidset').hide(200);
+	$("#paytype").val(2)
+	$("#payrank").val('已现金付款，财务线下处理')
+});
+$('#other').click(function(){
+	$('#payweidset').hide(200);
+	$("#paytype").val(3)
+	$("#payrank").val('其他方式付款')
+});
+{if (!(IsHasQx($tid_global,1006005,1,$schoolid)))}
+	$(".qx_6005").hide();
+{/if}
+
+</script>	

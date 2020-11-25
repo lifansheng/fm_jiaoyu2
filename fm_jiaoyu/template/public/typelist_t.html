@@ -1,0 +1,45 @@
+<script type="text/javascript"> 
+    var divid = `{$lasticontypeid['id']}`;
+    // var divid = topid + 1;
+        $('#newtype').click(function(){
+            $(".editor1").show()
+            divid++;
+            var htmls = '<div id="iconeditor'+divid+'" class="editor" style="top: 50px">'+
+                        '		<div class="ng-scope">'+
+                        '			<div class="app-header-setting">'+
+                        '				<div class="arrow-left"></div>'+
+                        '				<div class="app-header-setting-inner">'+
+                        '					<div class="panel panel-default">'+
+                        '						<div class="panel-body form-horizontal">'+
+                        '							<input type="hidden" name="type['+divid+']" value="2" />'+
+                        '							<input type="hidden" name="place['+divid+']" value="13" />'+				
+                        '							<div class="form-group">'+
+                        '								<label class="col-xs-3 control-label"><span class="red">*</span>显示状态</label>'+
+                        '								<div class="col-xs-9">'+
+                        '									<input type="checkbox" value="1" name="status['+divid+']" checked>'+
+                        '									<span class="help-block">新增按钮默认显示，修改请提交后再次编辑</span>'+
+                        '								</div>'+
+                        '							</div>'+
+                        '							<div class="form-group">'+
+                        '								<label class="col-xs-3 control-label"><span class="red">*</span>排序</label>'+
+                        '								<div class="col-xs-9">'+
+                        '									<input type="text" id="ssort'+divid+'" name="ssort['+divid+']" placeholder="标题" value="1" class="form-control">'+
+                        '								</div>'+
+                        '							</div>'+
+                        '							<div class="form-group">'+
+                        '								<label class="col-xs-3 control-label"><span class="red">*</span>分类名称</label>'+
+                        '								<div class="col-xs-9">'+
+                        '									<input type="text" id="icontypetitle'+divid+'" name="icontypetitle['+divid+']" onkeyup="SwapTxt('+divid+')" placeholder="标题" class="form-control ng-pristine ng-untouched ng-valid">'+
+                        '								</div>'+
+                        '							</div>'+
+                        
+                        '						</div>'+
+                        '					</div>'+
+                        '				</div>'+
+                        '			</div>'+
+                        '		</div>'+
+                        '	</div>';	
+                    ;
+            $('.app-side').append(htmls);			
+        });
+    </script> 

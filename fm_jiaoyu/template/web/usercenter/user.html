@@ -1,0 +1,237 @@
+<div class="col-xs-12">
+	<div class="loading-layer" id="left_bigload" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+	<div class="tab-pane active" id="profile" aria-labelledby="profile-tab" role="tabpanel">
+		<!-- user profile nav tabs profile start -->
+		<div class="card">
+			<div class="card-content">
+				<div class="card-body px-2">
+					<div class="row">
+						<div class="col-12">
+							<div class="row">
+								<div class="col-12 col-sm-3 text-center mb-1 mb-sm-0">
+									<img src="{$mythumb}" class="rounded" alt="group image" height="120" width="120">
+								</div>
+								<div class="col-12 col-sm-9">
+									<div class="row">
+										<div class="col-12 text-center text-sm-left">
+											<h4 class="media-heading mb-0">{$myteacherinfo['tname']}<i class="cursor-pointer bx bxs-star text-warning ml-50 align-middle"></i></h4>
+											<small class="text-muted align-top">{$myTitle}</small>
+										</div>
+										<div class="col-12 text-center text-sm-left">
+											<div class="mt-1">
+												<span class="mr-1"><small>管辖班级</small></span>
+											</div>
+											<div class="mb-1">
+											{loop $bjlists $row}
+												<span class="mr-1"><small>{$row['sname']}</small></span>
+											{/loop}	
+											</div>
+											<div>
+												{if $myteacherinfo['zzmianmao'] == "党员" || $myteacherinfo['zzmianmao'] == "共青团"}<div class="badge badge-light-primary badge-round mr-1 mb-1">{$myteacherinfo['zzmianmao']}</div>{/if}
+												{if $myteacherinfo['status'] == 2}<div class="badge badge-light-warning badge-round mr-1 mb-1" >校长</div>{/if}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-content">
+				<div class="card-body px-4 pb-5">
+					<h5 class="card-title">基础资料</h5>
+					<ul class="list-unstyled">
+						<li><i class="cursor-pointer fa fa-home mb-1 mr-50"></i>{if $myteacherinfo['address']}{$myteacherinfo['address']}{else}未设置住址{/if}</li>
+						<li><i class="cursor-pointer fa fa-phone mb-1 mr-50"></i>{$myteacherinfo['tel']}</li>
+						<li><i class="cursor-pointer fa fa-clock-o mb-1 mr-50"></i>生日:{php echo date('m月d',$myteacherinfo['birthdate'])}</li>
+						<li><i class="cursor-pointer fa fa-envelope-o mb-1 mr-50"></i>{$myteacherinfo['email']}</li>
+					</ul>
+					<div class="display_fixed">
+						<div class="col-xs-6"><h6><small class="text-muted">手机号码</small></h6><p>(+86){$myteacherinfo['mobile']}</p></div>
+						<div class="col-xs-6"><h6><small class="text-muted">身份证号</small></h6><p>{$myteacherinfo['idcard']}</p></div>
+						<div class="col-xs-6"><h6><small class="text-muted">政治面貌</small></h6><p>{$myteacherinfo['zzmianmao']}</p></div>
+						<div class="col-xs-6"><h6><small class="text-muted">民族</small></h6><p>汉族</p></div>
+						<div class="col-xs-12">
+							<h6><small class="text-muted">教学经验</small></h6>
+							{if $myteacherinfo['headinfo']}<p>{php echo htmlspecialchars_decode($myteacherinfo['headinfo'])}</p>{/if}{if $myteacherinfo['info']}<p>{php echo htmlspecialchars_decode($myteacherinfo['info'])}</p>{/if}{if $myteacherinfo['jinyan']}<p>{php echo htmlspecialchars_decode($myteacherinfo['jinyan'])}</p>{/if}</p>
+						</div>
+					</div>
+					<a class="btn btn-light-primary cursor-pointer float-right" onclick="edite_teainfo({$nowtid})" title="修改">修&nbsp;&nbsp;改</a>
+				</div>
+			</div>
+		</div>
+	<!-- user profile nav tabs profile ends -->
+	</div>
+</div>
+<style>
+form .control-label { padding-top: 0px !important; padding-left: 0px !important; }
+</style>
+<!-- 修改资料 modal -->
+<div class="modal fade" style="min-width: 500px!important;z-index: 1050 !important;" id="Modal7" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2041 !important;">
+	<div class="modal-dialog" style="left: 30%;top: 8%;">
+		<div class="modal-content">
+			<div class="modal-header" style="color: black;">					
+				<h4 class="modal-title">修改个人资料</h4>	
+			</div>
+			<div class="modal-body">
+				<form id="tea_infobox">
+					<div class="material-body " style="overflow-y: scroll;padding: 14px;height:500px;">
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>姓名</label>
+							<div class="col-sm-9">
+								<div class="input-group">
+									<input type="text" name="tname" class="form-control" value="{$myteacherinfo['tname']}"/>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>头像</label>
+							<div class="col-sm-9">
+								{php echo tpl_form_field_image('thumb', $myteacherinfo['thumb'])}
+								<span class="help-block"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>性别</label>
+							<div class="col-sm-9">
+								<label class="radio-inline"><input type="radio" name="sex" value="1"  {if empty($myteacherinfo) || $myteacherinfo['sex'] == 1}checked="true"{/if} /> 男</label>
+								&nbsp;&nbsp;&nbsp;
+								<label  class="radio-inline"><input type="radio" name="sex" value="0" {if !empty($myteacherinfo) && $myteacherinfo['sex'] == 0}checked="true"{/if} /> 女</label>
+							</div>
+						</div>
+						<div class="form-group">
+						   <label class="col-sm-2 control-label"><span class="require">*</span>出生日期</label>
+						   <div class="col-sm-9">
+							   <div class="input-group">
+								{if !empty($myteacherinfo['birthdate'])}{php echo tpl_form_field_date('birthdate', date('Y-m-d', $myteacherinfo['birthdate']))}{else}{php echo tpl_form_field_date('birthdate', date('Y-m-d', 516599001))}{/if}            
+							   </div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>固定电话</label>
+							<div class="col-sm-7">
+								<input type="text" name="tel" class="form-control" value="{$myteacherinfo['tel']}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>手机号码</label>
+							<div class="col-sm-7">
+								<input type="text" name="mobile" class="form-control" value="{$myteacherinfo['mobile']}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>电子邮箱</label>
+							<div class="col-sm-7">
+								<input type="text" name="email" class="form-control" value="{$myteacherinfo['email']}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>家庭住址</label>
+							<div class="col-sm-7">
+								<input type="text" name="address" class="form-control" value="{$myteacherinfo['address']}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>民族</label>
+							<div class="col-sm-7">
+								<input type="text" name="minzu" class="form-control" value="{$myteacherinfo['minzu']}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>身份证号</label>
+							<div class="col-sm-7">
+								<input type="text" name="idcard" class="form-control" value="{$myteacherinfo['idcard']}"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label"><span class="require">*</span>政治面貌</label>
+							<div class="col-sm-7">
+								<div class="input-group">
+									<select style="margin-right:15px;width:200px" name="zzmianmao" class="form-control">
+										<option value="群众" {if $myteacherinfo['zzmianmao'] == "群众"} selected="selected"{/if}>群众</option>
+										<option value="党员" {if $myteacherinfo['zzmianmao'] == "党员"} selected="selected"{/if}>党员</option>
+										<option value="共青团" {if $myteacherinfo['zzmianmao'] == "共青团"} selected="selected"{/if}>共青团</option>
+										<option value="其他" {if $myteacherinfo['zzmianmao'] == "其他"} selected="selected"{/if}>其他</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">教学特点</label>
+							<div class="col-sm-9">
+								{php echo tpl_ueditor('headinfo', $myteacherinfo['headinfo']);}
+								<span class="help-block"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">教学成果</label>
+							<div class="col-sm-9">
+							   {php echo tpl_ueditor('info', $myteacherinfo['info']);}
+								<div class="help-block">教学成果</div>
+							</div>
+						</div>
+						 <div class="form-group">
+							<label class="col-sm-2 control-label">教学经验</label>
+							<div class="col-sm-9">
+							   {php echo tpl_ueditor('jinyan', $myteacherinfo['jinyan']);}
+								<div class="help-block">教学经验</div>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="nowtid" value="{$nowtid}">
+				</form>
+			</div>				
+			<div class="modal-footer">	
+				<button type="button" class="btn btn-default" id="close_modal" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary qx_6005" id="qx_6005" onclick="add_tea()" >确认</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+function edite_teainfo(tid){
+	$('#Modal7').modal('toggle');
+}
+function add_tea() {
+	var form = new FormData(document.getElementById('tea_infobox'));
+	//表单提交前的各种验证
+	var tname = form.get('tname')
+	if(!tname){
+		ReToastGlobal("请设置教师姓名")
+		return false
+	}
+	var nowtid = "{$nowtid}"
+	var birthdate = form.get('birthdate')
+	if(!birthdate){
+		ReToastGlobal('抱歉,请设置出生日期');
+		return false
+	}
+	var mobile = form.get('mobile')
+	if(!mobile){
+		ReToastGlobal('抱歉,老师输入老师手机号');
+		return false
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op' => 'edit_tea','schoolid' => $schoolid))}",
+		type: "post",
+		data: form,
+		processData: false,
+		contentType: false,
+		success: function(result) {
+			var data = jQuery.parseJSON(result);
+			alert(data.msg);
+			if(data.result){
+				$('#Modal7').modal('toggle');
+				change_left('user')
+			}
+		},
+		error: function(e) {
+			alert('访问网络失败');
+			console.log(e)
+		}
+	});
+}
+</script>

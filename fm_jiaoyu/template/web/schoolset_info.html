@@ -1,0 +1,118 @@
+<!--
+ * @Discription:
+ * @Author: Hannibal·Lee
+ * @Date: 2020-03-10 16:15:45
+ * @LastEditTime: 2020-03-10 18:30:29
+ -->
+<div class="modal-dialog">
+    <div class="modal-content" style="border-radius: 20px;">
+        <div class="modal-header">
+            <h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;">报表推送人员</h4>
+        </div>
+        <div class="modal-body" style="width: 100%;">
+            <div class="js-menu-container" ng-controller="MenuCtrl" ng-cloak>
+                <div class="panel we7-panel">
+                    <div class="panel-body system-menu-list">
+                        <ul class="one">
+                            {php $a = 0;}
+                            {loop $nonowfz $key=>$menu}
+
+                            <li class="menu-item">
+
+                                <div class="table-div table-div-menu" style="padding: 12px 37px;">
+                                    <div class="table-div__item name">{$menu['sname']}
+                                        <label class="checkbox-inline" style="width:80px;margin-left: 10px;padding:0;" onclick="quanxuan({$a},'quan')">全选</label>
+                                        <label class="checkbox-inline" style="width:80px;margin-left: 10px;padding:0;" onclick="quanxuan({$a},'buquan')">全不选</label>
+                                    </div>
+                                    <div class="table-div__item name"></div>
+                                    <div class="table-div__item action">
+                                        <div class="link-group">
+                                            <a href="javascript:;" class="toggle"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="two nonowfztea">
+                                    <li class="menu-item">
+                                        <div class="input-group text-info" id="nonowfztea">
+                                            {loop $menu['nonowfztea'] $r}
+                                            <label class="checkbox-inline" style="width:80px;margin-left: 10px" id="hide_{$r['id']}"><input class="pre idss xuankuang{$a}" data-name="{$r['tname']}" type="checkbox" {if $r['checked'] == 1}checked{/if} value="{$r['id']}" style="float: none;"/>{$r['tname']}</label>
+                                            {/loop}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            {php $a++;}
+                            {/loop}
+                            {php $a+1;}
+                            <li class="menu-item">
+                                <div class="table-div table-div-menu" style="padding: 12px 37px;">
+                                    <div class="table-div__item name">未分组({php echo count($nofz)}人)
+                                        <label class="checkbox-inline" style="width:80px;margin-left: 10px;padding:0;" onclick="quanxuan({$a},'quan')">全选</label>
+                                        <label class="checkbox-inline" style="width:80px;margin-left: 10px;padding:0;" onclick="quanxuan({$a},'buquan')">全不选</label>
+                                    </div>
+                                    <div class="table-div__item name"></div>
+                                    <div class="table-div__item action">
+                                        <div class="link-group">
+                                            <a href="javascript:;" class="toggle"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="two nofz">
+                                    <li class="menu-item">
+                                        <div class="input-group text-info" id="nofz">
+                                            {loop $nofz $row}
+                                            <label class="checkbox-inline" style="width:80px;margin-left: 10px" id="hide_{$row['id']}"><input class="pre idss xuankuang{$a}" data-name="{$row['tname']}" {if $row['checked'] == 1}checked{/if} type="checkbox" value="{$row['id']}" style="float: none;" />{$row['tname']}</label>
+                                            {/loop}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <script>
+                    $('.toggle').click(function () {
+                        $(this).parent().parent().parent().parent().toggleClass('menu-open');
+                    })
+                </script>
+            </div>
+            <script type="text/javascript">
+                $(function(){
+                    angular.bootstrap($('.js-menu-container'), ['systemApp']);
+                });
+            </script>
+        </div>
+        <div class="modal-footer" style="border-radius: 6px;">
+            <input type="submit" onclick="tijiao()" class="btn btn-success" value="确定">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function quanxuan(a,type){
+    var obj = $(".xuankuang"+a);
+    if(type=='quan'){
+        for(var i=0;i<obj.length;i++){
+            obj[i].checked="true";
+        }
+    }
+    if(type=='buquan'){
+        for(var i=0;i<obj.length;i++){
+            obj[i].checked="";
+        }
+    }
+}
+function tijiao(){
+    let tidArr = [];
+    $('.idss').each(function () {
+        if($(this).is(':checked')){
+            tidArr.push($(this).val());
+        }
+    });
+    $.post("{php echo $this->createWebUrl('schoolset',array('op'=>'is_tuisongren','schoolid'=>$schoolid))}", {'tidArr':tidArr}, function(data) {
+        alert('设置成功')
+        $('#Modal3').modal('toggle');
+    });
+}
+</script>

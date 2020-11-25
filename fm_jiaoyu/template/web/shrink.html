@@ -1,0 +1,306 @@
+{template 'public/header'}
+{template 'public/comhead'}
+ 
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+
+<!-- <div class="panel panel-default">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{php echo $this->createWebUrl('buzhu', array('schoolid' => $schoolid))}">发放记录</a></li>
+			<li ><a href="{php echo $this->createWebUrl('yuecostlog', array('op' => 'display', 'schoolid' => $schoolid))}">消费记录</a></li>
+		</ul>
+	</div>
+</div> -->
+
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">心理咨询师管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="shrink" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+               <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按老师姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="teaname" type="text" value="{$_GPC['teaname']}">
+                    </div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+
+					<div class="col-sm-2 col-lg-2">
+						<a class="btn btn-success qx_3902" href="javascript:AddShrink();"><i class="fa fa-plus"> 添加咨询师</i></a>
+                    </div>
+				</div>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+					<th style="width:10%;">咨询师</th>
+					<th style="width:10%;">联系方式</th>
+					<th style="width:72%;">简介</th>
+					<th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<td>
+                        <div style="display: flex;" >
+                            <img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($item['thumb'])}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($school['tpic'])}{/if}" width="50" style="border-radius: 3px;" />
+                            <div style="padding:0px 20px;">
+                               <div>{$item['tname']}</div> 
+                               {if $item['sex'] == 0}
+                                    <div class="label label-info">女</div> 
+                               {else}
+                                    <div class="label label-primary">男</div> 
+                               {/if}
+                            </div>
+                        </div>
+                       </td>
+                       <td>{if !empty($item['mobile'])}{$item['mobile']}{else}未设置联系方式{/if}</td>
+                    <td>
+					   {$item['description']}
+                    </td>
+					<!-- <td>
+					   {$item['nj_name']}
+                    </td>
+					<td><span class="label label-success">￥{$item['start_yue']}</span></td>
+					<td>
+					    <span class="label label-info">{php echo date("Y-m-d H:i:s",$item['createtime'])}</span>
+                    </td> -->
+
+
+
+                    <td class="" style="text-align:right;">
+                        <a class="btn btn-default btn-sm " href="javascript:EditShrink({$item['id']})" title="编辑"><i class="fa fa-pencil"></i></a>
+						<a class="btn btn-default btn-sm " href="{php echo $this->createWebUrl('shrink', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('该操作将删除当前心理咨询师以及其所有咨询记录，是否确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="EditShrink" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft">
+       
+        <div class="modal-content" id="ed_stubox">
+            <div class="modal-header" style="text-align: center;color: black;">
+                <h4 class="modal-title" id="myModalLabel">编辑咨询师</h4>
+            </div>
+            <div class="modal-body" style="height:100%;overflow-y: scroll;">
+                <div class="loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+                <form style="padding-top: 30px;">
+                    <input type="hidden" value="0" name="shrinkId">
+                    <div class="form-group" >
+                        <label class="col-sm-3 control-label">老师</label>
+                        <div class="col-sm-9 " >
+                            <!-- <input type="text" class="form-control" name="" id=""> -->
+                            <select name="tid" id="" class="form-control">
+                                {loop $teacherlist $row}
+                                <option value="{$row['id']}">{$row['tname']}</option>
+                                {/loop}
+                            </select>
+
+                            <span class="form-control" style="border:none" id="TN" >name</span>
+                        </div>
+                    </div>
+                    <div class="form-group" > 
+                        <label class="col-sm-3 control-label">简介</label>
+                        <div class="col-sm-9" >
+                            <textarea type="text" style="resize: none;height: 100px;border-radius: 3px;padding:5px"  name="description" class="form-control"></textarea>
+                            <div class="help-block">建议字数在60字内</div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div class="modal-foot">
+                <a class="btn btn-primary" style="color: #fff;" onclick="SureAddShrink();">确定</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function EditShrink(id){
+    $("#EditShrink .loading-layer").show()
+    $("#EditShrink").modal('toggle')
+    let url = "{php echo $this->createWebUrl('shrink', array('schoolid' => $schoolid))}";
+    $.ajax({
+        url: url,
+        type: "post",
+        dataType: "json",
+        data:{
+            id:id,
+            op:'GetShrinkInfo'
+        },
+        success: function (res) {
+            $("select[name=tid]").hide()
+            $("#TN").text(res.data.tname).show()
+            $("textarea[name=description]").val(res.data.description)
+            $("input[name=shrinkId]").val(id)
+            $("#EditShrink .loading-layer").hide()
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+            //DoSomething
+        }
+    });
+}
+
+function AddShrink(){
+    $("select[name=tid]").val('').show()
+    $("#TN").text('').hide()
+    $("textarea[name=description]").val('')
+    $("input[name=shrinkId]").val(0)
+    $("#EditShrink .loading-layer").hide()
+    $("#EditShrink").modal('toggle')
+}
+
+function SureAddShrink(){
+    let url = "{php echo $this->createWebUrl('shrink', array('op' => 'editshrink','schoolid' => $schoolid))}"
+    if(Number($("select[name=tid]").val()) <= 0 && Number($("input[name=shrinkId]").val()) == 0 ){
+        ReToastGlobal("请选择老师")
+        return
+    }
+    $.ajax({
+        url: url,
+        type: "post",
+        dataType: "json",
+        data:{
+            tid:$("select[name=tid]").val(),
+            description:$("textarea[name=description]").val(),
+            id:$("input[name=shrinkId]").val()
+        },
+        success: function (res) {
+            ReToastGlobal(res.msg)
+            if(res.status === true){
+                setTimeout(() => {
+                window.location.reload()
+                    
+                }, 1000);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown){
+            console.log(jqXHR)
+            console.log(textStatus)
+            console.log(errorThrown)
+            //DoSomething
+        }
+    });
+}
+
+$(function(){
+
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1003902,1,$schoolid))}
+		$(".qx_3902").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1003903,1,$schoolid))}
+		$(".qx_3903").hide();
+	{/if}
+
+
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的补助记录!');
+            return false;
+        }
+        if(confirm("确认要删除选择的补助记录?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('buzhu', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+
+
+
+	$(document).ready(function() {
+		$("#xq").change(function() {
+			var cityId = $("#xq option:selected").attr('value');
+			var type = 1;
+			changeGrade(cityId, type, function() {
+			});
+		});
+	});
+	function changeGrade(gradeId, type) {
+		//alert(cityId);
+		var schoolid = "{$schoolid}";
+		var classlevel = [];
+		//获取班次
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+
+			data = JSON.parse(data);
+			classlevel = data.bjlist;
+
+			var htmls = '';
+			htmls += '<select id="bj_id"><option value="">请选择班级</option>';
+			if (classlevel != '') {
+				for (var i in classlevel) {
+					htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+				}
+			}
+			$('#bj').html(htmls);
+		});
+
+	}
+</script>
+{/if}
+{template 'public/footer'}

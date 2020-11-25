@@ -1,0 +1,670 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<link type="text/css" rel="stylesheet" href="./resource/components/switch/bootstrap-switch.min.css?v=2018020415">
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+<style>
+
+.schooltip { position: absolute; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+
+
+	.cLine { overflow: hidden; padding: 5px 0; color: #000000; }
+	.alert { padding: 8px 35px 0 10px; text-shadow: none; -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); background-color: #f9edbe; border: 1px solid #f0c36d; -webkit-border-radius: 2px; -moz-border-radius: 2px; border-radius: 2px; color: #333333; margin-top: 5px; }
+	.alert p { margin: 0 0 10px; display: block; }
+	.alert .bold { font-weight: bold; }
+</style>
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+			<li {if $_GPC['do']=='groupactivity'}class="active"{/if}><a href="{php echo $this->createWebUrl('groupactivity', array('op' => 'display', 'schoolid' => $schoolid))}">集体活动</a></li>
+			{if IsHasQx($tid_global,1005301,1,$schoolid)}
+			<li {if $_GPC['do']=='checkmeeting'}class="active"{/if}><a href="{php echo $this->createWebUrl('checkmeeting', array('op' => 'display', 'schoolid' => $schoolid))}">打卡会议</a></li>
+			{/if}
+		</ul>
+	</div>
+</div>
+{if $operation == 'post'}
+<style>
+	#stu_div{ max-height: 150px; min-height: 40px; overflow-y: auto; border: 1px solid #eae5e5; padding: 5px 2px; }
+	.reStyleLabel .radio-inline{margin-left: 0;padding-left:0;width: 130px;padding-right: 10px;}
+	#InviteList{text-align: left;}
+	.invite_cell{border: 1px solid #e8e8e8; padding:3px 3px;white-space: nowrap; display: inline-block; margin:3px 2px;cursor: pointer;transition: background-color .2s;}
+	.invite_cell:hover{background-color: gainsboro;}
+	.invite_cell.All{border-color: #57d1e4;}
+	.invite_cell.All:hover{background-color: #d4f4f9;}
+	.loading-layer{overflow: hidden;display: flex;align-items: center;justify-content: space-around;}
+</style>
+<div class="panel panel-info">
+    <div class="panel-heading"><a class="btn btn-primary" onclick="javascript :history.back(-1);"><i class="fa fa-tasks"></i> 返回列表</a></div>
+</div>
+<div class="main">
+	<form id="meeting-form" action="" method="post" class="form-horizontal form"	enctype="multipart/form-data">
+		<div class="panel panel-default">
+			<div class="panel-body" >
+				<div class="form-group">
+					<label class="col-md-2 control-label"><span style="color:red">*</span>会议名称</label>
+					<div class="col-md-7">
+						<input type="text" name="title" class="form-control" value="{$checkItem['title']}" />
+					</div>
+				</div>
+				{if $_W['isfounder'] || $_W['role'] == 'owner'}
+				<div class="form-group">
+					<label class=" col-md-2 control-label"><span style="color:red">*</span>发起人</label>
+					<div class="col-sm-2">
+                        <select name="creator_tid" class="form-control">
+							<option value="0">请选择</option>
+							{loop $teachers $row}
+							<option value="{$row['id']}" {if $row['id'] == $checkItem['creator_tid']}selected{/if}>{$row['tname']}</option>
+							{/loop}
+                        </select>
+					</div>
+				</div>
+				{else}
+					<input type="hidden" name="creator_tid" value="{$tid_global}">
+				{/if}
+				<div class="form-group">
+					<label class="col-md-2 control-label"><span style="color:red">*</span>会议时间</label>
+					<div class="col-md-7">
+						<div style="display: flex;justify-content: start;align-items: center;">
+							<div>
+								{php echo tpl_form_field_date('starttime', $checkItem['starttime'],true)}
+							</div>
+							 <span style="padding:0 10px">至</span>
+							<div>
+								{php echo tpl_form_field_date('endtime', $checkItem['endtime'],true)}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label"><span style="color:red">*</span>提前签到时间</label>
+					<div class="col-md-7">
+						<div style="display: flex;justify-content: start;align-items: center;">
+							<div>
+								<input type="text" name="earlytime" class="form-control" value="{$checkItem['earlytime']}" />
+							</div>
+							 <span style="padding:0 10px">分钟</span>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label"><span style="color:red">*</span>会议缩略图</label>
+					<div class="col-md-7">
+						{php echo tpl_form_field_image('thumb', $checkItem['thumb'])}
+					<div class="help-block">缩略图建议尺寸：90像素 * 70像素</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-md-2 control-label"><span style="color:red">*</span>会议描述</label>
+					<div class="col-md-7">
+				   		{php echo tpl_ueditor('content', $checkItem['content']);}
+					</div>
+                </div>
+                <div class="form-group">
+					<label class=" col-md-2 control-label"><span style="color:red">*</span>会议类型</label>
+					<div class="col-sm-2">
+                        <select name="type" onchange="ChangeMtype(this)"  class="form-control">
+                            <option value="1" >教师会议</option>
+                            <option value="2" >家长会议</option>
+                        </select>
+					</div>
+				</div>
+
+				<div id="TeaMeeting" style="display: none;">
+					<div class="form-group" >
+						<label class="col-md-2 control-label">邀请列表</label>
+						<div class="col-md-7">
+							<div class="form-control" style="min-height: 40px;" >
+								<div id="InviteList">
+									{loop $fzlist $row}
+										<span  class="invite_cell All"  onclick="DeleteSpan(this,'{$row['sname']}')">{$row['sname']}
+											<input class="sidArr" type="hidden" name="FzArr[]" value="{$row['sid']}">
+											<i class="fa fa-times" style="font-size: 13px;"></i>
+										</span>
+									{/loop}
+									{loop $extralist $row}
+										<span  class="invite_cell"  onclick="DeleteSpan(this)">{$row['tname']}
+											<input class="sidArr" type="hidden" name="TeaArr[]" value="{$row['id']}">
+											<i class="fa fa-times" style="font-size: 13px;"></i>
+										</span>
+									{/loop}
+								</div>
+							</div>
+							<div class="help-block">点击已邀请教师/分组可移除</div>
+						</div>
+					</div>
+					<div class="form-group" >
+						<label class="col-md-2 control-label">邀请教师</label>
+						<div class="col-md-7">
+							<label class="radio-inline">
+								<input type="radio" name="invite_type" value="1" >整组邀请
+							</label>
+							<label class="radio-inline">
+								<input type="radio" name="invite_type" value="2" >单独邀请
+							</label>
+						</div>
+					</div>
+
+					<div class="SwitchInvite" id="invite_type_1">
+						<div class="form-group" >
+							<label class="col-md-2 control-label">选择分组</label>
+							<div class="col-md-7 reStyleLabel">
+								{loop $TeaFzList $tfli}
+								<label  class="radio-inline" >
+									<input onclick="ChooseFz({$tfli['sid']},'{$tfli['sname']}')" type="checkbox" value="{$tfli['sid']}" {if strstr($checkItem['fzlist'],$tfli['sid'])}checked{/if}> {$tfli['sname']}
+								</label>
+								{/loop}
+							</div>
+						</div>
+					</div>
+					<div class="SwitchInvite" id="invite_type_2">
+						<div class="form-group" >
+							<label class="col-md-2 control-label">选择分组</label>
+							<div class="col-md-2">
+								<select class="form-control" onchange="ChangeTeaFzSelect(this)" name="2TeaFz">
+									<option value="-1">未分组</option>
+									{loop $TeaFzList $tflsi}
+									<option value="{$tflsi['sid']}">{$tflsi['sname']}</option>
+									{/loop}
+								</select>
+							</div>
+						</div>
+						<div class="form-group" >
+							<label class="col-md-2 control-label"> </label>
+							<div class="col-md-7 reStyleLabel" style="position: relative;min-height: 60px;" >
+								<div class="loading-layer" id="TeaListLoader">
+									<img src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/web/images/blue_four_round.png">
+								</div>
+								<div id="ExtraTeaList" > </div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="StuMeeting" style="display: none;" >
+					<div class="form-group" >
+						<label class="col-md-2 control-label">指定班级</label>
+						<div class="col-md-2">
+							<select name="njid" class="form-control" id="xq">
+								<option value="0">选择年级</option>
+								{loop $NjList $Nji}
+								<option value="{$Nji['sid']}" {if $Nji['sid'] == $checkItem['njid']}selected{/if}>{$Nji['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+						<div class="col-md-2">
+							<select name="bjid" class="form-control" id="bj_select">
+								<option value="0">选择班级</option>
+								{loop $BjList $Bji}
+								<option value="{$Bji['sid']}" {if $Bji['sid'] == $checkItem['bjidlist']}selected{/if}>{$Bji['sname']}</option>
+								{/loop}
+							</select>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">创建后是否群发</label>
+					<div class="col-sm-9">
+						<label class="radio-inline">
+							<input type="radio" name="is_allsend" value="1" {if $reply['is_wxsign']== 1 }checked{/if} id="credit8">是
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="is_allsend" value="2" {if $reply['is_wxsign'] == 2 || empty($reply['is_wxsign']) }checked{/if} id="credit9">否
+						</label>
+						<div class="help-block">选择会议创建后是否群发至相关班级</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group col-sm-12">
+			<span  class="btn btn-primary col-lg-1" style="cursor: pointer;" onclick="CheckForm('meeting-form')">提交</span>
+			<input style="display: none;" type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+		</div>
+	</form>
+</div>
+<script type="text/javascript">
+
+	$(function(){
+		let type = `{$checkItem['type']}` ? `{$checkItem['type']}` : 1;
+		$("select[name='type']").val(type)
+		$("select[name='type']").change()
+		$("input[name='invite_type']").change(function(){
+			let Val = Number($(this).val())
+			$(`#invite_type_${Val}`).slideDown(200).siblings(".SwitchInvite").slideUp(200)
+			if(Val === 2){
+				$("select[name='2TeaFz']").change()
+			}
+		})
+		$("input[name='invite_type'][value='1']").click()
+	})
+
+	$(document).ready(function () {
+		$("#xq").change(function () {
+			var cityId = $("#xq option:selected").attr('value');
+			var type = 1;
+			changeGrade(cityId, type, function () {});
+		});
+	});
+
+	//修改会议类型
+	function ChangeMtype(e) {
+		let Val = Number($(e).val());
+		if (Val === 1) {
+			$("#TeaMeeting").slideDown(200);
+			$("#StuMeeting").slideUp(200);
+		} else {
+			$("#TeaMeeting").slideUp(200);
+			$("#StuMeeting").slideDown(200);
+		}
+	}
+
+	//选择整组邀请
+	function ChooseFz(id,text){
+		if($(`input[name='FzArr[]'][value='${id}']`).length === 0){
+			let html = `<span  class="invite_cell All"  onclick="DeleteSpan(this,'${text}')">${text}
+						<input class="sidArr" type="hidden" name="FzArr[]" value="${id}">
+						<i class="fa fa-times" style="font-size: 13px;"></i>
+					</span>`
+			$("#InviteList").append(html)
+			// console.log($(`select[name='2TeaFz'] option[value=${id}]`));
+			$(`select[name='2TeaFz'] option[value=${id}]`).remove()
+		}else{
+			$(`input[name='FzArr[]'][value='${id}']`).parents(".invite_cell").remove()
+			let html = `<option value=${id}>${text}</option>`
+			$(`select[name='2TeaFz']`).append(html)
+		}
+	}
+
+	//教师单独邀请选择分组
+	function ChangeTeaFzSelect(e){
+		let id = $(e).val(),
+			url = "{php echo $this->createWebUrl('checkmeeting', array('schoolid' => $schoolid,'op'=>'GetTeaListByFz'))}";
+			$("#TeaListLoader").show()
+		$.ajax({
+			url: url,
+			type: "post",
+			dataType: "json",
+			data:{
+				id:id
+			},
+			success: function (res) {
+				$("#ExtraTeaList").html('');
+				const data = res.data
+				data.forEach(x => {
+					let html = `<label  class="radio-inline" >
+									<input onclick="ChooseTea(${x.id},'${x.tname}')" type="checkbox" class="TeaInput" value="${x.id}" > ${x.tname}
+								</label>`;
+					$("#ExtraTeaList").append(html);
+					if($(`input[name='TeaArr[]'][value='${x.id}']`).length !== 0){
+						$(`input.TeaInput[value='${x.id}']`).prop('checked',true)
+					}
+				});
+			$("#TeaListLoader").hide()
+
+			},
+			error: function (jqXHR, textStatus, errorThrown){
+				console.log(jqXHR)
+				console.log(textStatus)
+				console.log(errorThrown)
+				//DoSomething
+			}
+		});
+	}
+
+	//选择教师单独邀请
+	function ChooseTea(id,text){
+		if($(`input[name='TeaArr[]'][value='${id}']`).length === 0){
+			let html = `<span  class="invite_cell"  onclick="DeleteSpan(this)">${text}
+						<input class="sidArr" type="hidden" name="TeaArr[]" value="${id}">
+						<i class="fa fa-times" style="font-size: 13px;"></i>
+					</span>`
+		$("#InviteList").append(html)
+		}else{
+			$(`input[name='TeaArr[]'][value='${id}']`).parents(".invite_cell").remove()
+		}
+
+	}
+
+	//删除已邀请教师/分组
+	function DeleteSpan(e,fz){
+		let id = $(e).find("input").val()
+		if($(`input[type='checkbox'][value='${id}']`).length !== 0){
+			$(`input[type='checkbox'][value='${id}']`).prop('checked',false)
+		}
+		if(typeof(fz) === 'string'){
+			let html = `<option value=123>${fz}</option>`;
+			$(`select[name='2TeaFz']`).append(html)
+		}
+		$(e).remove()
+	}
+
+	//检查表单必填项
+	function CheckForm(formId){
+		let title      = $("#meeting-form input[name='title']").val(),
+		    thumb      = $("#meeting-form input[name='thumb']").val(),
+		    type       = $("select[name='type']").val(),
+		    creator_tid= $("select[name='creator_tid']").val(),
+		    inviteList = $("#meeting-form input.sidArr").length,
+		    bjid       = $("#meeting-form select[name='bjid']").val();
+		if(title === '' || title === null){
+			ReToastGlobal('请填写会议名称')
+			return
+		}
+		if(creator_tid === '0' || title === null){
+			ReToastGlobal('请选择发起人')
+			return
+		}
+		if(thumb === '' || thumb === null){
+			ReToastGlobal('请选择会议缩略图')
+			return
+		}
+		if(Number(type) === 1 && inviteList === 0){
+			ReToastGlobal('请选择邀请教师或分组')
+			return
+		}
+		if(Number(type) === 2 && Number(bjid) === 0){
+			ReToastGlobal('请选择指定班级')
+			return
+		}
+		$("input[name='submit']").click()
+	}
+
+	function changeGrade(gradeId, type) {
+		//alert(cityId);
+		var schoolid = "{$schoolid}";
+		var classlevel = [];
+		//获取班次
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {
+			'gradeId': gradeId,
+			'schoolid': schoolid
+		}, function (data) {
+			data = JSON.parse(data);
+			classlevel = data.bjlist;
+			var htmls = '';
+			htmls += '<option value="0">请选择班级</option>';
+			if (classlevel != '') {
+				for (var i in classlevel) {
+					htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+				}
+			}
+			$('#bj_select').html(htmls);
+		});
+	}
+
+</script>
+{elseif $operation == 'display'}
+<style>
+	.hover-btn{border-radius: 5px;padding: 3px 5px;background-color: rgb(0, 159, 233);color:white;cursor: Default;font-size: 12px;}
+	.reset-hover-box{padding:10px 10px;background-color:#1b1a1ab8;width:auto;max-width: 120px;color:white;max-width:300px;font-size: 13px;}
+	.reset-hover-box .li-span:not(:last-of-type){position: relative;margin-right:15px;display: inline-block;}
+	.reset-hover-box .li-span:not(:last-of-type):after {content:"";position: absolute;height: 80%;width: 2px;background-color: white;right:-10px;top:10%}
+	.ReSpanColor{padding:2px 10px;font-size: 12px;background-color: #45bac5;margin-bottom: 5px;display: inline-block;color:white;border-radius: 5px;}
+</style>
+<div class="panel panel-info">
+	<div class="panel-heading">会议列表</div>
+	<div class="panel-body">
+
+		<form accept-charset="UTF-8" action="./index.php" class="form-horizontal" id="diandanbao/table_search" method="get"
+			role="form">
+			<input name="utf8" type="hidden" value="✓" />
+			<input type="hidden" name="c" value="site" />
+			<input type="hidden" name="a" value="entry" />
+			<input type="hidden" name="m" value="fm_jiaoyu" />
+			<input type="hidden" name="do" value="checkmeeting" />
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+			<div class="form-group">
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按会议名称</label>
+				<div class="col-sm-2 col-lg-2">
+					<input class="form-control" name="meeting_name" id="" type="text" value="{$_GPC['meeting_name']}">
+				</div>
+				<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按起止时间范围</label>
+				<div class="col-sm-2 col-lg-2">
+					{php echo tpl_form_field_daterange('searchtime', array('start' => date('Y-m-d', $searchStime), 'end' => date('Y-m-d', $searchEtime)));}
+				</div>
+
+				<div class="col-sm-2 col-lg-2" style="margin-left: 55px;">
+					<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+				</div>
+				<div class="col-sm-2 col-lg-2">
+					<a class="btn btn-primary qx_5301" href="{php echo $this->createWebUrl('checkmeeting', array('op' => 'post', 'schoolid' => $schoolid))}" >
+						<i class="fa fa-plus" style="font-size: 12px !important" >&nbsp;&nbsp;添加集体会议</i>
+					</a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="panel panel-default">
+	<div class="table-responsive panel-body">
+		<table class="table">
+			<thead>
+				<tr>
+					<th style="width: 10%;">缩略图</th>
+					<th style="width: 40%;">标题</th>
+					<th style="width: 10%;">发起人</th>
+					<th style="width: 12%;">会议起止时间</th>
+					<th style="width: 8%;">与会人员</th>
+					<th style="width: 10%;">打卡情况</th>
+					<th class="qx_e_d" style="text-align:right;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+					<td><img src="{php echo tomedia($item['thumb'])}" width="50"></td>
+					<td> {$item['title']} </td>
+					<td> {$item['tname']} </td>
+					<td>
+						<span style="font-size: 12px;"> 起：</span><span  class="ReSpanColor">{php echo date('Y-m-d H:i',$item['starttime'])}</span><br/>
+						<span style="font-size: 12px;"> 止：</span><span  class="ReSpanColor">{php echo date('Y-m-d H:i',$item['endtime'])}</span>
+
+						<!-- <span class="label label-info">." 至 ".date('Y-m-d H:i',$item['endtime'])}</span> -->
+					</td>
+					<td>
+						<div><span class="show_yulan_img hover-btn">悬浮查看</span> </div>
+						<div class="schooltip reset-hover-box">
+						{if $item['type'] == 1}
+							{if !empty($item['FzList'])}
+							<div>整组邀请</div>
+							<div style="padding-left: 20px;">
+								{loop $item['FzList'] $fzi}
+								<span class="li-span">{$fzi['sname']}</span>
+								{/loop}
+							</div>
+							{/if}
+							{if !empty($item['TeaList'])}
+							<div>单独邀请</div>
+							<div style="padding-left: 20px;">
+								{loop $item['TeaList'] $ti}
+									<span class="li-span">{$ti['tname']}</span>
+								{/loop}
+							</div>
+							{/if}
+						{else}
+							{if !empty($item['BjList'])}
+							<div style="padding-left: 20px;">
+								{loop $item['BjList'] $bi}
+									<span class="li-span">{$bi['sname']}</span>
+								{/loop}
+							</div>
+							{/if}
+						{/if}
+						</div>
+					</td>
+					<td>
+						{if $item['hasBegin'] == true}
+						<a class="btn btn-info" onclick="signlist(`{$item['id']}`)" >
+							<i class="fa fa-align-justify" style="font-size: 12px !important" >&nbsp;&nbsp;签到列表</i>
+						</a>
+						{else}
+						 	<span>会议暂未开始</span>
+						{/if}
+					</td>
+
+					<td class="qx_e_d" style="text-align:right;">
+						<a class="btn btn-default btn-sm qx_5302" href="{php echo $this->createWebUrl('checkmeeting', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_5303" href="{php echo $this->createWebUrl('checkmeeting', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除并清空该会议打卡记录？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+
+<style>
+	.signlist-item{display: flex;align-items: center;justify-content: space-between;padding:5px 10px}
+	.signlist-item:hover{background-color:#ececec;}
+	.signlist-item .userinfo{display: flex;align-items: center;flex:1}
+	.signlist-item .signtime{display: flex;align-items: center;width: 130px;margin-right:50px;}
+	.signlist-item .option{padding:5px;cursor: pointer;width: 40px;height: 40px;}
+	.signlist-item .option .option-btn{width: 30px;height: 30px;display: flex;align-items: center;display: none;}
+	.signlist-item:hover .option .option-btn{display: flex;}
+
+	.userinfo .img{width: 40px;height: 40px;border-radius: 50%;}
+	.userinfo .content{margin-left: 10px;}
+	.userinfo .content .tips{display: inline-block;padding:2px 10px;font-size: 12px;border-radius: 5px;height: 20px;color:white}
+	.userinfo .content .tea-tips{background-color: #29b0ff;}
+	.userinfo .content .stu-tips{background-color: #6181f5;}
+	.userinfo .content .title-name{font-size: 12px;line-height: 20px;position: relative;margin-left: 25px;display: inline-block;}
+	.userinfo .content .title-name:after{content:"";position: absolute;height: 8px;width: 8px;border-radius: 50%;top:7px;left:-15px;}
+	.userinfo .content .tea-title:after{background-color: rgb(0, 159, 233);}
+	.userinfo .content .stu-title:after{background-color:#ffb161;}
+
+  
+</style>
+
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="info_bigbox" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog myModalleft" style="width: 30%;">
+        <div class="loading-layer"><div><img  style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+       
+        <div class="modal-content"  style="max-height:unset !important;">
+			<div class="modal-header">
+				<h4 class="modal-title" style="color:black;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;" >打卡记录 - <span id="titie"></span></h4>
+			</div>
+
+			<div class="modal-body" style="height:100%;overflow-y: auto; max-height: 87%;">
+				<div id="info_box" class="signlist-box hide-dock-content">
+				</div>
+			 </div>
+
+
+			<div class="modal-foot">
+				<a class="btn btn-primary" style="color: #fff;" onclick="add_stu();">提交</a>
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+        </div>
+    </div>
+</div>
+
+{$pager}
+ 
+
+{/if}
+<script type="text/javascript">
+	$(function(){
+		var e_d = 2 ;
+		{if (!(IsHasQx($tid_global,1005302,1,$schoolid)))}
+			$(".qx_5301").hide();
+			e_d = e_d - 1 ;
+		{/if}
+		{if (!(IsHasQx($tid_global,1005303,1,$schoolid)))}
+			$(".qx_5303").hide();
+		{/if}
+		if(e_d == 0){
+			$(".qx_e_d").hide();
+		}
+	});
+</script>
+<script type="text/javascript">
+
+$(function(){
+	var x = -190;
+	var y = -60;
+	$(".show_yulan_img").mouseover(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).show();
+		console.log(e.pageY);
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"}).show("fast");
+	}).mouseout(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).hide();
+	}).mousemove(function (e) {
+		let NeedShow = $(this).parent().next();
+		$(NeedShow).css({"top": (e.pageY + y) + "px","left": (e.pageX + x) + "px"});
+	});
+})
+
+function signlist(id){
+	$('.loading-layer').show()
+    $('#info_box').empty();
+    $('body').toggleClass('modal-open');
+    $('#info_bigbox').modal('toggle');
+    $.ajax({
+        url: "{php echo $this->createWebUrl('checkmeeting', array('op' => 'signlist', 'schoolid' => $schoolid))}",
+        type: "post",
+        dataType: "json",
+        data: {
+            id:id,
+        },
+        success: function(result) {
+			let data = result.data
+			let html = '';
+			for(let item of data){
+				if(`${item.tips}` == '发起人'){
+					iscreator = 'tea-title';
+				}else{
+					iscreator = 'stu-title';
+				}
+				if(`${item.createtime}` == '未签到'){
+					hassign = 'style="color:red"';
+					deleteHtml = ''
+				}else{
+					hassign = ''
+					deleteHtml = `<div class="option" >
+							<div class="option-btn">
+								<i class="fa fa-times" onclick='delLog(this,${item.id})'></i>
+							</div>
+						</div>`
+				}
+				html += `<div class="signlist-item">
+						<div class="userinfo" >
+							<img src="${item.icon}" class="img">
+							<div class="content">
+								<div>
+									${item.username}
+									<span class="title-name ${iscreator}">${item.tips}</span>
+								</div>
+							</div>
+						</div>
+						<div class="signtime" ${hassign} >
+							${item.createtime}
+						</div>
+						${deleteHtml}
+					</div>`
+			}
+			$("#info_box").html(html)
+			$("#titie").html(result.title)
+            $('.loading-layer').hide()
+        }
+    });
+}
+function delLog(obj,id){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('checkmeeting', array('op' => 'delLog', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data:{id,id},
+		success: function (res) {
+			alert(res.msg)
+			location.reload()
+		}
+	});
+}
+</script>
+{template 'public/footer'}

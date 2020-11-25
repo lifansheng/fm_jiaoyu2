@@ -1,0 +1,213 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-02-14 16:41:20
+ * @LastEditTime: 2020-03-07 17:30:58
+ -->
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+</head>
+<style type="text/css">
+    .stu-info{ background-image: url('{OSSURL}public/mobile/img/bg@3x.png'); background-size: 100% 100%; margin: 0; padding-top: 2.5rem; border-radius: 0; width:100%; height: 12rem; text-align: center; color:white; }
+    .stu-info img{ width: 3rem; height: 3rem; }
+    .stu-info h4{ color:white; font-size: 0.7rem; margin-top: 0.1rem; margin-bottom: 0.1rem; }
+    .stu-info p{ color:white; font-size: 0.5rem; margin-bottom: 0.1rem; }
+    .BigDiv{ display: flex; width: 100%; flex-flow: row wrap; }
+    .middleDiv{ width: 33%; margin-top: 5%; text-align: center; }
+ 
+    .s_name{ width: 100%; padding: 10px; text-align: center;border-bottom: 1px solid #ccc; }
+    .act{ border-bottom: 2px solid #34afbe; }
+ </style>
+
+<body>
+    {if $_GPC['bj_id']}
+    <div onclick="SelectStu()"
+        style="z-index: 2000;position: fixed; color: #b52323; border: 1px solid; border-radius: 10px 0 0 10px; right: 0; top: 25px;">
+        切换学生
+    </div>
+    {/if}
+    <style>
+        .ShowPostBox{position: fixed;top:0;left:0;background-color: rgba(0, 0, 0, 0.49);z-index: 999;height: 0;width: 0;}
+        .ShowPostBox.InShow{height: 100%;width: 100%;}
+        .ShowPostBox .bkgbox{position: absolute;width: 100%;height: 100%;z-index: 1;display: none;}
+        .ShowPostBox.InShow .bkgbox{display: block;}
+        .ShowPostBox .SPB-content{position: absolute;width: 92%;margin:30px 4% auto 4%;z-index: 2; transition:opacity 0.2s .1s,transform 0.2s .1s;   opacity: 0;transform:scale(0.6); }
+        .ShowPostBox.InShow .SPB-content{opacity: 1;transform:scale(1); }
+        .ShowPostBox .SPB-content img{width: 100%;position: relative;border-radius: 10px;}
+        .ShowPostBox .SPB-content .TipsWord{width: 100%;text-align: center;color:white;font-size: 16px;}
+    </style>
+    <div class="ShowPostBox" >
+        <div class="bkgbox" onclick="javascript:$(this).parent().removeClass('InShow')"></div>
+        <div class="SPB-content" >
+            <img src="">
+        </div>
+    </div>
+    <div style="width: 100%;height: 80px;display: flex;align-items: center;background: url('{OSSURL}public/mobile/img/bg@3x.png') no-repeat left top; background-size:cover;" >
+        <div style="width: 80px;text-align: center;height: 60px;" >
+            <img src="{if $student['icon']}{php echo tomedia($student['icon'])}{else}{php echo tomedia($school['spic'])}{/if}"  style="width: 60px;height: 60px;border-radius: 50%;" alt="">
+        </div>
+        <div style="color:#171717;flex:1">
+            <div style="font-size:16px">{$student['s_name']}</div>
+            <div style="font-size: 14px;">{$bj['sname']}</div>
+        </div>
+        <div onclick="SelectStu()" style="z-index: 2000;position: fixed; color: #b52323; border: 1px solid; border-radius: 10px 0 0 10px; right: 0; top: 25px;">
+            切换学生
+        </div>
+    </div>
+    <div style="width: 100%;height: 40px;display: flex;align-items: center;background-color: white;margin-top: 10px;font-size: 14px;padding:0 10px" >
+        <div style="position: relative;width: 100%;">
+            <div style="position: absolute;z-index: 2;opacity: 0;">
+                <input type="date" id="date" onchange="GetMcData()" value="{php echo date('Y-m-d',$first['createdate'])}">
+            </div>
+            <div style="width: 100%;">
+                <span id="dayhtml">{php echo date("Y-m-d",$first['createdate'])}</span>检测情况<span style="color: #ccc;font-size: 12px;float:right">点击日期切换</span>
+            </div>
+        </div>
+        </div>
+        <div class="temp_data"></div>
+        <div style="width: 100%; height: 100%; position: fixed;z-index: 2000; top: 0; display: none;" id="showmodal">
+            <div style="position: absolute; background-color: rgba(0, 0, 0, 0.39); width: 100%; height: 100%;z-index: 1;" onclick="HideModal()">
+            </div>
+            <div style="position: absolute; background-color: white; width: 25%; height: 100%;min-height: 400px;right: -30%;z-index: 2; overflow-y: auto;" id="ShowItem">
+                {loop $stulist $row}
+                <div class="s_name  {if $row['id'] == $_GPC['sid']}act{/if}" onclick="gomcdetail(`{$row['id']}`,`{$row['bj_id']}`)">
+                    {$row['s_name']}
+                </div>
+                {/loop}
+            </div>
+        </div>
+    {if $_GPC['bj_id']}
+    {php include $this->template('newfooter');}
+    {/if}
+</body>
+
+</html>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+
+<script src=" https://cdn.staticfile.org/echarts/4.3.0/echarts.min.js"></script>
+<script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>
+{php include $this->template('port');} 
+<script>
+    var sid = `{$_GPC['sid']}`;
+    GetMcData()
+    function GetMcData(){
+        let date = $("#date").val()
+        $("#dayhtml").html(date)
+         ajax_start_loading("获取数据中")
+        $.post("{php echo $this->createMobileUrl('tmcdetail', array('op' => 'getMcData', 'schoolid' => $schoolid))}",{'date' : date,'sid':sid}, function(html){
+            $(".temp_data").html(html)
+            search()
+            ajax_stop_loading()
+        },'html');
+    }
+    function SelectStu() {
+        $("#showmodal").show()
+        $("#showmodal #ShowItem").animate({ right: 0 }, 300)
+    }
+    function gomcdetail(sid, bj_id) {
+        location.href = `{php echo $this->createMobileUrl('tmcdetail', array('schoolid' => $schoolid), true)}` + '&sid=' + sid + '&bj_id=' + bj_id;
+    }
+    function HideModal() {
+        $("#showmodal #ShowItem").animate({ right: '-30%' }, 300, function () {
+            $("#showmodal").hide()
+        })
+    }
+    //默认进入取一个学生的数据
+    $(function () {
+        let keep_MC = `{php echo keep_MC()}`
+        if(keep_MC == 1){
+            search()
+        }
+    })
+    function search() {
+        var sid = `{$mcdata['sid']}`
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('tmcdetail',array('op'=>'GetStuMcData','schoolid'=>$schoolid))}",
+            type: "POST",
+            data: { sid: sid },
+            dataType: "json",
+            success: function (datas) {
+                let ds = PieOption['mobilestumc'];
+                ds.legend.data = ['身高', '体重'];
+                ds.xAxis[0].data = datas.date;
+                ds.series[0].data = datas.height;
+                ds.series[1].data = datas.weight;
+                var myChart = echarts.init($('#echarts-pie-chart-mobilestumc')[0]);
+                myChart.setOption(ds);
+
+                let tiwen = PieOption['tiwennum'];
+                tiwen.xAxis.data = datas.date;
+                tiwen.series[0].data = datas.tiwen;
+                tiwen.series[0].name = '体温';
+                tiwen.yAxis.max = 42;
+                tiwen.yAxis.min = 35;
+                var myChart2 = echarts.init($('#echarts-pie-chart-tiwenmc')[0]);
+                myChart2.setOption(tiwen);
+
+                let eye = PieOption['mobilestumc'];
+                eye.xAxis.data = datas.date;
+                eye.legend.data = ['左眼', '右眼'];
+                eye.series[0].data = datas.lefteye;
+                eye.series[0].name = '左眼';
+                eye.series[1].data = datas.righteye;
+                eye.series[1].name = '右眼';
+                var myChart3 = echarts.init($('#echarts-pie-chart-eye')[0]);
+                myChart3.setOption(eye);
+
+            }
+        });
+    }
+</script>
+<script>
+    var WeixinApi = (function () {
+        return {
+            imagePreview: imagePreview
+        };
+        "use strict";
+        /**
+            * 调起微信Native的图片播放组件。
+            * 这里必须对参数进行强检测，如果参数不合法，直接会导致微信客户端crash
+            *
+            * @param {String} curSrc 当前播放的图片地址
+            * @param {Array} srcList 图片地址列表
+            */
+        function imagePreview(curSrc, srcList) {
+            if (!curSrc || !srcList || srcList.length == 0) {
+                return;
+            }
+            WeixinJSBridge.invoke('imagePreview', {
+                'current': curSrc,
+                'urls': srcList
+            });
+        }
+        return {
+            version: "2.5",
+            ready: wxJsBridgeReady,
+            imagePreview: imagePreview
+        };
+    })();
+
+    var srcList = new Array();
+
+
+    function wxImageShow(src) {
+        WeixinApi.imagePreview(src, srcList);
+    }
+
+    $(function () {
+        //给图片增加点击放大功能
+        $(".middleDiv").find("img").each(function () {
+            let src = $(this).attr("src");
+            srcList.push(src);
+            $(this).attr("onclick", "wxImageShow('" + src + "');");
+        });
+    });	
+</script>

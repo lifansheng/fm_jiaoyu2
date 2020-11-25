@@ -1,0 +1,137 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'post'}
+<style>
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+	}
+	input[type="number"]{
+		-moz-appearance: textfield;
+	}
+</style>
+<div class="main">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<ul class="nav nav-tabs" id="myTab">
+				<li {if $level == 'tab_basic' }class="active" {/if} {if $tab_basic_li != 1 } style="display: none;" {/if} ><a href="#tab_basic">基本设置</a></li>
+				<li {if $level == 'tab_gongn' }class="active" {/if} {if $tab_gongn_li != 1 } style="display: none;" {/if}><a href="#tab_gongn">阿里云设置</a></li>
+				<li {if $level == 'tab_ten' }class="active" {/if} {if $tab_ten_li != 1 } style="display: none;" {/if}><a href="#tab_ten">腾讯云设置</a></li>
+				<li {if $level == 'tab_sms' }class="active" {/if} {if $tab_sms_li != 1 } style="display: none;" {/if}><a href="#tab_sms" >自定义模式</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<form class="form-horizontal form" id="form1" action="" method="post" enctype="multipart/form-data">
+		<div class="tab-content">
+
+			<div class="tab-pane {if $level == 'tab_basic'} active {/if}" id="tab_basic">
+				<div class="panel panel-info">
+					{if !IsHasQx($tid,1000102,1,$schoolid)}
+					<div id="Layer2" style=" background-color: gray;opacity:0.1;position:absolute; width:100%; height:100%; z-index:9999; padding-bottom: 20px; filter:Alpha(opacity=30)" >
+					</div>
+					{/if}
+					<div class="panel-heading">
+						基本信息
+					</div>
+					<div class="panel-body">
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>正常上课时间</label>
+							<div class="col-sm-2 col-lg-2">
+								{php echo tpl_form_field_clock('starttime',$ccset['starttime'])}
+                                
+							</div>
+                            <div class="col-sm-2 col-lg-2" style="width:70px;">
+                            <input type="text" class="form-control" value="至" disabled="disabled">
+                            </div>
+                            <div class="col-sm-2 col-lg-2">
+								{php echo tpl_form_field_clock('endtime',$ccset['endtime'])}
+							</div>
+						</div>
+                        
+					</div>
+				</div>
+			</div>
+            <div class="tab-pane {if $level == 'tab_gongn' }active {/if}" id="tab_gongn">
+
+                <div class="panel panel-info">
+                    
+                    <div class="panel-heading">阿里云设置</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">Access Key ID</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" class="form-control" value="{$ccset['accessKeyID']}" name="accessKeyID">
+                            </div>
+                            <div class="help-block"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">Access Key Secret</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" class="form-control" value="{$ccset['accessKeySecret']}" name="accessKeySecret">
+                            </div>
+                            <div class="help-block"></div>
+                        </div>
+                        
+            			<div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">bucket</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" class="form-control" value="{$ccset['bucket']}" name="bucket">
+                            </div>
+                            <div class="help-block"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">endpoint</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" class="form-control" value="{$ccset['endpoint']}" name="endpoint">
+                            </div>
+                            <div class="help-block"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane {if $level == 'tab_ten' }active {/if}" id="tab_ten">
+                <div class="panel panel-info">
+                    <div class="panel-heading">腾讯云设置</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">SDKAppID</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" class="form-control" value="{$ccset['tappId']}" name="tappId">
+                            </div>
+                            <div class="help-block">腾讯云实时音视频应用id</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-xs-12 col-sm-3 col-md-2 control-label">UserSig</label>
+                            <div class="col-sm-4 col-lg-4">
+                                <input type="text" class="form-control" value="{$ccset['tappKey']}" name="tappKey">
+                            </div>
+                            <div class="help-block">腾讯云实时音视频-应用管理-功能设置-快速上手-秘钥key</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div class="tab-pane {if $level == 'tab_sms' }active {/if}" id="tab_sms">
+				<div class="panel panel-info"><div class="panel-heading">自定义模式</div>
+					<div class="panel-body">
+						<div class="form-group">
+							<label class="col-xs-12 col-sm-3 col-md-2 control-label">自定义图片</label>
+							<div class="col-sm-9">
+									{php echo tpl_form_field_multi_image('img',unserialize($ccset['img']));}
+							</div>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+<div class="form-group col-sm-12">
+	<input type="submit" name="submit" value="保存设置" class="btn btn-primary col-lg-1" />
+	<input type="hidden" name="token" value="{$_W['token']}" />
+</div>
+</div>
+</form>
+</div>
+
+{/if}
+{template 'web/common'}
+{template 'public/footer'}

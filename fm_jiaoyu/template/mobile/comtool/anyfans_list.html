@@ -1,0 +1,7 @@
+{loop $list $row}
+<a class="headImg fans_c_box" onclick="fans_c_box(this)">
+	<img class="check_fans" style="display:none" src="{MODULE_URL}public/mobile/img/check_icon_on_bg.png">
+	<img class="fans_icon" openid="{$row['openid']}" src="{$row['avatar']}">
+	<div class="line-limit-length">{$row['nickname']}</div>
+</a>
+{/loop}

@@ -1,0 +1,248 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<div class="panel panel-info">
+	<div class="panel-body">
+		<ul class="nav nav-tabs">
+            {if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1005001,1,$schoolid)))}
+            <li {if $_GPC['do']=='ddscorelog'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddscorelog', array('op' => 'display', 'schoolid' => $schoolid))}">打分记录</a></li>
+            {/if}
+            {if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1005006,1,$schoolid)))}
+            <li {if $_GPC['do']=='ddcheckscore'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddcheckscore', array('op' => 'display', 'schoolid' => $schoolid))}">考核打分</a></li>
+            {/if}
+            {if ($tid_global =='founder' || $tid_global == 'owner' || (IsHasQx($tid_global,1005003,1,$schoolid)))}
+            <li {if $_GPC['do']=='ddscorecategory'}class="active"{/if}><a href="{php echo $this->createWebUrl('ddscorecategory', array('op' => 'display', 'schoolid' => $schoolid))}">评分项</a></li>
+            {/if}
+		</ul>
+	</div>
+</div>
+{if $operation == 'display'}
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+
+.cLine {
+    overflow: hidden;
+    padding: 5px 0;
+  color:#000000;
+}
+.alert {
+padding: 8px 35px 0 10px;
+text-shadow: none;
+-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+background-color: #f9edbe;
+border: 1px solid #f0c36d;
+-webkit-border-radius: 2px;
+-moz-border-radius: 2px;
+border-radius: 2px;
+color: #333333;
+margin-top: 5px;
+}
+.alert p {
+margin: 0 0 10px;
+display: block;
+}
+.alert .bold{
+font-weight:bold;
+}
+</style>
+
+    <div class="panel panel-info">
+        <div class="panel-heading">考核打分管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="ddscorelog" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                <input type="hidden" name="type" value="{$type}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">类型</label>
+                    <div class="col-sm-9 col-xs-9 col-md-9">
+                        <div class="btn-group">
+                            <a href="{php echo $this->createWebUrl('ddscorelog', array('schoolid' => $schoolid,'type'=>1))}" class="btn {if $type == 1}btn-primary{else}btn-default{/if}">单日</a>
+                            <a href="{php echo $this->createWebUrl('ddscorelog', array('schoolid' => $schoolid,'type'=>2))}" class="btn {if $type == 2}btn-primary{else}btn-default{/if}">统计</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {if $type == 1}
+                    <label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">按班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bjid" class="form-control">
+                            <option value="0"> 请选择班级</option>
+                            {loop $bjlist $row_b}
+                            <option value="{$row_b['sid']}" {if $row_b['sid'] == $_GPC['bjid']} selected="selected"{/if}>{$row_b['old_sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    {/if}
+                    <label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">选择日期</label>
+					<div class="col-sm-2 col-lg-2">
+                        {php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+                    </div>
+                    <div class="col-sm-2 col-lg-2">
+						<button class="btn btn-primary" name="out" value="out"><i class="fa fa-download"></i> 导出</button>
+						<button class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
+					</div>  
+                </div>		
+            </form>
+            <div class="col-sm-2 col-lg-2" style= "margin-top: -49px; margin-left: 935px; ">
+                <a class="btn btn-primary" href="{php echo $this->createWebUrl('ddecharts', array('op' => 'display', 'schoolid' => $schoolid))}">统计</a>
+            </div>
+        </div>
+    </div> 
+    {if $_GPC['bjid'] != 0}
+    <div class="cLine">
+        <div class="alert">
+            <p>
+                <span class="bold">考核统计：</span>
+                班级考核项总分：<span style="color: red;">{$bjtotal}分</span>
+                班主任考核项总分：<span style="color: red;">{$teatotal}分</span>
+                考核项目合计总分：<span style="color: red;">{$scoretotal}分</span>
+                班级考核平均分值：<span style="color: red;">{$bjavg}分</span>
+            </p>
+        </div>
+    </div>
+    {/if}
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+                    <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th>
+                    <th style="width:10%;">班级</th>
+                    {if $_GPC['bjid'] != 0}
+                    <th style="width:10%;">考核日期</th>
+                    {/if}
+                    <th style="width:10%;">班级考核项总分</th>
+                    <th style="width:10%;">班主任考核项总分</th>
+                    <th style="width:10%;">考核项目合计总分</th>
+                    <th style="width:10%;">班级考核平均分值</th>
+                    {if $type == 1}
+                    <th style="width:10%;">日期</th>
+                    {/if}
+					<th style="text-align:right; width:8%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+                    <td>{$item['sname']}</td>	
+                    {if $_GPC['bjid'] != 0}
+                    <td>{php echo date('Y-m-d',$item['date'])}</td>	
+                    {/if}
+                    <td>{$item['bjtotal']}分</td>	
+                    <td>{$item['teatotal']}分</td>	
+                    <td>{$item['scoretotal']}分</td>	
+                    <td>{$item['bjavg']}分</td>	
+                    {if $type == 1}
+                    <td>{php echo date('Y-m-d',$item['createtime'])}</td>
+                    {/if}
+					<td style="text-align:right;">
+                        <a class="qx_001" onclick="lookInfo(`{$item['bjid']}`,`{$item['date']}`)" title="查看"><i class="fa fa-eye"></i></a>&nbsp;&nbsp;
+                        <a class="qx_002" href="{php echo $this->createWebUrl('ddscorelog', array('bjid' => $item['bjid'],'date' => $item['date'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary" name="btndeleteall" value="批量删除" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+
+<!-- 展示信息 -->
+<div class="uploader-modal modal right fade" style="z-index:1050 !important;"  id="info_bigbox" tabindex="-1" role="dialog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog myModalleft" style="width: 30%;">
+		<div class="loading-layer"><div><img style="margin-top:40%" src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="modal-content" id="info_box" style="max-height:unset !important;padding: 20px;">
+			
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+{if !(IsHasQx($tid_global,1005001,1,$schoolid))}
+    $(".qx_001").hide();
+{/if}
+
+{if !(IsHasQx($tid_global,1005002,1,$schoolid))}
+    $(".qx_002").hide();
+{/if}
+
+function lookInfo(bjid,date){
+	$('.loading-layer').show()
+	$('#info_box').empty();
+	$('body').toggleClass('modal-open');
+	$('#info_bigbox').modal('toggle');
+    $.ajax({
+		url: "{php echo $this->createWebUrl('ddscorelog', array('op' => 'getInfo', 'schoolid' => $schoolid,'type'=>$_GPC['type']))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			bjid:bjid,
+			date:date,
+		},
+		success: function(result) {
+			setTimeout(function() {
+				$('.loading-layer').hide()
+			}, 400);
+			$('#info_box').html(result)
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+
+$(function(){
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的评分!');
+            return false;
+        }
+        if(confirm("确认要删除选择的评分?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('ddscorelog', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+</script>
+{/if}
+{template 'public/footer'}

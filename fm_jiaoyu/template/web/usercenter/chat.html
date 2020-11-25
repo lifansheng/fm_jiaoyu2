@@ -1,0 +1,263 @@
+<div class="widget-chat widget-chat-demo d-none">
+	<div class="card mb-0">
+	<div class="loading-layer" id="chat_load" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+		<div class="newchat">
+			
+			<div class="card-header border-bottom p-0">
+				<div class="media m-75">
+					<a href="JavaScript:void(0);">
+						<div class="avatar mr-75"><img id="chat-src" src="http://v.bootstrapmb.com/2020/7/akhot8348/app-assets/images/profile/user-uploads/social-2.jpg" alt="avtar images" width="32" height="32"><span class="avatar-status-online"></span></div>
+					</a>
+					<div class="media-body"><h6 class="media-heading mb-0 pt-25"><a href="javaScript:void(0);" id="chat-name">小周周妈妈</a></h6><span class="text-muted font-small-3" id="chat-bjname">三年级一班</span></div>
+					<i class="fa fa-times widget-chat-close primary float-right my-auto cursor-pointer"></i>
+				</div>
+			</div>
+
+			<div class="card-body widget-chat-container widget-chat-demo-scroll ps" >
+				<div class="chat-content chatInfoBox" >
+					
+				</div>
+				<div class="ps__rail-x" style="left: 0px; bottom: 0px;"><div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div></div>
+				<div class="ps__rail-y" style="top: 0px; right: 0px;"><div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div></div>
+			</div>
+			<div class="card-footer border-top p-1">
+				<form class="d-flex" onsubmit="widgetChatMessageDemo();" action="javascript:void(0);">
+					<input type="text" class="form-control chat-message-demo mr-75" placeholder="输入您想说的话">
+					<button type="submit" class="btn btn-primary glow px-1"><i class="fa fa-paper-plane"></i></button>
+				</form>
+			</div>
+
+		</div>	
+	</div>
+</div>
+<style>
+.consult_audio {
+    float: right;
+    background: #06c1ae;
+    border-radius: 5px;
+    padding: 6px;
+    position: relative;
+    word-wrap: break-word;
+    height: 30px;
+    width: 100px;
+    margin-right: 1.8rem;
+}
+.consult_audio .arrow {
+    width: 8px;
+    height: 9px;
+    position: absolute;
+    background: url({OSSURL}public/mobile/img/img/arrow_right.png) no-repeat;
+    background-size: 8px;
+    right: -8px;
+    margin-top: -1px;
+}
+.consult_audio .div_voice {
+    width: 40px;
+    padding-right: 5px;
+}
+.consult_audio .div_voice .icon {
+    background-image: url({OSSURL}public/mobile/img/voice_stop_icon_new.png?v=1221);
+    background-size: 18px;
+}
+.consult_audio .div_voice .icon, .consult_audio .div_voice.video_stop .icon {
+    background-size: 14px;
+    background-repeat: no-repeat;
+    width: 30px;
+    height: 30px;
+    float: right;
+}
+</style>
+<script src="{OSSURL}template/public/js/jquery.picEyes.js"></script>
+<script>
+	var intervalChatInfo;
+(function (window, document, $) {
+	$(".chat-demo-button").click(function () {
+		chat_id = $(this).attr("chat_id")
+		$("#chat-name").html($(this).attr("data_name"))
+		$("#chat-bjname").html($(this).attr("data_bjname"))
+		$("#chat-src").attr('src',$(this).attr("data_icon"))
+		$(".chat-demo-button").removeClass("active");
+		$(this).addClass("active");
+		LoadNewChat(chat_id)
+		clearInterval(interval);
+	});
+	$(".widget-chat-close").click(function () {
+		$(".widget-chat-demo").removeClass("d-block");
+		$(".widget-chat-demo").addClass("d-none")
+		$(".chat-demo-button").removeClass("active");
+		interval = setInterval(getLyList, 2000);
+		clearInterval(intervalChatInfo);
+	});
+	$(".chat-demo-button").on("click", function () {
+		$(".widget-chat-demo-scroll").animate({ scrollTop: $(".widget-chat-demo-scroll")[0].scrollHeight }, 800)
+	});
+
+})(window, document, jQuery);
+
+function LoadNewChat(chat_id) {
+	getAllLyInfo(); //获取所有留言列表信息
+	if(!$(".widget-chat-demo").hasClass("d-block")){
+		$(".widget-chat-demo").addClass("d-block")
+		$(".widget-chat-demo").removeClass("d-none")
+	}
+}
+
+function getAllLyInfo(){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'getAllLyInfo','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {userid:userid,leaveid:chat_id},
+		success: function (res) {
+			let html = `<div class="chatdata" style="display:none;" data-leaveid='${res.leaveid}' data-lasttime='${res.lasttime.createtime}'> </div>`;
+			let isLeft = '';
+			let content = '';
+			let css = '';
+			for(item of res.data){
+				if(item.isown){
+					isLeft = '';
+				}else{
+					isLeft = 'chat-left'	
+				}
+				if(item.picurl){
+					content = `<div class="chat-message showbigpic" style="background-color:#fff !important">
+								<p><img style="width:180px;height:80px" src="${item.picurl}"></p>
+							</div>`
+				}else if(item.conet){
+					content = `<div class="chat-message">
+								<p class="temp-content">${item.conet}</p>
+								<span class="chat-time">${item.time} </span>
+							</div>`
+				}else{
+					if(item.isown){
+						content = `<div onclick="playaudio(this,${item.id})" class="bubble_cont js-audio-wx-${item.id}" >
+								<div class="consult_audio">
+									<div class="arrow"></div>
+									<div class="div_voice">
+										<div class="icon"></div>
+										<audio id="jp_audio_1_${item.id}" preload="none" src="${item.audios}"">
+										</audio>
+									</div>
+								</div>
+								<div class="consult_time" style="float:right">${item.audioTime}’</div>
+							</div><span style="display: block; margin-top: 37px; color: #828D99; font-size: 12px; margin-left: 120px;">${item.time} </span>`
+					}else{
+						content = `<div onclick="playaudio(this,${item.id})" class="js-audio-wx-${item.id}" style="left: 0.2rem;width: 160px;position: absolute;height: 36px;display: inline-block;background: url({OSSURL}/public/mobile/img/sprite_for-web.png) 0 0 no-repeat;background-size: 150px 36px;cursor: pointer;"><img style="display:none;height: 20px;margin-left: 15px;margin-top: 8px;" src="./resource/images/app/player.gif" class="audioAnimation_${item.id}"><span style="position: absolute;font-size: 14px;color: #999;left: 170px;bottom: 12px;" class="audio-time">${item.audioTime}’</span><audio id="jp_audio_1_${item.id}" preload="none" src="${item.audios}" ></audio></div><span style="display: block; margin-top: 37px; color: #828D99; font-size: 12px; margin-left: -100px;">${item.time} </span>`	
+					}
+				}
+				html += `
+					<div class="chat ${isLeft}">
+						<div class="chat-body">
+							${content}
+						</div>
+					</div>
+					`
+			}
+			$(".chatInfoBox").html(html)
+			icon_replace($(".temp-content"));
+			intervalChatInfo = setInterval(getChatInfo, 3000);
+			$('.showbigpic').picEyes();
+		}	
+	});
+}
+//语音播发
+function playaudio(obj,id){
+	//背景音乐播放
+	var myaudio = document.getElementById(`jp_audio_1_${id}`);
+	console.log($(obj).hasClass("on"))
+	if ($(obj).hasClass("on")) {
+		$(`.js-audio-wx-${id}`).removeClass("on");
+		$(`.audioAnimation_${id}`).hide();
+		myaudio.pause();
+	} else {
+		$(`.js-audio-wx-${id}`).addClass("on");
+		$(`.audioAnimation_${id}`).show();
+		myaudio.play();
+	}
+}
+
+function getChatInfo(){
+	let leaveid = $(".chatdata").attr('data-leaveid');
+	let lasttime = $(".chatdata:last").attr('data-lasttime');
+	$.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'getOneLyInfo','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {userid:userid,leaveid:leaveid,lasttime:lasttime},
+		success: function (res) {
+			let	html = ''
+			let	temphtml = ''
+			if(res.result){ //有新数据
+				if(res.type == 3){
+					content = `<div class="chat-message showbigpic" style="background-color:#fff !important">
+								<p><img style="width:180px;height:80px" src="${res.content}"></p>
+							</div>`
+				}else if(res.type == 2){
+					content = `<div class="chat-message">
+								<p class="temp-content">${res.content}</p>
+								<span class="chat-time">刚刚</span>
+							</div>`
+				}else if(res.type == 1){
+					content = `<div onclick="playaudio(this,${res.lastid})" class="js-audio-wx-${res.lastid}" style="left: 0.2rem;width: 160px;position: absolute;height: 36px;display: inline-block;background: url({OSSURL}/public/mobile/img/sprite_for-web.png) 0 0 no-repeat;background-size: 150px 36px;cursor: pointer;"><img style="display:none;height: 20px;margin-left: 15px;margin-top: 8px;" src="./resource/images/app/player.gif" class="audioAnimation_${res.lastid}"><span style="position: absolute;font-size: 14px;color: #999;left: 170px;bottom: 12px;" class="audio-time">${res.mediaTime}’</span><audio id="jp_audio_1_${res.lastid}" preload="none" src="${res.content}" ></audio></div><span style="display: block; margin-top: 37px; color: #828D99; font-size: 12px; margin-left: -100px;">${res.time} </span>`	
+				}
+				temphtml = `
+					<div class="chat chat-left">
+						<div class="chat-body">
+							${content}
+						</div>
+					</div>
+					`
+
+				html = `<div class="chatdata" style="display:none;" data-leaveid='${res.id}' data-lasttime='${res.lasttime}'></div>${temphtml}`;
+				$(".chatInfoBox").append(html)
+				icon_replace($(".temp-content"));
+				$(".widget-chat-demo-scroll").scrollTop($(".widget-chat-demo-scroll > .chat-content").height());
+				$('.showbigpic').picEyes();
+			}else{
+				console.log('没有新数据')
+			}
+		}	
+	});
+}
+function widgetChatMessageDemo(source) {
+	var message = $(".chat-message-demo").val();
+	console.log(chat_id)
+	if (message != "") {
+		var checkfilter = filters(message)
+		if(checkfilter == true){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('usercenter', array('op'=>'saveLy','schoolid' => $schoolid))}",
+				type: "post",
+				dataType: "json",
+				data:{leaveid:chat_id,content:message,userid:userid},
+				success: function (res) {
+					html = `
+					<div class="chat">
+						<div class="chat-body">
+							<div class="chat-message"><p>${message}</p><div class="chat-time">刚刚</div></div>
+						</div>
+					</div>
+					`
+					// var html = '<div class="chat-message">' + "<p>" + message + "</p>" + "<div class=" + "chat-time" + ">刚刚</div></div>";
+					// $(".widget-chat-demo .chat:last-child .chat-body").append(html);
+					$(".chatInfoBox").append(html);
+					$(".chat-message-demo").val("");
+					$(".widget-chat-demo-scroll").scrollTop($(".widget-chat-demo-scroll > .chat-content").height());
+				},
+				error: function (jqXHR, textStatus, errorThrown){
+					console.log(jqXHR)
+					console.log(textStatus)
+					console.log(errorThrown)
+					//DoSomething
+				}
+			});
+			
+		}else{
+			ReToastGlobal("请遵守国家法律法规，请勿发布暴力、谣言、色情等言论。正文内容含有非法词语：" + message);
+		}
+	}else{
+		ReToastGlobal("请输入回复文字内容")
+	}
+}
+
+</script>

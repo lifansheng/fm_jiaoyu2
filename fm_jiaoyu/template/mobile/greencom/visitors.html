@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+<style>
+#birthday{border-bottom:1px solid #c6c6c6;position:relative;display:block;height:30px;line-height:30px;opacity:1;}
+#selMonth{margin-left:-40px;position:relative;z-index:10;opacity:0;}
+.item-button{position: absolute;right: 0px;border-radius: 5px;border: 1px solid #14c682;bottom: 0px;}
+.item-button a{margin: 2px;font-size: 13px;color: #6f6969;}
+</style>
+</head>
+	<body>
+		<div class="all">
+			<div class="header mainColor">
+				<div class="l" id="titlebar">
+					<a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a>
+				</div>
+				<div class="m">
+					<span>访客申请</span>
+				</div>
+				<div class="r">
+					<a style="font-size:16px;font-weight:bold;position:absolute;color:#f3f3f3;text-align:left;" href="{php echo $this->createMobileUrl('visitorslist',array('schoolid'=>$schoolid), true)}">
+						记录
+					</a>
+				</div>			
+			</div>
+			<div id="titlebar_bg" class="_header"></div>
+			<div class="bangdingForm">
+				<div class="bangdingBox">
+					<div class="headerBox">
+						<div class="centerHeader">
+							<img id="wxiconpath" onclick="uploadImg(this)" src="{OSSURL}public/mobile/img/insertImage.png" />
+							<input id="headimg" type="hidden" value="" />
+						</div>
+					</div>
+					<div id="parentBox" class="changeBox activeBox">
+						<ul>
+							
+							<li>
+								<span class="l">姓名：</span>
+								<span class="r">
+									<input id="s_name" type="text" value="" />
+								</span>
+							</li>							
+							<li>
+								<span class="l">身份证号：</span>
+								<span class="r">
+									<input id="idcard" type="text" maxlength="18" value="" />
+								</span>
+							</li>	
+							<li>
+								<span class="l">访客单位：</span>
+								<span class="r">
+									<input id="unit" type="text" value="" />
+								</span>
+							</li>
+							<li>
+								<span class="l">车牌号：</span>
+								<span class="r">
+									<input id="plate_num" type="text" value="" />
+								</span>
+							</li>
+							<li>
+								<span class="l">老师：</span>
+								<span class="r">
+									<label>请选择</label>
+									<select id="tname">
+										<option value="">请选择</option>
+										{loop $teachcers $row}
+											<option value="{$row['tname']}" data-mobile="{$row['mobile']}" data-tid="{$row['id']}">{$row['tname']}</option>
+										{/loop}
+									</select>
+									<i></i>
+								</span>
+							</li>
+							<li>
+								<span class="l">老师电话：</span>
+								<span class="r">
+									<input id="mobile" type="text" value="" readonly="readonly"/>
+								</span>
+							</li>
+							
+							<li>
+								<span class="l">开始时间：</span>
+								<span class="r">
+									<input class="start" type="datetime-local" placeholder="开始时间" id="starttime" value=""/>
+								</span>
+							</li>
+							<li>
+								<span class="l">结束时间：</span>
+								<span class="r">
+									<input class="end" type="datetime-local" placeholder="结束时间" id="endtime" value=""/>
+								</span>
+							</li>
+							<li>
+								<span class="l">事由：</span>
+								<span class="r">
+									<label>请选择</label>
+									<select id="sy_id">
+										<option value="">请选择</option>
+										{loop $visireason $row}
+											<option value="{$row['sid']}">{$row['sname']}</option>
+										{/loop}
+									</select>
+									<i></i>
+								</span>
+							</li>
+							<input type="hidden"  id="t_id" />
+						</ul>
+						
+						<div class="submitBtn mainColor" onclick="Tijiao();">提交</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="common_progress" class="common_progress_bg"><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>
+	</body>	
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+	}
+}, 100);
+
+</script>
+<script type="text/javascript">
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+var images = {
+	    localId: [],
+	    serverId: []
+};
+
+function uploadImg(){
+
+		wxChooseImage();
+}
+
+function uploadImg1(e,d){
+
+		wxChooseImage1(d);
+	
+	
+}
+
+/**
+ * 微信选择图片
+ */
+function wxChooseImage(){
+	wx.chooseImage({
+		success: function (res) {
+			images.localId = res.localIds;
+			var obj=new Image();
+			obj.src=res.localIds[0];
+			imagesUploadWx();
+		}
+	});
+};
+
+function wxChooseImage1(d){
+	wx.chooseImage({
+		success: function (res) {
+			images.localId = res.localIds;
+			var obj=new Image();
+			obj.src=res.localIds[0];
+			imagesUploadWx1(d);
+		}
+	});
+};
+
+function imagesUploadWx() {
+	      wx.uploadImage({
+	        localId: images.localId[0],
+	        isShowProgressTips:1,//// 默认为1，显示进度提示
+	        success: function (res) {
+		        
+	        	$("#headimg").val(res.serverId);
+				$("#wxiconpath").attr("src",images.localId[0]);
+	        },
+	        fail: function (res) {
+	          alert(JSON.stringify(res));
+	        }
+	      });
+};
+
+function imagesUploadWx1(d) {
+	      wx.uploadImage({
+	        localId: images.localId[0],
+	        isShowProgressTips:1,//// 默认为1，显示进度提示
+	        success: function (res) {
+		        
+	        	$("#headimg_"+d).val(res.serverId);
+				$("#wxiconpath_"+d).attr("src",images.localId[0]);
+	        },
+	        fail: function (res) {
+	          alert(JSON.stringify(res));
+	        }
+	      });
+};
+$(document).ready(function() {
+	$("#tname").change(function() {
+		change_tname();
+	});
+	
+	$("#sy_id").change(function() {
+		change_tname();
+	});
+	
+});
+function change_tname(){
+	$("#tname").parent().find("label").html($("#tname").find("option:selected").text());
+	$("#sy_id").parent().find("label").html($("#sy_id").find("option:selected").text());
+	$("#mobile").val($("#tname").find("option:selected").attr("data-mobile"));
+	$("#t_id").val($("#tname").find("option:selected").attr("data-tid"));
+}
+
+function Tijiao(){
+	var activeBoxID = $(".bangdingBox").find(".activeBox").attr("id");
+	var s_name = $("#s_name").val();
+	var idcard = $("#idcard").val();
+	var unit = $("#unit").val();
+	var plate_num = $("#plate_num").val();
+	var tname = $("#tname").val();
+	var t_id = $("#t_id").val();
+	var starttime = $("#starttime").val();
+	var endtime = $("#endtime").val();
+	var sy_id = $("#sy_id").val();
+	if(activeBoxID == "parentBox"){
+		{if $signset['is_head'] == 1}
+			if($("#headimg").val() == null || $("#headimg").val() == ""){
+				jTips("请上传图片");
+				return;
+			}
+		{/if}
+		if($("#s_name").val() == null || $("#s_name").val() == ""){
+			jTips("请输入姓名");
+			return;
+		}	
+		if($("#idcard").val() == null || $("#idcard").val() == ""){
+			jTips("请输入身份证号码");
+			return;
+		}
+		if($("#tname").val() == null || $("#tname").val() == ""){
+			jTips("请选择老师！");
+			return;
+		}
+		if($("#starttime").val() == null || $("#starttime").val() == ""){
+			jTips("请选择开始时间！");
+			return;
+		} 
+		if($("#endtime").val() == null || $("#endtime").val() == ""){
+			jTips("请选择结束时间！");
+			return;
+		} 	
+		let plate_num = $("#plate_num").val().toUpperCase();
+        console.log(plate_num);
+        var express = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/;
+        if(plate_num !='' && plate_num != null) {
+            result = express.test(plate_num);
+            if (!result && (plate_num != '' || plate_num != null)) {
+                jTips("请输入正确车牌号码");
+                return;
+            }
+        }		
+	}
+	jConfirm("确认提交申请？", "确定对话框", function (isConfirm) {
+		if (isConfirm) {
+			ajax_start_loading("提交中...");
+			var submitData = {
+                openid :"{$openid}",
+                schoolid :"{$schoolid}",
+                weid :"{$weid}",
+                uid :"{$_W['member']['uid']}",
+                t_id : t_id,
+                plate_num : plate_num,
+                s_name : s_name,
+                tname : tname,
+                idcard : idcard,
+                headimg : $("#headimg").val(),
+                starttime : starttime,
+                endtime : endtime,
+                unit : unit,
+                sy_id : sy_id,
+			};
+			console.log(submitData);return false;
+            $.ajax({
+                url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'addvisitors'))}",
+                data: submitData,
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    jTips(data.msg);
+					window.location.href = "{php echo $this->createMobileUrl('visitorslist', array('schoolid' => $schoolid), true)}";
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    console.log(XMLHttpRequest.status);
+                    console.log(XMLHttpRequest.readyState);
+                    console.log(textStatus);
+
+                },
+            });
+		}
+	});
+}
+</script>
+{php include $this->template('footer');}
+</html>

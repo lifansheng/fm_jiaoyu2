@@ -1,0 +1,538 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+<link rel="stylesheet" href="{MODULE_URL}public/web/css/magnific-popup.css">
+<div class="panel panel-default">
+		<div class="panel-body">
+			<ul class="nav nav-tabs">
+				<li {if $_GPC['op'] == 'display'} class="active"  {/if}><a href="{php echo $this->createWebUrl('apcheck', array('schoolid' => $schoolid,'op' => 'display'))}">考勤刷卡记录</a></li>
+				<li {if $_GPC['op'] == 'tongji'} class="active" {/if}><a href="{php echo $this->createWebUrl('apcheck', array('op' => 'tongji', 'schoolid' => $schoolid))}">归寝情况统计</a></li>
+			</ul>
+		</div>
+	</div>
+{if $operation == 'display'}
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        
+		<div class="panel-body">
+			<form action="./index.php" method="get" class="form-horizontal" role="form">
+				<input type="hidden" name="c" value="site">
+				<input type="hidden" name="a" value="entry">
+				<input type="hidden" name="m" value="fm_jiaoyu">
+				<input type="hidden" name="do" value="apcheck"/>
+				<input type="hidden" name="op" value="display"/>
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="type" value="{$_GPC['type']}"/>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">进出状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('apcheck', array('id' => $item['id'], 'type' => '0', 'schoolid' => $schoolid))}" class="btn {if $type == 0}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('apcheck', array('id' => $item['id'], 'type' => '1', 'schoolid' => $schoolid))}" class="btn {if $type == 1}btn-primary{else}btn-default{/if}">进寝</a>
+							<a href="{php echo $this->createWebUrl('apcheck', array('id' => $item['id'], 'type' => '2', 'schoolid' => $schoolid))}" class="btn {if $type == 2}btn-primary{else}btn-default{/if}">出寝</a>
+							<a href="{php echo $this->createWebUrl('apcheck', array('id' => $item['id'], 'type' => '3', 'schoolid' => $schoolid))}" class="btn {if $type == 3}btn-primary{else}btn-default{/if}">异常</a>								
+						</div>
+					</div>
+				</div>
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按学生姓名搜索</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="stu_name" id="" type="text" value="{$_GPC['stu_name']}">
+                    </div>						
+				</div>
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按年级搜索</label>					
+					<div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="nj_id" id="select_nj" class="form-control">
+							<option value="0">请选择年级</option>
+							{loop $allnj $row}
+							<option value="{$row['sid']}" {if $row['sid'] == $_GPC['nj_id']} selected="selected"{/if}>{$row['sname']}</option>
+							{/loop}
+						</select>
+					</div>
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按班级搜索</label>					
+					<div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="bj_id" id="select_bj" class="form-control">
+							<option value="0">请选择班级</option>
+							{loop $allbj $row}
+							<option value="{$row['sid']}" {if $row['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row['sname']}</option>
+							{/loop}
+						</select>
+					</div>
+				</div>	
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按楼栋搜索</label>					
+					<div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="ap_id" id="select_ap"  class="form-control">
+							<option value="0">请选择楼栋</option>
+							{loop $allAp $row}
+							<option value="{$row['id']}" {if $row['id'] == $_GPC['ap_id']} selected="selected"{/if}>{$row['name']}</option>
+							{/loop}
+						</select>
+					</div>
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">按宿舍搜索</label>					
+					<div class="col-sm-2 col-lg-2">
+						<select style="margin-right:15px;" name="room_id" id="select_room" class="form-control">
+							<option value="0">请选择宿舍</option>
+							{loop $allRoom $row}
+							<option value="{$row['id']}" {if $row['id'] == $_GPC['room_id']} selected="selected"{/if}>{$row['name']}</option>
+							{/loop}
+						</select>
+					</div>					
+				</div>
+				
+				
+				<div class="form-group clearfix">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">开始时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+				</div>
+			</form>
+		</div>		
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th class='with-checkbox' style="width: 20px;"><input type="checkbox" class="check_all" /></th>
+							<th style="width:8%">学生姓名</th>
+							<th style="width:8%">卡号ID</th>
+							<th style="width:10%">班级</th>
+							<th style="width:6%;">进出状态</th>
+							<th style="width:15%;">刷卡时间</th>
+							<th style="width:15%;">宿舍/楼栋</th>
+							<th >拍照</th>
+							<th ></th>
+							<th class="qx_3402" style="text-align:right; width:10%;">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{loop $list $item}
+							<tr>
+								<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+								<td>
+									&nbsp;{$item['s_name']}
+								</td>
+								<td>
+									{$item['cardid']}							
+								</td>
+								<td>{$item['bj_name']}</td>
+								<td>
+								{if $item['ap_type'] == 1}
+									<span class="label label-danger">归寝</span>	
+								{elseif $item['ap_type'] == 2}
+									<span class="label label-success">离寝</span>	
+								{else}
+									<span class="label label-primary">异常</span>	
+								{/if}
+								</td>
+								<td>
+									 {if !empty($item['createtime'])}{php echo date('Y年m月d日 H:i:s',$item['createtime'])}{/if}
+								</td>
+								<td>{$item['room_name']}</br>{$item['ap_name']}</td>
+								<td>
+									{if !empty($item['img1'])}
+									<a href="{php echo tomedia($item['img1'])}" target="_blank" class="gallery-link">
+										<img src="{php echo tomedia($item['img1'])}" alt="image" style="width:50px;height:50px;">
+									</a>
+									{/if}	
+								</td>
+								<td>
+									{if !empty($item['img2'])}
+									<a href="{php echo tomedia($item['img2'])}" target="_blank" class="gallery-link">
+										<img src="{php echo tomedia($item['img2'])}" alt="image" style="width:50px;height:50px;">
+									</a>
+									{/if}	
+								</td>								
+								<td class="qx_3402" style="text-align:right;">				
+									<a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('apcheck', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+						{/loop}
+					</tbody>
+					<tr>
+						<td colspan="10">
+							<input name="token" type="hidden" value="{$_W['token']}" />
+							<input type="button" class="btn btn-primary qx_3402" name="btndeleteall" value="批量删除" />
+						</td>
+					</tr>
+				</table>
+			{$pager}
+			</form>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+$(function(){
+
+	{if (!(IsHasQx($tid_global,1002304,1,$schoolid)))}
+		$(".qx_3402").hide();
+	{/if}
+	
+	
+	//班级年级联动
+	$("#select_nj").change(function() {
+		var type = 4;
+		var cityId = $("#select_nj option:selected").attr('value');
+		changeGrade(cityId,type, function() {});
+	});
+	function changeGrade(gradeId, type, __result) {
+		var schoolid = "{$schoolid}";
+		var classlevel = [];
+		//获取班次
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+			data       = JSON.parse(data);
+			classlevel = data.bjlist;
+			var html   = '';
+			
+			html += '<select id="select_bj"><option value="">请选择班级</option>';
+			if (classlevel != '') {
+				for (var i in classlevel) {
+					html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+				}
+			}
+			$('#select_bj').html(html);	
+		});
+	}
+	
+	
+	//楼栋宿舍联动
+	$("#select_ap").change(function() {
+		var type = 4;
+		var cityId = $("#select_ap option:selected").attr('value');
+		changeGrade(cityId,type, function() {});
+	});
+	function changeGrade(gradeId, type, __result) {
+		var schoolid = "{$schoolid}";
+		var classlevel = [];
+		//获取宿舍
+		$.post("{php echo $this->createWebUrl('apcheck',array('op'=>'getroomlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+			data       = JSON.parse(data);
+			classlevel = data.roomlist;
+			var html   = '';
+			
+			html += '<select id="select_room"><option value="">请选择宿舍</option>';
+			if (classlevel != '') {
+				for (var i in classlevel) {
+					html += '<option value="' + classlevel[i].id + '">' + classlevel[i].name + '</option>';
+				}
+			}
+			$('#select_room').html(html);	
+		});
+	}
+	
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的订单!');
+            return false;
+        }
+        if(confirm("确认要删除选择的订单?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('apcheck', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+</script>
+{elseif $operation == 'tongji'}
+
+<div class="main">
+		<style>
+			.schooltip { position: fixed; background-color: #eee; border: 1px solid #999; width: 350px; height: auto; -webkit-border-radius: 8px; font-family: "微软雅黑"; padding: 20px; z-index:2050;display: none }
+		.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+		</style>
+			<div class="panel panel-info">
+			
+				
+{if $tid_global == 'founder' || $tid_global == 'owner'}
+<style>
+		.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+		.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+		.alert p {margin: 0 0 10px;display: block;}
+		.alert .bold{font-weight:bold;}
+		 </style>
+		 <div class="cLine">
+			<div class="alert">
+			<p><span class="bold" style="color:red">定时任务添加url : </span>{php echo $_W['siteroot'] . 'app/index.php?i=' . $weid . '&c=entry&schoolid=' . $schoolid . '&m=fm_jiaoyu&do=apcheckdaily'} </p>
+			</div>
+
+
+		</div>
+{/if}
+
+				<div class="panel-body">
+					<form action="./index.php" method="get" class="form-horizontal" role="form">
+						<input type="hidden" name="c" value="site">
+						<input type="hidden" name="a" value="entry">
+						<input type="hidden" name="m" value="fm_jiaoyu">
+						<input type="hidden" name="do" value="apcheck"/>
+						<input type="hidden" name="op" value="tongji"/>
+						<input type="hidden" name="schoolid" value="{$schoolid}" />
+						<input type="hidden" name="type" value="{$_GPC['type']}"/>
+	
+						<div class="form-group clearfix">
+							<label class="col-xs-12 col-sm-3 col-md-1 control-label">按楼栋搜索</label>					
+							<div class="col-sm-2 col-lg-2">
+								<select style="margin-right:15px;" name="ap_id" id="select_ap"  class="form-control">
+									<option value="0">请选择楼栋</option>
+									{loop $apartmentlist $row}
+									<option value="{$row['id']}" {if $row['id'] == $_GPC['ap_id']} selected="selected"{/if}>{$row['name']}</option>
+									{/loop}
+								</select>
+							</div>
+							<label class="col-xs-12 col-sm-3 col-md-1 control-label">按宿舍搜索</label>					
+							<div class="col-sm-2 col-lg-2">
+								<select style="margin-right:15px;" name="room_id" id="select_room" class="form-control">
+									<option value="0">请选择宿舍</option>
+									{loop $allRoom $row}
+									<option value="{$row['id']}" {if $row['id'] == $_GPC['room_id']} selected="selected"{/if}>{$row['name']}</option>
+									{/loop}
+								</select>
+							</div>					
+						</div>
+						
+						
+						<div class="form-group clearfix">
+							<label class="col-xs-12 col-sm-3 col-md-1 control-label">检查时间段</label>
+							<div class="col-sm-2 col-lg-2">
+									{php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+							</div>
+							<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+								<button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+							</div>
+
+							<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+									<button class="btn btn-success" name="OutExcel" value="OutExcel" ><i class="fa fa-download"></i> 当前条件导出</button>
+								</div>
+						</div>
+					</form>
+				</div>		
+			</div>
+			<div class="panel panel-default">
+				<div class="table-responsive panel-body">
+					<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+						<input type="hidden" name="schoolid" value="{$schoolid}" />
+						<table class="table table-hover">
+							<thead class="navbar-inner">
+								<tr>
+									
+									<th >学生姓名</th>
+									<th style="width:14%">寝室信息</th>
+									<th style="width:14%">楼栋信息</th>
+									<th style="width:14%">班级信息</th>
+									<th style="width:14%">年级信息</th>
+									<th style="width:14%;">未按时归寝日期</th>
+									<th style="width:14%;">中午/晚上</th>
+								 
+								</tr>
+							</thead>
+							<tbody>
+								{loop $list $item}
+									<tr>
+										
+										<td>
+											&nbsp;{$item['stuName']}
+										</td>
+										<td>
+											{$item['roomName']}							
+										</td>
+										<td>
+											{$item['apName']}							
+										</td>
+										<td>
+											{$item['bjName']}							
+										</td>
+										<td>
+											{$item['NjName']}							
+										</td>
+										<td>
+											{$item['datestr']}							
+										</td>
+										<td>
+											{if $item['type'] == '1'}
+											<span class="label label-info">中午</span>
+											{else}
+											<span class="label label-warning">晚上</span>
+											{/if}
+											 						
+										</td>
+										 
+									</tr>
+								{/loop}
+							</tbody>
+
+						</table>
+					{$pager}
+					</form>
+				</div>
+			</div>
+		</div>
+	
+		<script>
+		var Move_x = 10;
+		var Move_y = 20;
+		
+		$(function(){
+			
+			$(".show_yulan_img").mouseover(function (e) {
+				let ScrollTop = $(window).scrollTop();
+				console.log(ScrollTop)
+				let NeedShow = $(this).next();
+				$(NeedShow).show();
+				//console.log(NeedShow);
+				$(NeedShow).css({"top": (e.pageY + Move_y - ScrollTop) + "px","left": (e.pageX + Move_x) + "px"}).show("fast");
+			}).mouseout(function (e) {
+				let NeedShow = $(this).next();
+				$(NeedShow).hide();
+			}).mousemove(function (e) {
+				let ScrollTop = $(window).scrollTop();
+				let NeedShow = $(this).next();
+				$(NeedShow).css({"top": (e.pageY + Move_y - ScrollTop) + "px","left": (e.pageX + Move_x) + "px"});	
+			});
+		})
+		
+
+
+		
+		
+		</script>
+
+
+<script type="text/javascript">
+	$(function(){
+	
+ 
+		
+		
+		//班级年级联动
+		$("#select_nj").change(function() {
+			var type = 4;
+			var cityId = $("#select_nj option:selected").attr('value');
+			changeGrade(cityId,type, function() {});
+		});
+		function changeGrade(gradeId, type, __result) {
+			var schoolid = "{$schoolid}";
+			var classlevel = [];
+			//获取班次
+			$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+				data       = JSON.parse(data);
+				classlevel = data.bjlist;
+				var html   = '';
+				
+				html += '<select id="select_bj"><option value="">请选择班级</option>';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						html += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+					}
+				}
+				$('#select_bj').html(html);	
+			});
+		}
+		
+		
+		//楼栋宿舍联动
+		$("#select_ap").change(function() {
+			var type = 4;
+			var cityId = $("#select_ap option:selected").attr('value');
+			changeGrade(cityId,type, function() {});
+		});
+		function changeGrade(gradeId, type, __result) {
+			var schoolid = "{$schoolid}";
+			var classlevel = [];
+			//获取宿舍
+			$.post("{php echo $this->createWebUrl('apcheck',array('op'=>'getroomlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+				data       = JSON.parse(data);
+				classlevel = data.roomlist;
+				var html   = '';
+				
+				html += '<select id="select_room"><option value="">请选择宿舍</option>';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						html += '<option value="' + classlevel[i].id + '">' + classlevel[i].name + '</option>';
+					}
+				}
+				$('#select_room').html(html);	
+			});
+		}
+		
+		
+		$(".check_all").click(function(){
+			var checked = $(this).get(0).checked;
+			$("input[type=checkbox]").attr("checked",checked);
+		});
+	
+		$("input[name=btndeleteall]").click(function(){
+			var check = $("input[type=checkbox][class!=check_all]:checked");
+			if(check.length < 1){
+				alert('请选择要删除的订单!');
+				return false;
+			}
+			if(confirm("确认要删除选择的订单?")){
+				var id = new Array();
+				check.each(function(i){
+					id[i] = $(this).val();
+				});
+				var url = "{php echo $this->createWebUrl('apcheck', array('op' => 'deleteall','schoolid' => $schoolid))}";
+				$.post(
+					url,
+					{idArr:id},
+					function(data){
+						if(data.result){
+							alert(data.msg);
+							location.reload();
+						}else{
+							alert(data.msg);
+						}
+					},'json'
+				);
+			}
+		});
+	
+	});
+	</script>
+
+	 
+{/if}
+<script type="text/javascript">
+		$(document).ready(function() {
+$('.gallery-link').magnificPopup({type:'image'});
+		}); 
+	</script>
+
+
+{template 'public/footer'}

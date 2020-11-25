@@ -1,0 +1,70 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-05-22 14:03:38
+ * @LastEditTime: 2020-05-28 11:03:13
+--> 
+
+{if $item['sendtype'] == 'fanstotea'}
+    <div class="fenge"><i></i><p>粉丝与老师的对话</p></div>
+    {if $list}
+        {loop $list $row}
+            <div class="comment_item">
+                <img src="{$row['icon']}"  {if $row['istea'] == true} style="left: 450px;top: 0px;"{else} style="top: 0px;" {/if}>
+                <text class="n"   style="{if $row['istea'] == true}padding-left: 340px;{/if}min-height: 17px;">{if $row['istea'] == true}  {$row['name']}{else}{$row['name']}  {/if} </text>
+                {if !empty($row['content'])}
+                <text class="c"   style="{if $row['istea'] == true} float: right;margin-right: 100px;{/if} " > <span style="background-color: #a1f3a0; border-radius: 5px; padding: 5px;">{$row['content']}</span></text>
+                {/if}
+                {if $row['audio']}
+                <div class="reply_viceo">
+                    <div class="audio_div">
+                        <audio style="width:75%;height: 36px;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+                    </div>
+                </div>
+                {/if}
+                {if $row['picurl']}
+                <div class="reply_video">
+                    {$row['picurl']}
+                </div>
+                {/if}
+            </div>
+        {/loop}
+    {else}
+    <div class="default" style="text-align:center">
+        <image src="{MODULE_URL}public/mobile/img/comment_bg.png"></image>
+        <div>暂无心理咨询留言</div>
+    </div>
+    {/if}
+{/if}
+
+{if $item['sendtype'] == 'stutotea'}
+    <div class="fenge"><i></i><p>学生与老师的对话</p></div>
+    {if $list}
+        {loop $list $row}
+            <div class="comment_item">
+                <img src="{$row['icon']}" {if $row['istea'] == true} style="left: 450px;top: 0px;" {else} style="top: 0px;" {/if}>
+                <text class="n"   style="{if $row['istea'] == true}padding-left: 340px;{/if}min-height: 17px;" >{if $row['istea'] == true}  {$row['name']}{else} {$row['name']}  {/if} </text>
+                {if !empty($row['content'])}
+                <text class="c"  {if $row['istea'] == true} style="float: right;margin-right: 100px; " {/if}> <span style="background-color: #a1f3a0; border-radius: 5px; padding: 5px;">{$row['content']}</span></text>
+                {/if}
+                {if $row['audio']}
+                <div class="reply_viceo">
+                    <div class="audio_div">
+                        <audio style="width:75%;height: 36px;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+                    </div>
+                </div>
+                {/if}
+                {if $row['picurl']}
+                <div class="reply_video">
+                    {$row['picurl']}
+                </div>
+                {/if}
+            </div>
+        {/loop}
+    {else}
+    <div class="default" style="text-align:center">
+        <image src="{MODULE_URL}public/mobile/img/comment_bg.png"></image>
+        <div>暂无心理咨询留言</div>
+    </div>
+    {/if}
+{/if}

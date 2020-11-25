@@ -1,0 +1,35 @@
+<div class="aui-grids aui-grids-image">
+    <div class="BlockTitle">
+        <span style="flex:1"> 未点到</span>
+        <i class="fas fa-minus" style="margin-right: 10px;font-size: 14px;" ></i>
+        <i class="fas fa-plus" style="margin-right: 10px;font-size: 14px;" ></i>
+    </div>
+    {loop $NotCheckedList $row}
+        <a href="javascript:;" onclick="ShowAddModal(`{$row['id']}`)" class="aui-grids-item" id="hide_{$row['id']}">
+            <span>
+                <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" >
+            </span>
+            <span class="aui-grids-item-text">{$row['s_name']}</span>
+        </a>
+    {/loop}
+</div>
+<div class="aui-grids aui-grids-image" style="margin: 10px 10px">
+    <div class="BlockTitle" style=" color: #40a8e8;">
+        <span style="flex:1"> 已点到</span>
+        <i class="fas fa-minus" style="margin-right: 10px;font-size: 14px;" ></i>
+        <i class="fas fa-plus" style="margin-right: 10px;font-size: 14px;" ></i>
+    </div>
+    {loop $CheckedList $row}
+        <a href="javascript:;" onclick="ShowAddModal(`{$row['id']}`)" class="aui-grids-item" id="hide_{$row['id']}">
+            <span>
+                <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" >
+            </span>
+            <span class="aui-grids-item-text">{$row['s_name']}</span>
+        </a>
+    {/loop}
+    {if $CountDone == 0}
+    <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+        暂无已检测学员
+    </div>
+{/if}
+</div>

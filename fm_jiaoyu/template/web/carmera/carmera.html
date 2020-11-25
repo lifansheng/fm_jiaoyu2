@@ -1,0 +1,105 @@
+<div class="material-body" style="overflow-y: scroll;padding: 34px;min-height: 350px;">
+    <div class="row lists_kc">
+        <div id="dplayer" style="font-size: 12px;"></div>
+        <div class="video" id="video_{$video['id']}" data="{$video['videourl']}"></div>
+        <a id="s_{$item['id']}" onclick="showFlashPlayer(`{$video['id']}`);"
+            style="background-image:url({MODULE_URL}public/web/recipe/timg.png);background-repeat:no-repeat; background-size:100% 100%;-moz-background-size:100% 100%;width:100px;height:100px;margin: 10% 0 0 40%;position: absolute;"></a>
+    </div>
+</div>
+<!-- <script src="{MODULE_URL}public/web/js/swfobject.js"></script> -->
+<!-- <script src="{MODULE_URL}public/web/js/html5media.min.js"></script> -->
+<script>
+    $(function(){
+        {if !$isonline}
+            alert('当前课程未开课')
+            return
+        {/if}
+        
+        {if $_W['schooltype']}
+            {if $video['videotype'] != 2}
+                $("#kctitle").html(`{$video['kcname']}(第{$video['nuber']}课)`)
+            {/if}
+            {if $video['videotype'] == 2}
+                $("#kctitle").html(`{$video['name']}(公共区域)`)
+            {/if}
+        {/if}
+        
+        {if !$_W['schooltype']}
+            {if $video['videotype'] != 2}
+                $("#kctitle").html(`{$video['name']}(总共有{$video['bjidnum']}班级)`)
+            {/if}
+            {if $video['videotype'] == 2}
+                $("#kctitle").html(`{$video['name']}(公共区域)`)
+            {/if}
+        {/if}
+
+        $('#Modal').modal('toggle');
+    })
+    function closevideobox() {
+        $('#Modal').modal('toggle');
+    }
+
+    function flashChecker() {
+        var hasFlash = 0;　　　　 //是否安装了flash    
+        var flashVersion = 0;　　 //flash版本    
+
+        if (document.all) {
+            var swf = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+            if (swf) {
+                hasFlash = 1;
+                VSwf = swf.GetVariable("$version");
+                flashVersion = parseInt(VSwf.split(" ")[1].split(",")[0]);
+            }
+        } else {
+            if (navigator.plugins && navigator.plugins.length > 0) {
+                var swf = navigator.plugins["Shockwave Flash"];
+                if (swf) {
+                    hasFlash = 1;
+                    var words = swf.description.split(" ");
+                    for (var i = 0; i < words.length; ++i) {
+                        if (isNaN(parseInt(words[i]))) continue;
+                        flashVersion = parseInt(words[i]);
+                    }
+                }
+            }
+        }
+        return { f: hasFlash, v: flashVersion };
+    }
+    function showFlashPlayer(id) {
+        var hlsData = $("#video_" + id).attr("data");
+        var divname = "#video_" + id;
+        $(divname).css({ "width": "100%" });
+        var bHeight = $(divname).width() * 9 / 16;
+        $(divname).css("height", bHeight);
+        $("#s_" + id).hide();
+        //判断是否已安装flash播放插件
+        var fls = flashChecker();
+        var s = "";
+        if (!fls.f) {
+            $(divname).css("background", "#000");
+            $(divname).html('<embed src="/images/zhansi.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="258" height="220">');
+            return;
+        }
+
+        var flashvars = {
+            src: escape(hlsData),
+            plugin_m3u8: "{MODULE_URL}public/web/js/HLSProviderOSMF.swf",
+        };
+        var params = {
+            allowFullScreen: true,
+            allowScriptAccess: "always",
+            bgcolor: "#000000"
+        };
+        var attrs = {
+            name: "video_" + id
+        };
+        swfobject.embedSWF(
+            "{MODULE_URL}public/web/js/StrobeMediaPlayback.swf",
+            "video_" + id,
+            "100%", "300",
+            "10.2",
+            null, flashvars, params, attrs
+        );
+    }
+
+</script>

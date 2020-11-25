@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true">
+<title>商品已下架</title>
+<style type="text/css" media="screen" id="test">
+	.user_info_wrap {
+  padding: 0.3rem;
+  background-color: #fff;
+  font-size: 0.26rem;
+  color: #333;
+  margin-bottom: 0.2rem; }
+  .user_info_wrap .user_info {
+    line-height: 0.5rem; }
+  .user_info_wrap .user_phone {
+    margin-left: 0.2rem; }
+  .user_info_wrap .user_address {
+    color: #666;
+    padding-right: 0.2rem;
+    background: url({OSSURL}public/mobile/img/arrow_right.png) no-repeat;
+    background-size: 0.16rem 0.3rem;
+    background-position: right center; }
+
+       .goods_info_wrap .goods_send_address:after {
+      content: '';
+      width: 0.2rem;
+      height: 0.2rem;
+      position: absolute;
+      top: 0.35rem;
+      right: 0;
+      background: url({OSSURL}public/mobile/img/arrow_right_pay.png) no-repeat;
+      background-size: 0.16rem 0.3rem;
+      background-position: right center;
+      font-size: 0.20rem; }
+
+       .goods_info_wrap .goods_send_address {
+    height: 0.9rem;
+    line-height: 0.9rem;
+    padding-left: 0.48rem;
+    color: #666;
+    background: url({OSSURL}public/mobile/img/pays_fault.png) no-repeat;
+    background-size: 0.32rem 0.32rem;
+    background-position: 0 center;
+    position: relative;
+    font-size: 0.28rem; 
+    overflow:hidden;
+    text-overflow:ellipsis;
+    word-break:keep-all;/* 不换行 */
+    white-space:nowrap;/* 不换*/
+    
+  }
+</style>
+<link href="{OSSURL}public/mobile/css/j_alert.css?v=062220161108" rel="stylesheet">
+<link href="{OSSURL}public/mobile/css/coinmall_index.css?v=0622" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link href="{OSSURL}public/mobile/css/new_index.css?v=062220170218" rel="stylesheet">
+<script src="https://hm.baidu.com/hm.js?e6c44a88bd78113bfe161250284d9863"></script>
+<script src="{OSSURL}public/mobile/js/hb.js?v=0622"></script>
+</head><body style="">
+	<div id="titlebar" class="header mainColor" style="background: #06c1ae  !important;">
+	<div class="l"><a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a></div>
+	<div class="m">
+		<span style="font-size: 18px">商城</span>   
+	</div>
+	<div class="r">
+		
+	</div>
+</div>
+	<div class="top_head_blank" style="height: 50px !important"></div>
+<div class="goods_img_wrap" style="height:3.0rem !important;">
+   
+</div>
+
+
+
+
+
+    <div class="goods_info_price">
+        <strong style="color:#black;font-size:18px;line-height:27px;text-align:center;white-space:normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;对不起，该商品已下架&nbsp;</strong><br>
+        
+    </div>
+
+
+
+
+
+<script type="text/javascript">
+    // *** 防止广告劫持 Start ***
+    var global_old_write = document.write;
+
+    document.write = function (string) {
+        // 允许youanbao, 百度地图     --条件可再优化
+        if (string.indexOf('youanbao') > -1 || string.indexOf('api.map.baidu.com') > -1) {
+            //alert(script);
+            // 调用原始接口
+            global_old_write.apply(document, arguments);
+        }
+        else
+            return false;
+    }
+    // *** 防止广告劫持 End ***
+</script>
+
+<script src="{MODULE_URL}public/mobile/js/jquery-1.10.2.min.js?v=0622"></script>
+
+
+</body></html>

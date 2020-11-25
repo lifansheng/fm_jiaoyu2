@@ -1,0 +1,62 @@
+{if $operation == 'kslist'}
+{loop  $Data $event}
+{loop $event['data'] $row_event}
+{loop $row_event['data'] $key $event_data}
+<li class="pk_ks kc_{$event_data['kcid']} sd_{$event_data['sd_id']}" kcid="{$event_data['kcid']}" sdid="{$event_data['sd_id']}">
+    <div class="pktop_box" onclick="gotokc({$event_data['kcid']},{$event_data['id']})">
+        <div class="topleft">{$row_event['start_time']} — {$row_event['end_time']} {if $event_data['istoday']}<label>今天</label>{/if}</div>
+        <div class="topriht"></div>    
+    </div>
+    <div class="pkbot_box">
+        <div class="botleft">
+            <div class="xqbox">
+                <div class="xqboxtop">{$event['date']}</div>
+                <div class="xqboxbot">{$event['title']}</div>
+            </div>
+        </div>
+        <div class="botmid">
+            <div class="kcname">{$event_data['kcname']}({$event_data['ksname']})</div>
+            <div class="kcinfo">模式：{$event_data['type']} {$event_data['adrr']}</div>
+            <div class="kcinfo">老师：{if $event_data['teaSign']}{$event_data['teaSign']}{else}未签{/if}</div>
+        </div>
+        <div class="botright">
+            {if !empty($row_event['checksign'])}
+                {if $row_event['checksign']['status'] == 2}
+                    {if $row_event['stupj']}
+                        <a style="color: #06c1ae;" onclick="gotopj({$event_data['kcid']},{$event_data['id']})">已评价</a>
+                    {else}
+                        <a style="color: rgb(226, 142, 40);" onclick="gotopj({$event_data['kcid']},{$event_data['id']})">未评价</a>
+                    {/if}
+                    <p style="color:#1a90f2">已签</p>
+                {/if}
+                {if $row_event['checksign']['status'] == 1}
+                    <span style="color: rgb(226, 142, 40);">待确认</span>
+                    <div class="bot_top" onclick="tixing({$row_event['checksign']['id']},this)"><label >提醒</label></div>
+                {/if}
+                {if $row_event['checksign']['status'] == 3}
+                    <span style="color: rgb(226, 142, 40);">请假</span>
+                {/if}
+                {if $row_event['checksign']['status'] == 0}
+                    <span style="color: rgb(226, 142, 40);">缺课</span>
+                {/if}
+             {else}
+                {if $event_data['timeend'] < $nowtime}
+                    <div class="bot_top" onclick="qiandao({$event_data['id']},2,this)"><label >补签</label></div>
+                {/if}    
+                {if $event_data['timeend'] > $nowtime && $event_data['sk_start'] < $nowtime}
+                <div class="bot_top" onclick="qiandao({$event_data['id']},1,this)"><label >签到</label></div>
+                {/if}
+                {if $event_data['sk_start'] > $nowtime}
+                <span style="color: rgb(226, 142, 40);">未开课</span>
+                {/if}
+             {/if}   
+        </div>
+    </div>
+</li>
+{/loop}
+{/loop}
+{/loop}
+<script>
+$('.bot_header_left').text("课时数目:{$mykcnub}节")
+</script>
+{/if}

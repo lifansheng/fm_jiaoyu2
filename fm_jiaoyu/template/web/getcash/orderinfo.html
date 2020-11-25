@@ -1,0 +1,191 @@
+<div class="modal-header">                
+	<h4 class="modal-title" id="myModalLabel" style="color:#444">提现申请详情</h4>
+</div>
+<div class="modal-body wizard " style="height:100%; max-height: 90%;">
+	<div class="card-content">
+		<ul class="nav nav-tabs justify-content-center" role="tablist">
+			<li class="nav-item pt-50 ml-2 active">
+				<a class="nav-link active d-flex align-items-center" id="details-tab" data-toggle="tab" href="#details" aria-controls="details" role="tab" aria-selected="true"><i class="fa fa-clock-o mr-50"></i>处理进度</a>
+			</li>
+			<li class="nav-item pt-50 ">
+				<a class="nav-link d-flex align-items-center" id="conent-tab" data-toggle="tab" href="#conent" aria-controls="conent" role="tab" aria-selected="false"><i class="fa fa-file-text-o mr-50"></i>提现组成</a>
+			</li>
+		</ul>
+		<div class="tab-content chat-profile-rightover pl-0" style="width:100%;height:100%">
+			<div class="tab-pane active pl-0" id="details" aria-labelledby="details-tab" role="tabpanel">
+				<div class="card-body" style="padding:0px !important">
+					<ul class="widget-timeline mb-0">
+						<li class="timeline-items timeline-icon-primary active">
+							<div class="timeline-time mt-2">{php echo date('Y.m.d H:i',$order['createtime'])} <span class="badge badge-success"><i class="fa fa-check-circle"></i> 申请</span></div>
+							<h6 class="timeline-title">
+								<div class="chip">
+									<div class="chip-body">
+										<div class="avatar">
+											<img class="img-fluid" src="{$usericon}" alt="generic img placeholder" height="20" width="20">
+										</div>
+										<span class="chip-text" style="margin-left:-4px">{$username}</span>
+									</div>
+								</div>
+							</h6>
+							{if $order['contrank']}<div class="timeline-content">{$order['contrank']}</div>{/if}
+						</li>
+						{if $order['approval'] >= 1}
+						<li class="timeline-items timeline-icon-warning active">
+							<div class="timeline-time mt-2">
+								{if $order['shtime']}{php echo date('Y.m.d H:i',$order['shtime'])}{/if} 
+								{if $order['approval'] == 1}<span class="badge badge-danger"><i class="fa fa-ban"></i> 拒绝</span>{/if}
+								{if $order['approval'] == 2}<span class="badge badge-success"><i class="fa fa-check-circle"></i> 已审</span>{/if}
+							</div>
+							<h6 class="timeline-title">
+								<div class="chip">
+									<div class="chip-body">
+										<div class="avatar">
+											<img class="img-fluid" src="{$shicon}" alt="generic img placeholder" height="20" width="20">
+										</div>
+										<span class="chip-text" style="margin-left:-4px">{$shname}</span>
+									</div>
+								</div>
+							</h6>
+							{if $order['shrank']}<div class="timeline-content">{$order['shrank']}</div>{/if}
+						</li>
+						{/if}
+						{if $order['paytid']}
+						<li class="timeline-items timeline-icon-info active">
+							<div class="timeline-time">{if $order['paytime']}{php echo date('Y.m.d H:i',$order['paytime'])}{/if} <span class="badge badge-success"><i class="fa fa-check-circle"></i> 拨款</span></div>
+							<h6 class="timeline-title">
+								<div class="chip">
+									<div class="chip-body">
+										<div class="avatar">
+											<img class="img-fluid" src="{$payicon}" alt="generic img placeholder" height="20" width="20">
+										</div>
+										<span class="chip-text" style="margin-left:-4px">{$payname}</span>
+									</div>
+								</div>
+							</h6>
+							{if $order['payrank']}<div class="timeline-content">{$order['payrank']}</div>{/if}
+						</li>
+						{/if}
+						{if $order['status'] > 0}
+						<li class="timeline-items timeline-icon-danger active">
+							<div class="timeline-time">
+								{if $order['dztime']}{php echo date('Y.m.d H:i',$order['dztime'])}{/if}
+								{if $order['status'] == 1}<span class="badge badge-danger"><i class="fa fa-ban"></i> 未到账</span>{/if}
+								{if $order['status'] == 2}<span class="badge badge-success"><i class="fa fa-check-circle"></i> 到账</span>{/if}
+							</div>
+							<h6 class="timeline-title">
+								<div class="chip">
+									<div class="chip-body">
+										<div class="avatar">
+											<img class="img-fluid" src="{$usericon}" alt="generic img placeholder" height="20" width="20">
+										</div>
+										<span class="chip-text" style="margin-left:-4px">{$username}</span>
+									</div>
+								</div>
+							</h6>
+							<div class="card-body">
+								<label class="app-file-label">收款信息</label>
+								<div class="d-flex justify-content-between align-items-center mt-75"><p><i class="fa fa-user"></i> 真实姓名</p><p class="font-weight-bold">{$order['realname']}</p></div>
+								<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-phone"></i> 手机号码</p><p class="font-weight-bold">{$order['mobile']}</p></div>
+								<div class="d-flex justify-content-between align-items-center">
+									<p><i class="fa fa-tag"></i> 支付账户</p>
+									<p class="font-weight-bold">{if $order['paytype'] == 1}{$payweid['name']}{/if}{if $order['paytype'] == 2}现金付款{/if}{if $order['paytype'] == 3}其他方式{/if}</p>
+								</div>
+								{if $order['dztime']}
+									<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-clock-o"></i> 到账时间</p><p class="font-weight-bold">{php echo date('Y.m.d H:i',$order['dztime'])}</p></div>
+									{if $order['paytype'] == 1}<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-wechat"></i> 收款微信</p><p class="font-weight-bold">{$order['payopenid'])}</p></div>{/if} 
+								{/if} 
+							</div>
+						</li>
+						{/if}
+					</ul>
+				</div>
+			</div>
+			<div class="tab-pane" id="conent" aria-labelledby="conent-tab" role="tabpanel">
+				<div class="card-body mt-2" style="overflow-y: scroll;height:auto;max-height:600px;width:100%">
+					<label class="app-file-label">提成组成</label>
+					<table class="table table-hover">
+						<thead class="navbar-inner">
+							<tr>
+								<th style="width:13%">课程</th>
+								<th style="width:5%;text-align:left">节次</th>
+								<th style="width:6%;">签到</th>
+								<th style="width:6%;">审核</th>
+								<th style="width:6%;">计费</th>
+								<th style="width:6%;text-align:center">课时</th>
+								<th style="width:5%;">金额</th>
+								{if $order['status'] != 2 && empty($order['paytid'])}<th style="text-align:center; width:6%;"><small class="text-muted">操作</small></th>{/if}
+							</tr>
+						</thead>
+						<tbody>
+							{loop $allks $item}
+							<tr>
+								<td>
+									<small class="text-muted">{$item['kcname']}</small>
+								</td>
+								<td>
+									<small class="text-muted">{$item['ksorder']}</small>
+									{if $item['ismaster_tid'] == 1}<span class="badge badge-light-primary">主讲</span>{/if}
+									{if $item['ismaster_tid'] == 2}<span class="badge badge-light-info">助教</span>{/if}
+									{if $item['kstime'] == 2}<span class="badge badge-light-warning">提前签</span>{/if}
+									{if $item['kstime'] == 3}<span class="badge badge-light-danger">补签</span>{/if}
+								</td>
+								<td>
+									<small class="text-muted">{$item['signname']}</small>
+									{if $item['istea']}<span class="badge badge-light-primary">师</span>{else}<span class="badge badge-light-success">学</span>{/if}
+								</td>
+								<td><small class="text-muted">{$item['shtname']}</small></td>
+								<td><small class="text-muted">{if $item['ruletype'] == 1}按老师签{/if}{if $item['ruletype'] == 2}按学生签{/if}</small></td>
+								<td style="text-align:center"><small class="text-muted">{$item['costnum']}</small></td>
+								<td><small class="text-muted">{$item['fee']}</small></td>
+								{if $order['status'] != 2 && empty($order['paytid'])}
+								<td style="text-align:center;">
+									<i class="fa fa-trash cursor-pointer" onclick="DelteKs({$item['id']},this)"></i>
+								</td>
+								{/if}
+							</tr>
+							{/loop}
+						</tbody>
+					</table>
+				</div>
+				<label class="app-file-label pl-3">总计</label>
+				<div class="d-flex justify-content-between align-items-center pl-3 pr-5">
+					<p><i class="fa fa-rmb"></i> 提现金额</p>
+					<p class="font-weight-bold primary"><strong id="txfee">{$order['oldfee']}</strong> 元</p>
+				</div>
+				{if $order['status'] == 2}
+				<div class="d-flex justify-content-between align-items-center pl-3 pr-5">
+					<p><i class="fa fa-rmb"></i> 到账金额</p>
+					<p class="font-weight-bold danger"><strong>{$order['fee']}</strong> 元</p>
+				</div>
+				{/if}
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal-foot">
+	<button type="button" class="btn btn-danger cursor-pointer" data-dismiss="modal">关闭</button>
+	<!-- <a class="btn btn-primary glow cursor-pointer ml-3" style="color: #fff;" onclick="add_tea();">提交</a> -->
+</div>
+<script type="text/javascript">
+function DelteKs(id,elm){
+	var r = confirm("确认删除此提现课时？");
+	if (r == true) {
+		$('#txfee').text(0)
+		$.ajax({
+			url: "{php echo $this->createWebUrl('getcash', array('op'=>'DelOneKs','schoolid' => $schoolid))}",
+			type: "post",
+			dataType: "json",
+			data: {id:id},
+			success: function (result) {
+				ReToastGlobal(result.msg)
+				if (result.result) {
+					move('txfee',result.fee);
+					$(elm).parent().parent().remove();
+				}
+			}	
+		});
+	}
+}
+
+
+</script>

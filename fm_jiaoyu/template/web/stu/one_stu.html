@@ -1,0 +1,135 @@
+{loop $list $item}
+<tr id="stuid_{$item['id']}">
+	<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+	{if !$schooltype}
+	<td>
+		{$item['numberid']}
+	</td>
+	{/if}
+	<td style="text-align:center">
+		<img style="width:50px;height:50px;border-radius:50%;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);" src="{if !empty($item['icon'])}{php echo tomedia($item['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" width="50" style="border-radius: 3px;" /></br>{$item['s_name']}
+	</td>	
+	<td>
+	{if $item['s_type'] == 1}
+		<span class="badge badge-light-warning">走读</span>
+		{elseif $item['s_type'] == 2}
+		<span class="badge badge-light-info">住校</span>
+		{elseif $item['s_type'] == 3}
+		<span class="badge badge-light-info">半通</span>
+	{/if}
+	{if $item['sex'] == 1}<span class="badge badge-light-primary">男</span>{else}<span class="badge badge-light-success">女</span>{/if}
+	{if $item['birthdate']}
+		<span class="badge badge-light-info">{php echo (date('Y',TIMESTAMP) - date('Y',$item['birthdate']))}岁</span>
+		<span class="badge badge-light-secondary">{php echo date('Y-m-d',$item['birthdate'])}</span>
+	{/if}
+	{$item['mobile']}
+	{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+		{if  !empty($item['typt_user_id'])}
+		<span class="label label-primary">已同步</span>
+		{/if}
+	{/if}
+	</td>
+	{if $logo['is_stuewcode'] ==1}
+	<td id="ewcode{$item['id']}">
+	{if $item['img_qr']}
+		{if $item['overtime'] && $item['qrcid'] == $item['id']}
+			<img class="min" onclick="img({$item['id']})" id="img{$item['id']}" src="{php echo tomedia($item['img_qr'])}"/>
+			<br><span id="sub{$item['id']}" class="label label-warning">{$item['subnum']}次扫描</span>
+			<br><span id="day{$item['id']}" class="label label-info">{$item['restday']}天后失效</span>
+		{else}
+			<span class="label label-danger">已过期</span></br></br>
+			<a class="btn btn-default btn-sm qx_702"  title="重新生成二维码" id="recreatqr{$item['id'],}" onclick="recreate_qr({$item['id']},{$item['qrcode_id']});">重新生成</i></a>
+		{/if}
+	{else}
+		<a class="btn btn-default btn-sm qx_702"  title="生成二维码" id="creatqr{$item['id']}" onclick="creatqr({$item['id']});">生成</i></a>
+	{/if}
+	</td>
+	{/if}
+	{if !$schooltype}
+	<td>
+		 {if !empty($category[$item['xq_id']])}{$category[$item['xq_id']]['sname']}{/if}丨{if !empty($category[$item['bj_id']])}{$category[$item['bj_id']]['sname']}{/if}</br>
+		</br>
+		<!-- {$item['area_addr']} -->
+	</td>
+	{/if}	
+	{if !$schooltype}
+		{if is_showap()}
+		<td>
+			{$item['roomname']}</br>
+			{$item['apname']}
+		</td>
+		{/if}
+	{/if}
+	{if keep_sk77() && $_W['schooltype']}
+	<td>
+		{$item['sellteaname']}
+	</td>
+	{/if}
+	<td>
+		{if $item['fanslist']}
+			<span class="zhuliclass">
+			{loop $item['fanslist'] $row}
+				<img class="zlheader" src="{$row}">
+			{/loop}
+			</span></br></br>
+			<a class="btn btn-light-secondary btn-xs qx_707" onclick="show_wxbd({$item['id']})" title="绑定信息"><i class="fa fa-wechat">&nbsp;&nbsp;{$item['wxbdrs']}人绑定</i></a>
+		{/if}
+	</td>					
+	<td>{php echo date('Y-m-d',$item['seffectivetime'])}</td>  	
+	{if $_W['schooltype']}		
+	<td>
+		{if $item['mutikc']}
+			{loop $item['mutikc'] $row}
+				<a class="btn btn-primary btn-sm" style="padding:3px 6px;" target="_blank" href="{php echo $this->createWebUrl('kecheng', array('id' => $row['kcid'], 'op' => 'kc_info', 'schoolid' => $schoolid))}" title="{$row['kcname']}">{$row['kcname']}</br>
+					总课时：{$row['allks']}</br>
+					已用课时：{$row['hasSign']}</br>
+					{if $row['freeks']}
+					赠送课时：{$row['freeks']}</br>
+				{/if}
+				</a>
+			{/loop}
+		{else}
+		{loop $item['bmkc'] $row}
+			{$row}</br>
+		{/loop}
+		{/if}
+	</td>	
+	{/if}			
+	<td><a class="btn btn-light-secondary btn-sm qx_706" onclick="show_cjbox({$item['id']})" title="录入成绩"><i class="fa fa-qrcode">&nbsp;录成绩</i></a></td>
+	<td>{$item['code']}</td>
+	{if ( is_showpf() || keep_DD()) && !$_W['schooltype']}
+	<td class="qx_709"><a class="btn btn-light-secondary btn-sm" onclick="show_order({$item['id']})" title="修改资料卡"><i class="fa fa-qrcode">&nbsp;资料卡</i></a></td>
+	{/if}
+	{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+	<td>
+		{if  !empty($item['typt_user_id'])}
+		<span class="label label-primary">已同步</span>
+		{/if}
+	</td>
+	{/if}
+
+	{if keep_Ls()}
+	<td style="text-align:right;">
+		<input type="checkbox" value="{$item['isopen']}" name="isopen" data-sid="{$item['id']}" {if $item['isopen'] == 1}checked{/if}>	
+	</td>
+	{/if}
+	<td class="qx_e_d" style="text-align:right;">
+		<a class="btn btn-default btn-sm qx_702" onclick="edite_stu({$item['id']})" title="编辑"><i class="fa fa-pencil"></i></a>
+		<a class="btn btn-default btn-sm qx_708" onclick="deletestu({$item['id']})" title="删除"><i class="fa fa-times"></i></a>
+	</td>
+</tr>
+{/loop}
+<script>
+$(function(){
+	$(':checkbox[name="isopen"]').bootstrapSwitch();
+	$(':checkbox[name="isopen"]').off('switchChange.bootstrapSwitch')
+
+	$(':checkbox[name="isopen"]').on('switchChange.bootstrapSwitch', function(e, state){
+		var isopen = this.checked ? 1 : 2;
+		var sid = $(this).attr('data-sid')
+		$.post("{php echo $this->createWebUrl('students', array('op' => 'lsChange','schoolid' => $schoolid))}", {isopen: isopen,sid:sid}, function(resp){
+		});
+	});	
+})
+
+</script>

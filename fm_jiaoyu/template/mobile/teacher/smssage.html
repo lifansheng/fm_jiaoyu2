@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="HandheldFriendly" content="true" />
+	<script type="text/javascript" src="{OSSURL}public/mobile/js/hb.js?v=1124"></script>
+	<link href="{OSSURL}public/mobile/css/new_yab.css?v=112420161108" rel="stylesheet" />
+	<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+	<link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+	<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=4.81022"></script>
+	{php echo register_jssdks();}
+	{php include $this->template('port');}
+	<style>
+		.ovfHideen{height:calc(100vh - 50px);overflow: hidden;}
+		body {font-family: initial;}
+		.mainColor{background:#06c1ae !important;}
+		.PromptBox {position: fixed;z-index: 2000;top: 30%;color: #fff;padding: 13px 20px;font-size: 16px;display:none;}
+		.vacationRecord_section {display: block;margin: 10px;width: auto;background-color: white;border-radius: 10px;position: relative;padding-top: 10px;padding-bottom: 10px;}
+		.vacationItem {position: relative;padding: 0px 0 0 15px;margin: 0px 0 0px 20px;height: 32px;display: -webkit-box;display: -moz-box;display: -ms-flexbox; display: -webkit-flex; display: flex;
+		-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;border-left: 1px solid #06c1ae;}
+		.vacationItemBtn {border: none;}
+		.vacationItem:first-child {margin: 5px 0 0px 20px;}
+		.vacationItem:last-child {margin-bottom: 2px;}
+		.vacation_title {font-size: 14px;color: rgb(34, 34, 34);}
+		.vacation_mom {font-size: 14px;color: #06c1ae;}
+		.vacation_left {padding-left: 3px;}
+		.vacation_time {font-size: 12px;color: rgb(102, 102, 102);}
+		.left_dotsVacation {position: absolute;width: 10px;height: 10px;background-color: #06c1ae;border-radius: 50%;left: -5px;top: 50%;transform: translateY(-50%);-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);}
+		/*老师回复*/
+		.teachReplyBox {margin: 10px 0 0px 35px;position: relative;}
+		.teachReplyInfo {width: 6rem;height: auto;display: block;background-color: rgb(248, 248, 248);border: 1px solid rgb(238, 238, 238);border-radius: 5px;margin-bottom: 5px;position: relative;margin-top: .36rem;}
+		.teachReplyInfo::after {content: "";display: block;height: 0;clear: both;visibility: hidden;}
+		.teachReplyLeftBox {width: 0.7rem;height: 0.7rem;border-radius: 50%;display: inline-block;float: left;}
+		.teachReplyRightBox {display: inline-block;height: 100%;float: left;width: 95%;}
+		.teachReplyRightTitle {display: inline-block;height: 35px;padding-left: 5px;}
+		.teachReplyRightDescribe {display: inline-block;margin-top: 0.3rem;margin-bottom: 0.3rem;margin-left: 0.3rem;}
+		.teachReplyName {font-size: 14px;color: rgb(102, 102, 102);display: block;margin-top: 2px;}
+		.teachReplyTitle_Time {font-size: 12px;color: rgb(153, 153, 153);}
+		.teachReplyRightDescribeInfo {font-size: 14px;}
+		.teachReplyBottom {padding-bottom: 10px;height: auto;}
+		/*三角形*/
+		.teachReplyInfo em, .teachReplyInfo .teachTop {display: block;width: 30px;height: 16px;font-size: 30px;overflow: hidden;_position: relative;margin-left: 0px;}
+		.teachReplyInfo em {margin-top: -16px;color: rgb(238, 238, 238);font-style: normal;}
+		.teachReplyInfo .teachTop {margin-top: -14px;color: rgb(248, 248, 248);position: absolute;}
+		/*左边线条*/
+		.teachReplyLeftLine {position: absolute;left: -15px;top: -34px;height: 32px;}
+		/*左边圆*/
+		.teachReplyLeftCircle {position: absolute;width: 10px;height: 10px;border-left: 1px solid #06c1ae;left: -20px;top: 8px;border-radius: 50%;background-color: #06c1ae;}
+		/*右边提示*/
+		.statusTip {position: absolute;width: 40px;height: 42px;right: 0;top: 0;}
+		.statusTipTop {width: 100%;height: 22px;font-size: 12px;color: white;background-color: rgb(255, 102, 101);line-height: 22px;text-align: center;border-bottom: 1px solid rgb(255, 131, 130);}
+		.tip_approve_down {width: 0;height: 0;border-left: 20px solid transparent;border-right: 20px solid transparent;border-top: 20px solid rgb(255, 102, 101);}
+		/*不批准提示*/
+		.statusTipTop_disapprove {background-color: rgb(153, 153, 153);text-align: center;border-bottom: 1px solid rgb(172, 172, 172);}
+		.tip_approve_down__disapprove {border-top: 20px solid rgb(153, 153, 153);}
+		.otherTime {color: rgb(153, 153, 153);}
+		.vacationRecord_section:first-child {margin-top: 10px;}
+		.signin_leftBox {position: absolute;}
+		.txtArea {width: 95%;height: 100%;border: none;background-color: #f8f8f8;padding: 5px;resize: none;border-radius: 10px;overflow: hidden;text-overflow: ellipsis;white-space: normal;overflow-y: scroll;}
+		.txtArea::-webkit-scrollbar {display: none;}
+		.refuse, .approve {width: 75px;height: 30px;color: white;text-align: center;line-height: 30px;font-size: 14px;border-radius: 25px;position: absolute;cursor: pointer;}
+		.refuse {background-color: #ff9f22;left: 1rem;}
+		.approve {background-color: #06c1ae;right: 1rem;}
+		.vacationItem > a {width: 75px;height: 30px;color: white;}
+		.vacation_titleOther {max-width: 80%;padding-left: 3px;line-height: 18px;}
+		.vacationItemOther {height: auto;-webkit-box-align: flex-start;-moz-box-align: flex-start;-ms-flex-align: flex-start;-webkit-align-items: flex-start;align-items: flex-start;padding-bottom: 5px;padding-top: 5px;}
+		.left_dotsVacationOther {top: 12px;}
+		.teachReplyTitleBox {padding-top: 5px;position: relative;}
+		.lectBorderLine {position: absolute;border-left: 1px solid #06c1ae;left: -15px;top: 0px;height: 16px;}
+		.header { width: 100%; height: 50px; line-height: 50px; position: fixed; z-index: 1000; top: 0; left: 0; box-shadow: 0 0 2px 0px rgba(0,0,0,0.3),0 0 6px 2px rgba(0,0,0,0.15); }
+		.header .l { width: 50px; height: 50px; line-height: 50px; color: white; position: absolute; left: 0; top: 0; }
+		.header .m { width: 100%; height: 50px; line-height: 50px; text-align: center; color: white; font-size: 18px; }
+		.header .r { width: 50px; height: 50px; line-height: 50px; position: absolute; right: 0; top: 0; }
+		.mainColor { background: #06c1ae !important; }
+		.header .l a { font-size: 18px; color: white; display: block; width: 100%; height: 100%; text-align: center; }
+		.header .m a i {float: left;margin: 23px 0 0 5px;width: 0;height: 0;border-width: 6px 6px 0;border-style: solid;border-color: white transparent transparent;position: absolute;}
+		.img-responsive {display: block;width: 35px;border-radius: 50%;height: 35px;}
+		.selectList {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);text-align: center;z-index: 30;font-size: 20px;    color: #fe6700;}
+		.selectList .single {position: absolute;left: 6%;right: 6%;top: 15%;padding: 0 20px;background-color: #fff;padding-bottom: 33px;padding-top: 10px;height: 62vh; }
+		.selectList ul {width: 100%;height: auto;overflow: auto;}
+		.selectList ul li {height: 50px;line-height: 50px;border-bottom: 1px solid #e9e9e9;padding: 0 10px;}
+		.selectList ul li span.ri {height: 50px;line-height: 50px;font-size: 16px;}
+		/* 详细病因弹出框 */
+		.BackGroundPoP{width:100vw;height: 100vh;background-color: rgba(154,154,154,0.6);top: 0px;position: fixed;z-index: 9999;overflow: hidden;}
+		.BackGroundPoP *{box-sizing: border-box;}
+		.TopLeft{padding-top:8px;padding-left: 10px;font-size: 25px;float: left;}
+		.TopMiddle{font-size: 16px;text-align: center; line-height: 40px;padding-right: 40px;}
+		.BingYinDetail{height: 80vh;width: 100vw;background-color: rgb(249, 249, 249);margin-top: -90vh;}
+		.TopInfo{height: 40px;width: 100vw;text-align: center;border-bottom: 1px solid #b7b7b7;background-color: white;}
+		.BYBox{width:100%;box-sizing: border-box;overflow: scroll;height: calc(80vh - 40px);padding-top: 10px;}
+		.BYBox_level{width: 100%;background-color: white;margin-bottom: 20px;padding:0 10px;box-sizing: border-box;border-top:1px solid rgb(240, 240, 240);border-bottom:1px solid rgb(240, 240, 240)}
+		div.BYBox_level div.BoxCell:last-child { border:none; }
+		.BoxCell{height: 35px;width: 100%;border-bottom: 0.5px solid #f1f1f1;font-size: 15px;box-sizing: border-box;}
+		.Heihly{height: auto !important;}
+		.BoxCell .left{float: left;height: 100%;width: 90px;text-align: right; line-height: 35px;}
+		.BoxCell .right{float: left;height: 100%;width: calc(100% - 90px);text-align: right; line-height: 35px;}
+		.BoxCell .right input{border: unset; width: 100%; height: 34px;}
+		.BoxCell .rightTips {float: left;height: 100%;width: calc(100% - 90px);text-align: right; line-height: 35px;font-size: 12px;color:gray}
+		input::-webkit-input-placeholder, textarea::-webkit-input-placeholder { color: rgb(177, 175, 175); font-size: 14px; }
+		.UpBtn{padding:5px 5px;height: 30px; font-size: 14px;border-radius: 5px;color: white;}
+		.btnGroupBox{width: 100%;height: 40px;display: flex;flex-direction: row;justify-content: space-between;padding:0 10px;box-sizing: border-box;}
+
+		/* 治愈情况详情 */
+		.HealDetail{height: 100vh;width: 100vw;background-color: rgb(249, 249, 249);margin-left: 100vh;}
+		.consult_audio {
+			float: right;
+			font-size: 16px;
+			color: #fff;
+			background: #06c1ae;
+			border-radius: 5px;
+			padding: 6px;
+			margin-left: 5px;
+			position: relative;
+			word-break: break-all;
+			word-wrap: break-word;
+			height: 20px;
+		}
+		.consult_audio .arrow {
+			width: 8px;
+			height: 9px;
+			position: absolute;
+			background: url("{MODULE_URL}public/mobile/img/arrow_right.png") no-repeat;
+			background-size: 8px;
+			right: -8px;
+			margin-top: -1px;
+		}
+		.consult_audio .div_voice {
+			height: 100%;
+			width: 40px;
+			padding-right: 5px;
+		}
+		.consult_audio .div_voice .icon {
+			height: 100%;
+			background: url("{MODULE_URL}public/mobile/img/voice_icon.png") no-repeat; 
+			background-size: 18px;
+		}
+		.slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+	
+	</style>
+	<title>{$school['title']}</title>
+</head>
+<body  >
+	<div class="header mainColor">
+		<div class="l" id="titlebar">
+			<a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"> </a>
+		</div>
+		{if !$_W['schooltype']}
+		<div class="m">
+			<a id="showbjlist">
+				<span style="font-size: 18px">{$bjidname['sname']}</span><i></i>
+			</a>
+		</div>
+		{/if}
+		{if $_W['schooltype']}
+		<div class="m"><a><span style="font-size: 18px">学生请假列表</span></a></div>
+		<div class="r">
+			<a href="javascript:;" class="choice_baby">
+				<img style="height: 35px;margin-top:10px" src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+			</a>
+		</div>
+		{/if}
+		
+	</div>
+	<div class="All ">
+		<div class="list">
+			<div class="listContent" style="margin-top: 15px">
+				<div class="leave" style="padding: 0">
+				{loop $leave $row}
+					<div class="vacationRecord_section">
+						<div class="vacationItem">
+							<span class="vacation_title">申请人:</span><span class="vacation_mom vacation_left">{$row['s_name']}{$row['guanxi']}</span>
+							<div class="left_dotsVacation"></div>
+						</div>
+						<div class="vacationItem">
+							<span class="vacation_time">开始时间:</span><span class="vacation_time vacation_left">{if $row['startime']}{$row['startime']}{else}{php echo date('Y-m-d H:i:s',$row['startime1'])}{/if}</span>
+							<div class="left_dotsVacation"></div>
+						</div>
+						<div class="vacationItem">
+							<span class="vacation_time">结束时间:</span><span class="vacation_time vacation_left">{if $row['endtime']}{$row['endtime']}{else}{php echo date('Y-m-d H:i:s',$row['endtime1'])}{/if}</span>
+							<div class="left_dotsVacation"></div>
+						</div>
+						<div class="vacationItem">
+							<span class="vacation_title">类型:</span><span class="vacation_title vacation_left">{$row['type']}</span>
+							{if $row['byid']}
+							<span  style="margin-left: 10px;color:#36bcda;" onclick="ShowByDetail(`{$row['byid']}`)">点击查看详细病因</span>
+							{/if}
+							<div class="left_dotsVacation"></div>
+						</div>
+						{if keep_Ls()}
+						<div class="vacationItem">
+							<span class="vacation_title">语音:</span>
+							<div class="consult_audio">
+							 	<div class="div_voice">
+									<div class="icon"></div>
+									<audio class="sound1" width="320" height="240" src="{$row['audio']}" style="display: none; opacity: 0;">
+										<source src="{$row['audio']}" type="video/mp4">亲，你的手机不支持微信语音播放，这个真没办法！
+									</audio>
+								</div>
+							 </div>
+							 <div>
+								{$row['audioTime']}"
+							 </div>
+						</div>
+						{/if}
+						<div class="vacationItem vacationItemOther">
+							<span class="vacation_title">原因:</span><span class="vacation_title vacation_titleOther">{$row['conet']}</span>
+							<div class="left_dotsVacation left_dotsVacationOther"></div>
+						</div>
+						<!--老师回复-->
+						{if $row['status'] == 0}
+						<div class="teachReplyBox qx_00402">
+							<div class="teachReplyTitleBox">回复:<div class="lectBorderLine"></div></div>
+							<div class="teachReplyInfo">
+								<em>&#9670;</em>
+								<span class="teachTop">&#9670;</span>
+								<textarea class="txtArea " rows="4"> </textarea>
+							</div>
+						</div>
+						{else}
+						<div class="teachReplyBox">
+							<div class="teachReplyToptBox">
+								<div class="teachReplyLeftBox">
+									<img src="{if $row['thumb']}{php echo tomedia($row['thumb'])}{else}{php echo tomedia($schol['tpic'])}{/if}" class="img-responsive">
+								</div>
+								<div class="teachReplyRightTitle">
+									<span class="teachReplyName">{$row['tname']}-老师</span>
+									<span class="teachReplyTitle_Time">{php echo date('Y-m-d H:i:s',$row['cltime'])}</span>
+								</div>
+							</div>
+							{if $row['reconet']}
+							<div class="teachReplyTitleBox">回复: <div class="lectBorderLine"></div></div>
+							<div class="teachReplyInfo">
+								<em>&#9670;</em>
+								<span class="teachTop">&#9670;</span>
+								<textarea class="txtArea" rows="4" readonly="readonly">{$row['reconet']}</textarea>
+							</div>
+							{/if}
+						</div>
+						{/if}
+						<div class="teachReplyBottom">
+							<span class="vacation_time otherTime">申请时间:</span><span class="vacation_time vacation_left otherTime">{php echo date('Y-m-d H:i:s',$row['createtime'])}</span>
+						</div>
+						<div class="left_teachReply"></div>
+						<div class="teachReplyLeftLine"></div>
+						<div class="teachReplyLeftCircle"></div>
+
+						{if $row['status'] == 0}
+						<div class="statusTip">
+							<div class="statusTipTop statusTipTop_disapprove">待批</div>
+							<div class="tip_approve_down tip_approve_down__disapprove"></div>
+						</div>
+						{else if $row['status'] == 2}
+						<div class="statusTip">
+							<div class="statusTipTop statusTipTop_disapprove">拒绝</div>
+							<div class="tip_approve_down tip_approve_down__disapprove"></div>
+						</div>
+						{else if $row['status'] == 1}
+						<div class="statusTip">
+							<div class="statusTipTop">批准</div>
+							<div class="tip_approve_down"></div>
+						</div>
+						{/if}
+						<div class="signin_leftBox"></div>
+						{if $row['status'] == 0}
+						<div class="vacationItem vacationItemBtn">
+							<a href="javascript:;" class="refuse">
+								<div class="btn_refuse teacher_leave_but qx_00402" agree-type="disagree" data-id="{$row['id']}" >拒绝</div>
+							</a>
+							{if keep_DD()}
+								{if $senddoor == 1}
+								<a href="javascript:;" class="approve">
+									<div onclick="agree(this,`{$row['id']}`)">批准</div>
+								</a>
+								{else}
+								<a href="javascript:;" class="approve">
+									<div class="btn_approve teacher_leave_but qx_00402" agree-type="agree" data-id="{$row['id']}" >批准</div>
+								</a>
+								{/if}
+							{else if keep_ZHXZY()}
+								<a href="javascript:;" class="approve">
+									<div onclick="zhxzyagree(this,`{$row['id']}`)">批准</div>
+								</a>
+							{else}
+
+							<a href="javascript:;" class="approve">
+								<div class="btn_approve teacher_leave_but qx_00402" agree-type="agree" data-id="{$row['id']}" >批准</div>
+							</a>
+							{/if}
+						</div>
+						{/if}
+						{if $row['byid'] && !$row['is_heal'] && $schoolset['is_bingyin'] && keep_Blacklist() && $row['status'] == 1 }
+						<div class="vacationItem vacationItemBtn" style="text-align: center;display: flex;flex-direction: row;justify-content: center;margin-left: unset;padding-left: unset;">
+							<a href="javascript:;" class="approve" style="width:100px;position: unset;">
+								<div  style="width: auto;" onclick="EditHeal(`{$row['byid']}`)" >填写治愈情况</div>
+							</a>
+						</div>
+						{/if}
+					</div>
+				{/loop}
+				</div>
+			</div>
+		</div>
+		<!------------提示框-------------!-->
+		<div id="popup_leave" class="popup_leave">
+			<div class="popup_leave_div">
+				<div style="font-size: 14px;color:#111111" class="alert_msg">操作后将无法修改，您确定要拒绝学生的请假吗？</div>
+				<div class="popup_leave_input">
+					<div class="popup_leave_button popup_leave_button_left">
+						<input class=" popup_leave_coloer_1 click_close" type="button" value="确定" data-index="1" />
+					</div>
+					<div class="popup_leave_button">
+						<input class=" popup_leave_coloer_2 click_close" type="button" value="取消" data-index="0" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="selectList" id="selectList" style="z-index:100000;display:none;">
+			<div class="single" style="border-radius: 10px;">
+				<ul>
+					<span style="color:#444;height: 20px;display: inline-block;">切换班级</span>
+					<div style="height: calc(62vh - 20px);overflow: scroll;">
+						{loop $bjlist $row}
+						<li onclick="isSelect({$row['sid']});"><span class="ri">{$row['sname']}</span></li>
+						{/loop}
+					</div>
+				</ul>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+
+	<div class="BackGroundPoP" id="ShowByTopBox" style="display: none;">
+		<div id="BYDetail" class="BingYinDetail"  >
+			<div class="TopInfo"  >
+				<div class="TopLeft" style="font-size: 16px;"  onclick="javascipt:window.history.back();"><i class="fa fa-chevron-left" style="font-size: 20px;"></i>返回</div>
+				<div class="TopMiddle"><span>查看详细病因</span></div>
+			</div>
+			<div class="BYBox">
+				<div class="BYBox_level">
+					<div class="BoxCell">
+						<div class="left"  >姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</div>
+						<div class="right" style="text-align: left">{$student['s_name']}</div>
+					</div>
+					<div class="BoxCell">
+						<div class="left"  >性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</div>
+						<div class="right" style="text-align: left"> {if $student['sex'] == 1} 男 {else} 女 {/if} </div>
+					</div>
+					<div class="BoxCell" >
+						<div class="left"  >联系方式：</div>
+						<div class="right" style="text-align: left">{$student['mobile']}</div>
+					</div>
+					<div class="BoxCell" >
+						<div class="left"  >请假天数：</div>
+						<div class="right diffday" style="text-align: left">未选择开始时间与结束时间</div>
+					</div>
+				</div>
+				<div class="BYBox_level">
+					{if $By_content['jbname'] != 2}
+					<div class="BoxCell">
+						<div class="left"  >疾病名称：</div>
+						<div class="right" style="text-align: left">
+							<input type="text" placeholder="请填写疾病名称" id="jbname">
+						</div>
+					</div>
+					{/if}
+					{if $By_content['fbtime'] != 2}
+					<div class="BoxCell">
+						<div class="left"  >发病时间：</div>
+						<div class="right" style="text-align: left">
+							<span id="fbtime">2019-09-10</span>
+						</div>
+					</div>
+					{/if}
+					{if $By_content['qztime'] != 2}
+					<div class="BoxCell">
+						<div class="left"  >确诊时间：</div>
+						<div class="right" style="text-align: left">
+							<span id="qztime">2019-09-10</span>
+						</div>
+					</div>
+					{/if}
+					{if $By_content['hospital'] != 2}
+					<div class="BoxCell" >
+						<div class="left"  >就诊医院：</div>
+						<div class="right" style="text-align: left">
+							<input type="text" placeholder="请填写医院名称" id="hospital">
+						</div>
+					</div>
+					{/if}
+					{if $By_content['jbstatus'] != 2}
+					<div class="BoxCell" style="border:none" >
+						<div class="left"  >主要症状：</div>
+					</div>
+					<div class="BoxCell" style="height: 48vw;padding:0 10px ;padding-top: 1vw;padding-bottom: 10px;" >
+						<textarea name="" id="jbstatus" readonly style="height: 100%; width: 100%; resize: none;    border-radius: 5px; border: 1px solid #cacaca;"></textarea>
+					</div>
+					{/if}
+					{if $By_content['zdzm'] != 2}
+					<div class="BoxCell" style="border:none" >
+						<div class="left"  >诊断证明：</div>
+					</div>
+					<div class="BoxCell content" style="height: 48vw;padding-top: 1vw;" >
+						<div style="width: 40vw;margin-left:10px;height: 40vw;border-radius: 5px;border:1px solid #e4e4e4;overflow: hidden;float: left;margin-right: 10px;">
+							<img style="height:100%;width: 100%; " id="zdzm" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/insertImage.png">
+						</div>
+					</div>
+					{/if}
+					{if $By_content['blzm'] != 2}
+					<div class="BoxCell" style="border:none" >
+						<div class="left"  >病&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历：</div>
+					</div>
+					<div class="BoxCell content" style="height: 48vw;padding-top: 1vw;" >
+						<div style="width: 40vw;margin-left:10px;height: 40vw;border-radius: 5px;border:1px solid #e4e4e4;overflow: hidden;float: left;margin-right: 10px;">
+							<img style="height:100%;width: 100%; " id="blzm" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/insertImage.png">
+						</div>
+					</div>
+					{/if}
+					<div style="display:none" id="is_heal">
+						{if $By_content['stzk'] != 2}
+						<div class="BoxCell" style="border:none" >
+							<div class="left"  >身体状态：</div>
+						</div>
+						<div class="BoxCell" style="height: 48vw;padding:0 10px ;padding-top: 1vw;padding-bottom: 10px;" >
+							<textarea name="" id="stzk1" readonly style="height: 100%; width: 100%; resize: none;    border-radius: 5px; border: 1px solid #cacaca;"></textarea>
+						</div>
+						{/if}
+						{if $By_content['zytime'] != 2}
+						<div class="BoxCell">
+							<div class="left"  >治愈时间：</div>
+							<div class="right" style="text-align: left">
+								<span id="zytime1">2019-09-10</span>
+							</div>
+						</div>
+						{/if}
+						{if $By_content['zyzm'] != 2}
+						<div class="BoxCell" style="border:none" >
+							<div class="left"  >治愈证明：</div>
+						</div>
+						<div class="BoxCell content" style="height: 48vw;padding-top: 1vw;" >
+							<div style="width: 40vw;margin-left:10px;height: 40vw;border-radius: 5px;border:1px solid #e4e4e4;overflow: hidden;float: left;margin-right: 10px;">
+								<img style="height:100%;width: 100%; " id="zyzm1" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/insertImage.png">
+							</div>
+						</div>
+						{/if}
+						{if $By_content['fktime'] != 2}
+						<div class="BoxCell">
+							<div class="left"  >复课时间：</div>
+							<div class="right" style="text-align: left">
+								<span id="fktime1">2019-09-10</span>
+							</div>
+						</div>
+						{/if}
+						{if $By_content['zyzm'] != 2}
+						<div class="BoxCell" style="border:none" >
+							<div class="left"  >老师签名：</div>
+						</div>
+						<div class="BoxCell content" style="height: 48vw;padding-top: 1vw;" >
+							<div style="width: 40vw;margin-left:10px;height: 40vw;border-radius: 5px;border:1px solid #e4e4e4;overflow: hidden;float: left;margin-right: 10px;">
+								<img style="height:100%;width: 100%; " id="tsign" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/insertImage.png">
+							</div>
+						</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<div class="BackGroundPoP" id="ShowHealTopBox"  style="display: none;">
+		<div id="HealDetail" class="HealDetail"  >
+			<div class="TopInfo"  >
+				<div class="TopLeft" style="font-size: 16px;"  onclick="javascipt:window.history.back();"><i class="fa fa-chevron-left" style="font-size: 20px;"></i>返回</div>
+				<div class="TopMiddle"><span>填写治愈情况</span></div>
+			</div>
+			<div class="BYBox" style="height: calc(100vh - 40px);">
+				<div class="BYBox_level">
+					<div class="BoxCell">
+						<div class="left"  >姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：</div>
+						<div class="right" style="text-align: left">{$student['s_name']}</div>
+					</div>
+					<div class="BoxCell">
+						<div class="left"  >性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</div>
+						<div class="right" style="text-align: left"> {if $student['sex'] == 1} 男 {else} 女 {/if} </div>
+					</div>
+					<div class="BoxCell" >
+						<div class="left"  >联系方式：</div>
+						<div class="right" style="text-align: left">{$student['mobile']}</div>
+					</div>
+					<div class="BoxCell" >
+						<div class="left"  >请假天数：</div>
+						<div class="right diffday" style="text-align: left">未选择开始时间与结束时间</div>
+					</div>
+				</div>
+				<input type="hidden" id="Teabyid">
+				<div class="BYBox_level">
+					<div class="BoxCell">
+						<div class="left"  >治愈时间：</div>
+						<div class="right" style="text-align: left">
+							<input type="date" id="zytime" placeholder=" ">
+						</div>
+					</div>
+					<div class="BoxCell">
+						<div class="left"  >复课时间：</div>
+						<div class="right" style="text-align: left">
+							<input type="date" placeholder=" " id="fktime">
+						</div>
+					</div>
+
+					<div class="BoxCell" style="border:none" >
+						<div class="left"  >身体状况：</div>
+					</div>
+					<div class="BoxCell" style="height: 48vw;padding:0 10px ;padding-top: 1vw;padding-bottom: 10px;" >
+						<textarea name="" id="stzk" style="height: 100%; width: 100%; resize: none;    border-radius: 5px; border: 1px solid #cacaca;"></textarea>
+					</div>
+					<div class="BoxCell" style="border:none" >
+						<div class="left"  >治愈证明：</div>
+					</div>
+					<div class="BoxCell content" style="height: 48vw;padding-top: 1vw;" >
+						<div style="width: 40vw;margin-left:10px;height: 40vw;border-radius: 5px;border:1px solid #e4e4e4;overflow: hidden;float: left;margin-right: 10px;">
+							<img style="height:100%;width: 100%; " id="zyzm" onclick="uploadImg(this)" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/insertImage.png">
+							<input id="headimg" type="hidden" value="" />
+						</div>
+						<div style="float: left;width:calc(100% - 40vw - 30px);height: 100%;">
+							<div class="btnGroupBox" id="hasnoheadimg">
+								<div class="UpBtn" style="background-color: #2d2d2d;" onclick="uploadImg(this)">上传</div>
+							</div>
+							<div class="btnGroupBox" id="hasheadimg" style="display:none;">
+								<div class="UpBtn" style="background-color: #2d2d2d;" onclick="uploadImg(this)">重新上传</div>
+								<div class="UpBtn" style="background-color: #afafaf;" onclick="DeleteImg(this)">取消上传</div>
+							</div>
+							<div class="btnGroupTip" style="width: 100%;height: 40px;padding:0 10px ">
+								<span style="font-size: 12px;color:gray;">说明：请选择包含主要信息的一张图片上传，请保证光线充足无遮挡，字迹清晰</span>
+							</div>
+						</div>
+					</div>
+					<div class="BoxCell" style="border:none" >
+						<div class="left"  >教师签名：</div>
+					</div>
+					<div class="BoxCell content" style="height: 48vw;padding-top: 1vw;" >
+						<div style="width: 100%;height: 40vw;border-radius: 5px;border:1px solid #e4e4e4;overflow: hidden;float: left;margin-right: 10px;" onclick="TeaSign()" >
+							<img style="height:100%;width: 100%; " id="TeaSignImg" >
+							<input type="hidden" id="TeaSignBase64" value="">
+						</div>
+					</div>
+					<div class="BoxCell" style="height: 48vw;padding-top: 1vw;" >
+						<div class="vacationItem vacationItemBtn" style="text-align: center;display: flex;flex-direction: row;justify-content: space-evenly;margin-left: unset;padding-left: unset;">
+							<a href="javascript:;" class="approve" style="width:100px;position: unset;">
+								<div  style="width: auto;" onclick="tijiao()" >提交</div>
+							</a>
+							<a href="javascript:;" class="refuse" style="width:100px;position: unset;">
+								<div  style="width: auto;" onclick="quxiao()" >取消</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<style type="text/css">
+        html,body{
+            margin: 0;
+            padding: 0;
+        }
+        .saveimg{
+            text-align: center;
+        }
+        .saveimgs span{
+            display: inline-block;
+            margin-top:5px;
+        }
+        .portraitBox{
+            text-align: center;
+        }
+        .landscapeBox{
+            display: flex;
+            flex-direction: row;
+
+        }
+		#DrawBox button{height: 30px;width: 80px;border:unset;border-radius: 10px;font-size: 16px;}
+    </style>
+
+
+<div id="TeaSignBox" style="height: 100vh;width: 100vw;background-color: white;position: fixed;top:0;left: 0;z-index: 99999;display: none;" >
+		<div class="portraitBox"  id="DrawBox">
+			<canvas id="myCanvas" width="500" height="300" style="border:1px solid #6699cc"></canvas>
+			<div class="control-ops control" id="portBtn" >
+				<button type="button" class="saveimg" onclick="saveImageInfo();return false;">保存</button>
+				<button type="button" class="btn btn-primary" style="background-color: grey;color:white;margin-left: 20px;" onclick="clearArea();return false;">清空画板</button>
+				<button type="button" class="btn btn-primary" style="background-color: rgb(206, 91, 91);color:white;margin-left: 20px;" onclick="javascipt:window.history.back();return false;">返回</button>
+			</div>
+			<div class="control-ops control" id="landBtn" style="display: flex;flex-direction: column;margin-left: 20px;">
+					<button type="button" class="saveimg" style="margin-top: 20px" onclick="javascipt:saveImageInfo(); return false;">保存</button>
+					<button type="button" class="btn btn-primary" style="background-color: grey;color:white;margin-top: 20px;" onclick="jclearArea();return false;">清空画板</button>
+					<button type="button" class="btn btn-primary" style="background-color: rgb(206, 91, 91);color:white;margin-top: 20px;" onclick="javascipt:window.history.back();return false;">返回</button>
+			</div>
+
+		</div>
+ </div>
+
+
+ <div class="slide_left_menu_bg">
+	<div class="slide_left_menu">
+		<div class="slide_left_menu_til">切换课程</div>
+		<ul class="slide_left_menu_ul">
+			<div style="overflow: scroll;">
+				{loop $kclist $row}
+				<li onclick="isSelectKc(`{$row['id']}`);" {if $row['id'] == $kcid} style="border-color: #06c1ae ;" {/if}><span class="ri">{$row['name']}({$row['stunum']}人)</span></li>
+				{/loop}
+			</div>
+		</ul>
+	</div>
+</div>	
+<script type="text/javascript">
+    var mousePressed = false;
+    var lastX, lastY;
+    var ctx = document.getElementById('myCanvas').getContext("2d");
+    var c = document.getElementById("myCanvas");
+    var control = document.getElementsByClassName("control")[0];
+    var saveimgs = document.getElementsByClassName("saveimgs")[0];
+    function saveImageInfo(){
+        var image = c.toDataURL("image/png");
+		$("#TeaSignImg").attr("src",image);
+		$("#TeaSignBase64").val(image);
+		$("#TeaSignBox").hide()
+		window.history.back();
+		return;
+        var ctximg = document.createElement("span");
+        ctximg.innerHTML = "<img src='"+image+"' alt='from canvas'/>";
+        if(saveimgs.getElementsByTagName('span').length >= 1){
+            var span_old = saveimgs.getElementsByTagName("span")[0];
+            saveimgs.replaceChild(ctximg,span_old)
+        }
+        else{
+            saveimgs.appendChild(ctximg);
+        }
+    }
+    var selected1,selected2;
+    function InitThis() {
+		//触摸屏
+        c.addEventListener('touchstart', function (event) {
+            if (event.targetTouches.length == 1) {
+                event.preventDefault();// 阻止浏览器默认事件，重要
+                var touch = event.targetTouches[0];
+                mousePressed = true;
+                Draw(touch.pageX - this.offsetLeft, touch.pageY - this.offsetTop - $(window).scrollTop(), false);
+            }
+        },false);
+        c.addEventListener('touchmove', function (event) {
+            if (event.targetTouches.length == 1) {
+                event.preventDefault();// 阻止浏览器默认事件，重要
+                var touch = event.targetTouches[0];
+                if (mousePressed) {
+                    Draw(touch.pageX - this.offsetLeft, touch.pageY - this.offsetTop - $(window).scrollTop(), true);
+                }
+            }
+        },false);
+        c.addEventListener('touchend', function (event) {
+            if (event.targetTouches.length == 1) {
+                event.preventDefault();// 阻止浏览器默认事件，防止手写的时候拖动屏幕，重要
+                mousePressed = false;
+            }
+        },false);
+		// 鼠标
+        c.onmousedown = function (event) {
+			console.log(this.offsetLeft)
+            mousePressed = true;
+            Draw(event.pageX - this.offsetLeft, event.pageY - this.offsetTop - $(window).scrollTop(), false);
+        };
+        c.onmousemove = function (event) {
+            if (mousePressed) {
+                Draw(event.pageX - this.offsetLeft, event.pageY - this.offsetTop - $(window).scrollTop(), true);
+            }
+        };
+        c.onmouseup = function (event) {
+            mousePressed = false;
+        };
+    }
+
+    function Draw(x, y, isDown) {
+        if (isDown) {
+            ctx.beginPath();
+            ctx.strokeStyle = selected2;
+            ctx.lineWidth = selected1;
+            ctx.lineJoin = "round";
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.closePath();
+            ctx.stroke();
+        }
+        lastX = x; lastY = y;
+    }
+
+    function clearArea() {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        // 清除签名图片
+        if(saveimgs.getElementsByTagName('span').length >= 1){
+            var clearImg = saveimgs.getElementsByTagName('span')[0];
+            saveimgs.removeChild(clearImg);
+        }
+    }
+
+	//监控手机是竖屏还是横屏
+    (function(){
+    var supportsOrientation = (typeof window.orientation == 'number' && typeof window.onorientationchange == 'object');
+    var HTMLNode = document.body.parentNode;
+    var OldWindowWidth = $(window).width();
+    var OldWindowHeight = $(window).height();
+    var ChangeWidth = function(){
+        let orientation = window.orientation;
+        switch(orientation) {
+            case 90: case -90:
+              orientation = 'landscape';
+            break;
+            default:
+              orientation = 'portrait';
+          }
+        let WindowWidth = $(window).width();
+        let WindowHeight = $(window).height();
+
+        if(orientation === 'portrait'){
+            $("#myCanvas").attr("width",WindowWidth);
+            $("#myCanvas").attr("height",WindowWidth*3/4);
+            $("#DrawBox").removeClass("landscapeBox");
+            $("#DrawBox").addClass("portraitBox");
+			$("#portBtn").show();
+			$("#landBtn").hide();
+		}else{
+            $("#myCanvas").attr("width",WindowWidth*3/4);
+            $("#myCanvas").attr("height",WindowHeight - 2);
+            $("#DrawBox").removeClass("portraitBox");
+            $("#DrawBox").addClass("landscapeBox");
+			$("#portBtn").hide();
+			$("#landBtn").show();
+		}
+    }
+
+    var updateOrientation = function() {
+		if(supportsOrientation) {
+			updateOrientation = function() {
+			var orientation = window.orientation;
+			switch(orientation) {
+				case 90: case -90:
+				orientation = 'landscape';
+				break;
+				default:
+				orientation = 'portrait';
+			}
+			HTMLNode.setAttribute('class', orientation);
+			}
+		} else {
+			updateOrientation = function() {
+			var orientation = (window.innerWidth > window.innerHeight) ? 'landscape': 'portrait';
+			HTMLNode.setAttribute('class', orientation);
+			}
+		}
+		updateOrientation();
+    }
+    var init = function() {
+		updateOrientation();
+		ChangeWidth();
+		if(supportsOrientation) {
+			window.addEventListener('orientationchange', updateOrientation, false);
+			window.addEventListener('resize', ChangeWidth, false);
+		} else {
+			setInterval(updateOrientation, 5000);
+		}
+    }
+    window.addEventListener('DOMContentLoaded', init, false);
+  })();
+</script>
+<script>
+	//阻止页面跳转监听
+	var IsBlockReturn = false;
+	var Iswuli = false;
+	var BlockEvent = '';
+	window.addEventListener("popstate", function(e) {
+		//alert("我监听到了浏览器的返回按钮事件啦");//根据自己的需求实现自己的功能
+		if(IsBlockReturn === true){
+			Iswuli = true;
+			eval(BlockEvent + '()')
+		}
+	}, false);
+
+	//阻止页面跳转实际函数
+	function pushHistory() {
+		var state = {
+			title: "title",
+			url: "#"
+		};
+		window.history.pushState(state, "title", "#");
+	}
+
+	$(".BackGroundPoP").click(function(){
+		if(event.target==this){ //阻止子元素继承父元素点击事件
+			window.history.back();
+		}
+	})
+
+	function TeaSign() {
+		$("#TeaSignBox").show();
+		pushHistory();
+		IsBlockReturn = true;
+		BlockEvent = 'cancelTeaSign';
+	}
+
+	function cancelTeaSign() {
+		$("#TeaSignBox").hide()
+		BlockEvent = 'cancelHeal';
+	}
+
+	function EditHeal(byid) {
+		$("#Teabyid").val(byid)
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'GetByInfo'))}",
+			data: { id: byid, schoolid :"{$schoolid}",weid :"{$weid}"},
+			success: function(res) {
+				let data = res.data;
+				console.log(data.diffday)
+				$(".diffday").html(data.diffday);
+			},
+		});
+		$(".All").addClass("ovfHideen")
+		$("#ShowHealTopBox").show()
+		$("#HealDetail").animate({"margin-left":0},200)
+		pushHistory();
+		IsBlockReturn = true;
+		BlockEvent = 'cancelHeal';
+	}
+
+	function cancelHeal() {
+		IsBlockReturn = false;
+		$("#HealDetail").animate({"margin-left":"100vh"},200,function () {
+			$("#ShowHealTopBox").hide();
+		})
+		$(".All").removeClass("ovfHideen")
+	}
+
+	function ShowByDetail(byid) {
+		$(".All").addClass("ovfHideen")
+		$("#ShowByTopBox").show();
+		$(".BYBox").scrollTop(0)
+		$("#BYDetail").animate({"margin-top":0},200)
+		pushHistory();
+		IsBlockReturn = true;
+		BlockEvent = 'cancelBY';
+		$.ajax({
+			type: "POST",
+			dataType: 'json',
+			url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'GetByInfo'))}",
+			data: { id: byid, schoolid :"{$schoolid}",weid :"{$weid}"},
+			success: function(res) {
+				let data = res.data;
+				if (res.result) {
+					$(".diffday").html(data.diffday);
+					$("#jbname").val(data.jbname);
+					$("#fbtime").html(data.fbtime);
+					$("#qztime").html(data.qztime);
+					$("#hospital").val(data.hospital);
+					$("#jbstatus").val(data.jbstatus);
+					$("#zdzm").attr('src',data.zdzm);
+					$("#blzm").attr('src',data.blzm);
+					if(data.is_heal == 1){
+						$("#tsign").attr('src',data.tsign);
+						$("#zyzm1").attr('src',data.zyzm);
+						$("#zytime1").html(data.zytime);
+						$("#fktime1").html(data.fktime);
+						$("#stzk1").val(data.stzk);
+						$("#is_heal").show()
+					}
+					//给图片添加点击放大功能
+					$(".content").find("img").each(function(){
+						$(this).attr("onclick","javascript:return false;");
+						let src = $(this).attr("src");
+						srcList.push(src);
+						$(this).attr("onclick","wxImageShow('"+src+"');");
+					});
+				}else{
+					jTips(res.msg);
+				}
+			},
+		});
+	}
+
+	function cancelBY() {
+		IsBlockReturn = false;
+		$("#BYDetail").animate({"margin-top":"-90vh"},200,function () {
+			$("#ShowByTopBox").hide();
+		})
+		$(".All").removeClass("ovfHideen")
+
+	}
+	$('textarea').on('blur', function() {
+		var count = 0;
+		var screenHeight = window.screen.height;
+		var blurInterval = setInterval(function () {
+			$('body').css('min-height', (screenHeight-=10)+'px');
+			if (count >= 10) {
+				clearInterval(blurInterval);
+				$('body').css('min-height', '');
+			}
+			count++;
+		}, 10)
+	});
+</script>
+<script>
+	setTimeout(function() {
+		if(window.__wxjs_environment === 'miniprogram'){
+			$("#titlebar").hide();
+			document.title="学生请假记录";
+		}
+	}, 100);
+
+	window.onload = function() {
+		InitThis();
+		$('.vacationRecord_section').each(function (index, obj) {
+
+			$scHeight = $(this).height();
+			$(this).find('.signin_leftBox').css('height', $scHeight - 110);
+
+		});
+	}
+	var PB = new PromptBox();
+	$(function() {
+		{if !(IsHasQx($tid_global,2000402,2,$schoolid))}
+			$(".qx_00402").hide();
+		{/if}
+		var self;
+		var agreetype;
+		//请假处理
+		$(".listContent").on("click", ".teacher_leave_but", function() {
+			self = this;
+			agreetype = $(self).attr("agree-type");
+			if (agreetype == 'agree') {
+				$(".alert_msg").text("您确定要批准学生的请假吗？");
+			} else {
+				$(".alert_msg").text("您确定要拒绝学生的请假吗？");
+			}
+			$("#popup_leave").css("display", "block");
+		});
+
+		$(".popup_leave_button .click_close").click(function() {
+			is_sure = $(this).attr('data-index');
+			if (is_sure == '1') {
+				var id = $(self).attr("data-id");
+				var content = $(self).parent().parent().siblings().find(".txtArea").val().trim();
+				content = iphone_emoji_filter(content);
+				PB.prompt("数据提交中，请稍等~","forever");
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'sagree'))}",
+					data: { id: id, content: content, agreetype: agreetype, openid :"{$openid}",schoolid :"{$schoolid}",weid :"{$weid}",tid :"{$it['tid']}",userid:"{$it['id']}",tname :"{$teachers['tname']}"},
+					success: function(msg) {
+						if (msg.status == '1') {
+							jTips(msg.info, function() {
+								window.location.reload();
+							});
+						}
+					},
+				});
+			}
+			$("#popup_leave").css("display", "none");
+		});
+	});
+
+	function agree(self,id){
+		jConfirm("是否推送给门卫?", "确定对话框", function (isConfirm) {
+			if(isConfirm){
+				let content = $(self).parent().parent().siblings().find(".txtArea").val().trim();
+				content = iphone_emoji_filter(content);
+				let submitData = { id: id, content: content, agreetype: 'agree', openid :"{$openid}",schoolid :"{$schoolid}",weid :"{$weid}",tid :"{$it['tid']}",userid:"{$it['id']}",tname :"{$teachers['tname']}",'todoor':true};
+				PB.prompt("数据提交中，请稍等~","forever");
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'sagree'))}",
+					data: submitData,
+					success: function(msg) {
+						if (msg.status == '1') {
+							jTips(msg.info, function() {
+								window.location.reload();
+							});
+						}
+					},
+				});
+			}else{
+				let content = $(self).parent().parent().siblings().find(".txtArea").val().trim();
+				content = iphone_emoji_filter(content);
+				let submitData = { id: id, content: content, agreetype: 'agree', openid :"{$openid}",schoolid :"{$schoolid}",weid :"{$weid}",tid :"{$it['tid']}",userid:"{$it['id']}",tname :"{$teachers['tname']}",'todoor':false};
+				PB.prompt("数据提交中，请稍等~","forever");
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'sagree'))}",
+					data: submitData,
+					success: function(msg) {
+						if (msg.status == '1') {
+							jTips(msg.info, function() {
+								window.location.reload();
+							});
+						}
+					},
+				});
+			}
+		});	
+	}
+
+	function zhxzyagree(self,id){
+		jConfirm("是否推送给家长?", "确定对话框", function (isConfirm) {
+			if(isConfirm){
+				let content = $(self).parent().parent().siblings().find(".txtArea").val().trim();
+				content = iphone_emoji_filter(content);
+				let submitData = { id: id, content: content, agreetype: 'agree', openid :"{$openid}",schoolid :"{$schoolid}",weid :"{$weid}",tid :"{$it['tid']}",userid:"{$it['id']}",tname :"{$teachers['tname']}",'sendToJz':true};
+				PB.prompt("数据提交中，请稍等~","forever");
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'sagree'))}",
+					data: submitData,
+					success: function(msg) {
+						if (msg.status == '1') {
+							jTips(msg.info, function() {
+								window.location.reload();
+							});
+						}
+					},
+				});
+			}else{
+				let content = $(self).parent().parent().siblings().find(".txtArea").val().trim();
+				content = iphone_emoji_filter(content);
+				let submitData = { id: id, content: content, agreetype: 'agree', openid :"{$openid}",schoolid :"{$schoolid}",weid :"{$weid}",tid :"{$it['tid']}",userid:"{$it['id']}",tname :"{$teachers['tname']}",'sendToJz':false};
+				PB.prompt("数据提交中，请稍等~","forever");
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'sagree'))}",
+					data: submitData,
+					success: function(msg) {
+						if (msg.status == '1') {
+							jTips(msg.info, function() {
+								window.location.reload();
+							});
+						}
+					},
+				});
+			}
+		});	
+	}
+
+</script>
+<script type="text/javascript">
+	$("#showbjlist").on('click', function () {
+		$('#selectList').show();
+	});
+
+	$(".choice_baby").on("click", function(e) {
+		e.stopPropagation();
+		$(".slide_left_menu_bg").addClass("show_menu_bg");
+	});
+	$(".slide_left_menu_bg").on("click", function() {
+		$(this).removeClass("show_menu_bg");
+	});
+
+	$(".wkplan_add").on("click", function () {
+		$(".wk_style").show();
+
+	})
+	$(".wk_del").on("click", function () {
+		$(".wk_style").hide();
+	})
+	function isSelect(bjid){
+		jTips("数据加载中！···");
+		location.href = "{php echo $this->createMobileUrl('smssage', array('schoolid' => $schoolid), true)}"+ '&bj_id=' + bjid;
+	}
+	function isSelectKc(kcid){
+		jTips("数据加载中！···");
+		location.href = "{php echo $this->createMobileUrl('smssage', array('schoolid' => $schoolid), true)}"+ '&kcid=' + kcid;
+	}
+	$('.selectList').click(function(){
+        $('body').removeClass('ovfHiden');
+        $('#selectList').hide();
+    })
+</script>
+
+<script>
+var images = {
+	localId: [],
+	serverId: []
+};
+function uploadImg(){
+	wxChooseImage();
+}
+/**
+ * 微信选择图片
+ */
+ function wxChooseImage(){
+	wx.chooseImage({
+		success: function (res) {
+			images.localId = res.localIds;
+			var obj=new Image();
+			obj.src=res.localIds[0];
+			imagesUploadWx();
+		}
+	});
+};
+function imagesUploadWx() {
+	wx.uploadImage({
+	localId: images.localId[0],
+	isShowProgressTips:1,//// 默认为1，显示进度提示
+	success: function (res) {
+
+		$("#headimg").val(res.serverId);
+		$("#zyzm").attr("src",images.localId[0]);
+
+		$("#hasnoheadimg").hide()
+		$("#hasheadimg").show()
+	},
+	fail: function (res) {
+		alert(JSON.stringify(res));
+	}
+	});
+};
+function DeleteImg(){
+	let srcimg = `{MODULE_URL}public/mobile/img/insertImage.png`;
+	$("#zyzm").attr("src",srcimg);
+	$("#hasnoheadimg").show()
+	$("#hasheadimg").hide()
+}
+
+function quxiao(){
+	let srcimg = `{MODULE_URL}public/mobile/img/insertImage.png`;
+	$("#zyzm").attr("src",srcimg);
+	$("#zytime").val('')
+	$("#fktime").val('')
+	$("#stzk").val('')
+	$("#TeaSignImg").attr("src",srcimg);
+	$("#ShowHealTopBox").hide()
+}
+function tijiao(){
+	let submitdata = {
+		schoolid : "{$schoolid}",
+		weid : "{$weid}",
+		id : $("#Teabyid").val(),
+		zyzm : $("#headimg").val(),
+		zytime : $("#zytime").val(),
+		fktime : $("#fktime").val(),
+		stzk : $("#stzk").val(),
+		TeaSignBase64 : $("#TeaSignBase64").val(),
+	}
+	ajax_start_loading("提交中...");
+	$.ajax({
+		type: "POST",
+		dataType: 'json',
+		url: "{php echo $this->createMobileUrl('indexajax',array('op'=>'UpdateBy'))}",
+		data: submitdata,
+		success: function(result) {
+			ajax_stop_loading();
+			alert(result.msg)
+			location.reload()
+		},
+	});
+}
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>
+
+<script>
+var WeixinApi = (function () {
+	return {
+		imagePreview    :imagePreview
+	};
+	"use strict";
+	/**
+		* 调起微信Native的图片播放组件。
+		* 这里必须对参数进行强检测，如果参数不合法，直接会导致微信客户端crash
+		*
+		* @param {String} curSrc 当前播放的图片地址
+		* @param {Array} srcList 图片地址列表
+		*/
+	function imagePreview(curSrc,srcList) {
+		if(!curSrc || !srcList || srcList.length == 0) {
+			return;
+		}
+		WeixinJSBridge.invoke('imagePreview', {
+			'current' : curSrc,
+			'urls' : srcList
+		});
+	}
+	return {
+		version         :"2.5",
+		ready           :wxJsBridgeReady,
+		imagePreview    :imagePreview
+	};
+})();
+
+var srcList = new Array();
+
+
+function wxImageShow(src){
+	WeixinApi.imagePreview(src, srcList);
+}
+
+	//实时获取新的消息 核心function end
+		
+	$(".div_voice").on('click', function (e) {
+		voiceplay($(this), e);
+	});
+
+	//播放录音
+	function voiceplay(obj, e) {
+		e.stopPropagation();
+		e.preventDefault();
+		var jq_obj = obj.children('.sound1');
+		var dom_obj = jq_obj[0];
+		// console.log(dom_obj)
+		// return
+		document.addEventListener("WeixinJSBridgeReady", function () {
+			dom_obj.muted = true;
+			dom_obj.load();
+			dom_obj.play();
+			dom_obj.pause();
+			dom_obj.muted=false;
+		},false);		
+		if (obj.hasClass("video_stop")) {//点击正在播放的语音将关闭
+			dom_obj.pause();
+			dom_obj.currentTime = 0.0;
+			obj.removeClass("video_stop");
+		} else {
+			//先停止所有播放的语音
+			var allvoice = $(".div_voice");
+			for (var i = 0; i < allvoice.length; i++) {
+				var voice_obj = $($(".div_voice")[i]).find('.sound1');
+				if ($(allvoice[i]).hasClass("video_stop")) {
+					voice_obj[0].pause();
+					voice_obj[0].currentTime = 0.0;
+					$(allvoice[i]).removeClass("video_stop");
+				}
+			}
+
+			//再播放刚点击的那个语音
+			dom_obj.play();
+			obj.addClass("video_stop");
+
+			//语音播放结束后触发的方法
+			dom_obj.addEventListener('ended', function () {
+				dom_obj.currentTime = 0.0;
+				obj.removeClass("video_stop");
+			}, false);
+		}
+	};
+
+	//播放录音
+
+
+	$(".add_content_btn").click(function () {
+		$(".ulContent").addClass("hiddenOper");
+		$(".ulAudio").removeClass("hiddenOper");
+	})
+
+	$("#add_audio_btn").click(function () {
+		$(".ulContent").removeClass("hiddenOper");
+		$(".ulAudio").addClass("hiddenOper");
+	})
+
+	$("#btnAudio").click(function () {
+		var objAudioList = $(".video_list").find("li");
+		if (objAudioList.length == 0) {
+			$(".babysay_bg").css("display", "block");
+			$(".record_btn").click();
+		}
+		else {
+			jTips("最多只能传1条语音哦！");
+		}
+	})
+
+
+</script>
+{php include $this->template('newfooter');}

@@ -1,0 +1,333 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<ul class="nav nav-tabs">
+    <li class="qx_edit {if $operation == 'post'}active{/if}"><a href="{php echo $this->createWebUrl('checkdateset', array('op' => 'post', 'schoolid' => $schoolid))}"><i class="fa fa-plus"></i>添加</a></li>
+    <li {if $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('checkdateset', array('op' => 'display', 'schoolid' => $schoolid))}"><i class="fa fa-cog"></i>日期管理</a></li>
+</ul>
+ <style>
+ ul{margin-top: 0 !important;}
+.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+.alert {width: 90%;margin-left: 5%;padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);    background-color: #bbeaf9; border: 1px solid #53cbde;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+.alert p {margin: 0 0 10px;display: block;} .alert .bold{font-weight:bold;} .checkbox input[type=checkbox], .checkbox-inline input[type=checkbox], .radio input[type=radio], .radio-inline input[type=radio] {      margin-top: 4px; }
+.now_porint{width: 13px;padding-right: 2px;}
+.suc_icon{width: 13px;padding-right: 2px;}
+.text_new{white-space: nowrap;overflow: hidden; text-overflow: ellipsis;margin: 3px;}
+.modal-title{text-align:center;color:#333;font-size: 17px;}
+.modal-left{width:47%;float:left;max-height: 400px;}
+.modal-right{width:47%;float:left;margin-left: 30px;max-height: 400px;}
+.group_left{padding: 20px;text-align:left;border-radius: 6px;background: #acefdf59;}
+.group_right{padding: 20px;text-align:left;border-radius: 6px;background: #ca193c14;}
+.conent_load{width: 25px; height: 29px; display: inline-block; background: url({MODULE_URL}public/mobile/img/gh_xh_wating.gif) no-repeat center center / 25px 29px;}
+.qxbq{float:right;font-size:10px;margin-top: -5px;}
+.qxqx{float:right;font-size:10px;margin-top: -5px;}
+.iconss{font-size:10px}
+.popover {z-index: 2051;}
+.line_boxsss{display: inline-flex;}
+.frisset{width: 18%;}
+.clocknew{width: 100%;}
+.clocknews{width: 50%;}
+.delteclassicon{position: absolute; right: -99px;}
+.form-group, form .form-group{margin-bottom: 5px;}
+</style>
+<div class="cLine"> 
+    <div class="alert">
+		<p><span class="bold">提示：</span>各时间安排的可以多选或单选应用到指定班级实现控制和前端的显示</p>
+		<p><span class="bold">日期设置：</span>各自定义时间安排，日期设置按钮可以详细设置正常上课日期涵盖范围，放假时间，以及特殊上课和放假时间，设置后学生手机端会显示该日期为“休”标识，如 配合相关考勤机，上课与放假时间的设置配合可以控制进出（前提考勤需支持按需放行功能）</p>
+		<p><span class="bold">时段设置：</span>时段设置是指，各自定义时间安排可以按设置的时段进行放行（同理需要考勤机有相关功能才可配合实现）</p>
+    </div>
+</div>
+{if $operation == 'post'}
+<div class="main">
+<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{$item['id']}" />
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <div class="panel panel-default">
+            <div class="panel-heading">编辑时间安排</div>
+            <div class="panel-body">
+				
+			    <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;"  >安排名称：</label>
+                    <div class="col-sm-2 col-lg-2">
+                            <input type="text" class="form-control" name="name" value="{$item['name']}" required="required" oninvalid="setCustomValidity('日期安排名称不能为空！');" oninput="setCustomValidity('');"/>
+                    </div>
+                </div>
+				<div class="form-group">
+	                <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">周五设置：</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <label class="radio-inline">
+                            <input type="radio" name="fridayset" value="1" {if $item['friday']==1}checked{/if}>是
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="fridayset" value="0" {if $item['friday']==0}checked{/if}>否
+                        </label>
+                        <div class="help-block">周五单独设置</div>
+                    </div>
+				</div>	
+				<div class="form-group">
+	                <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">周六设置：</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <label class="radio-inline">
+                            <input type="radio" name="saturdayset" value="1" {if $item['saturday']==1}checked{/if}>上课
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="saturdayset" value="0" {if $item['saturday']==0}checked{/if}>放假
+                        </label>
+                        <div class="help-block">周六上课还是放假</div>
+                    </div>
+				</div>
+				<div class="form-group">
+	                <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">周日设置：</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <label class="radio-inline">
+                            <input type="radio" name="sundayset" value="1" {if $item['sunday']==1}checked{/if}>上课
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="sundayset" value="0" {if $item['sunday']==0}checked{/if}>放假
+                        </label>
+                        <div class="help-block">周日上课还是放假</div>
+                    </div>
+				</div>
+				<!--  <div class="form-group">
+	               <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">法定假日:</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group text-info">
+                            <label  class="checkbox-inline" style="width:10%;margin-left: 10px"><input type="checkbox" name="holidayarr[]"  value="1"  style="float: none;" {if ($is)}checked="checked"{/if}> {$row['tname']}</label>                        
+						</div>
+						<div class="help-block">选择授课老师，最多五个</div>
+					</div>
+				</div> -->
+				<div class="form-group">
+					 <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择班级：</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group text-info">
+							{loop $banji $uni}
+									<label for="uni_{$uni['sid']}" class="checkbox-inline" style="width:140px;margin-left: 10px"><input id="uni_{$uni['sid']}" type="checkbox" name="arr[]" value="{$uni['sid']}"{if ($id && $uni['datesetid'] == $id)}checked="checked"{/if} {if ($id && $uni['datesetid'] != 0 && $uni['datesetid'] !=$id) || (empty($id) && $uni['datesetid'] != 0  ) }disabled="disabled"{/if}> {$uni['sname']}</label>
+							{/loop}
+						</div>
+						<div class="help-block">选择本安排适用的班级,若班级已指定安排则不可选</div>
+					</div>
+				</div>
+				
+               			
+             </div>											   
+		</div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>	
+<script>
+
+$(document).on('click', '.custom-url-del', function(){
+	$(this).parent().parent().remove();
+	return false;
+});	
+$(document).on('click', '.btn-default', function(){
+	var t = $(this).parents().children();
+	var want = t.find('input[class*=sxword]');
+	var selectdiv = t.find('select[class*=select]');
+	
+	var tname = want.val();
+	want.hide();
+	selectdiv.show();
+	
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	html1 += '<select id="schoolid"><option value="">请选择老师</option>';
+	if(tname != ''){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getallteacher'))}", {'tname': tname,schoolid:schoolid}, function(data) {
+				data = JSON.parse(data);
+			if(data.result == true){	
+				classlevel = data.teachcers;		
+				var html = '';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						html += '<option value="' + classlevel[i].id + '">' + classlevel[i].tname + '</option>';
+					}
+				}
+				selectdiv.html(html);
+			}else{
+				selectdiv.hide();
+				want.show();
+				alert(data.msg);
+			}
+		});	
+	}else{
+		var html1 = ''+
+								{loop $allls $it}
+				'					<option value="{$it['id']}">{$it['tname']}</option>'+
+								{/loop}
+				'';
+		selectdiv.html(html1);
+	}
+});	
+</script>
+{elseif $operation == 'display'}
+<div class="main">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i>刷新</a>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+					    <th style="width:100px;">序号</th>
+                        <th>安排名称</th>
+						<th>周五设置</th>
+						<th>周六设置</th>
+						<th>周日设置</th>
+						<th>适用班级</th>
+						<th class="qx_02902">详细设置</th>
+						<th class="qx_02903">时段设置</th>
+                        <th class="qx_e_d" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $datesetlist $row}
+                    <tr>
+					    <td><div class="type-parent">{$row['id']}</div></td>
+                        <td><div class="type-parent">{$row['name']}&nbsp;&nbsp;</div></td>
+						<td>
+						{if $row['friday'] == 1}
+							<span class="label label-warning">单独设置</span>
+						{elseif $row['friday'] == 0}
+							<span class="label label-info">统一设置</span>
+						{/if}
+						</td>
+						<td>
+						{if $row['saturday'] == 1}
+							<span class="label label-warning">上课</span>
+						{elseif $row['saturday'] == 0}
+							<span class="label label-info">休息</span>
+						{/if}
+						</td>
+						<td>
+						{if $row['sunday'] == 1}
+							<span class="label label-warning">上课</span>
+						{elseif $row['sunday'] == 0}
+							<span class="label label-info">休息</span>
+						{/if}
+						</td>
+						<td>
+						{if $row['mutibj'] == 0 }
+						<span class="label label-primary" >{$row['bjname']}</span>
+						{elseif $row['mutibj'] == 1}
+						<span class="label label-primary" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="{$row['bjname']}">列表</span>
+						{/if}
+						</td>
+						<td class="qx_02902"><a class="btn btn-default btn-sm qx_02902" href="{php echo $this->createWebUrl('checkdatedetail', array('id' => $row['id'], 'op' => 'display', 'schoolid' => $schoolid))}" title="日期设置"><i class="fa fa-qrcode">&nbsp;&nbsp;日期设置</i></a></td>
+						<td class="qx_02903">
+						<!-- <a class="btn btn-default btn-sm qx_02903" href="{php echo $this->createWebUrl('checktimeset', array('id' => $row['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="时段设置"><i class="fa fa-qrcode">&nbsp;&nbsp;时段设置</i></a> -->
+						<div class="btn btn-info btn-sm" title="时段设置" href="javascript::;" data-toggle="tooltip" data-placement="top" onclick="show_bj_pay({$row['id']});">时段设置</div>
+						</td>
+                        <td style="text-align:right;" class="qx_e_d"><a class="btn btn-default btn-sm qx_edit" href="{php echo $this->createWebUrl('checkdateset', array('op' => 'post', 'id' => $row['id'], 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a class="btn btn-default btn-sm qx_delete" href="{php echo $this->createWebUrl('checkdateset', array('op' => 'delete', 'id' => $row['id'], 'schoolid' => $schoolid))}" onclick="return confirm('确认删除此安排吗？');return false;" title="删除"><i class="fa fa-times"></i></a></td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+
+<div class="modal fade" style="min-width: 600px!important;" id="Modal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content" style="border-radius: 20px;">
+			<div class="modal-header">
+				<h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;">控制允许刷卡时段</h4>
+			</div>
+			<input id="nowsdid" type="hidden" value="">
+			<div class="modal-body" style="width: 100%;">
+			<div class="cLine"> 
+				<div class="alert">
+				<span class="bold">1：</span>时段设置为周五、周六、周日以及正常上课日的进出时段设置，详细设置为寒暑假、特殊上课与特殊休假的设置。
+				<br><span class="bold">2：</span>各个时段可单独设置进或出，针对学生类型，精确控制需要特殊设备支持才有效
+				<br><span class="bold">3：</span>此处设置的是允许刷卡的时段，如不选择进出类型，或学生类型，则只限制住校生的的进出时段
+				</div>
+			</div>
+			<div class="panel-body ones">
+			
+			
+			</div>
+			</div>
+			<div class="modal-footer" style="border-radius: 6px;">
+				<input type="submit" onclick="tijiao()" class="btn btn-success" value="确认提交">
+				<button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+var suc_icon = "{OSSURL}public/mobile/img/icon-checked.png";
+var err_icon = "{OSSURL}public/mobile/img/yellowfork.png";
+function show_bj_pay(tiemid){
+	$('#Modal3').modal('toggle');
+	let nowsdid = $("#nowsdid").val();
+	if(nowsdid != tiemid){
+		$('.ones').empty();
+		let loadcont = "<div class='modal-body' style='width: 100%;text-align:center'><div class='conent_load'></div>拼命加载中....</div>"
+		$('.ones').html(loadcont);//加载动画
+		$("#nowsdid").val(tiemid);
+		$.ajax({
+			url: "{php echo $this->createWebUrl('checktimeset', array('op' => 'display', 'schoolid' => $schoolid))}"+"&id="+tiemid,
+			type: "POST",
+			dataType: "html",
+			success: function (res) {
+				$('.conent_load').hide();
+				$('.ones').html(res);
+			}
+		});
+	}
+}
+
+function tijiao(){
+	let nowsdid = $("#nowsdid").val();
+	var form = new FormData(document.getElementById("form"));
+	$.ajax({
+		url: "{php echo $this->createWebUrl('checktimeset', array('op' => 'submit', 'schoolid' => $schoolid))}"+"&id="+nowsdid,
+		type: "post",
+		data: form,
+		processData: false,
+		contentType: false,
+		success: function(res) {
+			alert('设置成功');
+			$('#Modal3').modal('toggle');
+			location.reload()
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	});
+}
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1002904,1,$schoolid))}
+		$(".qx_edit").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1002902,1,$schoolid))}
+		$(".qx_02902").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1002903,1,$schoolid))}
+		$(".qx_02903").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,1002905,1,$schoolid))}
+		$(".qx_delete").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});	
+</script>
+{/if}

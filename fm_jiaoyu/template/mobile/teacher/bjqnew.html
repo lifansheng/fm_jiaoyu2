@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="no">
+<meta name="format-detection" content="telephone=no">
+<title>{$school['title']}</title>
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/idangerous.swiper_new.css?v=1717">
+{php include $this->template('bjqcss');}
+{php echo register_jssdks();}
+<style>
+.slide_left_menu_ul li {height: 50px;line-height: 50px;font-size: 16px;width: 100%;box-sizing: border-box;padding: 0 10px 0 50px;overflow: hidden;position: relative;}
+.slide_left_menu_ul li .user_img {width: 50px;height: 50px;position: absolute;left: -5px;top: 0;box-sizing: border-box;padding: 10px;}
+.slide_left_menu_ul li .user_img img {width: 100%;height: 100%;border-radius: 50%;}
+</style>
+<link href="{OSSURL}public/mobile/css/wx_sdk.css?v=1717" rel="stylesheet" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+</head>
+<body>
+<header class="header">
+    <div class="hederLeftBox">
+        <a class="choice_baby" id="choice_school">
+            <img src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+        </a>
+    </div>
+    <div class="headerContent">{if $school['bjqstyle'] =='new'}{$nowbj['sname']}{else}校园动态{/if}</div>
+	{if $school['bjqstyle'] =='new'}
+    <div class="hederRightBox">
+        <a class="choice_baby" id="choice_baby">
+            <img src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+        </a>
+    </div>
+	{/if}
+</header>
+{if $school['bjqstyle'] =='new'}
+<div class="slide_left_menu_bg" id="bjlist">
+    <div class="slide_left_menu">
+        <div class="slide_left_menu_til">班级列表</div>
+        <ul class="slide_left_menu_ul" id="bjlist_ul">
+		{if is_njzr($teachers['id'])}
+		<?php $bjlistsss = array() ;?>
+			{if $bjlists}
+				{loop $bjlists $row}
+					{if !in_array($row['bj_id'], $bjlistsss)}
+					<?php $bjlistsss[] = $row['bj_id'];?>
+						<li {if $bj_id == $row['bj_id']}class="act"{/if} classid="{$row['bj_id']}"><div>{$row['bjname']}</div></li>
+					{/if}
+				{/loop}	
+			{/if}	
+			{loop $mynjlist $row}
+			{if $bjlists}
+				{loop $row['bjlist'] $item}
+					{if !in_array($item['sid'], $bjlistsss)}
+						<li {if $bj_id == $item['sid']}class="act"{/if} classid="{$item['sid']}"><div>{$item['sname']}</div></li>
+					{/if}
+				{/loop}
+			{else}
+				{loop $row['bjlist'] $item}
+					<li {if $bj_id == $item['sid']}class="act"{/if} classid="{$item['sid']}"><div>{$item['sname']}</div></li>
+				{/loop}			
+			{/if}
+			{/loop}
+		{else}			
+			{if $teachers['status'] == 2}
+				{loop $bjlist $row}
+					<li {if $bj_id == $row['sid']}class="act"{/if} classid="{$row['sid']}"><div>{$row['sname']}</div></li>
+				{/loop}
+			{else}
+				{loop $bjlists $row}
+						<li {if $bj_id == $row['bj_id']}class="act"{/if} classid="{$row['bj_id']}"><div>{$row['bjname']}</div></li>
+				{/loop}
+			{/if}
+		{/if}		
+        </ul>
+    </div>
+</div>
+{/if}
+<div class="slide_left_menu_bg" id="schoollist">
+    <div class="slide_left_menu">
+        <div class="slide_left_menu_til">学校列表</div>
+        <ul class="slide_left_menu_ul" id="schoollist_ul">
+		{loop $schoollist $row}
+			<li onclick="isSelects({$row['schoolid']});" {if $schoolid == $row['schoolid']}class="act"{/if}>
+				<div class="user_img">
+					<img src="{if $row['schoolicon']}{php echo tomedia($row['schoolicon'])}{/if}">
+				</div>
+				<div>{$row['schoolname']}</div>
+			</li>
+		{/loop}
+        </ul>
+    </div>
+</div>
+<div id="container" class="scroller" >
+<div style="top:100px;height:100px; line-height:160px;text-align:center; width:100%;">
+	<span id="gif"><img style="width:25px;" src="{OSSURL}public/mobile/img/gh_xh_wating.gif"/>&nbsp;努力加载中...</span>
+</div> 
+<div class="top_head_box3 index_top ">
+    <div class="index_img">
+        <a><img src="{if $teachers['thumb']}{php echo tomedia($teachers['thumb'])}{else}{php echo tomedia($school['tpic'])} {/if}" class="studentImgError"></a>
+    </div>
+    <!--个人信息的积分和姓名和等级-->
+    <div class="index_username1">
+		{if $mallsetinfo['isShow'] == 1 }
+		<div class="jifenImg"></div>
+		<div class="jifen">积分:{$teachers['point']}</div>
+		{/if}
+        <span class="baobaoName">{$teachers['tname']}</span>
+		{if $mallsetinfo['isShow'] == 1 }<a class="honor" href="{php echo $this->createMobileUrl('goodslist', array('schoolid' => $schoolid,'tid' => $teachers['id']), true)}">赚积分?</a>{/if}
+    </div>
+</div>
+{if $school['bjqstyle'] =='new'}
+{if $nowbj['is_bjzx'] ==1 && !$_W['schooltype']}
+<div class="myCrowns" style="padding-bottom: 0px;">
+	<p>班级之星</p>
+	<div class="_myCrowns" >
+		<div class="crowns">
+			<div class="mydiv" {if $bzj}onclick="showlist(1);"{/if}>
+				<img id="icon1" src="{if $star['icon1']}{php echo tomedia($star['icon1'])}{else}{if $bzj}{OSSURL}public/mobile/img/insertImage.png{else}{php echo tomedia($school['spic'])}{/if}{/if}">
+			</div>
+			<span class="span1">1</span>
+			<div class="myname" style="position: relative">
+				<span id="name1" class="span2">{$star['name1']}</span>
+			</div>
+			<div class="myname" style="position: relative;background: none;padding-top: 3px">
+				<span id="name1" class="span2" style="color:black;margin-top: 3px">{$starname['star_name1']}</span>
+			</div>
+		</div>
+		<div class="crowns2">
+			<div class="mydiv" {if $bzj}onclick="showlist(2);"{/if}>
+				<img id="icon2" src="{if $star['icon2']}{php echo tomedia($star['icon2'])}{else}{if $bzj}{OSSURL}public/mobile/img/insertImage.png{else}{php echo tomedia($school['spic'])}{/if}{/if}">
+			</div>
+			<span class="span1">2</span>
+			<div class="myname2" style="position: relative">
+				<span id="name2" class="span2">{$star['name2']}</span>
+			</div>
+			<div class="myname" style="position: relative;background: none;padding-top: 3px">
+				<span id="name1" class="span2" style="color:black;margin-top: 3px">{$starname['star_name2']}</span>
+			</div>
+		</div>
+		<div class="crowns3">
+			<div class="mydiv" {if $bzj}onclick="showlist(3);"{/if}>
+				<img id="icon3" src="{if $star['icon3']}{php echo tomedia($star['icon3'])}{else}{if $bzj}{OSSURL}public/mobile/img/insertImage.png{else}{php echo tomedia($school['spic'])}{/if}{/if}">
+			</div>
+			<span class="span1">3</span>
+			<div class="myname3" style="position: relative">
+				<span id="name3" class="span2">{$star['name3']}</span>
+			</div>
+			<div class="myname" style="position: relative;background: none;padding-top: 3px">
+				<span id="name1" class="span2" style="color:black;margin-top: 3px">{$starname['star_name3']}</span>
+			</div>
+		</div>
+		<div class="crowns4">
+			<div class="mydiv" {if $bzj}onclick="showlist(4);"{/if}>
+				<img id="icon4" src="{if $star['icon4']}{php echo tomedia($star['icon4'])}{else}{if $bzj}{OSSURL}public/mobile/img/insertImage.png{else}{php echo tomedia($school['spic'])}{/if}{/if}">
+			</div>
+			<span class="span1">4</span>
+			<div class="myname4" style="position: relative">
+				<span id="name4" class="span2">{$star['name4']}</span>
+			</div>
+			<div class="myname" style="position: relative;background: none;padding-top: 3px">
+				<span id="name1" class="span2" style="color:black;margin-top: 3px">{$starname['star_name4']}</span>
+			</div>
+		</div>
+	</div>	
+</div>
+{else}
+<div class="top_height_blank50"></div>
+{/if}
+{/if}
+<!--积分计算的前四名学生-->
+<div class="empty_content_data">
+    <img src="{OSSURL}public/mobile/img/new_empty_icon3.png" />
+    <div class="text">别让这里空着哟</div>
+    <div class="text2">发布动态消息让大家看到你</div>
+</div>
+{if $list}
+<ul class="new_diary_list3">
+{loop $list $item}
+	<li time="{php echo date('Y-m-d H:i:s', $item['createtime'])}">
+        <div class="user_img">
+            <img src="{php echo tomedia($item['avatar'])}" class="studentImgError">
+        </div>
+        <div class="user_content" style="padding-bottom:10px;">
+            <div class="user_info" style="color: #2B779C;font-weight:600;">{$item['shername']}
+                {if $item['msgtype'] ==1}<span class="diary_tag_other">图文</span>&nbsp;&nbsp;&nbsp;{/if}
+				{if $item['msgtype'] ==2}<span class="diary_tag_life">语音</span>&nbsp;&nbsp;&nbsp;{/if}
+				{if $item['msgtype'] ==3}<span class="diary_tag_notify">视频</span>&nbsp;&nbsp;&nbsp;{/if}
+				{if $item['msgtype'] ==4}<span class="diary_tag_activity">分享</span>&nbsp;&nbsp;&nbsp;{/if}
+				{if $item['msgtype'] ==5}<span class="diary_tag_work">多媒体</span>&nbsp;&nbsp;&nbsp;{/if}
+				{if $item['msgtype'] ==7}<span class="diary_tag_life">班级通知</span>&nbsp;&nbsp;&nbsp;{/if}
+				{if $bzj || $teachers['status'] ==1 || $bnjzr || $manger}{if $item['isopen'] == 1}<span style="color: #9C2B44;font-weight:400;float: right;" class="shenhe_btn" diaryid="{$item['id']}">审核</span>{/if}{/if}
+            </div>
+            <div class="user_text">
+                <div class="inside_user_text">{$item['content']}{if $item['type'] == 2 } 点击查看{else}{$item['linkdesc']}{/if}{if $item['link']}<a href="{$item['link']}">{$item['linkdesc']}</a>{/if}</div>
+            </div>			
+            <div class="show_all_btn"></div>
+			<ul class="user_img_list3">
+				{if !empty($item['picurl'])}
+					{loop $item['picurl'] $row}	
+						<li style="height: 275.306px;">
+							<img img_path="{php echo tomedia($row['picurl'])}" src="{php echo tomedia($row['picurl'])}">
+						</li>
+					{/loop}
+				{/if}
+				{if !empty($item['audio'])}
+				<li class="no_image_tag3" style="height: 275.306px;">
+					<div class="li_radio3" style="background-image:url({php echo tomedia($item['avatar'])});">
+						<div class="icon"></div>
+						<audio class="sound1" width="320" height="240" src="{php echo tomedia($item['audio'])}" diary_id="{$item['id']}" style="display: none; opacity: 0;">
+							<source src="{php echo tomedia($item['audio'])}" type="video/mp4" id="{$item['id']}">
+							亲，你的手机不支持微信语音播放，这个真没办法！
+						</audio>
+					</div>
+				</li>				
+				{/if}				
+				{if !empty($item['video'])}
+				<li class="no_image_tag3" style="height: 275.306px;">
+					<div class="li_video3" video_url="{php echo tomedia($item['video'])}" isreport="N" style="background-image:url({if $item['videoimg']}{php echo tomedia($item['videoimg'])}{else}{OSSURL}public/mobile/img/videoicon.png{/if});">
+						<div class="icon"></div>
+					</div>					
+				</li>					
+				{/if}
+			</ul>
+            <div class="clear1"></div>
+            <div class="other_info_box3">
+                <span class="time">{$item['time']}前</span>
+				{if $bzj || $teachers['status'] ==2 || $bnjzr || $it['uid'] == $item['uid']}<span class="delete_btn" diaryid="{$item['id']}">删除</span>{/if}
+				{if $item['is_private'] =='N'}
+				<div class="other_control_icon" div_width="130" diary_id="{$item['id']}" reply_user="{$item['shername']}" comment_id="" type="subject_reply">
+					<span class="comment_btn" diary_id="{$item['id']}" reply_user="{$item['shername']}" comment_id="" type="subject_reply"></span>                     
+				</div>
+				{/if}
+				<div class="other_control_icon_praise" div_width="130" diary_id="{$item['id']}" {if $item['isdianz']}style="background: url('{OSSURL}public/mobile/img/icon_okpraise.png') 50% 50% / 16px no-repeat;"{else}style="background: url('{OSSURL}public/mobile/img/icon_nopraise.png') 50% 50% / 16px no-repeat;"{/if}></div>
+            </div>         
+            <div class="bottomLine"></div>
+			{if !empty($item['zname'])}
+            <div class="praiseBox">
+				{loop $item['zname'] $row1}
+					<span style="color:#2B779C;" class="praiseContent" user_id="{$row1['uid']}">{$row1['zname']}</span>
+				{/loop}
+				
+            </div>
+			{/if}
+            <div class="comment_box3" style="display:block;">
+				<ul class="comment_list3" style="">
+				<li style="padding: 0px 0px 0px 3px;"></li>
+				{loop $item['contents'] $row2}
+					<li diary_id="{$item['id']}" reply_user="{$row2['shername']}" comment_id="{$row2['id']}" {if $row2['uid'] !=$fan['uid']}is_mine="false"{else}is_mine="ture"{/if} type="comment_reply">
+						<div class="comment_content">
+							<div class="text">
+								<span class="user_name">{$row2['shername']}</span>{if $row2['uid'] !=$item['uid']}回复<span class="user_name">{$row2['hftoname']}</span>{/if}<span>：</span>{$row2['content']}
+							</div>
+						</div>
+					</li>
+				{/loop}
+				</ul>
+            </div>
+        </div> 
+        <div class="reply_box_div"></div>
+        <div class="reply_face_div"></div>
+    </li>
+{/loop}	
+</ul>
+{/if}
+</div>
+{if $nowbj['is_bjzx'] ==1}
+<div class="selectList" style="display: none; margin-top: -217.5px;">
+	<div class="double" id="classList" style="display: block; height: 436px;">
+		<ul style="height: 386px;">
+			{loop $thisclassstu $row}
+				<li onclick="isSelect(this);">
+					<span name="checkName" class="le">{$row['s_name']} </span>
+					<span class="ri"><img alt="check" src="{OSSURL}public/mobile/img/check.png"/></span>
+					<input type=hidden name="check" value="{$row['id']}"/>
+				</li>	
+			{/loop}	
+		</ul>
+		<div class="btnBox">
+			<div class="btn">
+				<input type=hidden id="mub" value=""/>
+				<input type=hidden id="sid" value=""/>
+				<div class="box"><span class="ok" onclick="saveChecked();">确认</span></div>
+				<div class="box"><span onclick="closeBox();">取消</span></div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="blackBg" style="display: none;"></div>
+<script>
+var oss = '{OSSURL}';
+
+function showlist(mub) {
+	$('.blackBg').show();
+	$('.selectList').show();
+	$("#mub").val(mub);
+}
+function saveChecked(){
+    var mub = $.trim($("#mub").val());
+	var sid = $.trim($("#sid").val());
+	if (sid == "" || sid == undefined || sid == null) {
+        jTips('请选择学生！');
+        return false;
+	}
+	var submitData = {
+		weid :"{$weid}",
+		schoolid :"{$schoolid}",
+		sid : sid,
+		mub : mub,
+		bj_id :"{$bj_id}",
+	};
+		$.post("{php echo $this->createMobileUrl('bjqajax',array('op'=>'setstar'))}",submitData,function(data){
+		if(data.result){
+			jTips(data.msg);
+			if(mub ==1){
+				$("#icon1").attr("src",data.icon);
+				$("#name1").html(data.s_name);
+			}
+			if(mub ==2){
+				$("#icon2").attr("src",data.icon);
+				$("#name2").html(data.s_name);
+			}
+			if(mub ==3){
+				$("#icon3").attr("src",data.icon);
+				$("#name3").html(data.s_name);
+			}
+			if(mub ==4){
+				$("#icon4").attr("src",data.icon);
+				$("#name4").html(data.s_name);
+			}
+			closeBox();			
+		}else{
+			jTips(data.msg);
+			closeBox();
+		}
+	},'json'); 	
+}
+function isSelect(obj){
+	var alt = $(obj).find("img").attr("alt");
+	if(alt == "check"){
+		$(".ri").find("img[alt=checked]").attr("src",oss+"public/mobile/img/check.png");
+		$(obj).find("img").attr("alt","checked");
+		$(obj).find("img").attr("src",oss+"public/mobile/img/checked.png");
+		$(obj).find("input").attr("name","checked");
+		$(obj).find("span[class=le]").attr("name","checkedName");
+		$(obj).find("input[type=hidden]").attr("name","selected");
+		var selectedValue = $(obj).find("input[type=hidden]").attr("name","selected");
+		$("#sid").val(selectedValue.val());
+	}else{
+		$(obj).find("img").attr("alt","check");
+		$(obj).find("img").attr("src",oss+"public/mobile/img/check.png");
+		$(obj).find("input").attr("name","check");
+		$(obj).find("span[class=le]").attr("name","checkName");
+		$(obj).find("input[type=hidden]").attr("name","check");
+		$("#sid").val('');
+	}
+}
+function closeBox() {
+	$('.blackBg').hide();
+	$('.selectList').hide();
+}
+</script>
+{/if} 
+<a href="{php echo $this->createMobileUrl('bjqfabu', array('schoolid' => $schoolid), true)}" class="F_div" style="z-index: 2;right: 20px; margin-bottom: 90px; display: block"><div class="F_div_text">发布</div></a>
+{php include $this->template('port');}
+<div class="bottom_comment_box3 hidden" style="padding: 0 0 0 8px; border: 1px solid #dedee0; box-sizing: border-box; padding-right: 90px; height: 30px; line-height: 30px;">
+    <div class="face_icon3 dialog_showFace" style="margin-left: 0; height: 30px; width: 30px; background-size: 20px; position: absolute; right: 58px; top: 0; left: auto;"></div>
+    <input id="comment_input" class="comment_input_box3" type="text" placeholder="回复：" diary_id="" comment_id="" comment_type="" reply_user="" style="border-radius: 0; border: none; font-size: 12px; padding: 0; line-height: 30px;">
+    <div class="send_comment_btn3" style="line-height: 30px; top: 0; right: -2px;">评论</div>
+</div>
+<!-- 表情框 -->
+<div class="faceBox faceBox_fixed" style="bottom: -2px;left: 0;z-index: 9;position: relative;">
+    <div class="faceBox_main">
+        <ul id="faceImg"></ul>
+    </div>
+    <div class="number">
+        <ul id="faceNum">
+            <li class="active">1</li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ul>
+    </div>
+</div>
+<div class="del_comment_bg">
+    <div class="del_comment_btn" comment_id="" diary_id="">
+        删除评论
+    </div>
+</div>
+<div class="video_bg">
+    <div class="close_video_btn">关闭</div>
+</div>
+<!-- 举报 -->
+<div class="report_bg">
+    <div class="report_title">请选择举报原因：</div>
+    <ul class="report_ul">
+        <li class="act">诈骗</li>
+        <li>色情</li>
+        <li>政治谣言</li>
+        <li>常识性谣言</li>
+        <li>诱导分享</li>
+        <li>恶意营销</li>
+        <li>隐私信息收集</li>
+        <li>抄袭</li>
+        <li>其他侵权类（冒名、抄袭、诽谤）</li>
+        <li>违规</li>
+    </ul>
+    <div class="blank"></div>
+    <div class="report_submit_btn">提交</div>
+    <div class="report_cancel_btn">取消</div>
+</div>
+<script src="{OSSURL}public/mobile/js/faceMap.js?v=5.61" type="text/javascript"></script>
+<script src="{OSSURL}public/mobile/js/common.js?v=1717"></script>
+<script>var ROOT_URL = "{OSSURL}public/mobile/img";</script>    
+<script>
+	var face_img_base_url = ROOT_URL;
+</script>
+<script src="{MODULE_URL}public/mobile/js/idangerous.swiper.min.js?v=1717"></script>
+<script>
+$("#choice_baby").on("click", function(e) {
+	e.stopPropagation();
+	$("#bjlist").addClass("show_menu_bg");
+});
+$("#bjlist").on("click", function() {
+	$(this).removeClass("show_menu_bg");
+});
+$("#bjlist_ul").on("click", "li", function() {
+	if (!$(this).hasClass('act')) {
+		$("#bjlist_ul .act").removeClass("act");
+		$(this).addClass("act");
+		var classid = $(".act").attr("classid");
+		location.href = "{php echo $this->createMobileUrl('bjq', array('schoolid' => $schoolid), true)}" + "&bj_id=" + classid;
+	}
+});
+{if empty($_GPC['schoolid'])}
+$("#schoollist").addClass("show_menu_bg");
+{/if}
+$("#choice_school").on("click", function(e) {
+	e.stopPropagation();
+	$("#schoollist").addClass("show_menu_bg");
+});
+$("#schoollist").on("click", function() {
+	$(this).removeClass("show_menu_bg");
+});
+function isSelects(schoolid){
+	jTips("数据加载中！···");
+	location.href = "{php echo $this->createMobileUrl('bjq')}"+ '&schoolid=' + schoolid;
+}
+
+	//add by suxinyong
+	$(function () {
+		var scroll_height = localStorage.getItem("new_info_tips3");
+		if (scroll_height == "0") {
+			$(".new_info_tips3").hide();
+			localStorage.removeItem("new_info_tips3");
+		}
+	});
+	function change_line(obj) {
+		$(obj).each(function () {
+			console.log($(this));
+			//   $(this).html($(this).html().trim().replace(/\n/g, "</br>"));
+		});
+	}
+	function countImgHeight(thumbLi) {
+		$(thumbLi).css("height", $(thumbLi).parent().width() * 0.3333);
+		//显示 全文 收起按钮
+		$('.inside_user_text').each(function () {
+			var $this = $(this);
+			if ($this.height() > $this.parent().height()) {
+				$this.parent().next('.show_all_btn').show().text('全文');
+			}
+		});
+	}
+	icon_replace($(".user_text")); // 替换表情
+	icon_replace($(".comment_content .text")); // 替换评论表情
+	//   change_line(".inside_user_text");
+
+	//无内容是显示默认图
+	if ($('.new_diary_list3 li').length == 0) {
+		$('.empty_content_data').show();
+	}
+</script>
+<script src="{OSSURL}public/mobile/js/new_iscroll.js?v=1717"></script>
+<script src="{OSSURL}public/mobile/js/openDialog_for_newpage_v1.4.js?v=1717"></script>
+<script src="{OSSURL}public/mobile/js/scroll_load_news.js?v=1717"></script>
+<script src="{MODULE_URL}public/mobile/js/uploaderh5.mod.js?v=1717"></script>
+<script>
+$('input').on('blur', function() {
+	var count = 0;
+	var screenHeight = window.screen.height;
+	var blurInterval = setInterval(function () {
+		$('body').css('min-height', (screenHeight-=10)+'px');
+		if (count >= 10) {
+			clearInterval(blurInterval);
+			$('body').css('min-height', '');
+		}
+		count++;
+	}, 10)
+});
+</script>
+<script>
+	common_ajax_callback = false;
+	slide({container:"#container",next: function (e) {
+		//松手之后执行逻辑,ajax请求数据，数据返回后隐藏加载中提示
+		var that = this;
+		var lasttime = $('.new_diary_list3').children('li').first().attr('time');
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('bjq', array('schoolid' => $schoolid, 'bj_id' => $bj_id ))}",
+			type: "post",
+			dataType: "html",
+			data: {
+				lasttime: lasttime
+			},
+			success: function (data) {
+				if ($.trim(data)) {
+					that.back.call();
+					$('.new_diary_list3').prepend(data);
+					icon_replace($(".user_text")); // 替换表情
+					icon_replace($(".comment_content .text")); // 替换评论表情
+					// img_big(); // 图片放大
+					countImgHeight(".user_img_list3 li");
+					//   change_line(".inside_user_text");
+
+					$(".inside_user_text span").css({
+						lineHeight: 24 + 'px'
+					});					
+				}else{
+					setTimeout(function () {
+						that.back.call();
+					}, 1000);
+				}
+			}		
+		});		
+
+	}});	
+	$(function () {
+
+		$(".inside_user_text span").css({
+			lineHeight: 24 + 'px'
+		})
+		countImgHeight(".user_img_list3 li");
+
+		//add by suxinyong
+		localStorage.removeItem("yab_teacher_notread_html");//清除本地存储未读数目列表内容
+
+		//分类赛选
+		
+
+
+		//$('.top_head_box3 .index_img').on('click', function (e) {
+		//    e.stopPropagation();
+		//    e.preventDefault();
+		//})
+		$('.search_icon').on('click', function (e) {
+			e.stopPropagation();
+		});
+
+		//显示 收起内容
+		$('.new_diary_list3').on('click', '.show_all_btn', function () {
+			var $this = $(this);
+			$this.prev('.user_text').toggleClass('show_all');
+			if ($this.text() == '全文') {
+				$this.text('收起');
+			} else {
+				$this.text('全文');
+			}
+		});
+
+		// 点击删除日志图标
+		$(".new_diary_list3").on("click", ".delete_btn", function (event) {
+			event.stopPropagation();
+			event.preventDefault();
+			var $this = $(this);
+			jConfirm("确认要删除该日志吗？", "删除确定对话框", function (isConfirm) {
+				if (isConfirm) {
+					$.ajax({
+						url: "{php echo $this->createMobileUrl('bjqajax', array('op' => 'delbjq'))}",
+						type: "post",
+						dataType: "json",
+						data: {
+							id: $this.attr("diaryid"),
+							schoolid:"{$schoolid}",
+							weid:"{$weid}",
+						},
+						success: function (data) {
+							jTips(data.msg, function () {
+								if (data.result) {
+									//clear_page_session("parent_diary_baby");
+									$this.closest('li').hide(200);
+								}
+							});
+						}
+					});
+				}
+			});
+		});
+		
+		$(".new_diary_list3").on("click", ".shenhe_btn", function (event) {
+			event.stopPropagation();
+			event.preventDefault();
+			var $this = $(this);
+			jConfirm("确认要审核该日志吗？", "确定对话框", function (isConfirm) {
+				if (isConfirm) {
+					$.ajax({
+						url: "{php echo $this->createMobileUrl('bjqajax', array('op' => 'shbjq'))}",
+						type: "post",
+						dataType: "json",
+						data: {
+							id: $this.attr("diaryid"),
+							schoolid:"{$schoolid}",
+							weid:"{$weid}",
+							userid:"{$it['id']}",
+						},
+						success: function (data) {
+							jTips(data.msg, function () {
+								if (data.result) {
+									//clear_page_session("parent_diary_baby");
+									$this.closest('.shenhe_btn').remove();
+								}
+							});
+						}
+					});
+				}
+			});
+		});		
+
+		// 底部加载更多
+		new Scroll_load({
+			"limit": "0",
+			"pageSize": 10,
+			"ajax_switch": true,
+			"ul_box": ".new_diary_list3",
+			"li_item": ".new_diary_list3 > li",
+			"ajax_url": "{php echo $this->createMobileUrl('bjq', array('schoolid' => $schoolid, 'bj_id' => $bj_id ))}",
+			"page_name": "parent_home_index",
+			"after_ajax": function () {
+				//image_bind_error_event(); // 图片错误处理
+				icon_replace($(".user_text")); // 替换表情
+				icon_replace($(".comment_content .text")); // 替换评论表情
+				// img_big(); // 图片放大
+				countImgHeight(".user_img_list3 li");
+				//   change_line(".inside_user_text");
+
+				$(".inside_user_text span").css({
+					lineHeight: 24 + 'px'
+				});
+
+			}
+		}).load_init();
+
+		//播放视频
+		$(".new_diary_list3").on("click", ".li_video3", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var video_url = $(this).attr("video_url");
+			var isreport = $(this).attr('isreport');
+			$(".video_bg").append('<video src="' + video_url + '" controls="controls" x-webkit-airplay="true" x5-playsinline="true" webkit-playsinline="true" playsinline="true">您的浏览器不支持 video 标签。</video>');
+			$(".video_bg").show();
+			$(".video_bg").children("video").index(0).currentTime = 0.0;
+			if (isreport == "Y") {
+				$('.report_btn').addClass('has_report_video_btn').text('已举报').off('click');
+
+			} else if (isreport == "N") {
+				//$('.report_btn').addClass('report_video_btn').attr('mediauid', $(this).attr('mediauid')).attr('businessid', $(this).attr('businessid')).text('举报').on('click', report_fun);
+			}
+		});
+
+		$(".close_video_btn").on("click", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			$(".video_bg").hide();
+			$(".video_bg").children("video")[0].pause();
+			$(".video_bg").children("video")[0].currentTime = 0;
+			$(".video_bg").children("video").remove();
+
+		});
+
+		//语音播放
+        var now_play_video_index = '-1';
+
+        $(".new_diary_list3").on('click', '.li_radio3', function (e) {
+
+            e.stopPropagation();
+            e.preventDefault();
+            var obj = $(this);
+            var jq_obj = obj.children('.sound1');
+            var dom_obj = jq_obj[0];
+			document.addEventListener("WeixinJSBridgeReady", function () {
+				dom_obj.muted = true;
+				dom_obj.load();
+				dom_obj.play();
+				dom_obj.pause();
+				dom_obj.muted=false;
+			},false);
+            if (obj.hasClass("video_stop")) {
+                dom_obj.pause();
+                dom_obj.currentTime = 0.0;
+                obj.removeClass("video_stop");
+                now_play_video_index = '-1';
+            } else {
+                if (now_play_video_index != '-1' && now_play_video_index != obj.index()) {
+                    var now_play_li = $(".li_radio3").eq(now_play_video_index);
+                    var now_play_obj = now_play_li.children('.sound1')[0];
+                    now_play_obj.pause();
+                    now_play_obj.currentTime = 0.0;
+                    now_play_li.removeClass("video_stop");
+                    now_play_video_index = '-1';
+                }
+                dom_obj.play();
+                obj.addClass("video_stop");
+                now_play_video_index = obj.index();
+                dom_obj.addEventListener('ended', function () {
+                    dom_obj.currentTime = 0.0;
+                    obj.removeClass("video_stop");
+                    now_play_video_index = '-1';
+                }, false);
+            }
+        });
+
+		//预览图片
+		$(".new_diary_list3").on("click", ".user_img_list3 li", function (e) {
+
+			if ($(this).attr("data-flag") == "table") {
+				location.href = $(this).parents(".user_info").find(".other_info_box3 a").attr("href");
+				return false;
+			}
+			var this_img = $(this).children('img').attr('img_path');
+			var this_img_arr = [];
+			$(this).parent('.user_img_list3').children('li').each(function () {
+				this_img_arr.push($(this).children('img').attr('img_path'));
+			})
+			wx.previewImage({
+				current: this_img, // 当前显示图片的http链接
+				urls: this_img_arr // 需要预览的图片http链接列表
+			});
+		});
+
+		// 点击回复评论
+		$(".new_diary_list3").on("click", ".comment_list3 li", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var replyUserInfo = $(this).attr("reply_user");
+			var diary_id = $(this).attr("diary_id");
+			var comment_id = $(this).attr("comment_id");
+			var is_mine = $(this).attr("is_mine");
+
+			if (is_mine == "false") {
+				$(".new_bottom_menu3").hide();
+
+				$('.reply_box_div').hide();
+				$('.reply_face_div').hide();
+				$('.faceBox').hide();
+				var this_reply_box = $(this).closest('.user_content').parent().find('.reply_box_div');
+				if (this_reply_box.children('.bottom_comment_box3').length == 0) {
+					$('#comment_input').val('');
+				}
+				this_reply_box.append($('.bottom_comment_box3')).show();
+				$('.bottom_comment_box3').show();
+
+				$("#comment_input").val("").attr("placeholder", "回复" + replyUserInfo + "：").attr("comment_type", "comment_reply").attr("diary_id", diary_id).attr("comment_id", comment_id).attr("reply_user", replyUserInfo);
+				//$(".bottom_comment_box3").show().css({ "position": "relative" });
+				$("#comment_input").focus();
+
+				//window.setTimeout(function () {
+				//    $('.bottom_comment_box3').css({ "position": "fixed" });
+				//}, 400)
+
+			} else {
+				$(".del_comment_bg").show();
+				$(".del_comment_btn").attr("comment_id", comment_id).attr("diary_id", diary_id);
+			}
+		});
+
+
+
+		//删除自己发表的评论回复
+		$(".del_comment_btn").on("click", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var diary_id = $(this).attr("diary_id");
+			var comment_id = $(this).attr("comment_id");
+			var this_comment_li = $(".comment_list3 li[diary_id=" + diary_id + "][comment_id=" + comment_id + "]");
+			var this_comment_li_parent = this_comment_li.closest('.comment_box3');
+			$(".del_comment_bg").hide(200);
+			this_comment_li.remove();
+			if (this_comment_li_parent.find('.comment_list3 li').length == 0) {
+				this_comment_li_parent.find('.like_box_3').addClass('noborder');
+				if (this_comment_li_parent.find('.like_box_3:hidden').length > 0) {
+					this_comment_li_parent.hide(200);
+				}
+
+			}
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('bjqajax', array('op' => 'delmyhf'))}",
+				type: "post",
+				dataType: "json",
+				data: {
+					id: comment_id,
+					schoolid: "{$schoolid}",
+				},
+				success: function (data) { }
+			});
+		});
+
+		$(".del_comment_bg").on("click", function () {
+			$(this).hide(200);
+		});
+
+		// 点击回复主题
+		$(".new_diary_list3").on("click", ".comment_btn", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var replyUserInfo = $(this).attr("reply_user");
+			var diary_id = $(this).attr("diary_id");
+			var comment_id = $(this).attr("comment_id");
+			$(".new_bottom_menu3").hide();
+			//$(".bottom_comment_box3").show().css({ "position": "relative" });
+			$(this).closest(".other_control_box").hide();
+
+			$('.reply_box_div').hide();
+			$('.reply_face_div').hide();
+			$('.faceBox').hide();
+			var this_reply_box = $(this).closest('li').find('.reply_box_div');
+			if (this_reply_box.children('.bottom_comment_box3').length == 0) {
+				$('#comment_input').val('');
+			}
+			this_reply_box.append($('.bottom_comment_box3')).show();
+			$('.bottom_comment_box3').show();
+			$(this).closest('.other_control_box').hide();
+
+			$("#comment_input").val("").attr("placeholder", "回复" + replyUserInfo + "：").attr("comment_type", "subject_reply").attr("diary_id", diary_id).attr("comment_id", comment_id).attr("reply_user", replyUserInfo).focus();
+		});
+
+
+		function changePraiseIco($praisBox, $currentObj) {
+
+			<!-- if ($praisBox == null || $praisBox == undefined) { -->
+				<!-- console.log("结构异常！"); -->
+				<!-- return; -->
+			<!-- } -->
+			var $icoCss = $currentObj;
+			var img_url = $icoCss.css("background");
+
+			if (img_url.toString().indexOf("icon_okpraise") > 0) {
+				$icoCss.css("background", "url({OSSURL}public/mobile/img/icon_nopraise.png) no-repeat center");
+				$icoCss.css("background-size", " 16px");
+
+				$praisBox.children("span").each(function (idx, obj) {
+					if ($(this).attr("user_id") == "{$fan['uid']}") {
+						$(this).remove();
+					}
+				});
+			}
+			if (img_url.toString().indexOf("icon_nopraise") > 0) {
+				$icoCss.css("background", "url({OSSURL}public/mobile/img/icon_okpraise.png) no-repeat center");
+				$icoCss.css("background-size", " 16px");
+
+				$praisBox.append('<span class="praiseContent" user_id="{$fan['uid']}">{$teachers['tname']}</span>');
+			}
+		}
+
+		//下划线
+
+		if (!$(".comment_list3").children().length > 0) {
+			$(".bottomLine").css("display", "block");
+
+		}
+		//点击提交保存评论
+		var com_winHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+		$(".send_comment_btn3").on("click", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var comment_input = $("#comment_input");
+			var comment_context = $.trim($("#comment_input").val());
+
+			// 1.校验文本框不能为空
+			if (comment_context == '') {
+				jTips('请输入内容！');
+				return;
+			}
+
+			{php  $word = $this->GetSensitiveWord($weid) }
+				// 2.敏感词检查
+				var sensitive_words = "{$word}";
+			var filter = sensitive_words.split('|');
+			for (var i = 0; i < filter.length; i++) {
+				var filter_word = filter[i].trim();
+
+				if (filter_word == "")
+					continue;
+
+				if (comment_context.indexOf(filter_word) > -1) {
+					jTips("请遵守国家法律法规，请勿发布暴力、谣言、色情等言论。内容含有非法词语：" + filter_word);
+					return false;
+				}
+			}
+
+			//comment_context = iphone_emoji_filter(comment_context);
+			var face_map_url = ROOT_URL + "/face/";
+			var comment_context_change = comment_context.replace(/\[([^\]]+)\]/g, function (a, b) {
+				return "<img class='face_icon' src='" + face_map_url + objMap[b] + ".gif'>";
+			});
+			var reply_user = $("#comment_input").attr("reply_user");
+			var diary_id = $("#comment_input").attr("diary_id");
+			var common_type = $("#comment_input").attr("comment_type");
+			var comment_id = $("#comment_input").attr("comment_id");
+			var parent_div = $(".comment_btn[diary_id=" + diary_id + "]").closest(".user_content");
+			$('.faceBox').hide();
+			$('.reply_box_div').hide();
+			var comment_sumit_tag = true;
+			if (comment_sumit_tag) {
+				comment_sumit_tag = false;
+				$.ajax({
+					url: "{php echo $this->createMobileUrl('bjqajax', array('op' => 'huifu'))}",
+					type: "post",
+					dataType: "json",
+					data: {
+						weid: "{$weid}",
+						schoolid: "{$schoolid}",
+						userid:"{$it['id']}",
+						uid: "{$fan['uid']}",
+						sherid: diary_id,
+						content: comment_context,
+						plid: comment_id,
+						uid: "{$fan['uid']}",
+						hftoname: reply_user,
+						shername: "{$teachers['tname']}老师",
+						openid:"{$openid}",
+					},
+					success: function (data) {
+
+						if (common_type == "comment_reply") {
+							parent_div.find(".comment_list3").show().append('<li diary_id="' + diary_id + '" reply_user="{$teachers['tname']}老师" comment_id="' + data.id + '" is_mine="true" type="comment_reply"><div class="comment_content"><div class="text"><span class="user_name">{$teachers['tname']}老师</span>回复<span class="user_name">' + reply_user + "</span><span>：</span>" + comment_context_change + "</div></div></li>");
+						} else {
+							parent_div.find(".comment_list3").show().append('<li diary_id="' + diary_id + '" reply_user="{$teachers['tname']}老师" comment_id="' + data.id + '" is_mine="true" type="comment_reply"><div class="comment_content"><div class="text"><span class="user_name">{$teachers['tname']}老师</span><span>：</span>' + comment_context_change + '</div></div></li>');
+						}
+						parent_div.find(".comment_box3").show();
+						parent_div.find('.like_box_3').removeClass('noborder');
+
+						$(".new_bottom_menu3").show();
+						$(".bottom_comment_box3").hide();
+						comment_sumit_tag = true;
+						//var top = 0;
+						var new_li_top = parent_div.find(".comment_list3 ").children('li:last-child').offset().top - com_winHeight + 85;
+						if (new_li_top > 0) {
+							$(window).scrollTop(new_li_top);
+						}
+					},
+					error: function () {
+						comment_sumit_tag = true;
+					}
+				});
+			}
+
+		});
+
+		$("body").on("click", function (e) {
+			if ($(e.target).closest(".comment_btn").length == 0 && $(e.target).closest(".comment_list3").length == 0 && $(e.target).closest(".bottom_comment_box3").length == 0 && $(e.target).closest(".faceBox").length == 0) {
+				$(".new_bottom_menu3").show();
+				$(".bottom_comment_box3").hide();
+				$('.reply_box_div').hide();
+			}
+
+			if ($(e.target).closest(".other_control_box").length == 0) {
+				$(".other_control_box").hide();
+			}
+
+			if ($(e.target).closest('.faceBox ').length == 0 && $(e.target).closest('.face_icon3 ').length == 0) {
+				$('.faceBox').hide();
+			}
+		});
+
+		document.getElementById("comment_input").addEventListener("touchstart", function (e) {
+			e.stopPropagation();
+			$(".faceBox").css("display", "none");
+
+		})
+
+		$(".new_diary_list3").on("click", ".other_control_icon", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			var replyUserInfo = $(this).attr("reply_user");
+			var diary_id = $(this).attr("diary_id");
+			var comment_id = $(this).attr("comment_id");
+			$(".new_bottom_menu3").hide();
+			//$(".bottom_comment_box3").show().css({ "position": "relative" });
+			//$(this).closest(".other_control_box").hide();
+			//$('.reply_box_div').hide();
+			//$(this).parents("user_content").next().show();
+			//$('.reply_face_div').hide();
+			//$('.faceBox').hide();
+
+			$('.reply_box_div').hide();
+			$('.reply_face_div').hide();
+			$('.faceBox').hide();
+			$(this).parents("user_content").next().show();
+
+			var this_reply_box = $(this).closest('li').find('.reply_box_div');
+			if (this_reply_box.children('.bottom_comment_box3').length == 0) {
+				$('#comment_input').val('');
+			}
+			this_reply_box.append($('.bottom_comment_box3')).show();
+			$('.bottom_comment_box3').show();
+			$(this).closest('.other_control_box').hide();
+
+			$("#comment_input").val("").attr("placeholder", "回复" + replyUserInfo + "：").attr("comment_type", "subject_reply").attr("diary_id", diary_id).attr("comment_id", comment_id).attr("reply_user", replyUserInfo).focus();
+
+		});
+
+
+
+
+		// 日志点赞
+		$(".new_diary_list3").on("click", ".other_control_icon_praise", function (e) {
+
+			var $this = $(this);
+
+			var $praisBox;
+
+			$(this).parents('.other_info_box3').siblings().each(
+				function (idx, obj) {
+					if ($(this).attr("class") == "praiseBox") {
+						$praisBox = $(this);
+						return false;
+					}
+				});
+
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('bjqajax', array('op' => 'dianzan'))}",
+				type: "post",
+				dataType: "json",
+				data: {
+					sherid: $this.attr("diary_id"),
+					weid: "{$weid}",
+					schoolid: "{$schoolid}",
+					userid: "{$it['id']}",
+					uid: "{$fan['uid']}",
+					zname: "{$teachers['tname']}老师"					
+				},
+				success: function (data) {
+					if (data.result) {
+						changePraiseIco($praisBox, $this);
+
+					}
+					else {
+						alert(data.info);
+					}
+				}
+			});
+		});
+
+	});
+
+
+	//举报视频
+	function report_fun() {
+		$('.report_bg').show();
+		$('.video_box').hide();
+		$('.video_bg video').hide();
+	}
+
+	$(function () {
+
+
+		$('.report_ul li').on('click', function () {
+			if (!$(this).hasClass('act')) {
+				$('.report_ul .act').removeClass('act');
+				$(this).addClass('act');
+			}
+		});
+		$('.report_cancel_btn').on('click', function () {
+			$('.video_box').show();
+			$('.report_bg').hide();
+			$('.video_bg video').show();
+		});
+		$('.report_submit_btn').on('click', function () {
+
+			$.post('/1046/Diary/Report', { 'businessid': $('.report_btn').attr("businessid"), 'mediaid': $('.report_btn').attr("mediauid"), 'content': $('.report_ul .act').text() }, function (data) {
+
+				$('.video_box').show();
+				$('.report_bg').hide();
+				$('.report_btn').addClass('has_report_video_btn').text('已举报').removeClass('report_video_btn').off('click');
+				jTips('举报信息已提交，我们会尽快处理您的举报。');
+			});
+		});
+
+
+		////////////////////////////////  食谱 //////////////////////////////////
+
+		// 针对表格形式的食谱 点击 放大图片
+		$(".recipeTable").click(function () {
+			var recipeUid = $(this).attr("data-recipeid");
+			location.href = "/1046/Recipe/GetDetailOFTableRecipeByRecipeUid?sRecipeUid=" + recipeUid;
+		});
+
+	});
+</script>
+</body>
+{php include $this->template('newfooter');}
+</html>

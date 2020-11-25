@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title>{$school['title']}</title>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+		<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mTeacherListNew.css?v=4.92" />
+		<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.920120" />
+		<link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css?{php echo time()}">
+		<link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+		<link href="{OSSURL}public/mobile/css/new_yab.css?v=10191009" rel="stylesheet" />
+		<style>
+			#bg_star {
+				width: 60px;
+				float: left;
+				height: 16px;
+				background: url("{MODULE_URL}public/mobile/img/star_show_gray.png");
+			}
+
+			#over_star {
+				height: 16px;
+				background:url("{MODULE_URL}public/mobile/img/star_show_red.png") no-repeat;
+			}
+
+			/**选择新增学生报名或选择已报学生**/
+			.popUpBox11 {
+				position: fixed;
+				left: 0px;
+				top: 0px;
+				width: 100%;
+				height: 100%;
+				animation-name: popFadeIn;
+				-webkit-animation-name: popFadeIn;
+				-ms-animation-name: popFadeIn;
+				-moz-animation-name: popFadeIn;
+				-o-animation-name: popFadeIn;
+				-webkit-animation-duration: 600ms;
+				animation-duration: 600ms;
+				-webkit-animation-fill-mode: both;
+				z-index: 102;
+			}
+
+			.trackMattesss {
+				position: absolute;
+				width: 100%;
+				height: 100vh;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(19, 18, 18, 0.54);
+			}
+
+			.popContentBoxs {
+				position: absolute;
+				width: 90%;
+				margin-left: 5%;
+				max-height: 80%;
+				top: 40%;
+				transform: translateY(-50%);
+				-webkit-transform: translateY(-50%);
+				-moz-transform: translateY(-50%);
+				-ms-transform: translateY(-50%);
+				-o-transform: translateY(-50%);
+				z-index: 101;
+				background-color: white;
+				border-radius: 10px;
+			}
+
+			.opt_box {
+				width: 100%;
+				height: auto;
+				display: inline-flex;
+				text-align: center;
+				margin-bottom: 19px;
+			}
+
+			.opt_box_btn_add {
+				width: 35%;
+				height: 40px;
+				font-size: 14px;
+				color: white;
+				text-align: center;
+				line-height: 38px;
+				border-radius: 40px;
+				background: #e85e5e;
+				margin-left: 9%;
+			}
+
+			.opt_box_btn_pot {
+				width: 35%;
+				height: 40px;
+				font-size: 14px;
+				color: white;
+				text-align: center;
+				line-height: 38px;
+				border-radius: 40px;
+				background: #5eaee8;
+				margin-left: 30%;
+			}
+
+			.stu_opt_list {
+				overflow-x: hidden;
+				overflow-y: auto;
+				max-height: 360px;
+				padding: 18px;
+			}
+
+			.stu_opt_list li {
+				list-style: none;
+				width: 100%;
+				height: auto;
+				display: inline-flex;
+				margin-top: 6px;
+				background: #eae8e8;
+				border-radius: 50px;
+			}
+
+			.stuimg {
+				border-radius: 50%;
+				margin-left: 1px;
+				margin-right: 5px;
+				width: 50px;
+				height: 50px;
+				float: left;
+			}
+
+			.stutext {
+				float: left;
+				width: 70%;
+				padding: 5px;
+			}
+
+			.stutitle {
+				max-width: 100%;
+				height: 20px;
+				line-height: 20px;
+				font-size: 14px;
+				color: gray;
+				float: left;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap
+			}
+
+			.boytip {
+				height: 20px;
+				width: 22px;
+				float: left;
+				background: url({OSSURL}public/mobile/img/boy_icon.png) right center no-repeat;
+				align-items: center;
+				background-size: 16px;
+			}
+
+			.girltip {
+				height: 20px;
+				width: 22px;
+				float: left;
+				background: url({OSSURL}public/mobile/img/girl_icon.png) right center no-repeat;
+				align-items: center;
+				background-size: 16px;
+			}
+
+			.not_inbox {
+				width: 90%;
+				margin: 5%
+			}
+
+			.btnPass_newstu {
+				background: #06c1ae;
+				margin-left: 31%;
+			}
+
+			.btnPass_newstu {
+				width: 100px;
+				height: 31px;
+				font-size: 14px;
+				color: white;
+				text-align: center;
+				line-height: 31px;
+				border-radius: 20px;
+			}
+		</style>
+	</head>
+
+<body>
+	<div class="all">
+		<div id="titlebar" class="header mainColor">
+			<div class="l"><a class="backOff"
+					style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;"
+					href="javascript:history.go(-1);"></a></div>
+			<div class="m">
+				<span style="font-size: 18px">心理咨询师</span>
+			</div>
+		</div>
+		<div id="titlebar_bg" class="_header"></div>
+		<div class="ADVlist" id="con_adv_1">
+			{loop $list $item}
+			<ul>
+				<a href="javascript:choseStu(`{$item['id']}`,`{$item['sendtype']}`)">
+					<li style="border-radius: 15px;">
+						<div class="question">
+							{if $item['sendtype'] == 'stutotea'}
+							与【{$item['tname']}】老师的对话
+							{/if}
+						</div>
+
+						<div class="answer" id="neirong">
+							<span>
+								我
+							</span>
+							：{$item['content']}<span class="wd" style="color:#fff;">未读</span>
+						</div>
+						<div class="time">{$item['sj']}前</div>
+					</li>
+				</a>
+			</ul>
+			{/loop}
+		</div>
+		<div class="line" style="padding-bottom:65px;"></div>
+	</div>
+	{php include $this->template('footer');}
+</body>
+
+</html>
+<script>
+	function choseStu(id, sendtype) {
+		if (sendtype == 'stutotea') {
+			location.href = `{php echo $this->createMobileUrl('spsychology', array('schoolid' => $schoolid))}` + `&id=${id}`
+		} else {
+			location.href = `{php echo $this->createMobileUrl('sfanspsychology', array('schoolid' => $schoolid))}` + `&id=${id}`
+		}
+	}
+	function goBangDing() {
+		location.href = "{php echo $this->createMobileUrl('bangding', array('schoolid' => $schoolid), true)}"
+	}
+</script>

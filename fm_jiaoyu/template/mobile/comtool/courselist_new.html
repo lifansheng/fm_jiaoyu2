@@ -1,0 +1,51 @@
+{loop $list_back $key $item}
+				{if $item['OldOrNew'] == 1}
+				<li class="kcdetail" time="{$item['localtion']}"  ctype="{$Ctype}" >
+					<img src="{if !empty($item['thumb'])}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}">
+					<strong>{$item['name']}
+					{if $item['end'] <TIMESTAMP}
+						<span style="background-color: gray;"class="label label-danger">已结课</span>
+					{/if}
+					</strong>
+					<p class="course-freq">
+						{$item['minge']}人/班
+						{if $item['is_hot'] == 1}
+						{if $item['end'] > TIMESTAMP}
+						<span style="background-color: #10b7a6;"class="label label-danger">精品课</span>
+						{/if}
+						{/if}
+					</p> 
+					<em>￥{$item['cose']}{if $item['guigetype'] == 1}起{/if}/首购</em>
+					{if !empty($item['course_type'])}
+					{if $item['end'] > TIMESTAMP}
+					<span style="background-color: #2f6bb7;float: right;"class="label label-danger">{$item['course_type']}</span>
+					{/if}
+					{/if}
+					<a href="{php echo $this->createMobileUrl('kcinfo', array('id' => $item['id'],'schoolid' =>$schoolid), true)}"></a>
+				</li>
+				{elseif $item['OldOrNew'] == 0}
+				<li class="kcdetail"  time="{$item['localtion']}"  ctype="{$Ctype}" >
+					<img src="{if !empty($item['thumb'])}{php echo tomedia($item['thumb'])}{else}{php echo tomedia($school['logo'])}{/if}">
+					<strong>{$item['name']}
+					{if $item['end'] <TIMESTAMP}
+						<span style="background-color: gray;"class="label label-danger">已结课</span>
+					{/if}
+					</strong>
+					<p class="course-freq">
+						{$item['minge']}人/班
+						{if $item['is_hot'] == 1}
+						{if $item['end'] > TIMESTAMP}
+						<span style="background-color: #10b7a6;"class="label label-danger">精品课</span>
+						{/if}
+						{/if}
+					</p>
+					<em>￥{$item['cose']}{if $item['guigetype'] == 1}起{/if}/期</em>
+					{if !empty($item['course_type'])}
+					{if $item['end'] > TIMESTAMP}
+					<span style="background-color: #2f6bb7;float: right;"class="label label-danger">{$item['course_type']}</span>
+					{/if}
+					{/if}
+					<a href="{php echo $this->createMobileUrl('kcinfo', array('id' => $item['id'],'schoolid' =>$schoolid), true)}"></a>
+				</li>
+				{/if}
+				{/loop}

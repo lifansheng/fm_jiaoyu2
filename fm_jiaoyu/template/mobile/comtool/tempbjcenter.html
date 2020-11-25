@@ -1,0 +1,63 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-03-05 17:01:53
+ * @LastEditTime: 2020-03-07 14:59:49
+ -->
+<style>
+    .datas_ul.blackUI:nth-of-type(even){
+        background-color: #fff;
+    }
+    .datas_ul.blackUI:nth-of-type(odd){
+        background-color: #f5f4f4;
+    }
+</style>
+<div class="datas_ul wihtUI">
+    <ul>班级</ul>
+    <ul>人数</ul>
+    <ul>检查</ul>
+    {if $_GPC['leixing'] == 3}
+    <ul>异常</ul>
+    {else}
+    <ul>发热</ul>
+    {/if}
+    <ul>病假</ul>
+    <ul>事假</ul>
+</div>
+<div id="ajax_datas">
+    <div class="datas_ul blackUI" >
+        <ul>全部</ul>
+        <ul>{$AllStu}</ul>
+        <ul>{$AllCheckup}</ul>
+        <ul>{$AbNormal}</ul>
+        <ul>{$qj['bj']}</ul>
+        <ul>{$qj['sj']}</ul>
+    </div>
+    {loop $bjlist $row}
+        <div class="datas_ul blackUI" onclick="gotodetail(`{$row['sid']}`)">
+            <ul>{$row['sname']}</ul>
+            <ul>{$row['stucount']}</ul>
+            <ul>{$row['Checkup']}</ul>
+            <ul>{$row['heat']}</ul>
+            <ul>{$row['bj']}</ul>
+            <ul>{$row['sj']}</ul>
+        </div>
+    {/loop}
+</div>
+
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#date").val(`{$date}`)
+    $("#time").html(`{$time}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+    function gotodetail(bjid){
+        let leixing = `{$_GPC['leixing']}`
+        window.location.href = "{php echo $this->createMobileUrl('tempforclass', array('schoolid' => $schoolid), true)}"+'&leixing='+leixing+'&bjid='+bjid+'&date='+`{$date}`
+    }
+</script>

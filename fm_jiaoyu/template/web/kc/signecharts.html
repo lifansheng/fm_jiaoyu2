@@ -1,0 +1,49 @@
+<div class="mbl_div">
+    <div class="ksmbl" data-value="{$Tdata['jindu']}" style="padding-top: 5%;"></div>
+    <div class="mbltitle" style="margin-top: 5px;">满班率</div>
+</div>
+<div style="margin-top: 10%;" >
+    <div style="display: flex;justify-content: center;margin-bottom: 5%;">
+        <div class="titlecolor" style="font-size: 16px; width: 100px;">当前课节:</div>
+        <div style="margin-left: 10%;width: 100px;">
+            <div>第{$Tdata['checknub']}节课</div>
+        </div>
+    </div>
+    <div style="display: flex;justify-content: center;margin-bottom: 5%;">
+        <div class="titlecolor" style="font-size: 16px;width: 100px;">平均得分:</div>
+        <div style="margin-left: 10%;width: 100px;">
+            <div>{$Tdata['kspingfen']}分</div>
+        </div>
+    </div>
+    <div style="display: flex;justify-content: center;margin-bottom: 5%;">
+        <div class="titlecolor" style="font-size: 16px;width: 100px;">排课老师:</div>
+        <div style="margin-left: 10%;width: 100px;">
+            <div>{$Tdata['pktname']}</div>
+        </div>
+    </div>
+    <div style="display: flex;justify-content: center;margin-bottom: 5%;">
+        <div class="titlecolor" style="font-size: 16px;width: 100px;">教室:</div>
+        <div style="margin-left: 10%;width: 100px;">
+            <div>{$Tdata['addinfo']}</div>
+        </div>
+    </div>
+</div>
+<script>
+    circleart()
+    function circleart(){
+
+        $(".ksmbl").circleChart({
+            backgroundColor: "#ccc",
+            background: true,
+            color: "#4b8bfd",
+            widthRatio: 0.1,
+            size: 158,
+            textSize:30,
+            text:true,
+            textCenter: true,
+            onDraw: function(el, circle) {
+                circle.text(Math.round(circle.value) + "%");
+            }
+        });
+    }
+</script>

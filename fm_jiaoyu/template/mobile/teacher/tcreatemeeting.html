@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/web/font-awesome5/css/all.min.css?v=1" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+<style>
+#birthday{border-bottom:1px solid #c6c6c6;position:relative;display:block;height:30px;line-height:30px;opacity:1;}
+#selMonth{margin-left:-40px;position:relative;z-index:10;opacity:0;}
+.item-button{position: absolute;right: 0px;border-radius: 5px;border: 1px solid #14c682;bottom: 0px;}
+.item-button a{margin: 2px;font-size: 13px;color: #6f6969;}
+
+
+body{--TopHeight:40px}
+.top-fix{height: var(--TopHeight);width: 100%;background-color: white;display: flex;align-items: center;box-shadow: 0 -1px 6px #b7b7b7;position: fixed;}
+.top-block{height:calc(var(--TopHeight) + 5px);width: 100%;}
+.top-fix .flex-middle{flex: 1;text-align: center;}
+.root *{box-sizing: border-box;}
+.root{padding:10px}
+
+.form-m .form-cell{width: 100%;}
+.form-m .cell-title{width: 100%;height: 30px;line-height: 30px;}
+.form-m .cell-content{border:1px solid #b9b9b9;border-radius: 5px;width: 100%;line-height: 30px;display: flex;height: 30px;overflow: hidden;margin-bottom: 10px;align-items: center;}
+.form-m .cell-content.no-border{border:unset}
+.form-m .cell-content.muti{height: auto;}
+.form-m .cell-content input,.form-m .cell-content select{padding:0 5px;border:none;flex:1;height: 100%;}
+.form-m .cell-content textarea{width: 100%;border-radius: 5px;padding:5px;border:1px solid #b9b9b9;resize: none;}
+.form-m .cell-content span.extra{display: inline-block;height: 100%;padding:0 10px;background-color: #ebf0f3;}
+.form-m .cell-content span.left{border-right: 1px solid  #b9b9b9;}
+.form-m .cell-content span.right{border-left: 1px solid  #b9b9b9;}
+.form-m .cell-content span.middle{border-left: 1px solid  #b9b9b9;border-right: 1px solid  #b9b9b9;}
+.form-m .cell-btn{padding:3px 10px;font-size: 12px;border-radius: 5px;line-height: 18px;background-color: #49a6e8;;color:white}
+
+.invite_cell{border: 1px solid #e8e8e8; padding:3px 3px;white-space: nowrap; display: inline-block; margin:3px 2px;cursor: pointer;transition: background-color .2s;line-height: 20px;}
+.invite_cell.All{border-color: #57d1e4;}
+#imgword{ padding:0 10px;color:red }
+#imgword.done{color:black}
+.fzbox,.fzbox *{box-sizing: border-box;}
+.fzbox .fz-item{display: flex;padding:0 10px;height:var(--ItemHeight);align-items: center;position: relative;--ItemHeight:40px}
+.fzbox .inputbox{height: 100%;position: relative;}
+input[type="checkbox"] { width: 0; height: 0; margin-right: 13px; }
+input[type="checkbox"]::before{ content:''; position: absolute; right: -10px; top:calc(var(--ItemHeight) / 2 - 8px); width: 16px; height: 16px; border-radius: 50%; border: 1px solid #999;transition: background-color 0.1s linear; }
+/*设置选中的input的样式*/
+input[type="checkbox"]:checked::before{ background-color: #006eb2; border: 1px solid #006eb2; }
+input[type="checkbox"]:after{position: absolute; width: 4px; height: 8px; top:calc(var(--ItemHeight) / 2 - 6px); right: -4px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg);opacity: 0;content: '';transition: all .2s linear;}
+input[type="checkbox"]:checked::after {opacity: 1;}
+</style>
+</head>
+    <body style="background-color: white;">
+        <div class="top-fix">
+            <div class="flex-left">
+                <div style="padding:5px 10px" >
+                    <i class="fas fa-chevron-left" style="font-size: 16px;" ></i>
+                </div>
+            </div>
+            <div class="flex-middle">
+                创建会议
+            </div>
+        </div>
+        <div class="top-block"></div>
+
+        <div class="root">
+            <form action="" class="form-m" id="formData">
+
+                <div class="form-cell">
+                    <div class="cell-title"> 会议名称 </div>
+                    <div class="cell-content">
+                        <input type="text" name="title" placeholder="会议名称...">
+                    </div>
+                </div>
+                <div class="form-cell">
+                    <div class="cell-title"> 会议日期 </div>
+                    <div class="cell-content">
+                        <input type="date" name="date">
+                    </div>
+                </div>
+                <div class="form-cell">
+                    <div class="cell-title"> 起止时间 </div>
+                    <div class="cell-content">
+                        <input type="time" name="starttime">
+                        <span class="middle extra" >至</span>
+                        <input type="time" name="endtime">
+                    </div>
+                </div>
+                <div class="form-cell">
+                    <div class="cell-title"> 提前签到时间 </div>
+                    <div class="cell-content">
+                        <input type="number" placeholder="0" name="earlytime">
+                        <span class="right extra">分钟</span>
+                    </div>
+                </div>
+                <div class="form-cell">
+                    <div class="cell-title"> 缩略图 </div>
+                    <div class="cell-content no-border">
+                        <input type="hidden" name="thumb">
+                        <div id="imgword"> 未上传 </div>
+                        <div class="cell-btn" onclick="uploadThumb(this)" >上传图片</div>
+                    </div>
+                </div>
+
+                <div class="form-cell">
+                    <div class="cell-title"> 会议描述 </div>
+                    <div class="cell-content muti no-border">
+                        <textarea name="content" placeholder="会议描述..." rows="5"></textarea>
+                    </div>
+                </div>
+
+
+                <div class="form-cell">
+                    <div class="cell-title"> 会议类型 </div>
+                    <div class="cell-content">
+                        <select name="type" onchange="ChangeMtype(this)" >
+                            <option value="1">教师会议</option>
+                            <option value="2">家长会议</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tea-join joinbox" >
+                    <div class="form-cell">
+                        <div class="cell-title"> 与会人员
+                            <span class="cell-btn" style="background-color: #5394ad;" data-slidefunc="ReInit('fz')" data-remaster-slide-id="fzlist">整组邀请</span>
+                            <span class="cell-btn" style="background-color: #676fa7;" data-slidefunc="ReInit('tea')"  data-remaster-slide-id="tealist" data-slidewidth="full" >单独邀请</span>
+                        </div>
+                        <div class="cell-content muti">
+                            <div id="joinlist" style="min-height: 40px;width: 100%;max-height: 100px;overflow: auto;padding:0 5px" >
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="stu-join joinbox" style="display: none;">
+                    <div class="form-cell">
+                        <div class="cell-title"> 指定班级 </div>
+                        <div class="cell-content">
+                            <select name="bjid" id="">
+                                {loop $AllBj $bi}`
+                                <option value="{$bi['sid']}">{$bi['sname']}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-cell">
+                        <div class="cell-title"> 完成后群发 </div>
+                        <div class="cell-content">
+                            <select name="issend">
+                                <option value="1">是</option>
+                                <option value="0" selected>否</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div style="margin:20px 0">
+                    <div style="height: 40px;line-height: 40px;width: 100%;text-align: center;background-color: #41b3f5;border-radius: 5px;color:white" onclick="tijiao()">提交</div>
+                </div>
+
+            </form>
+        </div>
+
+        <div id="fzlist" class="remaster-slide-box " >
+            <div class="slide-content-box">
+                <div class="top-fix" style="position: relative;">
+                    <div class="flex-middle">
+                        选择分组
+                    </div>
+                </div>
+
+                <div class="fzbox" style="width: 100%;padding:10px 20px;height: calc(100% - var(--TopHeight) );position: relative;overflow: auto;" >
+                    {loop $FzList $fzi}
+                    <div class="fz-item">
+                        <label for="fz_{$fzi['sid']}" style='flex: 1;' >
+                            {$fzi['sname']}
+                        </label>
+                        <div class="inputbox">
+                            <input onclick="AddIdList(this,'{$fzi['sname']}','fz')" id="fz_{$fzi['sid']}" value="{$fzi['sid']}" type="checkbox">
+                        </div>
+                    </div>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+        <div id="tealist" class="remaster-slide-box " >
+            <div class="slide-content-box">
+                <div class="top-fix" style="position: relative;">
+                    <div class="flex-left close-re-slide">
+                        <div style="padding:5px 10px">
+                        返回
+                        </div>
+                    </div>
+                    <div class="flex-middle">
+                        选择老师
+                    </div>
+                </div>
+
+                <style>
+                    .tea-box .tea-box-title{width: 100%;height: 40px;border-bottom: 1px solid #c1c1c1;line-height: 40px;padding:0 5px;display: flex;justify-content: space-between;align-items: center;}
+                    .tea-box.locked{background-color: #e0e0e0;position: relative;width: 100%;}
+                    .tea-box.locked:after{position: absolute;content: "已整组邀请";font-size: 12px;right: 10px;top:0;height: 100%;line-height: 40px;}
+                    .tea-box .tea-box-title i{transition: all .15s;}
+                    .tea-box.locked i{display: none;}
+                    .tea-box .tea-box-title.inshow i{transform: rotate(-180deg);}
+                </style>
+
+                <div class="fzbox teabox" style="width: 100%;padding:10px 20px;height: calc(100% - var(--TopHeight) );position: relative;overflow: auto;" >
+                    {loop $FzList $fzia}
+                    <div class="tea-box" data-fzid="{$fzia['sid']}">
+                        <div class="tea-box-title" onclick="TarggleTeaBox(this)">
+                        <div>{$fzia['sname']}</div>
+                            <i class="fas fa-chevron-up"></i>
+                        </div>
+                        <div style="width: 100%;padding:0 10px 0 20px;display: none;" >
+                            {loop $fzia['tealist'] $fzti}
+                                <!-- <div>{$fzti['tname']}</div> -->
+                                <div class="fz-item">
+                                    <label for="tea_{$fzti['id']}" style='flex: 1;' >
+                                        {$fzti['tname']}
+                                    </label>
+                                    <div class="inputbox">
+                                        <input onclick="AddIdList(this,'{$fzti['tname']}','tea')" id="tea_{$fzti['id']}" value="{$fzti['id']}" type="checkbox">
+                                    </div>
+                                </div>
+                            {/loop}
+                        </div>
+                    </div>
+                    {/loop}
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="{MODULE_URL}public/mobile/js/remaster.main.js?v=21.0.1"></script>
+        <script>
+
+            WeixinJSHideAllNonBaseMenuItem();
+            /**微信隐藏工具条**/
+            function WeixinJSHideAllNonBaseMenuItem(){
+                if (typeof wx != "undefined"){
+                    wx.ready(function () {
+                        wx.hideAllNonBaseMenuItem();
+                    });
+                }
+            }
+            var images = {
+                localId: [],
+                serverId: []
+            };
+
+
+            function uploadThumb(e){
+                wx.chooseImage({
+                    success: function (res) {
+                        images.localId = res.localIds;
+                        var obj=new Image();
+                        obj.src=res.localIds[0];
+                        wx.uploadImage({
+                            localId: images.localId[0],
+                            isShowProgressTips:1,//// 默认为1，显示进度提示
+                            success: function (res) {
+                                $("input[name='thumb']").val(res.serverId);
+                                $("#imgword").addClass('done').text("已上传")
+                            },
+                            fail: function (res) {
+                                alert(JSON.stringify(res));
+                            }
+                        });
+                    }
+                });
+            }
+            function TarggleTeaBox(e){
+                if($(e).parent().hasClass('locked')){
+                    return
+                }
+                if($(e).hasClass('inshow')){
+                    $(e).removeClass("inshow")
+                    $(e).siblings().slideUp(150)
+                }else{
+                    $(e).addClass("inshow")
+                    $(e).siblings().slideDown(150)
+                }
+            }
+
+            function ReInit(type){
+                switch (type) {
+                    case 'fz':
+                    $(".fzbox .fz-item input[type='checkbox']").each(function(){
+                        let value = $(this).val()
+                        if($(".invite_cell").find(`input[name='fzlist[]'][value='${value}']`).length !== 0){
+                            $(this).prop("checked",true)
+                        }else{
+                            $(this).prop("checked",false)
+
+                        }
+                    })
+                        break;
+                    case 'tea':
+                        $(".teabox .tea-box").each(function(){
+                            let value = Number($(this).data('fzid'))
+                            if($(".invite_cell").find(`input[name='fzlist[]'][value='${value}']`).length !== 0){
+                                $(this).addClass("locked")
+                            }else{
+                                $(this).removeClass("locked")
+
+                            }
+                        })
+                        $(".teabox .tea-box .fz-item input[type='checkbox']").each(function(){
+                            let value = $(this).val()
+                            if($(".invite_cell").find(`input[name='tidlist[]'][value='${value}']`).length !== 0){
+                                $(this).prop("checked",true)
+                            }else{
+                                $(this).prop("checked",false)
+
+                            }
+                        })
+                        break;
+                    default:
+                        console.log("参数非法");
+                        break;
+                }
+
+            }
+
+
+            $(function(){
+                $("select[name='meeting-type']").val('1').change()
+            })
+
+
+
+            function AddIdList(e,name,type){
+                let value=$(e).val(),
+                    inputname = type === 'fz' ? 'fzlist' : 'tidlist',
+                    CName = type === 'fz' ? 'All' : ''
+                if($(`#joinlist input[name='${inputname}[]'][value='${value}']`).length !== 0){
+                    $(`#joinlist input[name='${inputname}[]'][value='${value}']`).parents('.invite_cell').remove()
+                }else{
+                    let html = `<span  class="invite_cell ${CName}"  onclick="DeleteJoiner(this,'${name}')">${name}
+                                    <input class="joiner-input" type="hidden" name="${inputname}[]" value="${value}">
+                                    <i class="fa fa-times" style="font-size: 13px;"></i>
+                                </span>`;
+                    $("#joinlist").append(html)
+                }
+            }
+
+
+            function DeleteJoiner(e){
+                $(e).remove()
+            }
+
+
+            function ChangeMtype(e){
+                let value = $(e).val()
+                if(Number(value) === 1){
+                    $(".tea-join").slideDown(150).siblings(".joinbox").slideUp(150)
+                    console.log("tea");
+                }else{
+                    $(".stu-join").slideDown(150).siblings(".joinbox").slideUp(150)
+
+                }
+            }
+            
+            function tijiao(){
+                let formData = $("#formData").serializeArray();
+                $.ajax({
+                    url: "{php echo $this->createMobileUrl('tcreatemeeting', array('op' => 'save','schoolid'=>$schoolid))}",
+                    type: "post",
+                    dataType: "json",
+                    data:formData,
+                    success: function (res) {
+                        jTips(res.msg)
+                        location.href = "{php echo $this->createMobileUrl('tmeetinglist', array('op' => 'display','schoolid'=>$schoolid))}"
+                    }
+                });
+            }
+        </script>
+    </body>
+
+{php include $this->template('footer');}
+</html>

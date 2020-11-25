@@ -1,0 +1,9 @@
+{loop $CheckList $ci}
+<div class="LogCell" time="{$ci['id']}">
+    <div class="cell">{php echo date("Y-m-d H:i:s",$ci['createtime'])}</div>
+    <div class="cell">
+        <span>{$ci['gx']}</span>
+        {$ci['realname']}
+    </div>
+</div>
+{/loop}

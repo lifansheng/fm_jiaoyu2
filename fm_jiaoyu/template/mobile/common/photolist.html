@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$student['s_name']}的相册</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbum.css?v=5.00716" />	
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+</head>
+<style type="text/css">
+    .slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;}
+    .slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+    .slide_left_menu {width: 50%!important;right: 0;background-color: #fff;z-index: 999;min-height: 100%;position: absolute;}
+    .slide_left_menu_til {height: 40px;line-height: 40px;box-sizing: border-box;padding: 0 40px 0 15px;position: relative;font-size: 16px;}
+    .slide_left_menu_ul {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+    .slide_left_menu_ul li {height: 50px;line-height: 50px;font-size: 16px;width: 100%;box-sizing: border-box;overflow: hidden;position: relative;}
+    .photos_header { width: 100%; height: 38px; line-height: 38px; background-color: #fff; margin-bottom: 10px; }
+    .act{border-bottom: 2px solid #30c6e1;}
+    .photos_header > a { display: inline-block; width: 50%; color: #30c6e1; text-align: center; height: 36px; }
+    .photos_type_list li { background-color: #fff; padding: 0px 18px; height: 90px; color: #333; margin-bottom: 3px; border-radius: 10px; } 
+    .photos_type_list li .photos_type_wrap img { display: inline-block; width: 70px; height: 70px; margin-right: 10px; vertical-align: top; border: 0;border-radius: 10px;margin-top: 10px;}
+    .photos_type_wrap { width: 100%; display: -webkit-box; -webkit-box-align: center; }
+    .photos_type_list li .photos_type_wrap span { display: inline-block; width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 60px; padding-top: 20px; }
+	.reveal-modal {visibility: hidden;top: 30px; left: 2%;right:2%;background: #fff ;position: absolute;z-index: 101;    padding: 25px 18px 38px;}
+	.reveal-modal.small 		{ width: 200px; margin-left: -140px;}
+	.reveal-modal.medium 		{ width: 400px; margin-left: -240px;}
+	.reveal-modal.large 		{ width: 600px; margin-left: -340px;}
+	.reveal-modal.xlarge 		{ width: 800px; margin-left: -440px;}
+	.user_name {
+		height: 50px;
+		text-align: left;
+		color: #666;
+		font-size: 14px;
+	}
+	.user_name > input {
+		float: right;
+		display: block;
+		width: 70%;
+		border-radius: 3px;
+		height: 34px;
+		padding: 0 10px;
+		margin-bottom: 10px;
+		border: 1px solid #e4dede;
+		box-sizing: border-box;
+	}
+	.user_name > select {
+		float: right;
+		display: block;
+		width: 70%;
+		height: 34px;
+		border-radius: 3px;
+		padding: 0 10px;
+		margin-bottom: 10px;
+		border: 1px solid #ccc;
+		-webkit-box-sizing: border-box;
+		box-sizing: border-box;
+		text-align: left;
+		color: #666;
+		font-size: 14px;
+	}
+
+	.close_pupop_c {
+		width: 200px;
+		margin: 0 auto;
+	}
+	.close_pupop_button_1 {
+		background: #e74580;
+		color: #fff;
+	}
+	.close_pupop_button {
+		width: 90px;
+		height: 30px;
+		border-radius: 5px;
+		line-height: 30px;
+		font-size: 16px;
+		text-align: center;
+	}
+	.close_pupop_button_2 {
+		background: #56c454;
+		color: #fff;
+		margin-left: 20px;
+	}
+	.reveal-modal-bg {
+		position: fixed;
+		height: 100%;
+		width: 100%;
+		background: #000;
+		background: rgba(0,0,0,.8);
+		z-index: 100;
+		display: none;
+		top: 0;
+		left: 0;
+	}
+	.float_l {
+		float: left;
+	}
+</style>
+<body>
+<div class="all">	
+	<!-- <div class="header mainColor" style="z-index: 10;">
+		<div class="m"><span style="font-size: 18px">{$student['s_name']}的相册</span></div>
+    </div> -->
+    <div id="bjxclist" style="margin-top: 5px;">
+		<ul class="photos_type_list">
+			{loop $phototype $row}
+			<li style="position:relative">
+				<a href="{php echo $this->createMobileUrl('xc', array('schoolid' => $schoolid, 'bj_id' => $bj_id, 'type' => '1','ctype'=>$row['ctype'],'kcid'=>$row['kcid'],'sid'=>$_GPC['sid'],'istea'=>true), true)}">
+					<div class="photos_type_wrap">
+						{if $row['picurl']}
+						<img src="{php echo tomedia($row['picurl'])}" style="border-radius:10px">
+						{else}
+						<img src="{php echo tomedia($school['spic'])}" style="border-radius:10px">
+						{/if}
+						<span>
+							{$row['sname']}<br>{$row['total']} 张
+						</span>
+					</div>
+				</a>
+			</li>
+			{/loop}
+        </ul>
+    </div>
+</div>
+</body>
+<div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=5.00311"></script>
+<script src="{OSSURL}public/mobile/js/scroll_load_news.js?v=1717"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/datetimeUtil.min.js?v=5.00311"></script>
+<script>
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+$(".choice_baby").on("click", function(e) {
+	e.stopPropagation();
+	$(".slide_left_menu_bg").addClass("show_menu_bg");
+});
+	$(".slide_left_menu_bg").on("click", function() {
+		$(this).removeClass("show_menu_bg");
+	});
+var PB = new PromptBox();
+var dateTimesUtil = new dateTime();
+
+function isSelect(bjid){
+	location.href = "{php echo $this->createMobileUrl('xclist', array('schoolid' => $schoolid), true)}"+ '&bj_id=' + bjid;
+}
+</script>
+{php include $this->template('newfooter');}
+</html>
+<script>
+/*班级与个人切换*/
+$("#bjxc").click(function () {
+	$("#grxclist").hide();
+	$("#grxc").removeClass('act');
+	$("#bjxc").addClass('act'); 
+	$("#bjxclist").show();
+}); 
+$("#grxc").click(function () {
+	$("#bjxclist").hide();
+    $("#bjxc").removeClass('act'); 
+	$("#grxc").addClass('act');
+	$("#grxclist").show();
+});
+/*班级与个人切换*/
+function ShowAddModal(){
+	$("#myModal").show();
+	$("#myModal").css('visibility','visible');
+	$(".reveal-modal-bg").css('display','block');
+}
+$(".reveal-modal-bg").click(function(){
+	$("#myModal").css('visibility','none');
+	$("#myModal").hide();
+	$(".reveal-modal-bg").css('display','none');
+})
+$("#close").click(function(){
+	$("#myModal").css('visibility','none');
+	$("#myModal").hide();
+	$(".reveal-modal-bg").css('display','none');
+})
+$("#tijiao1").click(function(){
+	let name = $("#name").val()
+	let is_upload = $("#is_upload").val()
+	data = {
+		'name' :$("#name").val(),
+		'is_upload' :is_upload = $("#is_upload").val(),
+		'bj_id' :`{$bj_id}`,
+		'phototype' :$("#phototype").val(),
+		'schoolid':`{$schoolid}`
+	}
+	$.post("{php echo $this->createMobileUrl('techerajax', array('op' => 'AddPhotoType'))}",data, function(data){
+		if(data.result){
+			$("#myModal").css('visibility','none');
+			$("#myModal").hide();
+			$(".reveal-modal-bg").css('display','none');
+			location.reload()
+		}else{
+			alert(data.msg);	
+		}
+	},'json');	
+	
+})
+</script>

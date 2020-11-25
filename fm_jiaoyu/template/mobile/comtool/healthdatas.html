@@ -1,0 +1,59 @@
+<div class="ref_data">
+    <div class="ref_top">数据看板</div>
+    <div class="data_bot">
+        <div class="data_lfet">总人数:{$AllNum}</div>
+        <div class="data_right">正常人数:{$CheckupIsNormal['normal']}</div>
+    </div>
+    <div class="data_bot">
+        <div class="data_lfet">已检测:{$Checkup}</div>
+        <div class="data_right">异常人数:{$CheckupIsNormal['abnormal']}</div>
+    </div>
+    <div class="data_bot">
+        <div class="data_lfet">未检测:{$NoCheckup}</div>
+        <div class="data_right">事假人数:{$qj['sj']}</div>
+    </div>
+    <div class="data_bot">
+        <div class="data_lfet">发烧数:{$CheckupIsNormal['heat']}</div>
+        <div class="data_right">病假人数:{$qj['bj']}</div>
+    </div>
+</div>
+<div class="temp_data">
+    <div id="ajax_datas" class="ajax_datas">
+        <div class="chart-title ng-binding" style="padding: 4px 10px;"><b>症状情况</b></div>
+        <div id="echarts-pie-chart-zz" style="width: 100%;height:200px; margin-top: 10px;"></div>
+    </div>
+</div>
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#date").val(`{$date}`)
+    $("#time").html(`{$time}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+    $(".AllStu").html(`{$AllStu}`)
+</script>
+
+<script>
+	search()
+	function search(){
+		var date = `{$date}`
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('healthdatas',array('op'=>'getechardate','schoolid'=>$schoolid))}",
+			type: "POST",
+			data: {date:date},
+			dataType: "json",
+			success: function (datas) {
+				let zz = PieOption['zz'];
+				zz.yAxis.data = datas.title;
+				zz.series[0].data = datas.data;
+				var myChart = echarts.init($('#echarts-pie-chart-zz')[0]);
+				myChart.setOption(zz);
+				$(window).resize(myChart.resize);
+			}
+		});
+	}
+</script>

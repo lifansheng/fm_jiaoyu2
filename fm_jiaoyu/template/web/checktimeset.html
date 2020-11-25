@@ -1,0 +1,275 @@
+<div class="form-group">
+	<label class="radio-inline">
+		<input type="radio" name="saturdayset" checked id="one_four">{if $checksetinfo['friday'] == 0 }周一至周五{else}周一至周四{/if}
+	</label>
+	<label class="radio-inline"{if $checksetinfo['friday'] == 0 }style="display:none"{/if}>
+		<input type="radio" name="saturdayset" id="friday">星期五
+	</label>
+	<label class="radio-inline" {if $checksetinfo['saturday'] == 0 }style="display:none"{/if}>
+		<input type="radio" name="saturdayset" id="saturday">星期六
+	</label>
+	<label class="radio-inline" {if $checksetinfo['sunday'] == 0 }style="display:none"{/if}>
+		<input type="radio" name="saturdayset" id="sunday">星期天
+	</label>
+</div>
+<form id="form">
+	<div class="panel-body" id="one_four_div">
+		{loop $workdayset $item}
+		<div class="form-group line_boxsss">
+			<input type="hidden" name="one_four[id][]" value="{$item['id']}">
+			<div class="input-group clocknews">
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="one_four[start][]" value="{php echo $item['start']?$item['start']:'00:00'}" class="form-control">
+				</div>
+				<span class="input-group-addon">至</span>
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="one_four[end][]" value="{php echo $item['end']?$item['end']:'00:00'}" class="form-control">
+				</div>
+			</div>
+			<div class="col-sm-2 col-lg-2 frisset">
+				<select name="one_four[out_in][]">
+					<option value="">方向</option>
+					<option value="1" {if $item['out_in'] == 1}selected="selected"{/if}>进</option>
+					<option value="2" {if $item['out_in'] == 2}selected="selected"{/if}>出</option>
+				</select>
+			</div>
+			<div class="col-sm-2 col-lg-2">
+				<a href="javascript:;" class="custom-url-del delteclassicon" data-id="{$item['id']}"><i class="fa fa-times-circle"></i></a>
+				<select name="one_four[s_type][]">
+					<option value="">学生类型</option>
+					<option value="1" {if $item['s_type'] == 1}selected="selected"{/if}>走读生</option>
+					<option value="2" {if $item['s_type'] == 2}selected="selected"{/if}>住校生</option>
+					<option value="3" {if $item['s_type'] == 3}selected="selected"{/if}>半通生</option>
+				</select>
+			</div>
+		</div>
+		{/loop}
+	</div>
+	<div class="panel-body" id="friday_div" style="display:none">
+		{loop $fridayset $item_f}
+		<div class="form-group line_boxsss">
+			<input type="hidden" name="friday[id][]" value="{$item_f['id']}">
+			<div class="input-group clocknews">
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="friday[start][]" value="{php echo $item_f['start']?$item_f['start']:'00:00'}" class="form-control">
+				</div>			<span class="input-group-addon">至</span>
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="friday[end][]" value="{php echo $item_f['end']?$item_f['end']:'00:00'}" class="form-control">
+				</div>
+			</div>
+			<div class="col-sm-2 col-lg-2 frisset">
+				<select name="friday[out_in][]">
+					<option value="">方向</option>
+					<option value="1" {if $item_f['out_in'] == 1}selected="selected"{/if}>进</option>
+					<option value="2" {if $item_f['out_in'] == 2}selected="selected"{/if}>出</option>
+				</select>
+			</div>
+			<div class="col-sm-2 col-lg-2">
+				<a href="javascript:;" class="custom-url-del delteclassicon" data-id="{$item_f['id']}"><i class="fa fa-times-circle"></i></a>
+				<select name="friday[s_type][]">
+					<option value="">选择学生</option>
+					<option value="1" {if $item_f['s_type'] == 1}selected="selected"{/if}>走读生</option>
+					<option value="2" {if $item_f['s_type'] == 2}selected="selected"{/if}>住校生</option>
+					<option value="3" {if $item_f['s_type'] == 3}selected="selected"{/if}>半通生</option>
+				</select>
+			</div>
+		</div>
+		{/loop}
+	</div>
+	<div class="panel-body" id="saturday_div" style="display:none">
+		{loop $saturdayset $item_Sat}
+		<div class="form-group line_boxsss">
+			<input type="hidden" name="saturday[id][]" value="{$item_Sat['id']}">
+			<div class="input-group clocknews">
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="saturday[start][]" value="{php echo $item_Sat['start']?$item_Sat['start']:'00:00'}" class="form-control">
+				</div>			<span class="input-group-addon">至</span>
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="saturday[end][]" value="{php echo $item_Sat['end']?$item_Sat['end']:'00:00'}" class="form-control">
+				</div>
+			</div>
+			<div class="col-sm-2 col-lg-2 frisset">
+				<select name="saturday[out_in][]">
+					<option value="">方向</option>
+					<option value="1" {if $item_Sat['out_in'] == 1}selected="selected"{/if}>进</option>
+					<option value="2" {if $item_Sat['out_in'] == 2}selected="selected"{/if}>出</option>
+				</select>
+			</div>
+			<div class="col-sm-2 col-lg-2">
+				<a href="javascript:;" class="custom-url-del delteclassicon" data-id="{$item_Sat['id']}"><i class="fa fa-times-circle"></i></a>
+				<select name="saturday[s_type][]">
+					<option value="">选择学生</option>
+					<option value="1" {if $item_Sat['s_type'] == 1}selected="selected"{/if}>走读生</option>
+					<option value="2" {if $item_Sat['s_type'] == 2}selected="selected"{/if}>住校生</option>
+					<option value="3" {if $item_Sat['s_type'] == 3}selected="selected"{/if}>半通生</option>
+				</select>
+			</div>
+		</div>
+		{/loop}
+	</div>
+	<div class="panel-body" id="sunday_div" style="display:none">
+		{loop $sundayset $item_Sun}
+		<div class="form-group line_boxsss">
+			<input type="hidden" name="sunday[id][]" value="{$item_Sun['id']}">
+			<div class="input-group clocknews">
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="sunday[start][]" value="{php echo $item_Sun['start']?$item_Sun['start']:'00:00'}" class="form-control">
+				</div>			<span class="input-group-addon">至</span>
+				<div class="input-group clockpicker clocknew">
+					<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+					<input type="text" name="sunday[end][]" value="{php echo $item_Sun['end']?$item_Sun['end']:'00:00'}" class="form-control">
+				</div>
+			</div>
+			<div class="col-sm-2 col-lg-2 frisset">
+				<select name="sunday[out_in][]">
+					<option value="">方向</option>
+					<option value="1" {if $item_Sun['out_in'] == 1}selected="selected"{/if}>进</option>
+					<option value="2" {if $item_Sun['out_in'] == 2}selected="selected"{/if}>出</option>
+				</select>
+			</div>
+			<div class="col-sm-2 col-lg-2">
+				<a href="javascript:;" class="custom-url-del delteclassicon" data-id="{$item_Sun['id']}"><i class="fa fa-times-circle"></i></a>
+				<select name="sunday[s_type][]">
+					<option value="">选择学生</option>
+					<option value="1" {if $item_Sun['s_type'] == 1}selected="selected"{/if}>走读生</option>
+					<option value="2" {if $item_Sun['s_type'] == 2}selected="selected"{/if}>住校生</option>
+					<option value="3" {if $item_Sun['s_type'] == 3}selected="selected"{/if}>半通生</option>
+				</select>
+			</div>
+		</div>
+		{/loop}
+	</div>
+</form>
+<div class="clearfix template">
+	<div class="form-group">
+		<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+		<div class="col-sm-9 col-xs-12">
+			<a onclick="add_time()" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加时段</a>
+		</div>
+	</div>
+</div>
+
+<template id="sat_temp">
+	<div class="form-group line_boxsss">
+		<input type="hidden" name="satur[id][]" value="0">
+		<div class="input-group clockpicker clocknews">
+			<div class="input-group clockpicker clocknew">
+				<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+				<input type="text" name="satur[start][]" value="00:00" class="form-control">
+			</div>			<span class="input-group-addon">至</span>
+			<div class="input-group clockpicker clocknew">
+				<span class="input-group-addon"><i class="fa fa-clock-o"></i></span>
+				<input type="text" name="satur[end][]" value="00:00" class="form-control">
+			</div>
+		</div>
+		<div class="col-sm-2 col-lg-2 frisset">
+			<select name="satur[out_in][]">
+				<option value="">方向</option>
+				<option value="1">进</option>
+				<option value="2">出</option>
+			</select>
+		</div>
+		<div class="col-sm-2 col-lg-2">
+			<a href="javascript:;" class="custom-url-del delteclassicon" data-id=""><i class="fa fa-times-circle"></i></a>
+			<select name="satur[s_type][]">
+				<option value="">选择学生</option>
+				<option value="1">走读生</option>
+				<option value="2">住校生</option>
+				<option value="3">半通生</option>
+			</select>
+		</div>
+	</div>
+</template>
+
+
+<script type="text/javascript">
+require(["clockpicker"], function($){
+	$(function(){
+		$(".clockpicker").clockpicker({
+			autoclose: true
+		});
+	});
+});
+$(document).on('click', '.custom-url-del', function(){
+	let dataid = $(this).attr("data-id");
+	DealDom = $(this)
+	if(dataid){
+		if(confirm("删除不可恢复,确定删除?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('checktimeset', array('op' => 'del_timeset', 'schoolid' => $schoolid))}"+"&timesetid="+dataid,
+				type: "POST",
+				dataType: "json",
+				success: function (res) {
+					$(DealDom).parent().parent().remove();
+					return false;
+				},
+				error: function(e) {
+					alert('访问网络失败');
+				}
+			});
+
+		}
+	}else{
+		$(this).parent().parent().remove();
+		return false;
+	}
+});	
+</script>
+<script type="text/javascript">
+	var tag = 'one_four';
+    $('#one_four').click(function() {
+        $('#friday_div').slideUp(200);
+        $('#saturday_div').slideUp(200);
+		$('#sunday_div').slideUp(200);
+        $('#one_four_div').slideDown(200);
+        tag = `one_four`;
+    });
+    $('#friday').click(function() {
+        $('#one_four_div').slideUp(200);
+        $('#saturday_div').slideUp(200);
+		$('#sunday_div').slideUp(200);
+        $('#friday_div').slideDown(200);
+        tag = `friday`;
+    });
+    $('#saturday').click(function() {
+        $('#friday_div').slideUp(200);
+        $('#one_four_div').slideUp(200);
+		$('#sunday_div').slideUp(200);
+        $('#saturday_div').slideDown(200);
+        tag = `saturday`;
+    });
+    $('#sunday').click(function() {
+        $('#friday_div').slideUp(200);
+        $('#one_four_div').slideUp(200);
+        $('#saturday_div').slideUp(200);
+		$('#sunday_div').slideDown(200);
+        tag = `sunday`;
+    });
+    function add_time() {
+        let t = document.querySelector('#sat_temp'),
+            td = t.content.querySelectorAll("input"),
+			set = t.content.querySelectorAll("select");
+		td[0].setAttribute("name",`${tag}[id][]`);	
+        td[1].setAttribute("name",`${tag}[start][]`);
+        td[2].setAttribute("name",`${tag}[end][]`);
+		set[0].setAttribute("name",`${tag}[out_in][]`);
+        set[1].setAttribute("name",`${tag}[s_type][]`);	
+        // 克隆新行并将其插入表中
+        let tb =$(`#${tag}_div`);
+
+        let clone = document.importNode(t.content, true);
+        console.log(clone);
+        tb[0].appendChild(clone);
+        $(".clockpicker").clockpicker({
+            autoclose: true
+        });
+    }
+
+</script>

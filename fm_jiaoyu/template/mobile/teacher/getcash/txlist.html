@@ -1,0 +1,238 @@
+<div class="sign_list">
+	<div class="stu_search_head">
+		<div class="ADVtips">
+			<div class="ADVtips_title">提现记录</div>
+			<span class="msg_word">仅显示提现中</span>&nbsp;&nbsp;&nbsp;
+			<div class="switch scale01 switch_on" style="padding: 0px;">
+				<div class="switch_push">
+					<div class="switch_round"></div>
+				</div>
+			</div>
+		</div> 
+	</div>	
+	<div class="ajax_stu_box">
+		<div class="All">     
+			<div class="listContent">
+			{loop $mycash $row}
+				<li class="txlist_li {if $row['status'] == 2}alread{/if}">
+					<div class="txlist_top">订单号:{$row['id']} {if $row['status'] == 2}到账￥{$row['fee']}{else}提现￥{$row['oldfee']}{/if} {if $row['approval'] == 1}<span class="deltebtn" onclick="delorder({$row['id']},this)">删除</span>{/if}{if $row['approval'] == 1}<div class="audit_statusNew">已拒绝</div>{else}{if $row['status'] == 1 || empty($row['status'])}<div class="audit_statusIng">处理中</div>{/if}{if $row['status'] == 2}<div class="audit_statusPass">已到账</div>{/if}{/if}</div>
+					<div class="txlist_bot">
+						<div class="txlist_left">
+							<span class="tx_title">提现金额</span>
+							<p class="tx_feenub">￥{$row['oldfee']}</p>
+						</div>
+						<div class="txlist_center">
+							<span class="tx_title">包含{$row['ordernumber']}个签到记录</span>
+							<p class="notifyCreateTime"><span class="notifyCreateTime">申请时间：{php echo date('Y.m.d H:i',$row['createtime'])}</span></p>
+						</div>
+						<div class="txlist_right">
+							<div class="right_icons openclassT"></div>
+						</div>
+					</div>
+					<div class="txlist_detail" style="display:none">
+						<div style="padding-bottom:10px; padding-top: 10px; border-top: 1px #e4e4e4 solid;">处理进度<span class="notifyCreateTime" style="color: #8ccef9;">  点击进度条可切换</span></div>
+						<div class="aui-step-one">
+							<div class="aui-step-one-item shenhebtn {if $row['paytid']}aui_act{/if}">
+								<span>{if $row['approval']}{if $row['approval'] == 1}拒绝通过{/if}{if $row['approval'] == 2}审核通过{/if}{else}处理中{/if}</span>
+								<span>{if $row['shtime']}{php echo date('m-d H:i',$row['shtime'])}{else}提交申请{/if}</span>
+							</div>
+							<div class="aui-step-one-item caiwubtn {if $row['paytid']}aui_act{/if}">
+								<span>{if $row['paytid']}财务拨款{else}财务审核{/if}</span>
+								<span>{if $row['paytime']}{php echo date('m-d H:i',$row['paytime'])}{else}财务未审核{/if}</span>
+							</div>
+							<div class="aui-step-one-item dzbtn {if $row['status'] == 2}last_act{else}last_noact{/if}">
+								<span>{if $row['status'] == 2}到账成功{else}未到账{/if}</span>
+								<span>{if $row['dztime']}{php echo date('m-d H:i',$row['dztime'])}{else}{if $row['paytype'] == 1}需手动提现{else}未到账{/if}{/if}</span>
+							</div>
+						</div>
+						<div class="jindu_info shenhe" {if $row['paytid']}style="display:none"{/if}>
+							<div class="aui-flex-header">审核信息</div>
+							<div class="aui-flex-content">
+								<div class="aui-flex">
+									<div class="aui-flex-list">申请人：</div>
+									<div class="aui-flex-box">
+										<h5>{$row['realname']}</h5>
+									</div>
+								</div>
+								<div class="aui-flex">
+									<div class="aui-flex-list">手机号码：</div>
+									<div class="aui-flex-box">
+										<h5>{$row['mobile']}</h5>
+									</div>
+								</div>
+								<div class="aui-flex">
+									<div class="aui-flex-list">申请时间：</div>
+									<div class="aui-flex-box">
+										<h5>{if $row['createtime']}{php echo date('Y-m-d H:i',$row['createtime'])}{/if}</h5>
+									</div>
+								</div>
+								<div class="">
+									<div class="aui-flex-list">备注信息：{$row['contrank']}</div>
+								</div>
+							{if $row['shtid']}
+								<div class="aui-flex">
+									<div class="aui-flex-list">审核人：</div>
+									<div class="aui-flex-box">
+										<h5>{$row['shtname']}</h5>
+									</div>
+								</div>
+								<div class="aui-flex">
+									<div class="aui-flex-list">审核时间：</div>
+									<div class="aui-flex-box">
+										<h5>{if $row['shtime']}{php echo date('Y-m-d H:i',$row['shtime'])}{/if}</h5>
+									</div>
+								</div>
+								<div class="">
+									<div class="aui-flex-list">审核备注：{$row['shrank']}</div>
+								</div>
+							{/if}	
+							</div>
+						</div>
+						{if $row['paytid']}
+						<div class="jindu_info caiwu" {if $row['status']}style="display:none"{/if}>
+							<div class="aui-flex-header">拨款信息</div>
+							<div class="aui-flex-content">
+								<div class="aui-flex">
+									<div class="aui-flex-list">财务：</div>
+									<div class="aui-flex-box">
+										<h5>{$row['payname']}</h5>
+									</div>
+								</div>
+								<div class="aui-flex">
+									<div class="aui-flex-list">时间：</div>
+									<div class="aui-flex-box">
+										<h5>{if $row['paytime']}{php echo date('Y-m-d H:i',$row['paytime'])}{/if}</h5>
+									</div>
+								</div>
+								<div class="aui-flex">
+									<div class="aui-flex-list">付款方式：</div>
+									<div class="aui-flex-box">
+										<h5>{if $row['paytype'] == 1}微信付款{/if}{if $row['paytype'] == 2}现金付款{/if}{if $row['paytype'] == 3}其他方式{/if}</h5>
+									</div>
+								</div>
+								<div class="">
+									<div class="aui-flex-list">备注信息：{$row['payrank']}</div>
+								</div>
+							</div>
+						</div>
+						{/if}
+						{if $row['status']}
+							{if $row['status'] == 2}
+							<div class="jindu_info daozhang" style="">
+								<div class="aui-flex-header">到账信息</div>
+								<div class="aui-flex-content">
+									<div class="aui-flex">
+										<div class="aui-flex-list">收款人：</div>
+										<div class="aui-flex-box">
+											<h5>{$row['realname']}</h5>
+										</div>
+									</div>
+									{if $row['paytype'] == 1}
+									<div class="aui-flex">
+										<div class="aui-flex-list">微信昵称：</div>
+										<div class="aui-flex-box">
+											<h5>{$row['paynickname']}</h5>
+										</div>
+									</div>
+									{/if}
+									<div class="aui-flex">
+										<div class="aui-flex-list">到账时间：</div>
+										<div class="aui-flex-box">
+											<h5>{if $row['dztime']}{php echo date('Y-m-d H:i',$row['dztime'])}{/if}</h5>
+										</div>
+									</div>
+									<div class="aui-flex">
+										<div class="aui-flex-list">付款方式：</div>
+										<div class="aui-flex-box">
+											<h5>{if $row['paytype'] == 1}微信付款{/if}{if $row['paytype'] == 2}现金付款{/if}{if $row['paytype'] == 3}其他方式{/if}</h5>
+										</div>
+									</div>
+								</div>
+							</div>
+							{/if}
+							{if $row['status'] == 1}
+								{if $row['paytype'] == 1}
+								<div class="jindu_info daozhang" style="">
+									<div class="aui-flex-header">微信提现</div>
+									<div class="aui-flex-content" style="margin-left: 33%;">
+										<div class="btnPass" onclick="weixinpay({$row['id']},{$weid},{$row['payweid']})">点击提现</div>
+									</div>
+								</div>
+								{/if}
+							{/if}
+						{/if}
+					</div>
+				</li>
+			{/loop}
+			</div>
+			<div class="clear"></div>
+			<div class="clear"></div>
+			<div class="clear"></div>
+		</div>
+	</div>
+</div>
+<script>
+function weixinpay(orderid,weid,payweid) {
+	window.location = "{php echo $_W['siteroot'] . 'app/index.php?i="+payweid+"&oldweid="+weid+"&orderid="+orderid+"&c=entry&m=fm_jiaoyu&do=getcash_wx'}"
+}
+$('.scale01').click(function() {
+	if($(this).hasClass('switch_on')){
+		$(this).removeClass('switch_on')
+		$(this).addClass('switch_off')
+		$('.msg_word').text('显示所有记录')
+		$('.alread').show()
+	}else{
+		$(this).addClass('switch_on')
+		$(this).removeClass('switch_off')
+		$('.msg_word').text('仅显示申请中')
+		$('.alread').hide()
+	}
+});
+$('.shenhebtn').click(function() {
+	$('.jindu_info').hide()
+	$('.shenhe').show()
+});
+$('.caiwubtn').click(function() {
+	$('.jindu_info').hide()
+	$('.caiwu').show()
+});
+$('.dzbtn').click(function() {
+	$('.jindu_info').hide()
+	$('.daozhang').show()
+});
+$('.txlist_bot').click(function() {
+	let right_icon = $(this).children().find('.right_icons')
+	if(right_icon.hasClass('closeclassT')){
+		$(right_icon).removeClass('closeclassT')
+		$(right_icon).addClass('openclassT')
+		$(this).next().slideUp(200)
+	}else{
+		$(right_icon).addClass('closeclassT')
+		$(right_icon).removeClass('openclassT')
+		$(this).next().slideDown(200)
+	}
+});
+function delorder(id,elm){
+	var r = confirm("删除后可重新发起申请,确认继续吗？");
+	if (r == true) {
+		ajax_start_loading("加载中...");
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('getcash', array('schoolid' => $schoolid,'op' => 'delorder'), true)}",
+			type: "post",
+			dataType: "json",
+			data: {id:id},
+			success: function(result) {
+				ajax_stop_loading();
+				jTips(result.msg);
+				if(result.result){
+					$(elm).parent().parent().remove()
+				}
+			},
+			error: function(e) {
+				ajax_stop_loading();
+				jTips('访问网络失败');
+			}
+		});
+	}
+}
+</script>

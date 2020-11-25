@@ -1,0 +1,120 @@
+
+{if $scroll}
+    {loop $list $item}
+    <div class="article" style="overflow: hidden;padding-bottom: 0;" time="{$item['location']}" start="{$_GPC['start']}" end="{$_GPC['end']}" bj_id="{$bj_id}" onclick="showInfo(`{$item['date']}`,`{$bj_id}`)">
+        <div style="display: flex;height: 90px;" >
+            <div style="flex:1">
+                <div style="border-bottom: 1px solid #e6e6e6;padding:0 10px;line-height: 30px;width: 100%;">日期：{php echo date("Y-m-d",$item['date'])}</div>
+                <div style="padding:5px 10px;line-height: 25px;">
+                    <div style="display: flex;">
+                        <div style="flex:1" >
+                            <span style="display: inline-block;width: 70px;">班级考核</span>
+                            <span style="color:rgb(244,162,60);margin-left: 5px;">{if $khy == 1}--{else}{$item['bjtotal']}分{/if}</span>
+                        </div>
+                        <div style="flex:.8">
+                            <span>平均分</span>
+                            <span style="color:rgb(238,34,75);margin-left: 5px">{if $khy == 1}--{else}{$item['bjavg']}分{/if}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="flex:1" > 
+                            <span style="display: inline-block;width: 70px;">班主任考核</span>
+                            <span  style="color:rgb(83, 194, 238);margin-left: 5px" >{if $khy == 1}--{else}{$item['teatotal']}分{/if}</span> 
+                        </div>
+                        <div style="flex:.8"> 
+                            <span>合计</span> <span
+                                style="color:rgb(86,226,86);margin-left: 5px">{if $khy == 1}--{else}{$item['scoretotal']}分{/if}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 50px;height: 100%;text-align: center;border-left: 1px solid #e6e6e6;position: relative;" >
+                <div style="height: 2px;
+                width: 20px;
+                border-radius: 1px;
+                background-color: #c3c3c3;
+                transform: rotate(55deg);
+                position: absolute;
+                top: 34px;
+                left: 16px;" ></div>
+                 <div style="height: 2px;
+                 width: 20px;
+                 border-radius: 1px;
+                 background-color: #c3c3c3;
+                 transform: rotate(-55deg);
+                 position: absolute;
+                 top: 50px;
+                 left: 16px;" ></div>
+            </div>
+        </div>
+
+    </div>
+    {/loop} 
+{else}
+    {loop $list $key_l $item}
+    <div class="article" style="overflow: hidden;padding-bottom: 0;" time="{$key_l}" start="{$_GPC['start']}" end="{$_GPC['end']}" bj_id="{$bj_id}" onclick="showInfo(`{$item['date']}`,`{$bj_id}`)">
+        <div style="display: flex;height: 90px;" >
+            <div style="flex:1">
+                <div style="border-bottom: 1px solid #e6e6e6;padding:0 10px;line-height: 30px;width: 100%;">日期：{php echo date("Y-m-d",$item['date'])}</div>
+                <div style="padding:5px 10px;line-height: 25px;">
+                    <div style="display: flex;">
+                        <div style="flex:1" >
+                            <span style="display: inline-block;width: 70px;">班级考核</span>
+                            <span style="color:rgb(244,162,60);margin-left: 5px;">{if $khy == 1}--{else}{$item['bjtotal']}分{/if}</span>
+                        </div>
+                        <div style="flex:.8">
+                            <span>平均分</span>
+                            <span style="color:rgb(238,34,75);margin-left: 5px">{if $khy == 1}--{else}{$item['bjavg']}分{/if}</span>
+                        </div>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="flex:1" > 
+                            <span style="display: inline-block;width: 70px;">班主任考核</span>
+                            <span  style="color:rgb(83, 194, 238);margin-left: 5px" >{if $khy == 1}--{else}{$item['teatotal']}分{/if}</span> 
+                        </div>
+                        <div style="flex:.8"> 
+                            <span>合计</span> <span
+                                style="color:rgb(86,226,86);margin-left: 5px">{if $khy == 1}--{else}{$item['scoretotal']}分{/if}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="width: 50px;height: 100%;text-align: center;border-left: 1px solid #e6e6e6;position: relative;" >
+                <div style="height: 2px;
+                width: 20px;
+                border-radius: 1px;
+                background-color: #c3c3c3;
+                transform: rotate(55deg);
+                position: absolute;
+                top: 34px;
+                left: 16px;" ></div>
+                 <div style="height: 2px;
+                 width: 20px;
+                 border-radius: 1px;
+                 background-color: #c3c3c3;
+                 transform: rotate(-55deg);
+                 position: absolute;
+                 top: 50px;
+                 left: 16px;" ></div>
+            </div>
+        </div>
+
+    </div>
+    {/loop} 
+    <script>
+        let khy = `{$khy}`
+        console.log(khy)
+        if(Number(khy) == 1){
+            $("#bjtotal").html('--')
+            $("#bjavg").html('--')
+            $("#teatotal").html('--')
+            $("#scoretotal").html('--')
+        }else{
+            $("#bjtotal").html(`{$bjtotal}`+'分')
+            $("#teatotal").html(`{$teatotal}`+'分')
+            $("#scoretotal").html(`{$scoretotal}`+'分')
+            $("#bjavg").html(`{$bjavg}`+'分')
+        }
+        
+    </script>
+{/if}

@@ -1,0 +1,944 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+    <div class="panel panel-info">
+        <div class="panel-body">
+           {php echo $this -> set_tabbar($action1, $schoolid, $_W['role'], $_W['isfounder'], $_W['schooltype']);}
+        </div>
+    </div>
+<ul class="nav nav-tabs">
+    <li class="qx_edit {if $operation == 'post'}active{/if}"><a href="{php echo $this->createWebUrl('theclass', array('op' => 'post', 'schoolid' => $schoolid))}">
+		{if keep_sk77()}
+			添加项目
+		{else}
+			添加班级
+		{/if}
+	</a></li>
+    <li {if $operation == 'display'}class="active"{/if}><a href="{php echo $this->createWebUrl('theclass', array('op' => 'display', 'schoolid' => $schoolid))}">
+	{if keep_sk77()}
+		项目管理
+	{else}
+		班级管理
+	{/if}
+
+
+</a></li>
+</ul>
+ <style>
+.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+.alert p {margin: 0 0 10px;display: block;}
+.alert .bold{font-weight:bold;}
+.loading-layer{height: 100%;width:100%;background-color: #ffffffbd;text-align: center;position: relative;z-index: 1}
+.loading-layer div{width: 100%;height: 90px;padding-top:40px;display: flex;flex-direction: row;justify-content: space-around;}
+.loading-layer img{ 
+	height: 40px;
+	width:40px;
+	-webkit-transition-property: -webkit-transform;
+    -webkit-transition-duration: 1s;
+    -moz-transition-property: -moz-transform;
+    -moz-transition-duration: 1s;
+    -webkit-animation: rotate 1s linear infinite;
+    -moz-animation: rotate 1s linear infinite;
+    -o-animation: rotate 1s linear infinite;
+    animation: rotate 1s linear infinite;}
+ 
+@-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)}
+    to{-webkit-transform: rotate(360deg)}
+}
+@-moz-keyframes rotate{from{-moz-transform: rotate(0deg)}
+    to{-moz-transform: rotate(359deg)}
+}
+@-o-keyframes rotate{from{-o-transform: rotate(0deg)}
+    to{-o-transform: rotate(359deg)}
+}
+@keyframes rotate{from{transform: rotate(0deg)}
+    to{transform: rotate(359deg)}
+}
+
+.modal-backdrop{z-index:2040 !important}
+.modal-backdrop~.modal-backdrop{z-index: 2060 !important}
+ </style>
+<div class="cLine">
+    <div class="alert">
+    <p><span class="bold">使用方法：</span>    填写班级,如 高一一班,高一二班,高一三班.... </br>   
+   <strong><font color='red'>特别提醒: 当你删除该班级项的时候,该班级项下相关的所有数据都会被删除,请谨慎操作!以免丢失数据!</font></strong></br>
+    </p>
+    </div>
+</div>
+{if $operation == 'post'}
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <!-- <input type="hidden" name="parentid" value="{$parent['id']}" /> -->
+        <input type="hidden" name="schoolid" value="{$schoolid}" />		
+        <div class="panel panel-default">
+            <div class="panel-heading">班级分类编辑</div>
+            <div class="panel-body">
+				
+				{if $theclass}
+				<div id="custom-url">
+					<input type="hidden" name="old" value="111" />
+					<div class="form-group">
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort" placeholder="排序" class="form-control" value="{$theclass['ssort']}" />
+							排序可为空
+						</div>
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="parentid" class="form-control">
+								<option value="0">所属年级</option>
+								{loop $xueqi $it}
+									<option value="{$it['sid']}" {if $it['sid'] == $theclass['parentid']} selected="selected"{/if}>{$it['sname']}</option>
+								{/loop}
+							</select>
+							必选
+						</div>						
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="catename" placeholder="班级名称" class="form-control" value="{$theclass['sname']}" />
+							必填
+						</div>
+						<div class="col-sm-2 col-lg-2" id="sxname">
+							<select name="tid" class="form-control select" style="display:none">
+
+							</select>
+							<input type="text" placeholder="班主任或管理" class="form-control sxword" value="{if $tname}{$tname['tname']}{/if}"/>
+						</div>
+						<div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">	
+							<span class="btn btn-default"><i class="fa fa-search"></i></span>
+						</div>
+						{if !$_W['schooltype']}	
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="cost" placeholder="报名费/元" class="form-control" value="{$theclass['cost']}" />
+							报名需要付费,留空不付
+						</div>
+						{/if}
+                        <!--修改开始-->
+						{if !$_W['schooltype']}	
+                        <div class="col-sm-2 col-lg-2">
+							<input type="text" name="class_device" placeholder="班级播报ID" class="form-control" value="{$theclass['class_device']}" />
+							分班播报ID
+						</div>	
+						{/if}
+                        <!--修改结束-->					
+					</div>
+				</div>	
+					<div class="clearfix template"> 
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+						<div class="col-sm-9 col-xs-12">
+							<a href="javascript:;" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加班级</a>
+						</div>
+					</div>	
+				</div>	
+								
+				{else}
+				<div id="custom-url">
+					<input type="hidden" name="new[]" value="222" />
+					<div class="form-group">
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="{$theclass['ssort']}" />
+							排序可为空
+						</div>
+						<div class="col-sm-2 col-lg-2">
+							<select style="margin-right:15px;" name="parentid_new[]" class="form-control">
+								<option>所属年级</option>
+								{loop $xueqi $it}
+									<option value="{$it['sid']}">{$it['sname']}</option>
+								{/loop}
+							</select>
+							必选
+						</div>						
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="catename_new[]" placeholder="班级名称" class="form-control" value="{$theclass['sname']}" />
+							必填
+						</div>
+						<div class="col-sm-2 col-lg-2" id="sxname">
+							<select name="tid_new[]" class="form-control select" style="display:none">
+
+							</select>
+							<input type="text" placeholder="班主任或管理" class="form-control sxword" value="{if $tname}{$tname['tname']}{/if}"/>
+						</div>
+						<div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">	
+							<span class="btn btn-default"><i class="fa fa-search"></i></span>
+						</div>
+						{if !$_W['schooltype']}	
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="cost_new[]" placeholder="报名费/元" class="form-control" value="{$theclass['sname']}" />
+							报名需要付费,留空不付
+						</div>						
+                        <div class="col-sm-2 col-lg-2">
+							<input type="text" name="class_device" placeholder="班级播报ID" class="form-control" value="{$theclass['class_device']}" />
+							分班播报ID
+						</div>
+						{/if}
+					</div>			
+				</div>	
+				<div class="clearfix template"> 
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+						<div class="col-sm-9 col-xs-12">
+							<a href="javascript:;" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加班级</a>
+						</div>
+					</div>	
+				</div>						
+				{/if}	
+               			
+            </div>			
+        </div>
+        <div class="form-group col-sm-12">
+            <input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+            <input type="hidden" name="token" value="{$_W['token']}" />
+        </div>
+    </form>
+</div>
+<script>
+$('#custom-url-add').click(function(){
+	var html =  '	<input type="hidden" name="new[]" value="222" />'+
+				'	<div class="form-group">'+
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="" />排序可为空'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<select style="margin-right:15px;" name="parentid_new[]" class="form-control">'+
+				'				<option>所属年级</option>'+
+								{loop $xueqi $it}
+				'					<option value="{$it['sid']}">{$it['sname']}</option>'+
+								{/loop}
+				'			</select>必选'+
+				'		</div>	'+					
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<input type="text" name="catename_new[]" placeholder="班级名称" class="form-control" value="" />必填'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2" id="sxname">'+
+				'			<select name="tid_new[]" class="form-control select" style="display:none">'+
+				'			</select>'+
+				'			<input type="text" placeholder="班主任或管理" class="form-control sxword" value="{if $tname}{$tname['tname']}{/if}"/>'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2" style="width: 45px;margin-left: -31px;">'+
+				'			<span class="btn btn-default"><i class="fa fa-search"></i></span>'+
+				'		</div>'+
+{if !$_W['schooltype']}	
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<input type="text" name="cost_new[]" placeholder="报名费/元" class="form-control" value="" />报名需要付费,留空不付'+
+				'		</div>'+
+				'		<div class="col-sm-2 col-lg-2">'+
+				'			<input type="text" name="class_device" placeholder="班级播报ID" class="form-control" value="" /班级播报ID'+
+				'		</div>'+
+{/if}
+				'	<div class="col-sm-1" style="margin-top:5px">'+
+				'   	<a href="javascript:;" class="custom-url-del"><i class="fa fa-times-circle"></i></a>'+
+				'	</div>'+				
+				'	</div>'+
+				'</div>';
+			
+	$('#custom-url').append(html);
+});
+$(document).on('click', '.custom-url-del', function(){
+{if $_W['schooltype']}
+	$(this).parent().parent().remove();
+{else}
+	$(this).parent().parent().parent().remove();
+{/if}	
+	return false;
+});	
+
+$(document).on('click', '.btn-default', function(){
+	var t = $(this).parent().parent().children();
+	var want = t.find('input[class*=sxword]');
+	var selectdiv = t.find('select[class*=select]');
+	
+	var tname = want.val();
+	want.hide();
+	selectdiv.show();
+	
+	var schoolid = "{$schoolid}";
+	var classlevel = [];
+	html1 += '<select id="schoolid"><option value="">请选择老师</option>';
+	if(tname != ''){
+		$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getallteacher'))}", {'tname': tname,schoolid:schoolid}, function(data) {
+				data = JSON.parse(data);
+			if(data.result == true){	
+				classlevel = data.teachcers;		
+				var html = '';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						html += '<option value="' + classlevel[i].id + '">' + classlevel[i].tname + '</option>';
+					}
+				}
+				selectdiv.html(html);
+			}else{
+				selectdiv.hide();
+				want.show();
+				alert(data.msg);
+			}
+		});	
+	}else{
+		var html1 = ''+
+								{loop $allls $it}
+				'					<option value="{$it['id']}">{$it['tname']}</option>'+
+								{/loop}
+				'';
+		selectdiv.html(html1);
+	}
+});
+	
+</script>
+{elseif $operation == 'display'}
+<div class="main">
+	{if CheckXZF($schoolid)}
+	<div class="panel panel-default">
+        <div class="panel-body">
+			<a class="btn btn-success" href="javascript:;" onclick="UpToXZF()"><i class="fa fa-cloud-upload"></i> 同步信息至校智付</a>
+        </div>
+	</div>
+	{/if}
+	
+    <div class="panel panel-default">
+        <form action="" method="post" class="form-horizontal form" >
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+            <div class="table-responsive panel-body">
+                <table class="table table-hover">
+                    <thead class="navbar-inner">
+                    <tr>
+					    <th style="width:100px;">序号</th>
+						<th>所属年级</th>
+                        <th>班级名称</th>
+						{if !$_W['schooltype']}<th>班级主任</th>{/if}
+						{if keep_MC() && !$_W['schooltype']}
+						<th>授课老师</th>
+						{/if}
+						<th>学生人数</th>
+						{if !$_W['schooltype']}
+						<th>班级圈消息</th>
+						<th>班级之星</th>
+						{/if}
+						{if is_showgkk()}
+						<th >班级之星设置</th>
+						{/if}
+						<th >考勤推送设置</th>
+						{if !$_W['schooltype']}
+						<th class="qx_00224">是否毕业</th>
+						{/if}
+						{if !$_W['schooltype']}
+						<th>报名费</th>
+						{/if}
+						{if keep_MC()}
+						<th>同步学生</th>
+						{/if}
+						{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+						<th style="width:30px">是否已同步</th>
+						{/if}
+                        <th class="qx_e_d" style="text-align:right;">编辑/删除</th>
+                    </tr>
+                    </thead>
+                    <tbody id="level-list">
+                    {loop $theclass $row}
+                    <tr>
+					    <td><div class="type-parent">{$row['ssort']}</div></td>
+						<td><div class="type-parent">{$row['xueqi']}</div></td>
+                        <td><div class="type-parent">{$row['sname']}&nbsp;&nbsp;</div></td>
+						{if !$_W['schooltype']}
+						<td><div class="type-parent">{$row['name']}</div></td>
+						{/if}
+						{if keep_MC() && !$_W['schooltype']}
+						<td><a class="btn btn-default btn-sm " onclick="ShowClassTeacher({$row['sid']},'{$row['sname']}')"  title="查看授课老师"><i class="fa fa-qrcode">&nbsp;&nbsp;查看授课老师</i></a></td>
+						{/if}
+						<td><span class="label label-danger">{$row['renshu']}人</span></td>
+						{if !$_W['schooltype']}
+						<td><span class="label label-info">{$row['bjqsm']}条</span></td>
+						<td><input type="checkbox" value="{$row['is_bjzx']}" name="is_on[]" data-id="{$row['sid']}" {if $row['is_bjzx'] == 1}checked{/if}></td>
+						{/if}
+						{if is_showgkk()}
+						<td ><a class="btn btn-default btn-sm " onclick="setbjstar({$row['sid']})"  title="班级之星设置"><i class="fa fa-qrcode">&nbsp;&nbsp;班级之星设置</i></a></td>
+						{/if}
+						<td ><a class="btn btn-default btn-sm " onclick="setchecksend({$row['sid']})"  title="考勤推送设置"><i class="fa fa-qrcode">&nbsp;&nbsp;考勤推送设置</i></a></td>
+						{if !$_W['schooltype']}
+						<td class="qx_00224"><input type="checkbox" value="{$row['is_over']}" name="is_over[]" data-id="{$row['sid']}" {if $row['is_over'] == 2}checked{/if}></td>
+						{/if}
+						{if !$_W['schooltype']}
+						<td>{if !empty($row['cost'])}<span class="label label-success">￥{$row['cost']}</span>{else}<span class="label label-danger">未启用</span>{/if}</td>
+						{/if}
+						{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+						<td>
+							{if  !empty($row['typt_id'])}
+							<span class="label label-primary">已同步</span>
+							{/if}
+						</td>
+						{/if}
+
+						{if keep_MC()}
+						<td>
+							<a onclick="Synchronize(`{$row['sid']}`)" class="btn btn-default btn-sm ">同步</a>
+						</td>
+						{/if}
+
+						<td style="text-align:right;" class="qx_e_d">
+							{if keep_DD()}
+							<a onclick="getRate(`{$row['sid']}`)" class="btn btn-default btn-sm ">倍率设置</a>&nbsp;&nbsp;
+							{/if}
+							<a class="btn btn-default btn-sm qx_edit" href="{php echo $this->createWebUrl('theclass', array('op' => 'post', 'sid' => $row['sid'], 'schoolid' => $schoolid))}" title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;
+							<a class="btn btn-default btn-sm qx_delete" href="{php echo $this->createWebUrl('theclass', array('op' => 'delete', 'sid' => $row['sid'], 'schoolid' => $schoolid))}" onclick="return confirm('删除本班将清空本班所有班级圈消息和相册照片,确认吗？');return false;" title="删除"><i class="fa fa-times"></i></a></td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+
+<div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document" id="detail_checksend"></div>
+</div>
+
+<div class="modal fade" id="Modal_ClassTeacher" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:20%;width:910px;">
+		<div class="modal-content"  >
+			<div class="modal-header" style="color: black;background-color: white;border-bottom: 1px solid #e8e8e8;">
+				<h4 class="modal-title" id="CTitle">{$bjinfo['sname']} 授课老师</h4>
+			</div>
+			<div class="modal-body" style="height:370px ;position: relative;background-color: #f4f5f9;padding:20px 10px;border-bottom: 1px solid #e8e8e8;" id="ClsTeacher_detail" >
+				<div class="loading-layer">
+					<div> <img src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""> </div>
+					<div>加载中。。。</div>
+				</div>
+			</div>
+			<div class="modal-footer" style="background-color: white;">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="ModalBjRate" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2061 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(20% + 100px);width:600px;">
+		<div class="modal-content"  >
+			<div class="modal-header" style="color: black;background-color: #e8e8e8;">
+				<h4 class="modal-title" >设置班级考核倍率</h4>
+			</div>
+			<div class="modal-body" style="height:370px ;position: relative;background-color: white;padding:30px 10px"  >
+				<form id="upsence_form" method="post" class="form-horizontal form" >
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group"id="NewTag">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">班级倍率:</label>
+								<div class="col-sm-6">
+									<input type="text" id="bjrate" class="form-control"/>
+									<input type="hidden" id="dd_bjid"/>
+								</div>
+							</div>
+
+							<div class="form-group"id="NewTag">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">班主任倍率:</label>
+								<div class="col-sm-6">
+									<input type="text" id="bzrrate" class="form-control"/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit2" onclick="setRate()" >确认变更</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+	.TagCgD{
+		width: 100%;padding-left: 100px;display: flex;flex-direction: row;
+		margin:10px 0px
+	}
+</style>
+
+<div class="modal fade" id="SynchronizeLoading" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);width:600px;margin-top:60px;">
+		<div class="modal-content"  >
+			<div class="loading-layer">
+				<div class="NS"> <img src="{OSSURL}public/web/images/blue_four_round.png"> </div>
+				<div id="tbhtml" style="font-size: 120%;">同步中。。。</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="modal_tag" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2061 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(20% + 100px);width:600px;">
+		<div class="modal-content"  >
+			<div class="modal-header" style="color: black;background-color: #e8e8e8;">
+				<h4 class="modal-title" >变更老师标签</h4>
+			</div>
+			<input type="hidden" name="cgt_bjid" value="0" >
+			<input type="hidden" name="cgt_tid"  value="0" >
+
+			<div class="modal-body" style="height:370px ;position: relative;background-color: white;padding:30px 10px"  >
+				<form id="upsence_form" method="post" class="form-horizontal form" >
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">教师姓名：</label>
+								<div class="col-sm-9">
+									<span class="form-control" id="cgt_tname"  style="border:unset"> </span>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">选择标签：</label>
+								<div class="col-sm-6">
+									<select style="margin-right:15px;" name="cgt_tagid" class="form-control">
+										<option value="0">选择标签</option>
+										{loop $alltag $row}
+										<option value="{$row['sid']}">{$row['sname']}</option>
+										{/loop}
+										<option value="-1">其他标签</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group" style="display: none;" id="NewTag">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">其他标签：</label>
+								<div class="col-sm-6">
+									<input type="text" name="newtagname" id="newtagname"  class="form-control" value="" />
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit2" onclick="cgt_change()" >确认变更</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document" >
+		<div class="modal-content" >
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle">设置班级之星称号</h4>
+			</div>
+			<div class="modal-body">
+				<form id="upsence_form" method="post" class="form-horizontal form" >
+					<input type="hidden" name="schoolid" value="{$schoolid}" />
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<p style="padding-left: 60px;color:red">注意：每个称号不得多于4字，不设置则不显示称号</p>
+
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">班级名称</label>
+								<div class="col-sm-9">
+									<span class="form-control" id="bj_name_show"  style="border:unset">班级名称 </span>
+									<input type="hidden" name="bj_id" id="this_bjid" value="" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">称号1</label>
+								<div class="col-sm-2">
+									<input type="text" name="star_name1" id="star_name1" maxlength="4" class="form-control" value="{$this_teacher['id']}" />
+								</div>
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">称号2</label>
+								<div class="col-sm-2">
+									<input type="text" name="star_name2" id="star_name2" maxlength="4" class="form-control" value="{$this_teacher['id']}" />
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">称号3</label>
+								<div class="col-sm-2">
+									<input type="text" name="star_name3" id="star_name3" maxlength="4" class="form-control" value="{$this_teacher['id']}" />
+								</div>
+
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">称号4</label>
+								<div class="col-sm-2">
+									<input type="text" name="star_name4" id="star_name4" maxlength="4" class="form-control" value="{$this_teacher['id']}" />
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" id="close_modal" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="submit2" onclick="upstarset()" >确认设置</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal fade" id="UpToXZFModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:2081 !important;">
+	<div class="modal-dialog modal-lg" role="document"  style="left:calc(28% + 100px);width:600px;margin-top:60px;">
+		<div class="modal-content" style="border-radius: 5px;overflow: hidden;" >
+			<div class="loading-layer">
+				<div class="NS"> <img src="{OSSURL}public/web/images/blue_four_round.png"> </div>
+				<div id="synctbhtml" style="font-size: 120%;margin-top: 10px;">同步中。。。</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+
+function UpToXZF(){
+	$("#UpToXZFModal").modal("show")
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass',array('schoolid'=>$schoolid,'op'=>'syncclass'))}",
+		type: "post",
+		dataType: "json",
+		success: function (res) {
+			$("#synctbhtml").text(res.msg)
+			setTimeout(() => {
+				$("#UpToXZFModal").modal("hide")
+			}, 1000);
+		},
+		error: function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR)
+			console.log(textStatus)
+			console.log(errorThrown)
+			//DoSomething
+		}
+	});
+}
+
+$(function(){
+	$('select[name=cgt_tagid]').change(function(){
+		const sid = $(this).val()
+		if(sid === '-1'){
+			$('#NewTag').slideDown(150);
+		}else{
+			$("#NewTag").slideUp(150);
+		}
+	})
+})
+
+function ChangeTag(tid,bjid,tagid,tname){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'gettaglist', 'schoolid' => $schoolid))}",
+		type: "get",
+		dataType: "json",
+		success: function (res) {
+			let html = '<option value="0">选择标签</option>';
+			for(let i of res){
+				let selected = ''
+				if(i.sid == tagid){
+					selected = 'selected'
+				}
+				html +=`<option value="${i.sid}" ${selected}>${i.sname}</option>`
+			}
+			html +=`<option value="-1">其他标签</option>`
+			$('select[name=cgt_tagid]').html(html)
+		}
+	});
+	$('#cgt_tname').html(tname)
+	$('input[name=cgt_bjid]').val(bjid)
+	$('input[name=cgt_tid]').val(tid)
+	$("select[name=cgt_tagid]").val(tagid);
+	$('#modal_tag').modal('toggle')
+}
+
+function cgt_change(){
+	const tagid = $('select[name=cgt_tagid]').val()
+	const bjid  = $('input[name=cgt_bjid]').val()
+	const tid   = $('input[name=cgt_tid]').val()
+	let ntname = $('#newtagname').val()
+
+	ntname = ntname.replace(/^\s*|\s*$/g,"");
+	if(tagid === '-1'){
+		if(ntname === '' || ntname == null){
+			alert("请填写新增标签名称")
+			return
+		}
+		let IsSet = false;
+		$('select[name=cgt_tagid]').find('option').each(function(){
+			if(ntname === $(this).text() && IsSet === false){
+				alert("该新增标签已存在，请直接选择标签")
+				$('select[name=cgt_tagid]').val($(this).attr('value'))
+				$('#newtagname').val('')
+				$("#NewTag").slideUp(150);
+				IsSet = true;
+				return
+			}
+		})
+		if(IsSet === true){
+			return
+		}
+	}
+
+	if(tagid == 0){
+		alert('请选择标签')
+		return
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'chageteatag', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data:{
+			tagid : tagid,
+			tid : tid,
+			ntname : ntname
+		},
+		success: function (res) {
+			const msgtag = res.msg
+			alert(msgtag)
+			$('#ClsTeacher_detail').html('<div class="loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""> </div><div>加载中。。。</div> </div>')
+			$.ajax({
+				url: "{php echo $this->createWebUrl('theclass', array('op' => 'getclassteacher', 'schoolid' => $schoolid))}",
+				type: "post",
+				dataType: "html",
+				data: {
+					bj_id: Active_bjid
+				},
+				success: function (result) {
+					$('#ClsTeacher_detail').html(result)
+					$('#newtagname').val('')
+					$('#modal_tag').modal('toggle')
+					$('#NewTag').slideUp(150)
+				}
+			});
+		}
+	});
+}
+function savechecksend(bjid){
+    let bj_id = bjid;
+    let stu = $("#checksend_stu").prop('checked');
+    let pare = $("#checksend_pare").prop('checked');
+    let ht = $("#checksend_ht").prop('checked');
+    let rt = $("#checksend_rt").prop('checked');
+    $.ajax({
+        url: "{php echo $this->createWebUrl('theclass', array('op' => 'setchecksendset', 'schoolid' => $schoolid))}",
+        type: "post",
+        data: {
+            stu: stu,
+            pare: pare,
+            ht: ht,
+            rt: rt,
+			bjid:bj_id
+        },
+        success: function(result) {
+            let obj = jQuery.parseJSON(result);
+
+            alert(obj.msg);
+            console.log(obj);
+            $("#close_modal1").trigger('click');
+        },
+        error: function(e) {
+            alert('访问网络失败');
+        }
+    },'json');
+}
+
+
+var Active_bjid = 0 
+
+function ShowClassTeacher(bj_id,bj_name) {
+	$('#ClsTeacher_detail').html('<div class="loading-layer"> <div> <img   src="{OSSURL}public/web/images/blue_four_round.png" style="" alt=""> </div><div>加载中。。。</div> </div>')
+	$('#CTitle').html(`${bj_name} 授课老师`)
+	Active_bjid = bj_id
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'getclassteacher', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "html",
+		data: {
+			bj_id: bj_id
+		},
+		success: function (result) {
+			$('#ClsTeacher_detail').html(result)
+		}
+	});
+	$('#Modal_ClassTeacher').modal('toggle')
+}
+
+function setchecksend(bj_id){
+	$("#this_bjid_checksend").val(bj_id);
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'getchecksendset', 'schoolid' => $schoolid))}",
+		type: "post",
+		data: {
+			bjid: bj_id
+		},
+		success: function(result) {
+			$("#detail_checksend").html(result);
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	},'html');
+	$('#Modal2').modal('toggle');
+}
+
+function getRate(bj_id){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'getRate', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			bjid: bj_id
+		},
+		success: function(result) {
+			$('#ModalBjRate').modal('toggle');
+			$("#bjrate").val(result.bjrate)
+			$("#bzrrate").val(result.bzrrate)
+			$("#dd_bjid").val(bj_id)
+		}
+	});
+}
+
+function setRate(){
+	if($("#bjrate").val() == 0){
+		alert('班级倍率不能为0');
+		return
+	}
+	if($("#bzrrate").val() == 0){
+		alert('班主任倍率不能为0');
+		return
+	}
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'setRate', 'schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			bjrate: $("#bjrate").val(),
+			bzrrate: $("#bzrrate").val(),
+			bjid: $("#dd_bjid").val()
+		},
+		success: function(result) {
+			alert(result.msg)
+			location.reload()
+		}
+	});
+}
+function setbjstar(bj_id){
+	$("#this_bjid").val(bj_id);
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'getstarname', 'schoolid' => $schoolid))}",
+		type: "post",
+		data: {
+			bj_id: bj_id
+		},
+		success: function(result) {
+			let obj = jQuery.parseJSON(result);
+			console.log(obj);
+			bj_name_show
+			$('#bj_name_show').html(obj.bjname);
+			$('#star_name1').val(obj.star_name1);
+			$('#star_name2').val(obj.star_name2);
+			$('#star_name3').val(obj.star_name3);
+			$('#star_name4').val(obj.star_name4);
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	},'json');
+	$('#Modal1').modal('toggle');
+}
+
+function upstarset(){
+	let bj_id = $("#this_bjid").val();
+	$.ajax({
+		url: "{php echo $this->createWebUrl('theclass', array('op' => 'setstarname', 'schoolid' => $schoolid))}",
+		type: "post",
+		data: {
+			bj_id: bj_id,
+			star_name1: $('#star_name1').val(),
+			star_name2: $('#star_name2').val(),
+			star_name3: $('#star_name3').val(),
+			star_name4: $('#star_name4').val(),
+		},
+		success: function(result) {
+			let obj = jQuery.parseJSON(result);
+			console.log(obj);
+			alert(obj.msg);
+			$("#close_modal").trigger('click');
+		},
+		error: function(e) {
+			alert('访问网络失败');
+		}
+	},'json');
+}
+
+
+$(document).ready(function() {
+	var e_d = 2 ;
+	{if !(IsHasQx($tid_global,1000222,1,$schoolid))}
+		$(".qx_edit").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1000223,1,$schoolid))}
+		$(".qx_delete").hide();
+		e_d = e_d - 1 ;
+	{/if}
+	{if !(IsHasQx($tid_global,1000224,1,$schoolid))}
+		$(".qx_00224").hide();
+	{/if}
+	if(e_d == 0){
+		$(".qx_e_d").hide();
+	}
+});	
+require(['jquery', 'util', 'bootstrap.switch'], function($, u){
+	
+		$(':checkbox[name="is_on[]"]').bootstrapSwitch();
+		$(':checkbox[name="is_on[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+			var is_on = this.checked ? 1 : 2;
+			var id = $(this).data('id');
+			$.post("{php echo $this->createWebUrl('theclass', array('op' => 'change','schoolid' => $schoolid))}", {is_on: is_on, id: id}, function(resp){
+				setTimeout(function(){
+					//location.reload();
+				}, 500)
+			});
+		});
+	
+	{if (IsHasQx($tid_global,1000224,1,$schoolid))}
+	$(':checkbox[name="is_over[]"]').bootstrapSwitch();
+	$(':checkbox[name="is_over[]"]').on('switchChange.bootstrapSwitch', function(e, state){
+		var is_over = this.checked ? 2 : 1;
+		var id = $(this).data('id');
+		$.post("{php echo $this->createWebUrl('theclass', array('op' => 'change_over','schoolid' => $schoolid))}", {is_over: is_over, id: id}, function(resp){
+			setTimeout(function(){
+				//location.reload();
+			}, 500)
+		});
+	});
+	{/if}
+});
+
+function Synchronize(sid){
+	$(".NS").show()
+	$("#tbhtml").html('同步中。。。')
+	$('#SynchronizeLoading').modal('toggle')
+	$.ajax({
+		url: `{php echo $this->createWebUrl('theclass', array('op' => 'Synchronize','schoolid' => $schoolid))}`,
+		type: "post",
+		dataType: "json",
+		data:{sid:sid},
+		success: function (res) {
+			$(".NS").hide()
+			if(res.resultCode == 0){
+				$("#tbhtml").html('同步完成。。。')
+				setTimeout(function(){
+					$('#SynchronizeLoading').modal('toggle')
+				},1000)
+			}else {
+				$("#tbhtml").html(res.resultStr)
+			}
+			
+		},
+		error: function (jqXHR, textStatus, errorThrown){
+			console.log(jqXHR)
+			console.log(textStatus)
+			console.log(errorThrown)
+		}
+	});
+}
+</script>
+{/if}
+{template 'public/footer'}

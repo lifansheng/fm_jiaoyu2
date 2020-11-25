@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<title>{$school['title']}</title>
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-ui.js?v=4.8"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/circleChart.min.js?v=4.8"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/mobile_date.js?v=17"></script>
+<style>
+* {margin:0;padding:0;box-sizing:border-box;}
+/**弹框开启后限制BODY高度**/
+.pop_open{height:100%;overflow:hidden}
+/**圆形进度条清晰度**/
+.circleChart_canvas{  width: 64px; height: 64px; }
+.circleChart_text{line-height:65px !important}
+/**按钮点击特效**/
+.mb_marsk:foucs{ -webkit-mask:-webkit-linear-gradient(rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53),rgba(0, 0, 0, 0.53));}
+/**加载花瓣转圈效果**/
+.loading-layer{ height: 100%;;width:79%;background-color: rgb(255,255,255,0.59);text-align: center;position: absolute;z-index: 1}
+.loading-layer div{width: 100%;height: 30px;padding-top:100px;display: flex;flex-direction: row;justify-content: space-around;}
+.loading-layer img{ height: 30px; width:30px; -webkit-transition-property: -webkit-transform; -webkit-transition-duration: 1s; -moz-transition-property: -moz-transform; -moz-transition-duration: 1s; -webkit-animation: rotate 1s linear infinite; -moz-animation: rotate 1s linear infinite; -o-animation: rotate 1s linear infinite; animation: rotate 1s linear infinite;}
+@-webkit-keyframes rotate{from{-webkit-transform: rotate(0deg)} to{-webkit-transform: rotate(360deg)} }
+@-moz-keyframes rotate{from{-moz-transform: rotate(0deg)} to{-moz-transform: rotate(359deg)} }
+@-o-keyframes rotate{from{-o-transform: rotate(0deg)} to{-o-transform: rotate(359deg)} }
+@keyframes rotate{from{transform: rotate(0deg)} to{transform: rotate(359deg)} }
+/**顶部浮动返回按钮**/
+.backdiv{ width: 12%; height: 180px;text-align: center;position: absolute;z-index: 1 ;background-color: rgba(255, 255, 255, 0.19);;-webkit-animation-name: fadeInOut; -webkit-animation-timing-function: ease-in-out; -webkit-animation-iteration-count: infinite; -webkit-animation-duration: 0.5s; -webkit-animation-direction: alternate;}
+.backdiv div{width: 100%;height: 30px;padding-top:69px;display: flex;flex-direction: row;justify-content: space-around;}
+.backdiv img{ height: 30px; width:30px;}
+@-webkit-keyframes fadeInOut { 0% { opacity:1; } 100% { opacity:0; } }
+/**进度条仿ANT start**/
+.ant-progress { box-sizing:border-box; margin:0; padding:0; color:rgba(0,0,0,.65); font-size:14px; font-variant:tabular-nums; line-height:1.5; list-style:none; font-feature-settings:"tnum"; display:inline-block } .ant-progress-line { position:relative; width:100%; font-size:14px } .ant-progress-small.ant-progress-line,.ant-progress-small.ant-progress-line .ant-progress-text .anticon { font-size:12px } .ant-progress-outer { display:inline-block; width:100%; margin-right:0; padding-right:0 } .ant-progress-show-info .ant-progress-outer { margin-right:calc(-2em - 8px); padding-right:calc(2em + 8px) } .ant-progress-inner { position:relative; display:inline-block; width:100%; vertical-align:middle; background-color:#d2d0d0; border-radius:100px } .ant-progress-circle-trail { stroke:#f5f5f5 } .ant-progress-circle-path { animation:ant-progress-appear .3s; stroke:#1890ff } .ant-progress-bg,.ant-progress-success-bg { position:relative; background-color:#1890ff; transition:all .4s cubic-bezier(.08,.82,.17,1) 0s } .ant-progress-success-bg { position:absolute; top:0; left:0; background-color:#52c41a } .ant-progress-text { display:inline-block; width:2em; margin-left:8px; color:rgba(0,0,0,.45); font-size:1em; line-height:1; white-space:nowrap; text-align:left; vertical-align:middle; word-break:normal } .ant-progress-text .anticon { font-size:14px } .ant-progress-status-active .ant-progress-bg:before { position:absolute; top:0; right:0; bottom:0; left:0; background:#fff; border-radius:10px; opacity:0; animation:ant-progress-active 2.4s cubic-bezier(.23,1,.32,1) infinite; content:"" } .ant-progress-status-exception .ant-progress-bg { background-color:#f5222d } .ant-progress-status-exception .ant-progress-text { color:#f5222d } .ant-progress-status-exception .ant-progress-circle-path { stroke:#f5222d } .ant-progress-status-success .ant-progress-bg { background-color:#52c41a } .ant-progress-status-success .ant-progress-text { color:#52c41a } .ant-progress-status-success .ant-progress-circle-path { stroke:#52c41a } .ant-progress-circle .ant-progress-inner { position:relative; line-height:1; background-color:transparent } .ant-progress-circle .ant-progress-text { position:absolute; top:50%; left:50%; width:100%; margin:0; padding:0; color:rgba(0,0,0,.65); line-height:1; white-space:normal; text-align:center; transform:translate(-50%,-50%) } .ant-progress-circle .ant-progress-text .anticon { font-size:1.16666667em } .ant-progress-circle.ant-progress-status-exception .ant-progress-text { color:#f5222d } .ant-progress-circle.ant-progress-status-success .ant-progress-text { color:#52c41a } @keyframes ant-progress-active { 0% { width:0; opacity:.1 } 20% { width:0; opacity:.5 } to { width:100%; opacity:0 } }
+/**进度条仿ANT  end**/
+/**粉丝图集**/
+.zhuliclass{ float:left; } .zlheader{ width: 23px;height: 23px; border-radius: 25px; margin-left: 0px; box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);} .fans_box{ width: 100%; margin-top: 5px; height: 23px; } .fans_text_title{ font-size: 11px; color: #8c8787; float: left; } .pay_cose{ font-size: 12px; font-weight: bold; color: red; float: left; }
+/******************顶部浮动框***************/
+.headerinfo{width:96%;margin:2%;background-color:#fff;border-radius: 10px;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.05);overflow: hidden;}
+.topbox{width:100%;background-color:#1a90f2;border-top-right-radius: 10px;border-top-left-radius: 10px;height:84px}
+.topbox_info{margin-left: 3%;width: 100%;}
+.left_div{width: 18%;float: left;height: 57px;margin-top: 3%;text-align: center;}
+.left_div .icon{width: 90%;height: 57px;margin: 4px;background-size: 100%;border-radius: 10px;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);}
+.left_div .icon img{width:100%}
+/**课时用**/
+.left_div .ksorder{ width: 80%; height: 108%; margin-left: 11%; background-color: #fff; border-radius: 6px; }
+.left_div .ksorder .ordertitle{ font-size: 12px; height: 30%; border-top-left-radius: 6px; border-top-right-radius: 6px; background-color: #d0eaf9; color: #2e72dc; }
+.left_div .ksorder .ordernub{font-size: 26px;color: #1a90f2;margin-top: 13%;}
+.mid_div{width: 50%;height: 57px;float: left; margin-top: 3%;}
+.mid_div .kc_name{width: 100%;font-size: 17px;font-weight: bold;color: #fff;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.mid_div .ks_info{width:100%;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;color: #e8e8e8;font-size: 12px;margin-top: 4px;}
+.mbl_div{width: 21%;float: left;position: relative;color: #fff;margin-top: 1%;text-align: center;}
+.mbl_div .mbltitle{font-size:10px}
+.close_btn{background-image:url({OSSURL}public/mobile/img/exit1.png);background-size: 35px 35px; background-repeat:no-repeat;background-position:top right;float: right; width: 35px;height: 35px;position: absolute;right: 5px;top: 5px;z-index: 33;}
+.starpj{ float:left; }
+.star{ width: 30px; margin-left: 4px;}
+/**课时用end**/
+.right_div{width: 75%;height: 57px;float: left; margin-left: 2%; margin-top: 3%;}
+.right_div .kc_name{width: 100%;font-size: 17px;font-weight: bold;color: #fff;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.kc_info{width:100%;overflow: hidden; text-overflow: ellipsis; white-space: nowrap;color: #e8e8e8;font-size: 12px;margin-top: 4px;}
+.bot_box{ margin-left: 3%;}
+.sut_box{width:97%;height:48px;border-bottom: 1px #ececec solid;display: flex;}
+.box_left{width: 30%;text-align: center;display: flex;}
+.box_right{width: 65%;float:left}
+.box_left_lab{width: 57%; background-color: #1a90f2; margin: 13px; border-radius: 6px; font-size: 11px; line-height: 22px; color: #fff;}
+.box_left_title{width: 58%;line-height: 47px;font-size: 16px;color:#827f7f}
+.kcjd_box{width:97%;height:49px;display: flex;}
+.pj_box{width:97%;height:49px;display: flex;}
+.rig_infobox{width: 46%;float: left;text-align: right;font-size: 12px;color: #6e6e6e;}
+.point{width: 5%;float:left}
+.point { height: 16px; position: relative; right: 0px; top: 17px; background: url({OSSURL}public/mobile/img/right_arrow.png) no-repeat; background-position: center center; background-size: 9px 16px;}
+/***************顶部浮动框 end**************/
+/****左侧课时列表框*****/
+.pk_box{position: absolute;width:100%;height:70%;padding:2%;background-color:#fff;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.05);margin-bottom:65px;display: flex;}
+.pk_left{width: 20%; border-radius: 6px; text-align: center; height: 100%;  overflow-y: scroll;    background-color:rgba(0, 0, 0, 0.05);}
+.pk_left li{ font-size: 13px; color: #383636; margin-top: 5px;margin-bottom: 5px;list-style: none; }
+.pk_left li:first-child{ margin-top: 10px;}
+.pk_left li:last-child{ margin-bottom: 10px;}
+.pk_left .over{color: #a09c9c;}
+.pk_left .my{color: red; }
+.pk_left .or{color:blue;}
+.pk_left .act{font-size: 16px;color: #2e72dc;background-color: #fff;}
+/*****右侧学生列表框顶部****/
+.pk_right{width: 79%;height: 100%; float: left;}
+.pk_header{ width: 96%; padding: 2%; margin-left: 4%; display: flex; border-bottom: 1px #ddd solid; }
+.pk_title{width: 65%;font-size: 16px; color: #827f7f;float:left}
+.pk_qdls{width: 35%;float:right;display: flex;}
+.pk_qdls img{width:20px;height:20px;border-radius:50%}
+.pk_qdls .tnames{font-size: 12px;color: #9a9696;line-height: 22px;margin-left: 1px;}
+.pk_qdls span{ margin-left: 5px;margin-top: 4px;}
+.pk_qdls span img{width:15px;height:15px}
+.ks_stubox{width: 96%; padding: 2%; margin-left: 4%;height: 92%;}
+.pk_tab{width:100%;display:flex}
+.pk_tab ul{width:25%;color:#555;text-align: center;height: 35px;line-height: 35px;}
+.pk_tab .act{background-color:rgba(0, 0, 0, 0.05);}
+.pk_tab ul:first-child{border-top-left-radius: 8px;}
+.pk_tab ul:last-child{border-top-right-radius: 8px;}
+/*****学生列表框****/
+.stulistbox{width:100%;max-height:94%;min-height:94%;overflow-y:scroll;background-color:rgba(0, 0, 0, 0.05);padding: 5px;}
+.stu_box{width:20%;height:50px;margin:5px;float: left;text-align: center;}
+.stu_box img{width:26px;height:26px;border-radius:50%;box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.2);}
+.stu_box .stu_name{font-size:10px;width:100%;}
+.stulistbox .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:top right;}
+.stulistbox .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:top right;}
+.stu_line{ width: 96%; display: flex; height: 25px; line-height: 15px; margin-bottom: 11px; margin-top: 10px; margin-left: 2%; border-bottom: 1px #ddd solid; }
+.stu_line_title{font-size: 12px; width: 40%;}
+.dqrqx{ font-size: 13px;  width: 18%;}
+.wait_qr_btn{ width: 15%; line-height: 21px; text-align: center; margin-left: 18%; color: #1a90f2; border-radius: 5px; height: 19px; font-size: 12px; background: #c6e1f7; }
+
+/**底部菜单**/
+.foot_bot{ width: 100%; height: 50px; bottom: 0; background-color: #fff; position: fixed;text-align: center;z-index: 3;box-shadow: 0px 4px 2px 3px rgba(0, 0, 0, 1);}
+.foot_kc_bot{width: 100%;line-height:50px;display:flex;text-align:center;float:left}
+.tea_back{height:50px;width: 20%;}
+.fenge::after{ position: relative;content: "";width: 1px;left: 32%;height: 30px;border-right: 1px #ddd solid;}
+.tea_sign{height:50px;width: 40%;}
+.tea_pk{height:50px;width: 40%;background-color: #1a90f2;color: #fff;}
+.unsign_box_bot{width: 100%;line-height:50px;display:flex;text-align:center;float:left}
+.unsign_box_bot div{width:25%}
+.qj_box_bot{width: 100%;line-height:50px;display:flex;text-align:center;float:left}
+.qj_box_bot div{width:33%}
+.qk_box_bot{width: 100%;line-height:50px;display:flex;text-align:center;float:left}
+.qk_box_bot div{width:33%}
+.sign_tag{color:#1a90f2}
+.foot_bot .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:21% 48%;}
+.foot_bot .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 15px 15px; background-repeat:no-repeat;background-position:21% 48%;}
+
+/**老师签到弹框**/
+.popContentBox_card{position: absolute;width: 80%;margin-left: 10%;max-height: 80%;top: 45%;transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }
+.popUpBox1 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }
+.btnPass { background: #1a90f2; margin-left: 27%; position: relative; margin-top: 10%; width: 131px; }
+.pop_top{ width: 100%; background-image: linear-gradient(to right , #ebf5fd, #78b6ea); border-top-left-radius: 10px; border-top-right-radius: 10px; position: relative; min-height: 98px; max-height: 98px; overflow: hidden;}
+.pop_top img{width: 104%;margin-left: -2%;}
+.pop_mid{ width: 100%; margin-top: 10%; padding-left: 18%; padding-right: 18%; }
+.pop_mid_btn{width: 100%;height: 55px;margin-top: 8%;display: flex;background: #f3f2f2;border-radius: 55px;}
+.pop_mid_img{width: 55px;text-align: center;border-radius: 50%; background-color: #d4d4d4;line-height: 55px; font-size: 25px; color: #fff;}
+.pop_mid_tit {width: 57%;font-size: 20px;line-height: 55px;text-align: center;color: #968e8e;}
+.unchosebtn{background: #1a90f2;}
+.chosefont{color: #1a90f2;}
+/**老师修改课时弹框**/
+.popContentBox_card{position: absolute;width: 80%;margin-left: 10%;max-height: 80%;top: 45%;transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }
+.trackMatte2 { position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: black; opacity: .5; } 
+.popUpBox2 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }
+.btnPass { background: #1a90f2; margin-left: 27%; position: relative; margin-top: 10%; width: 131px; }
+.pop_title{ text-align: center; margin-top: 5%; font-size: 16px; color: #797d7f; }
+.pop_mid_ks{ width: 100%; margin-top: 10%; padding-left: 18%; padding-right: 18%; }
+.pop_number_box{width: 100%;height: 48px;margin-top: 8%;display: flex;background: #f3f2f2;border-radius: 48px;}
+.pop_inupt {width: 50%;font-size: 30px;font-weight: bold;line-height: 48px;text-align: center;color: #fb0d0d;}
+.ks_minus{width: 25%;font-size: 20px;line-height: 48px;text-align: center;color: #968e8e;}
+.ks_minus img{width:100%}
+.ks_plus{width: 25%;font-size: 20px;line-height: 48px;text-align: center;color: #968e8e;}
+.ks_plus img{width:100%}
+/**负课时学生列表确认框**/
+.popContentBox_cards{position: absolute;width: 80%;margin-left: 10%;max-height: 80%;top: 35%;transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }
+.trackMatte2 { position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: black; opacity: .5; } 
+.popUpBox3 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }
+.pop_titinfo{ width: 100%; background-image: linear-gradient(to right , #ebf5fd, #78b6ea); border-top-left-radius: 10px; border-top-right-radius: 10px; position: relative; height: 62px; padding-left: 10%; padding-right: 10%; padding-top: 3%; text-align: center; }
+.stusign_result_suc{ text-align: center; font-size: 16px; color: #0e0e0e; }
+.stusign_result_def{ text-align: center; font-size: 13px; color: #50544f; }
+.btnPasssss { background: #1a90f2;position: relative; width: 100px; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; }
+.btnCancel { background: #ff9f22; margin-left: 15%; margin-right: 10px; }
+.pop_fuke_mid{ width: 100%; margin-top: 2%; padding-left: 5%; padding-right: 5%; }
+.fuke_stulist{ width: 100%; border-radius: 6px; background-color: #f3f2f2; max-height: 268px; overflow: scroll; position: relative;padding:5px }
+.fuke_stulist li{list-style: none; width: 100%; margin-top: 3px;height:50px;display: flex;border-bottom: 1px #ddd solid;}
+.fuke_stulist li:last-child{border-bottom: 0px #ddd solid;}
+.fuke_stulist li .fuke_stuheader{width:20%;text-align: center;}
+.fuke_stulist li .fuke_stuheader img{width:25px;height:25px;border-radius:25px}
+.fuke_stulist li .fuke_stuheader .fuke_stuname{font-size:11px;}
+.fuke_stulist li .fuke_restdiv{width: 40%;line-height: 36px;text-align: center;}
+.fuke_stulist li .fuke_phone{ width: 20%; text-align: right; line-height: 55px;}
+.fuke_stulist li .fuke_phone img{width: 38%;}
+.fuke_stulist li .fuke_checkbox{width: 15%;}
+.fuke_stulist li .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 23px 23px; background-repeat:no-repeat;background-position:44% 39%;}
+.fuke_stulist li .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 23px 23px;background-repeat: no-repeat;background-position: 44% 39%;}
+.stu_lines{ width: 96%; display: flex; height: 25px; line-height: 15px; margin-bottom: 11px; margin-top: 10px; margin-left: 2%; border-bottom: 1px #ddd solid; }
+.stu_lines .stu_lines_title{font-size: 12px; width: 60%;}
+.stu_lines .fk_qrqd{font-size: 12px; width: 40%;}
+.stu_lines .fk_qrqd	.fu_qux{float: right;color: red;}
+.fu_qrqd{ width: 15%; line-height: 21px; text-align: center; margin-left: 18%; color: #1a90f2; border-radius: 5px; height: 19px; font-size: 12px; background: #c6e1f7; }
+/**负课时学生列表确认框 end**/
+/**老师签到列表框**/
+.popContentBox_cards{position: absolute;width: 80%;margin-left: 10%;max-height: 80%;top: 35%;transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 101; background-color: white; border-radius: 10px; }
+.trackMatte2 { position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: black; opacity: .5; } 
+.popUpBox4 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 102; }
+.pop_teasign_titinfo{ width: 100%; background: #3693e2; border-top-left-radius: 10px; border-top-right-radius: 10px; position: relative; height: 49px; padding-left: 2%; padding-right: 2%; padding-top: 6%; text-align: center; }
+.teasign_result_suc{ text-align: center; font-size: 14px; color: #fff; }
+.btnPasssss { background: #1a90f2;position: relative; width: 100px; height: 31px; font-size: 14px; color: white; text-align: center; line-height: 31px; border-radius: 20px; }
+.btnCancel { background: #ff9f22; margin-left: 15%; margin-right: 10px; }
+.pop_teasign_mid{ width: 100%; margin-top: 2%; padding-left: 5%; padding-right: 5%; }
+.sign_tealist{ width: 100%; border-radius: 6px; background-color: #f3f2f2; max-height: 268px; overflow: scroll; position: relative;padding:5px }
+.sign_tealist li{list-style: none; width: 100%; margin-top: 3px;height:50px;display: flex;border-bottom: 1px #ddd solid;}
+.sign_tealist li:last-child{border-bottom: 0px #ddd solid;}
+.sign_tealist li .fuke_teaheader{width:20%;text-align: center;}
+.sign_tealist li .fuke_teaheader img{width:25px;height:25px;border-radius:25px}
+.sign_tealist li .fuke_teaheader .fuke_stuname{font-size:11px;}
+.sign_tealist li .fuke_teaqdzt{width: 30%;line-height: 36px;text-align: center;font-size: 12px;}
+.sign_tealist li .fuke_tyape{width: 20%;line-height: 36px;text-align: center;}
+.sign_tealist li .fuke_shenfen{width: 15%;line-height: 36px;text-align: center;}
+.sign_tealist li .fuke_phone{ width: 15%; text-align: center; line-height: 50px;}
+.sign_tealist li .fuke_phone img{width: 53%;}
+.sign_tealist li .act{background-image:url({OSSURL}public/mobile/img/icon-checked.png);background-size: 23px 23px; background-repeat:no-repeat;background-position:44% 39%;}
+.sign_tealist li .noact{background-image:url({OSSURL}public/mobile/img/check_icon_off.png);background-size: 23px 23px;background-repeat: no-repeat;background-position: 44% 39%;}
+/**老师签到列表框 end**/
+/**排课滑块**/
+.popUpBox5{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 100;overflow-y: scroll;overflow-x: hidden;}
+.trackMattess{ position: absolute; width: 100%; height: 150%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.paikebox { position: absolute; width: 100%; z-index: 101; background-color: #f7f7f7;padding-bottom: 26px;}
+.pk_header_box{width: 100%; margin-top: 0px; height: auto; background-color: #fff;padding: 5px;}
+.pk_midbox{width: 100%; margin-top: 10px; height: auto; background-color: #fff;padding: 5px;}
+.pk_more_boxs{ width: 100%; height: 50px; line-height:50px;background-color: #fff;border-bottom: 1px #ddd solid;}
+.pk_more_boxs:last-child{border-bottom: 0px #ddd solid;}
+.left_title_pt{ float: left; font-size: 15px; line-height: 50px; margin-left: 12px; }
+.right_word{ float: right; margin-right: 23px; line-height: 50px; color: #656565; }
+.pkpoint:after{ content: ""; width: 9px; height: 16px; position: absolute; right: 8px; margin-top: 16px; background: url({MODULE_URL}public/mobile/img/right_arrow.png) no-repeat;  background-position: center center; background-size: 9px 16px;}
+/**隐藏input和select选择器**/
+.pk_more_boxs select{ width: 95%; height: 50px; -webkit-appearance: none; -moz-appearance: none; appearance: none; opacity: 0; position: absolute; }
+.pk_more_boxs input{ width: 95%; height: 50px; -webkit-appearance: none; -moz-appearance: none; appearance: none; opacity: 0; position: absolute; }
+/**日历选择器**/
+.datebox{width: 100%;height: 100%;padding: 5%;}
+.head{width: 100%;height:35px;cursor: pointer;}
+.head .prev,.head .next{width: 25%;text-align: center;float: left;line-height: 23px;font-size:13px;height: 35px;}
+.head .tomon{width: 25%;float: left;text-align: center;line-height: 23px;font-size:13px;}
+.head .next{text-align: left;}
+.head .now{width: 20%;float: left;text-align: center;line-height: 23px;font-size: 13px;}
+.datebox section{background-color: #f5f5f5; border-radius: 6px;}
+.date ol{width: 100%;height: 32px;background: #dcdbdb;padding: 0;}
+.date ol li{display:block;float: left;width: 14.2857%;text-align: center;font-size: 13px;color: #444;border: none;padding: 0;line-height: 30px;height: 30px;}
+/* .date ul{width: 100%;display: flex;flex-direction: row;    justify-content: space-between;flex-wrap: wrap; min-width: 395px; max-width: 414px;} */
+.date ul{width: 100%;display: flex; justify-content: space-between;flex-wrap: wrap;}
+.date ul li{ display: block; width: 10.16%; height: 28px; border-radius: 5px;text-align: center; font-size: 14px; background: #fff; position: relative; margin: 6px; }
+.date ul li i{ font-size: 6px; position: absolute; right: 0; bottom: 3px; display: block; height: 3px; line-height: 15px; width: 125%; text-align: center; color: #de4208; }
+.date ul li span{display: block;width: 100%;height: 100%;line-height: 28px;text-align: center;}
+.date ul .no_date{color: #cac4c4;line-height:28px}
+.date ul .no_date:hover{cursor:pointer;color: #cac4c4;background: #fff;}
+.date ul .act_wk{color: #6398ea;}
+.date ul .act_date{background: #6398ea;color: #fff;}
+.date ul .act_today{border:1px solid #6398ea;}
+.date ul .act_ds{background: ##b8bdc1;color: #fff;}
+/**周天选择器**/
+.week-select-wrap { border: 1px solid #e8e8e8; border-radius: 4px; overflow: hidden; height: 36px; font-size: 0; margin-top: 10px; line-height: 32px; float: right; margin-right: 17px; display: inline-block; }
+.week-select-wrap .item.active { color: #fff; background: #6398ea; }
+.week-select-wrap .item:first-child { border-left: 0; }
+.week-select-wrap .item { display: inline-block; -webkit-box-sizing: border-box; box-sizing: border-box; width: 36px; height: 36px; text-align: center; font-size: 14px; color: #333; border-left: 1px solid #e8e8e8; cursor: pointer; }
+/**排课底部**/
+.pk_box_footer{ width: 100%; height: 55px; position: fixed; line-height: 55px; color: #fff; font-size: 16px; bottom: 0; text-align: center; background: white; display: flex; }
+.pk_foot_left{width: 50%;background-color: #c5c3c3;}
+.pk_foot_right{width: 50%;background-color: #1a90f2;}
+#yx_days{display:flex}
+#daynumber{color:#2e72dc;font-size: 23px;}
+/**学生列表滑块**/
+.popUpBox6{position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 100;overflow-y: scroll;overflow-x: hidden;}
+.trackMak_stubox{ position: absolute; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(19, 18, 18, 0.54); }
+.ajax_stu_box { position: absolute; width: 100%;height: 100%; z-index: 101; background-color: #f7f7f7;padding-bottom: 26px;margin-top:55px}
+.All{background: #f0f0f2;}
+.main {margin: 10px 10px;box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;border-radius: 10px;padding-bottom: 10px;}
+.main img {margin-top: 0px;width: 100%;}
+.more{margin: 10px 10px;box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;border-radius: 10px;padding-bottom: 10px;}
+.stu_search_head{ width: 100%; z-index: 102; height: 55px; position: fixed; background-color: #f7f7f7; }
+.stu_search_box { height: 40px; box-sizing: border-box; padding: 3px 14px 4px 16px; background-color: #fff; border: 1px solid #ddd; position: fixed; border-radius: 6px; width: 96%; margin: 2%; }
+.stu_search_box input {-webkit-appearance: none;font-size: 14px;height: 34px;width: 82%;border: none;line-height: 30px;}
+.stu_search_box .stu_search_box_btn {position: absolute;right: 0%;top: 50%;margin-top: -20px;width: 21%;height: 39px;line-height: 40px;text-align: center;box-sizing: border-box;}
+.stu_search_box .stu_search_box_btn span{background: url({OSSURL}public/mobile/img/new_search_icon2.png) no-repeat left;background-size: 15px 15px;padding-left: 25px;font-size: 14px;color: #999999;}
+.addks{ margin-right: 4px; margin-top: -18px;width: 7%;}
+/**老师赠送课时弹框**/
+.popContentBox_card{position: absolute;width: 80%;margin-left: 10%;max-height: 80%;top: 45%;transform: translateY(-50%); -webkit-transform: translateY(-50%); -moz-transform: translateY(-50%); -ms-transform: translateY(-50%); -o-transform: translateY(-50%); z-index: 103; background-color: white; border-radius: 10px; }
+.trackMatte3 { position: absolute; width: 100%; height: 100vh; top: 0; left: 0; right: 0; bottom: 0; background-color: black; opacity: .5; } 
+.popUpBox7 { position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; animation-name: popFadeIn; -webkit-animation-name: popFadeIn; -ms-animation-name: popFadeIn; -moz-animation-name: popFadeIn; -o-animation-name: popFadeIn; -webkit-animation-duration: 600ms; animation-duration: 600ms; -webkit-animation-fill-mode: both; z-index: 104; }
+.btnPass { background: #1a90f2; margin-left: 27%; position: relative; margin-top: 10%; width: 131px; }
+.pop_title{ text-align: center; margin-top: 5%; font-size: 16px; color: #797d7f; }
+.pop_mid_ks{ width: 100%; margin-top: 10%; padding-left: 18%; padding-right: 18%; }
+.pop_number_box{width: 100%;height: 48px;margin-top: 8%;display: flex;background: #f3f2f2;border-radius: 48px;}
+.pop_ks_inupt {width: 50%;font-size: 30px;font-weight: bold;line-height: 48px;text-align: center;color: #fb0d0d;}
+.ksadd_minus{width: 25%;font-size: 20px;line-height: 48px;text-align: center;color: #968e8e;}
+.ksadd_minus img{width:100%}
+.ksadd_plus{width: 25%;font-size: 20px;line-height: 48px;text-align: center;color: #968e8e;}
+.ksadd_plus img{width:100%}
+</style>
+</head>
+<body class="auto_height" id="auto_height">
+	<div class="headerinfo" id="kcinfobox">
+		<div class="topbox">
+			<div class="topbox_info">
+				<div class="left_div">
+					<div class="icon" style="background-image:url({if !empty($item['thumb'])}{php echo tomedia($item['thumb']);}{else}{php echo tomedia($school['logo']);}{/if})"></div>
+				</div>
+				<div class="right_div">
+					<div class="kc_name">{$item['name']}</div>
+					<div class="kc_info">{php echo date('Y/m/d',$item['start'])}-{php echo date('Y/m/d',$item['end'])}</div>
+					<div class="kc_info">{$tname_array_end}</div>
+				</div>
+			</div>
+		</div>
+		<div class="bot_box">
+			<div class="sut_box mb_marsk" onclick="showstulist()">
+				<div class="box_left">
+					<div class="box_left_lab">学生</div>
+					<div class="box_left_title">{$allstunub}</div>
+				</div>
+				<div class="box_right" style="padding: 12px;">
+					<span class="zhuliclass">
+					{loop $topstuimg $row}
+						<img class="zlheader" src="{$row['icon']}">
+					{/loop}
+						{$nobodyh5}
+					</span>
+				</div>
+				<div class="point"></div>
+			</div>
+			<div class="kcjd_box myks mb_marsk">
+				<div class="box_left">
+					<div class="box_left_lab">进度</div>
+					<div class="box_left_title">{$allmyks}节</div>
+				</div>
+				<div class="box_right" style="width: 70%;padding: 5px;">
+					<div class="rig_infobox">{$yskks}/{$allmyks}</div>
+					<div class="antd-pro-pages-list-basic-list-style-listContentItem" style="width: 100%;">
+						<div class="ant-progress ant-progress-line ant-progress-status-{if $jindu >= 100}success{else}active{/if} ant-progress-show-info ant-progress-default" style="width:100%;">
+							<div>
+								<div class="ant-progress-outer">
+									<div class="ant-progress-inner" style="width: 114%;">
+										<div class="ant-progress-bg" style="width:{$jindu}%;height:9px;border-radius:100px;"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="headerinfo" id="ksinfobox" style="display:none">
+		<div class="topbox">
+			<div class="topbox_info">
+				<div class="left_div">
+					<div class="ksorder">
+						<div class="ordertitle">课节</div>
+						<div class="ordernub">1</div>
+					</div>
+				</div>
+				<div class="mid_div">
+					<div class="kc_name">{$item['name']}</div>
+					<div class="ks_info">2020.4.2 09:30-10:30</div>
+					<div class="ks_info">排课：&nbsp;&nbsp;&nbsp;签到：</div>
+				</div>
+				<div class="mbl_div">
+					<div class="ksmbl" data-value="80"></div>
+					<div class="mbltitle">满班率</div>
+				</div>
+			</div>
+		</div>
+		<div class="bot_box">
+			<div class="kcjd_box mb_marsk">
+				<div class="box_left">
+					<div class="box_left_lab">评价</div>
+					<div class="box_left_title">0条</div>
+				</div>
+				<div class="box_right" style="padding: 12px;">
+					<span class="starpj">
+						<img class="star" src="{OSSURL}/public/mobile/img/star_comment_empty.png">
+					</span>
+				</div>
+				<div class="point"></div>
+			</div>
+			<div class="pj_box myks mb_marsk" onclick="showpjlist({$ksid})">
+				<div class="box_left">
+					<div class="box_left_lab">评价</div>
+					<div class="box_left_title">0条</div>
+				</div>
+				<div class="box_right" style="padding: 12px;">
+					<span class="starpj"></span>
+				</div>
+				<div class="point"></div>
+			</div>
+		</div>
+	</div>
+	<div class="pk_box">
+		<div class="pk_left">
+			{loop $allks $row}
+				<li id="{$row['id']}" onclick="chose_ks({$row['id']})" class="{if $row['isover']}over{else}no_over{/if}"><span>第{$row['nuber']}课</span><dl>{$row['mob_date']}<dl></li>
+			{/loop}
+		</div>
+		<div class="pk_right">
+			<div class="loading-layer" style="display:none"><div><img src="{OSSURL}public/web/images/blue_four_round.png"></div></div>
+			<div class="pk_header">
+				<div class="pk_title">签到情况</div>
+				<div class="pk_qdls">
+
+				</div>
+			</div>
+			<div class="ks_stubox">
+				<div class="pk_tab">
+					<ul box="sign_box" class="act nostu">已签(0)</ul>
+					<ul box="unsign_box" class="nostu">未签(0)</ul>
+					<ul box="qj_box" class="nostu">请假(0)</ul>
+					<ul box="qk_box" class="nostu">缺课(0)</ul>
+				</div>
+				<div class="stulistbox">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<input id="tea_change_stutype" type="hidden" value="{$shetskt['tea_change_stutype']}">
+	<div class="foot_bot">
+		<div class="foot_kc_bot">
+			<div class="mb_marsk tea_back fenge">返回</div>
+			<div class="mb_marsk tea_sign" onclick="checksign()">签到本课</div>
+			<div class="mb_marsk tea_pk">一键排课</div>
+		</div>
+		<div class="unsign_box_bot" style="display:none">
+			<div class="mb_marsk all_chose fenge noact">全选</div>
+			<div class="mb_marsk sign_tag fenge">签到</div>
+			<div class="mb_marsk qj_tag fenge">请假</div>
+			<div class="mb_marsk qk_tag">缺课</div>
+		</div>
+		<div class="qj_box_bot" style="display:none">
+			<div class="mb_marsk all_chose fenge noact">全选</div>
+			<div class="mb_marsk sign_tag fenge">签到</div>
+			<div class="mb_marsk qk_tag">缺课</div>
+		</div>
+		<div class="qk_box_bot" style="display:none">
+			<div class="mb_marsk all_chose fenge noact">全选</div>
+			<div class="mb_marsk sign_tag fenge">签到</div>
+			<div class="mb_marsk qj_tag">请假</div>
+		</div>
+	</div>
+	<!--签到弹框-->
+	<div class="popUpBox1" style="display: none">
+		<div class="trackMatte" onclick="chose_tea_sign_pop()"></div>
+		<div class="popContentBox_card">
+			<div class="pop_top">
+				<img src="{OSSURL}public/mobile/img/teasign_img.png"/>
+			</div>
+			<div class="pop_mid">
+				<div id="zhu_tea" class="pop_mid_btn" onclick="xz_signtype(1)">
+					<div class="pop_mid_img">主</div>
+					<div class="pop_mid_tit">我是主讲</div>
+				</div>
+				<div id="fu_tea" class="pop_mid_btn" onclick="xz_signtype(2)">
+					<div class="pop_mid_img">辅</div>
+					<div class="pop_mid_tit">我是助教</div>
+				</div>
+			</div>
+			<div class="sectionContBox">
+				<div class="btnBox">
+					<div class="btnPass mb_marsk" onclick="tea_sign();">立即签到</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--修改扣除课时弹框-->
+	<div class="popUpBox2" style="display: none">
+		<div class="trackMatte2" onclick="close_edit_ks()"></div>
+		<div class="popContentBox_card">
+			<div class="pop_title">确认扣除课时</div>
+			<div class="pop_mid_ks">
+				<div class="pop_number_box">
+					<div class="ks_minus mb_marsk"><img src="{OSSURL}public/mobile/img/ks_minus.png"/></div>
+					<div class="pop_inupt" id="pop_inupt"></div>
+					<div class="ks_plus mb_marsk"><img src="{OSSURL}public/mobile/img/ks_plus.png"/></div>
+				</div>
+			</div>
+			<div class="sectionContBox">
+				<div class="btnBox">
+					<div class="btnPass mb_marsk" onclick="EditAndSing();">确认签到</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--负课签到确认框-->
+	<div class="popUpBox3" style="display: none">
+		<div class="trackMatte"></div>
+		<div class="popContentBox_cards">
+			<div class="pop_titinfo">
+				<div class="stusign_result_suc"></div>
+				<div class="stusign_result_def"></div>
+			</div>
+			<div class="pop_fuke_mid">
+				<div class="fuke_stubox">
+					<div class="stu_lines">
+						<div class="stu_lines_title">5人</div>
+						<div class="fk_qrqd noact"><div class="fu_qux">全选</div></div>
+					</div>
+					<div class="fuke_stulist">
+
+					</div>
+				</div>
+			</div>
+			<div class="sectionContBox">
+				<div class="btnBox">
+					<input id="this_xiaohao" type="hidden" value=""><!--此处是课时不足学生列表签到消耗课时数目有可能是刚刚手动设置的-->
+					<div class="btnCancel mb_marsk" onclick="close_fukepop()">取消</div>
+					<div class="btnPasssss mb_marsk" id="fksignbtn" onclick="fuke_sign()">签到</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--老师签到列表框-->
+	<div class="popUpBox4" style="display: none">
+		<div class="trackMatte"></div>
+		<div class="popContentBox_cards">
+			<div class="pop_teasign_titinfo">
+				<div class="teasign_result_suc"></div>
+			</div>
+			<div class="pop_teasign_mid">
+				<div class="fuke_stubox">
+					<div class="sign_tealist">
+
+					</div>
+				</div>
+			</div>
+			<div class="sectionContBox">
+				<div class="btnBox">
+					<div class="btnCancel mb_marsk" onclick="close_teasignlist()">关闭</div>
+					<div class="btnPasssss mb_marsk" onclick="checksign()">签到</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--排课滑块-->
+	<div class="popUpBox5" style="display: none">
+		<div class="trackMattess"></div>
+		<div class="paikebox">
+			<div class="pk_header_box">
+				<div class="pk_more_boxs">
+					<div class="left_title_pt">课程名称</div>
+					<div class="right_word">{$item['name']}</div>
+				</div>
+				<div class="pk_more_boxs">
+					<div class="left_title_pt">已报学员</div>
+					<div class="right_word">{$allstunub}人</div>
+				</div>
+			</div>
+			<div class="pk_midbox">
+				<div class="pk_more_boxs pkpoint">
+					<select name="rep_type" id="rep_type">
+						<option value="0">不重复</option>
+						<option value="1">每周重复</option>
+						<option value="2">隔周重复</option>
+					</select>
+					<div class="left_title_pt">重复模式</div>
+					<div class="right_word">不重复</div>
+				</div>
+				<div class="pk_more_boxs pkpoint">
+					<select name="costnum" id="costnum">
+						{loop $counmks $row}
+						{if $row > 0}<option value="{$row}">{$row}课时</option>{/if}
+						{/loop}
+					</select>
+					<div class="left_title_pt">消耗课时</div>
+					<div class="right_word">1课时</div>
+				</div>
+			</div>		
+			<div class="pk_midbox">
+				<div id="riqi_mod">
+					<div class="pk_more_boxs pkpoint" id="yx_day">
+						<div class="left_title_pt">上课日期</div>
+						<div class="right_word" id="yx_days">已选<div id="daynumber">0</div>天</div>
+					</div>
+					<div class="datebox">
+						<section class="date">
+							<div class="head">
+								<div class="prev">上一月</div>
+								<div class="tomon"><span class="year"></span>年 <span class="s_month"></span>月</div>
+								<div class="tomon">今天</div>
+								<div class="next">下一月</div>
+							</div>
+							<ol><li>日</li><li>一</li><li>二</li><li>三</li><li>四</li><li>五</li><li>六</li></ol>
+							<ul>
+								
+							</ul>
+						</section>
+					</div>
+				</div>
+				<div id="rep_mod" style="display:none">
+					<div class="pk_more_boxs pkpoint">
+						<input id="starttime" type="date" value=""/>
+						<div class="left_title_pt">开始时间</div>
+						<div class="right_word starttime"></div>
+					</div>
+					<div class="pk_more_boxs pkpoint">
+						<input id="endtime" type="date" value=""/>
+						<div class="left_title_pt">结束时间</div>
+						<div class="right_word endtime"></div>
+					</div>
+					<div class="pk_more_boxs">
+						<div class="left_title_pt">周几上课</div>
+						<div class="week-select-wrap">
+						<span weidid="1" class="item">一</span>
+						<span weidid="2" class="item">二</span>
+						<span weidid="3" class="item">三</span>
+						<span weidid="4" class="item">四</span>
+						<span weidid="5" class="item">五</span>
+						<span weidid="6" class="item">六</span>
+						<span weidid="7" class="item">日</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pk_midbox">
+				<div class="pk_more_boxs pkpoint">
+					<select id="sk_js">
+						<option value="">请选择</option>
+					{loop $tid_tname $row}
+						<option value="{$row['id']}" {if $tid_global == $row['id']}selected{/if}>{$row['tname']}</option>
+					{/loop}
+					</select>
+					<div class="left_title_pt">授课老师</div>
+					<div class="right_word">{if $nowteacher['tname']}{$nowteacher['tname']}{else}请选择{/if}</div>
+				</div>
+				<div class="pk_more_boxs pkpoint">
+					<select id="sk_sd">
+						<option value="">请选择</option>
+					{loop $allsd $row}
+						<option value="{$row['sid']}">{$row['sname']}</option>
+					{/loop}
+					</select>
+					<div class="left_title_pt">上课时段</div>
+					<div class="right_word">请选择</div>
+				</div>
+				<div class="pk_more_boxs pkpoint">
+					<select id="sk_add">
+						<option value="">请选择</option>
+					{loop $alljs $row}
+						<option value="{$row['sid']}">{$row['sname']}</option>
+					{/loop}
+					</select>
+					<div class="left_title_pt">上课教室</div>
+					<div class="right_word">请选择</div>
+				</div>
+			</div>
+			<div class="pk_box_footer">
+				<div class="pk_foot_left close_ddpage">取消排课</div>
+				<div class="pk_foot_right sub_pk">提交排课</div>
+			</div>
+		</div>
+	</div>
+	<!--学生列表-->
+	<div class="popUpBox6" style="display: none">
+		<div class="trackMak_stubox"></div>
+		<div class="stu_search_head">
+			<div class="stu_search_box">
+				<input type="text" id="condition" value="" placeholder="输入学生姓名查找"/>
+				<div class="stu_search_box_btn" onclick="stu_search()"><span>搜索</span></div>
+			</div>
+		</div>
+		<div class="ajax_stu_box">
+
+		</div>
+		<a href="{php echo $this->createMobileUrl('sbjqfabu', array('schoolid' => $schoolid), true)}" class="F_div" style="background: #1a90f2;z-index: 2;right: 20px; margin-bottom: 90px; display: block"><div class="F_div_text">关闭</div></a>
+	</div>
+	<!--赠送课时弹窗-->
+	<div class="popUpBox7" style="display: none">
+		<div class="trackMatte3" onclick="close_addks_pop()"></div>
+		<div class="popContentBox_card">
+			<div class="pop_title">赠送课时</div>
+			<div class="pop_mid_ks">
+				<div class="pop_number_box">
+					<div class="ksadd_minus mb_marsk"><img src="{OSSURL}public/mobile/img/ks_minus.png"/></div>
+					<div class="pop_ks_inupt" id="pop_ks_inupt">1</div>
+					<div class="ksadd_plus mb_marsk"><img src="{OSSURL}public/mobile/img/ks_plus.png"/></div>
+				</div>
+			</div>
+			<div class="sectionContBox">
+				<div class="btnBox">
+					<input type="hidden" id="costnum_add" value=""/>
+					<input type="hidden" id="now_chosebuyid" value=""/>
+					<div class="btnPass mb_marsk" onclick="confirm_addks();">确认赠送</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<input id="chosestunub" type="hidden" value=""><!--此处是当选中学生数量值-->
+<input id="stusigntype" type="hidden" value=""><!--此处扣课时弹框选学生签到还是确认签到-->
+<input id="sidarr" type="hidden" value=""><!--此处扣课时弹框选中后的学生列表-->
+<input id="signtype" type="hidden" value=""><!--此处是老师的签到身份-->
+<input id="order" type="hidden" value=""><!--此处是当前课的排序-->
+<input id="costnum" type="hidden" value=""><!--此处是当前课的默认消耗课时-->
+<input id="nowksid" type="hidden" value="{if $checkksid}{$checkksid}{/if}"><!--此处是当前课时-->
+<input id="mobile_pk" type="hidden" value="{$signset['tea_mobile_pk']}"><!--此处是手机排课开关-->
+</html>
+{php include $this->template('port');}
+<script type="text/javascript">
+//确认赠送课时
+function confirm_addks(buyid){
+	var buyid = $('#now_chosebuyid').val()
+	var ksnub = $('#pop_ks_inupt').val()
+	if(buyid > 0){
+		ajax_start_loading("加载中...");
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('tkcstu', array('schoolid' => $schoolid,'op' => 'addks'), true)}",
+			type: "post",
+			dataType: "json",
+			data: {
+				kcid:'{$item['id']}',
+				tid:'{$tid_global}',
+				ksnub:$('#costnum_add').val(),
+				buyid:buyid
+			},
+			success: function (data) {
+				ajax_stop_loading();
+				jTips(data.msg);
+				showstulist()
+				$('#now_chosebuyid').val(0)
+				$('html,body').removeClass('popNoscroll')
+				$('.popUpBox7').hide()
+			}		
+		});
+	}else{
+		jTips('请选择一个学生')
+		$('#now_chosebuyid').val(0)
+		$('html,body').removeClass('popNoscroll')
+		$('.popUpBox7').hide()
+	}
+}
+
+//赠送课时 弹框打开
+function addsk(sid){
+	$('#costnum_add').val(1)
+	$('#pop_ks_inupt').text(1)
+	$('#now_chosebuyid').val(sid)
+	$('html,body').addClass('popNoscroll')
+	$('.popUpBox7').show()
+}
+//赠送课时 弹框关闭
+function close_addks_pop(){
+	$('#now_chosebuyid').val(0)
+	$('html,body').removeClass('popNoscroll')
+	$('.popUpBox7').hide()
+}
+
+//搜索学生
+function stu_search(){
+	var condition = $.trim($('#condition').val())
+	if(condition != '' && condition != null && condition){
+		ajax_start_loading("加载中...");
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('tkcstu', array('schoolid' => $schoolid,'op' => 'search'), true)}",
+			type: "post",
+			dataType: "html",
+			data: {
+				kcid:'{$item['id']}',
+				condition:condition
+			},
+			success: function (data) {
+				ajax_stop_loading();
+				if (data) {
+					$('.listContent').empty()
+					$('.ajax_stu_box').html(data)
+				}else{
+					jTips('没有查询到学生数据');
+				}
+			}		
+		});
+	}else{
+		jTips('请输入学生姓名查找');
+	}
+}
+//关闭学生列表
+function close_STUBOX(){
+	$('html,body').removeClass('popNoscroll')
+	$('.popUpBox6').slideRightHide()
+}
+//学生列表加载更多
+function morestu(){
+	ajax_start_loading("加载中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tkcstu', array('schoolid' => $schoolid,'op' => 'morestu'), true)}",
+		type: "post",
+		dataType: "html",
+		data: {
+			kcid:'{$item['id']}',
+			limit: $('.listContent').children('li').eq($('.listContent').children('li').length-1).attr('time'),
+			pageSize: 10,
+		},
+		success: function (data) {
+			ajax_stop_loading();
+			if (data) {
+				$('.listContent').append(data)
+			}else{
+				jTips('没有更多学生了');
+			}
+		}		
+	});
+}
+function showpjlist(ksid){
+	jTips('加载中...');
+	location.href = "{php echo $this->createMobileUrl('tkcpingjia', array('kcid' => $item['id'],'schoolid' => $schoolid), true)}"+"&ksid="+ksid
+}
+
+//打开学生列表
+function showstulist(){
+	$('html,body').addClass('popNoscroll')
+	$('.popUpBox6').slideRightShow()
+	ajax_start_loading("加载中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tkcstu', array('schoolid' => $schoolid), true)}",
+		type: "post",
+		dataType: "html",
+		data: {
+			kcid:'{$item['id']}',
+		},
+		success: function (data) {
+			ajax_stop_loading();
+			if (data) {
+				$('.listContent').empty()
+				$('.ajax_stu_box').html(data)
+			}else{
+				jTips('没有学生数据');
+			}
+		}		
+	});
+}
+//提交排课
+$('.sub_pk').click(function() {
+	var costnum = $('#costnum').val();
+	if(costnum < 1){
+		jTips('请设置消耗课时数量,至少1次！');
+		return false
+	}
+	var pkmode = $('#rep_type').val();
+	if(pkmode > 0){ //重复模式
+		var start = $('#starttime').val();
+		var end = $('#endtime').val();
+		if(dbdtaedx(start,end)){
+			jTips('结束时间必须大于开始时间！');
+			return false
+		}
+		var week = [];
+		$(".week-select-wrap .active").each(function() {
+			let thisweek = $(this).attr("weidid")
+			week.push(Number(thisweek))
+		});
+		if(week.length < 1){
+			jTips('前选择重复周几上课！');
+			return false
+		}
+	}else{ //日历模式
+		if(dataarry.length < 1){
+			jTips('请从日历重选择要排课的日期！');
+			return false
+		}
+		var start = 0
+		var end = 0
+		var week = 0
+	}
+	var tid =  $('#sk_js').val();
+	if(tid < 1){
+		jTips('请选择授课老师,如果非同一老师,请分多次分开排课！');
+		return false
+	}
+	var sd_id = $('#sk_sd').val();
+	if(sd_id < 1){
+		jTips('请选择上课时段！');
+		return false
+	}
+	var adrr = $('#sk_add').val();
+	if(adrr < 1){
+		jTips('请选择教室，如果非同教室,请分多次分开排课！');
+		return false
+	}
+	ajax_start_loading("提交签到中...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'add_newks'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {
+			kcid:'{$item['id']}',
+			pkmode:pkmode,
+			start:start,
+			end:end,
+			week:week,
+			sd_id:sd_id,
+			adrr:adrr,
+			pkuser:'{$tid_global}',
+			costnum:costnum,
+			tid:tid,
+			dataarry:dataarry,
+		},
+		success: function (data) {
+			ajax_stop_loading();
+			if (data.result) {
+				jAlert(data.msg)
+				location.reload()
+			}else{
+				jAlert(data.msg)
+			}
+		}		
+	});	
+});
+
+//监听周天选择事件
+$('.week-select-wrap .item').click(function() {
+	if($(this).hasClass('active')){
+		$(this).removeClass('active')
+	}else{
+		$(this).addClass('active')
+	}
+});
+//监听选择的开始时间
+$(document).on('change','#rep_type',function() {
+	var today = "{php echo date('Y-m-d',TIMESTAMP)}";
+	var enddefday = "{php echo date('Y-m-d',TIMESTAMP+86400*25)}";
+	$('#starttime').val(today);
+	$('#endtime').val(enddefday);
+	$('.starttime').text(today);
+	$('.endtime').text(enddefday);
+});
+//开始时间选择事件
+$(document).on('change','#starttime',function() {
+	var dats = $('#starttime').val();
+	$('.starttime').text(dats);
+});
+//结束时间选择事件
+$(document).on('change','#endtime',function() {
+	var dats = $('#endtime').val();
+	$('.endtime').text(dats);
+});
+//排课 消耗课时
+$(document).on('change','#costnum',function() {
+	var text =  $("#costnum").find("option:selected").text();
+	$(this).parents().children('.right_word').text(text)
+});
+//排课 选择教室
+$(document).on('change','#sk_add',function() {
+	var text =  $("#sk_add").find("option:selected").text();
+	$(this).parents().children('.right_word').text(text)
+});
+//排课 选择时段
+$(document).on('change','#sk_sd',function() {
+	var text =  $("#sk_sd").find("option:selected").text();
+	$(this).parents().children('.right_word').text(text)
+});
+//排课 选择老师
+$(document).on('change','#sk_js',function() {
+	var text =  $("#sk_js").find("option:selected").text();
+	$(this).parents().children('.right_word').text(text)
+});
+//排课 重复模式选中
+$(document).on('change','#rep_type',function() {
+	var repid = $("select[name=rep_type]").val();
+	var text =  $("#rep_type").find("option:selected").text();
+	if(repid > 0){
+		$('#riqi_mod').hide()
+		$('.datebox').hide()
+		$('#rep_mod').show()
+	}else{
+		$('#riqi_mod').show()
+		$('.datebox').show()
+		$('#rep_mod').hide()
+	}
+	$(this).parents().children('.right_word').text(text)
+});
+//折叠日历
+$('#yx_day').click(function() {
+	$('.datebox').toggle()
+});
+//一键排课
+$('.foot_kc_bot .tea_pk').click(function() {
+	var mobile_pk = $('#mobile_pk').val()
+	if( mobile_pk == 1){
+		$('html,body').addClass('popNoscroll')
+		$('.popUpBox5').slideRightShow()
+	}else{
+		jTips('抱歉,本课不允许手机排课');
+	}
+});
+//排课底部点击关闭
+$('.pk_box_footer .close_ddpage, .trackMattess').click(function() {
+	$('html,body').removeClass('popNoscroll')
+	$('.popUpBox5').slideRightHide()
+});
+//为课时不足的学生签到
+function fuke_sign(){
+	var ksid = $('#nowksid').val()
+	var this_xiaohao = $('#this_xiaohao').val()
+	var sidarr =  [];
+	$(".fuke_stulist li .fuke_checkbox").not(".noact").each(function () {
+		sidarr.push($(this).attr("sid"));
+	});
+	if(sidarr.length < 1){
+		jTips('请至少选择一位学生');
+	}else{
+		jConfirm(stutas, "此操作会使学生剩余课时变为负数,确定要为此"+sidarr.length+"人继续签到吗？", function (isConfirm) {
+			if(isConfirm){
+				ajax_start_loading("提交签到中...");
+				$.ajax({
+					url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'stu_fu_sign'), true)}",
+					type: "post",
+					dataType: "json",
+					data: {
+						tid:'{$tid_global}',
+						ksid:ksid,
+						sidarr:sidarr,
+						costnum:this_xiaohao,
+						type:'qiandao',
+						kcid:'{$item['id']}',
+					},
+					success: function(data) {
+						ajax_stop_loading();
+						jTips(data.msg);
+						if(data.result){
+							$('.popUpBox3').hide()
+							$('body').removeClass('pop_open')
+							chose_ks(ksid)
+						}
+					},
+					error: function(e) {
+						ajax_stop_loading();
+						jTips('访问网络失败');
+					}
+				});
+			}
+		});
+	}
+}
+//首次提交签到学生
+function stu_sign(sidarr,type){
+	var chosestunub = $('#chosestunub').val()
+	var ksid = $('#nowksid').val()
+	var order = $('#order').val()
+	var costnum = $('#costnum').val()
+	if(type == 'queren' || type == 'qiandao'){
+		stutas = '第'+order+'节将扣除'+costnum+'课时,确认将此'+chosestunub+'个学生标记为签到状态吗？'
+	}
+	if(type == 'qingjia'){
+		stutas = '将此'+chosestunub+'个学生标记|第'+order+'节|为请假状态？'
+	}
+	if(type == 'queke'){
+		stutas = '将此'+chosestunub+'个学生标记|第'+order+'节|为缺课状态？'
+	}
+	jConfirm(stutas, "确定对话框", function (isConfirm) {
+		if(isConfirm){
+			ajax_start_loading("提交签到中...");
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'stu_sign'), true)}",
+				type: "post",
+				dataType: "json",
+				data: {
+					tid:'{$tid_global}',
+					ksid:ksid,
+					sidarr:sidarr,
+					costnum:costnum,
+					type:type,
+					kcid:'{$item['id']}',
+				},
+				success: function(data) {
+					ajax_stop_loading();
+					jTips(data.msg);
+					if(data.showstubox){
+						$('.stu_lines_title').text(data.defnumber)
+						$('.stusign_result_suc').text(data.suctext)
+						$('.stusign_result_def').text(data.deftext)
+						 $('#this_xiaohao').val(data.costnum)
+						push_fk_stulist(data.defstuarr,data.fu_btn)
+						$('.popUpBox3').show()
+						$('body').addClass('pop_open')
+						if(data.fu_btn){
+							$('.fk_qrqd').show()
+							$('#fksignbtn').show()
+						}else{
+							$('.fk_qrqd').hide()
+							$('#fksignbtn').hide()
+						}
+					}
+					if(data.result){
+						chose_ks(ksid)
+					}
+				},
+				error: function(e) {
+					ajax_stop_loading();
+					chose_tea_sign_pop()
+					jTips('访问网络失败');
+				}
+			});
+		}	
+	});
+}
+
+function tea_sign(){
+	ajax_start_loading("提交签到中...");
+	var ksid = $('#nowksid').val()
+	var signtype = $('#signtype').val()
+	if(ksid  > 0){
+		if(signtype>0){
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'tea_sign'), true)}",
+				type: "post",
+				dataType: "json",
+				data: {
+					tid:'{$tid_global}',
+					ksid:ksid,
+					signtype:signtype,
+					kcid:'{$item['id']}',
+				},
+				success: function(data) {
+					ajax_stop_loading();
+					jTips(data.msg);
+					if(data.result){
+						chose_tea_sign_pop()
+						get_onks_header(ksid)
+						get_onks_stubox(ksid)
+					}
+				},
+				error: function(e) {
+					ajax_stop_loading();
+					chose_tea_sign_pop()
+					jTips('访问网络失败');
+				}
+			});
+		}else{
+			ajax_stop_loading();
+			jTips('抱歉,请选择一个签到身份')
+		}
+	}else{
+		ajax_stop_loading();
+		chose_tea_sign_pop()
+		jTips('请从左侧选择一个课时')
+	}
+}
+function checksign(){
+	$('.popUpBox4').hide()
+	$('body').removeClass('pop_open')
+	ajax_start_loading("检查签到状态...");
+	var ksid = $('#nowksid').val()
+	if(ksid  > 0){
+		$.ajax({
+			url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'tea_sign_check'), true)}",
+			type: "post",
+			dataType: "json",
+			data: {
+				tid:'{$tid_global}',
+				ksid:ksid,
+				kcid:'{$item['id']}',
+			},
+			success: function(data) {
+				ajax_stop_loading();
+				if(data.result){
+					$('#zhu_tea').hide()
+					$('#fu_tea').hide()
+					if(data.zhu_my){
+						xz_signtype(1)
+					}
+					if(data.fu_my){
+						xz_signtype(2)
+					}
+					if(data.zhu_tea){
+						$('#zhu_tea').show()
+					}
+					if(data.fu_tea){
+						$('#fu_tea').show()
+					}
+					$('.popUpBox1').show()
+					$('body').addClass('pop_open')
+				}else{
+					jTips(data.msg);
+				}
+			},
+			error: function(e) {
+				ajax_stop_loading();
+				jTips('访问网络失败');
+			}
+		});
+	}else{
+		ajax_stop_loading();
+		jTips('请从左侧选择一个课时')
+	}
+}
+//切换课时
+function chose_ks(ksid){
+	$('.pk_left li').removeClass('act')
+	$('#'+ksid).addClass('act')
+	get_onks_header(ksid)
+	get_onks_stubox(ksid)
+	check_ks_costnum(ksid)
+	scrollToLocation(ksid)
+	$('#kcinfobox').hide()
+	$('#ksinfobox').hide()
+	$('#ksinfobox').slideRightShow()
+	//切换课时同时移除之前底部已经全选的状态
+	if($('.unsign_box_bot .all_chose').hasClass('act')){
+		$('.unsign_box_bot .all_chose').removeClass('act')
+		$('.unsign_box_bot .all_chose').addClass('noact')
+	}
+	if($('.qj_box_bot .all_chose').hasClass('act')){
+		$('.qj_box_bot .all_chose').removeClass('act')
+		$('.qj_box_bot .all_chose').addClass('noact')
+	}
+	if($('.qk_box_bot .all_chose').hasClass('act')){
+		$('.qk_box_bot .all_chose').removeClass('act')
+		$('.qk_box_bot .all_chose').addClass('noact')
+	}
+	//同时显示底部排课菜单
+	show_bot_pk()
+}
+//选择签到身份
+function xz_signtype(type){
+	$('#signtype').val(type)
+	$('.pop_mid .pop_mid_tit').removeClass('chosefont')
+	$('.pop_mid .pop_mid_img').removeClass('unchosebtn')
+	if(type == 1){
+		$('#zhu_tea').children('.pop_mid_img').addClass('unchosebtn')
+		$('#zhu_tea').children('.pop_mid_tit').addClass('chosefont')
+	}
+	if(type == 2){
+		$('#fu_tea').children('.pop_mid_img').addClass('unchosebtn')
+		$('#fu_tea').children('.pop_mid_tit').addClass('chosefont')
+	}
+}
+
+//关闭老师签到弹框
+function chose_tea_sign_pop(){
+	$('.popUpBox1').hide()
+	$('body').removeClass('pop_open')
+}
+
+//关闭修改课时弹框
+function close_edit_ks(){
+	var ksid = $('#nowksid').val()
+	chose_ks(ksid)
+	$('.popUpBox2').hide()
+	$('body').removeClass('pop_open')
+}
+
+//底部返回按钮
+$('.tea_back').click(function() {
+	location.href = "{php echo $this->createMobileUrl('tmycourse', array('schoolid' => $schoolid), true)}"
+});
+//点击红叉关闭
+function close_btn(){
+	$('#ksinfobox').hide()
+	$('#kcinfobox').slideLeftShow()
+	//同时显示底部排课菜单
+	show_bot_pk()
+}
+
+//底部菜单显示排课菜单
+function show_bot_pk(){
+	if($('.foot_kc_bot').is(':hidden')){
+		$('.foot_bot').children().hide()
+		$('.foot_kc_bot').slideRightShow()
+	}
+}
+
+//顶部 进度条 点击显示底部排课菜单
+$('.myks').click(function() {
+	show_bot_pk()
+});
+
+//当前未选中或未默认任何课时点击的提示
+$('.nostu').click(function() {
+	jTips('请从左侧选择一个课时')
+});
+
+//全选未签列表待确认学生
+$('.unsign_box_bot .noact').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.unsign_box .stu_box').removeClass('noact');
+		$('.unsign_box .stu_box').addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		$('.unsign_box .stu_box').addClass('noact');
+		$('.unsign_box .stu_box').removeClass('act');
+	}
+});
+//全选请假列表待确认学生
+$('.qj_box_bot .noact').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.qj_box .stu_box').removeClass('noact');
+		$('.qj_box .stu_box').addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		$('.qj_box .stu_box').addClass('noact');
+		$('.qj_box .stu_box').removeClass('act');
+	}
+});
+//全选缺课列表待确认学生
+$('.qk_box_bot .noact').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.qk_box .stu_box').removeClass('noact');
+		$('.qk_box .stu_box').addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		$('.qk_box .stu_box').addClass('noact');
+		$('.qk_box .stu_box').removeClass('act');
+	}
+});
+//顶部 点击授课老师按钮
+function open_teasignlist_pop(ksid){
+	ajax_start_loading("查询教师签到情况...");
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'teasignlist'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {
+			tid:'{$tid_global}',
+			ksid:ksid,
+			kcid:'{$item['id']}',
+		},
+		success: function(data) {
+			ajax_stop_loading();
+			if(data.result){
+				$('.teasign_result_suc').text(data.title)
+				push_tealist(data.signlist)
+				$('.popUpBox4').show()
+				$('body').addClass('pop_open')
+			}else{
+				jTips(data.msg);
+			}
+		},
+		error: function(e) {
+			ajax_stop_loading();
+			jTips('访问网络失败');
+		}
+	});
+}
+//根据课时ID获取学生签到信息模板
+function get_onks_stubox(ksid){
+	$('.loading-layer').show()
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'ksinfo','optype' => 'stulist'), true)}",
+		type: "post",
+		dataType: "html",
+		data: {
+			ksid:ksid,
+			kcid:'{$item['id']}',
+			stunuber:'{$allstunub}'
+		},
+		success: function(result) {
+			$('#nowksid').val(ksid);//当前选中的课时
+			$('.pk_right').empty();
+			$('.pk_right').html(result)
+		},
+		error: function(e) {
+			ajax_stop_loading();
+			jTips('访问网络失败');
+		}
+	});
+}
+//根据课时ID获取头部滑块内容模板
+function get_onks_header(ksid){
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'ksinfo','optype' => 'ksinfo'), true)}",
+		type: "post",
+		dataType: "html",
+		data: {
+			ksid:ksid,
+			kcid:'{$item['id']}',
+			kcname:'{$item['name']}',
+			allmyks:'{$allmyks}',
+			stunuber:'{$allstunub}'
+		},
+		success: function(result) {
+			$('#nowksid').val(ksid);//当前选中的课时
+			$('#ksinfobox').empty();
+			$('#ksinfobox').html(result)
+		},
+		error: function(e) {
+			jTips('访问网络失败');
+		}
+	});
+}
+
+//检查当前课时 第多少节 消耗课时数
+function check_ks_costnum(ksid){
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('tmykcinfo', array('schoolid' => $schoolid,'op' => 'check_ksnub'), true)}",
+		type: "post",
+		dataType: "json",
+		data: {ksid:ksid},
+		success: function(data) {
+			$('#order').val(data.order)
+			$('#costnum').val(data.costnum)
+			$('.pop_inupt').text(data.costnum)
+		},
+		error: function(e) {
+			jTips('访问网络失败');
+		}
+	});
+}
+//全选课时不足的学生列表
+$('.stu_lines .fk_qrqd').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.fuke_stulist li .fuke_checkbox').removeClass('noact');
+		$('.fuke_stulist li .fuke_checkbox').addClass('act');
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		$('.fuke_stulist li .fuke_checkbox').addClass('noact');
+		$('.fuke_stulist li .fuke_checkbox').removeClass('act');
+	}
+});
+//单选课时不足的学生列表
+function hitfuksid(elm){
+	var checkbox = $(elm).parents().children('.fuke_checkbox')
+	if(checkbox.hasClass('noact')){
+		checkbox.removeClass('noact');
+		checkbox.addClass('act');
+	}else{
+		checkbox.addClass('noact');
+		checkbox.removeClass('act');
+	}
+}
+//修改课时后点击确认
+function EditAndSing(){
+	var sidarr = $('#sidarr').val()
+	var type = $('#stusigntype').val()
+	stu_sign(sidarr,type)
+	$('.popUpBox2').hide()
+	$('body').removeClass('pop_open')
+}
+//修改课时弹框
+function open_edit_kspop(sidarr,type){
+	$('#stusigntype').val(type)
+	$('#sidarr').val(sidarr)
+	var ksid = $('#nowksid').val()
+	$('.popUpBox2').show()
+	$('body').addClass('pop_open')
+}
+//组装课时不足学生列表
+function push_fk_stulist(stuarr,fu_btn){
+	html = ''
+	$('.fuke_stulist').empty()
+	var html = '';
+	var url = '{OSSURL}'
+	for (var i = 0; i < stuarr.length; i++) {
+		html += "<li>";
+		if(fu_btn){
+			html += '<div class="fuke_checkbox noact" sid="'+stuarr[i].sid+'" onclick="hitfuksid(this)"></div>';
+		}
+		html += '<div class="fuke_stuheader" onclick="hitfuksid(this)"><img src="'+stuarr[i].icon+'"><div class="fuke_stuname">'+stuarr[i].s_name+'</div></div>';
+		html += '<div class="fuke_restdiv" onclick="hitfuksid(this)">剩余课时:'+stuarr[i].rest+'</div>';
+		html += '<a class="fuke_phone" href="tel:'+stuarr[i].mobile+'"><img src="'+url+'public/mobile/img/new_calling_icon3.png"></a>';
+		html += '</li>';
+	}
+	$('.fuke_stulist').append(html)
+}
+//组装老师签到列表
+function push_tealist(signlist){
+	html = ''
+	$('.sign_tealist').empty()
+	var url = '{OSSURL}'
+	for (var i = 0; i < signlist.length; i++) {
+		html += '<li>';
+		html += '<div class="fuke_teaheader"><img src="'+signlist[i].thumb+'"><div class="fuke_stuname">'+signlist[i].tname+'</div></div>';
+		html += '<div class="fuke_teaqdzt">'+signlist[i].time+'</div>';
+		html += '<div class="fuke_tyape">'+signlist[i].status+'</div>';
+		html += '<div class="fuke_shenfen">'+signlist[i].shenfen+'</div>';
+		html += '<a class="fuke_phone" href="tel:'+signlist[i].mobile+'"><img src="'+url+'public/mobile/img/new_calling_icon3.png"></a>';
+		html += '</li>';		
+	}
+	$('.sign_tealist').append(html)
+}
+
+//关闭课时不足列表弹框
+function close_fukepop(){
+	$('.popUpBox3').hide()
+	$('body').removeClass('pop_open')
+}
+//关闭老师签到弹框
+function close_teasignlist(){
+	$('.popUpBox4').hide()
+	$('body').removeClass('pop_open')
+}
+//点击扣课时加减号
+$('.pop_number_box .ks_minus').click(function() {
+	var nowcunt = $('.pop_inupt').text()
+	var total = Number(nowcunt)-1;
+	if(total>0){
+		$('#costnum').val(total)
+		$('.pop_inupt').text(total)
+	}
+});
+$('.pop_number_box .ks_plus').click(function() {
+	var nowcunt = $('.pop_inupt').text()
+	var total = Number(nowcunt)+1;
+	$('.pop_inupt').text(total)
+	$('#costnum').val(total)
+});
+//点击赠送时加减号
+$('.pop_number_box .ksadd_minus').click(function() {
+	var nowcunt = $('.pop_ks_inupt').text()
+	var total = Number(nowcunt)-1;
+	if(total>0){
+		$('#costnum_add').val(total)
+		$('.pop_ks_inupt').text(total)
+	}
+});
+$('.pop_number_box .ksadd_plus').click(function() {
+	var nowcunt = $('.pop_ks_inupt').text()
+	var total = Number(nowcunt)+1;
+	$('.pop_ks_inupt').text(total)
+	$('#costnum_add').val(total)
+});
+//初始化调用最近还没过期的课程
+onload = function () {
+  //初始化
+  {if !empty($checkksid)}
+	let nowcheckksid = '{$checkksid}'
+	chose_ks(nowcheckksid)
+  {else}
+	let nowcheckksid = $($('.pk_left .no_over')[0]).attr('id');
+  {/if}
+	$('.pk_left li').removeClass('act')
+	$('#'+nowcheckksid).addClass('act')
+	scrollToLocation(nowcheckksid)
+	check_ks_costnum(nowcheckksid)
+	$('#nowksid').val(nowcheckksid)
+	get_onks_stubox(nowcheckksid)
+};
+
+//选中课程滚动到中间
+function scrollToLocation(ksid) {
+  var mainContainer = $('.pk_left'),
+  scrollToContainer = mainContainer.find('#'+ksid);
+  //动画效果
+	let eventPositionTop =  scrollToContainer.position().top //元素相对定位
+    let boxScrollHeight = mainContainer[0].scrollHeight //总高度
+    let boxClientHeight = mainContainer[0].clientHeight //可视区域高度
+    let boxScrollTop = mainContainer[0].scrollTop //滚动高度 
+    //滚动高度 + 相对高度 = 元素相对于父节点的绝对高度
+    let eventAbsTop = eventPositionTop + boxScrollTop
+    if(eventAbsTop > boxClientHeight / 2 && eventAbsTop < boxScrollHeight - boxClientHeight / 2 + scrollToContainer[0].clientHeight/2 ){
+		mainContainer.animate({scrollTop:eventAbsTop - boxClientHeight / 2 + scrollToContainer[0].clientHeight/2},150)
+    }else if(eventAbsTop > boxScrollHeight - boxClientHeight / 2 + scrollToContainer[0].clientHeight/2){
+		mainContainer.animate({scrollTop:boxScrollHeight},150)
+    }else{
+        mainContainer.animate({scrollTop:0},150)
+    }
+}
+common_ajax_callback = false;
+function autoscroll(obj){
+	$(obj).find("ul:first").animate({marginTop:"-30px"},1000,function(){
+	  $(this).css("marginTop","0px").find("li:first").appendTo(this);
+   })
+}
+$(document).ready(function(){
+	setInterval('autoscroll("#scrollDiv")',2500);
+})
+jQuery.fn.extend({
+  slideRightShow: function() {
+	return this.each(function() {
+		$(this).show('slide', {direction: 'right'}, 300);
+	});
+  },
+  slideLeftHide: function() {
+	return this.each(function() {
+		$(this).hide('slide', {direction: 'left'}, 300);
+	});
+  },
+  slideRightHide: function() {
+	return this.each(function() {
+	    $(this).hide('slide', {direction: 'right'}, 300);
+	});
+  },
+  slideLeftShow: function() {
+	return this.each(function() {
+		$(this).show('slide', {direction: 'left'}, 300);
+	});
+  },
+  slideBottomShow: function() {
+	return this.each(function() {
+		$(this).show('slide', {direction: 'bottom'}, 300);
+	});
+  },
+  slideBottomHide: function() {
+	return this.each(function() {
+		$(this).hide('slide', {direction: 'bottom'}, 300);
+	});
+  }
+});
+function circleart(){
+	$(".ksmbl").circleChart({
+		backgroundColor: "#ffffff",
+		background: true,
+		color: "#2e72dc",
+		size: 128,
+		textSize:15,
+		text:true,
+		textCenter: true,
+		onDraw: function(el, circle) {
+			circle.text(Math.round(circle.value) + "%");
+		}
+	});
+}
+$(function() {
+  WeixinJSHideAllNonBaseMenuItem();
+});
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem()
+		});
+	}
+}
+var WeixinApi = (function () {
+	return {
+		imagePreview:imagePreview
+    };
+    "use strict";
+    function imagePreview(curSrc,srcList) {
+        if(!curSrc || !srcList || srcList.length == 0) {
+            return;
+        }
+        WeixinJSBridge.invoke('imagePreview', {
+            'current' : curSrc,
+            'urls' : srcList
+        });
+    }
+    return {
+        version         :"2.5",
+        imagePreview    :imagePreview
+    };
+})();
+function move(div,mub){//滚动数字特效
+	$("#"+div).prop('Counter',0).animate({
+		Counter: mub
+	},{
+		duration: 500,
+		easing: 'swing',
+		step: function (mub){
+			$("#"+div).text(Math.floor(mub));
+		}
+	});
+}
+function dbdtaedx(start,end){//对比前后时间大小
+	var  date1arr = start.split("-");
+	var date1 = new Date();
+	date1.setFullYear(date1arr[0],date1arr[1],date1arr[2]);
+	var  date1arr2 = end.split("-");
+	var date2 = new Date();
+	date2.setFullYear(date1arr2[0],date1arr2[1],date1arr2[2]);
+	if(date1>=date2){
+		return true
+	}else{
+		return false
+	}
+}
+</script>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mGrzxTeacher.css?v=4.8" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/pageContent.css?v=4.80120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+</head>
+<style>
+.publishInfo {width: 80%;color:#fff;height: 134px;margin: 0 10%;background: url({OSSURL}public/mobile/img/12180403174527_03.png) no-repeat; background-size: 100% 95%;    background-position: 100%;}
+.infosss {width: 100%;text-align: center;font-size:14px}
+</style>
+<body>
+<div id="titlebar" class="header mainColor">
+	<div class="l">
+		<a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a>
+	</div>
+	<div class="m">
+		<span style="font-size: 18px">课时详情</span>   
+	</div>
+</div>
+<div id="titlebar_bg" style="height:62px;background-color: #fff;" class="_header"></div>
+<div style="background-color: #fff;">
+<div class="publishInfo">
+	<div class="infosss" style=" padding-top: 5px;">{php echo date('m月d日',$item['date'])} 周{$nowweek}</div>
+	<div class="infosss" style="font-size:32px">{$type['sname']}</div>
+	<div class="infosss" style="font-size:15px">{$kc['name']}</div>
+	<div class="infosss" style="font-size:13px">第{$item['nub']}节</div>
+</div>
+</div>
+<div class="content parent">
+	<br/>{if $item['content']}{php echo htmlspecialchars_decode($item['content'])}{else}本节尚未录入详情{/if}<br/>
+</div>
+</body>
+{php include $this->template('footer');}	
+<script>
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+		document.title="课时详情";
+	}
+}, 100);
+</script>
+<script type="text/javascript">
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>
+</html>

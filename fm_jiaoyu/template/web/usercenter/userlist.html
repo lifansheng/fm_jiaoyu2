@@ -1,0 +1,52 @@
+<div class="material-body " style="overflow-y: scroll;height:500px;">
+	<div class="card-content">
+		<div class="card-body">
+			{loop $allfenzu $key $row}
+			<h4 class="{if $key != 0}mt-2{/if} fz_typelist cursor-pointer">{$row['sname']}({$row['fznumber']})</h4>
+			<div class="display_fixed" {if $key != 0}style="display:none"{/if}>
+				<div class="col-xs-12">
+					<ul class="list-unstyled mb-0">
+					{loop $row['alltea'] $item}
+						<li class="media my-50 cursor-pointer" onclick="GoToThisTeaCenter({$item['id']})" style="width:23%;float:left">
+							<div>
+								<div class="avatar mr-1">
+									<img src="{$item['thumb']}" alt="avtar images" width="32" height="32">
+								</div>
+							</div>
+							<div class="media-body"><h5 class="media-heading mb-0"><span>{$item['tname']}</span></h5><small class="text-muted">{$item['tips']}</small></div>
+						</li>
+					{/loop}	
+					</ul>
+				</div>
+			</div>
+			{/loop}
+			{if $allnowfz}
+			<h4 class="mt-2 fz_typelist cursor-pointer">未分组({$nofznumber})</h4>
+			<div class="display_fixed" style="display:none">
+				<div class="col-xs-12">
+					<ul class="list-unstyled mb-0">
+					{loop $allnowfz $row}
+						<li class="media my-50 cursor-pointer" onclick="GoToThisTeaCenter({$row['id']})" style="width:23%;float:left">
+							<div>
+								<div class="avatar mr-1">
+									<img src="{$row['thumb']}" alt="avtar images" width="32" height="32">
+								</div>
+							</div>
+							<div class="media-body"><h5 class="media-heading mb-0"><span>{$row['tname']}</span></h5><small class="text-muted">{$row['tips']}</small></div>
+						</li>
+					{/loop}	
+					</ul>
+				</div>
+			</div>
+			{/if}
+		</div>
+	</div>
+</div>
+<script>
+$(".fz_typelist").click(function(e){
+	$(this).next().toggle(200)
+});
+function GoToThisTeaCenter(tid){
+	window.location = "{php echo $this->createWebUrl('usercenter', array('schoolid' => $schoolid), true)}"+"&tid="+tid;
+}
+</script>

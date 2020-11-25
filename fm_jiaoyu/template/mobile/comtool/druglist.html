@@ -1,0 +1,32 @@
+{loop $list $v}
+<li class="main" time="{$v['location']}" id="{$v['id']}" style="display: block;" onclick="CheckInfo(`{$v['id']}`)">
+    <div class="cutting"></div>
+    <div class="notifyTopBox" style="height:90px;">
+        <div class="notifyTopLeft">
+            <img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+        </div>
+        <!-- 预约未成功才能进行修改或删除 -->
+        {if $v['status'] ==0}
+        <div class="btnDeleteBox qx_00503" onclick="chack(this,`{$v['id']}`);return false;">
+            <i class="fa fa-eye" aria-hidden="true" style="color: rgb(66, 169, 43);"></i>
+        </div>	
+        {/if}				
+        <div class="notifyTopRight">
+            <div class="notifyTopRightTopBox">					
+                <span class="teacherInfo">{$v['sname']}</span>		
+                {if $v['status'] ==0}
+                <span class="pard3">待审核</span>
+                {else if $v['status'] ==1}
+                <span class="pard4">审核通过</span>
+                {else if $v['status'] ==2}
+                <span class="pard5">已拒绝</span>
+                {/if}
+            </div>
+            <p class="notifyCreateTime">开始时间：{$v['starttime']}</p>
+            <p class="notifyCreateTime">结束时间：{$v['endtime']}</p>
+            <p class="notifyCreateTime">喂药时段：{$v['datetime']}</p>
+            
+        </div>
+    </div>
+</li>
+{/loop}	

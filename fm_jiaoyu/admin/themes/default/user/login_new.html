@@ -1,0 +1,176 @@
+{template 'common/header-base'}
+<link href="{$_W['siteroot']}addons/fm_jiaoyu/admin/resource/css/login_new_css.css?v=1" rel="stylesheet">
+<style>
+html,body{background-color: {if $item['bgcolor']}{$item['bgcolor']}{else}#02c493{/if};}
+.paddgin_box{text-align: center;width: 100%;}
+</style>
+    <div id="bg">
+        <i>{$item['banquan']}<div class="copyright">{if empty($_W['setting']['copyright']['footerleft'])}Powered by <a href="http://www.we7.cc"><b>微擎</b></a> v{IMS_VERSION} &copy; 2014-2015 <a href="http://www.we7.cc">www.we7.cc</a>{else}{$_W['setting']['copyright']['footerleft']}{/if}</div></i>
+    </div>
+<style>
+.qr-ico { background: url({$_W['siteroot']}addons/fm_jiaoyu/admin/resource/images/sprites_icon.png) no-repeat 0 -525px; width: 14px; height: 14px; display: inline-block; margin-right: 8px; }
+#qrcode{height: 120px; width: 120px;}
+#qrcode canvas{ display: block; padding: 6px; border: 1px solid #e5e9ed; background: #f8f9fb; margin: 0 0 0 50%; border-radius: 3px; }
+#timers{color:red}
+</style>	
+    <div id="main_content">
+        <div id="main_content_inner">
+            <img src="{php echo tomedia($item['newcenteriocn'])}" id="icon" ondragstart="return false" />
+            <div id="login_wrap">
+                <!-- <img src="{$_W['siteroot']}addons/fm_jiaoyu/admin/resource/images/user_bg.png" id="login_bg" ondragstart="return false" /> -->
+				<div id="login_info_wrap">
+				{if !empty($_GPC['schoolid'])}
+					<div class="tab_list">
+						<div class="left_box active">账号登录</div>
+						<div class="right_box">微信登录</div>
+					</div>
+				{/if}	
+                    <div id="login_info_inner" style="">
+                        <div class="login_title">{if $item['htname']}{$item['htname']}{else}微教育校园管理系统{/if}</div>
+						<form class="" action="" method="post" role="form" id="form1" style="display:block">
+                            <div class="input_wrap">
+                                <input type="text" title="用户名" name="username" placeholder="用户名" class="user_info" id="account" />
+                            </div>
+                            <div class="input_wrap">
+                                <input type="password" title="登录密码" name="password" placeholder="密码" class="user_info" id="password" />
+                            </div>
+							{if !empty($_W['setting']['copyright']['verifycode'])}
+                            <div class="input_wrap" style="overflow: hidden;">
+                                <input id="captcha" name="verify" placeholder="请输入验证码" maxlength="4" class="user_info login_input verification_input " type="text" />
+                                <div class="verification_box">
+                                     <img id="imgverify" src="{php echo $_W['siteroot'].'web/'.url('utility/code')}" title="点击刷新验证码" style="cursor: pointer;width: 80.5px;height: 37px;" align="absmiddle" border="0">
+                                </div>
+                            </div>
+							{/if}
+                            <div class="help">
+                                <div class="pull_left remeber checked" title="记住账号">记住账号</div>
+                            </div>
+							<div class="paddgin_box">
+								<button class="submit_btn" type="submit" id="submit" name="submit" value="登录">登录</button>
+							</div>
+							<input name="token" value="{$_W['token']}" type="hidden" />
+                        </form>
+						<div class="qr-code" id="coedbox" style="display: none;">
+							<img id="js_qrcode" src="{$_W['siteroot']}addons/fm_jiaoyu/public/mobile/img/overtimeqr.png" width="32" height="32" style="height:120px; width:120px;display:none"/>
+							<img id="qr_load" src="{$_W['siteroot']}addons/fm_jiaoyu/admin/resource/images/loading2.gif" width="32" height="32" style="height:42px; width:42px;display:none"/> 
+							<div id="qrcode"></div>
+							<span class="downtime" style="display:"><span id="timers">60</span>秒后失效</span>
+							<span class="refi_code" onclick="creatCode()" style="display:none">刷新二维码</span>
+							<p><span class="qr-ico"></span>使用微信扫码即可登录</p>
+							<div class="b-agreement">仅支持在本系统已经微信绑定教师用户</div>
+						</div>
+                        <div id="line"></div>
+                        <div class="input_wrap">
+                            <div id="tips">推荐使用以下浏览器(点击下载)</div>
+                            <div class="brower_wrap">
+                                <a href="http://sw.bos.baidu.com/sw-search-sp/software/3d03c3764837b/ChromeStandalone_52.0.2743.116_Setup.exe">
+                                    <img src="{$_W['siteroot']}addons/fm_jiaoyu/admin/resource/images/google.png" ondragstart="return false" class="mr_35" />
+								</a>
+                                <a href="http://down.360safe.com/cse/360cse_8.7.0.306.exe">
+                                    <img src="{$_W['siteroot']}addons/fm_jiaoyu/admin/resource/images/360.png" ondragstart="return false" />
+								</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="error_info"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+{if !empty($_GPC['schoolid'])}
+
+function creatCode(){
+	if ($( "#qrcode:has(canvas)" ).length == 0 ){ 
+		$('#qr_load').show()
+		$('#qrcode').show()
+		$('#js_qrcode').hide()
+		$('#timers').text(60)
+		$('.refi_code').hide()
+		$.ajax({
+			url: "{$_W['siteroot']}addons/fm_jiaoyu/admin/index.php?&op=url",
+			type: "post",
+			dataType: "json",
+			data: {schoolid:"{$_GPC['schoolid']}"},
+			success: function (result) {
+				if (result) {
+					$('#qrcode').qrcode({
+						render: "canvas", //也可以替换为table
+						width: 100,
+						height: 100,
+						text: result.url
+					});
+					overtime()
+					timeshouw()
+					lisen_token(result.token)
+					$('.downtime').show()
+					$('#qr_load').hide()
+				}
+			}
+		});
+	}
+}
+function lisen_token(token){
+	$('body').everyTime('1s','B',function(){
+		let nowtime = parseInt($('#timers').text())
+		let showtime = nowtime - 1
+		if(showtime == 0){
+			$('body').stopTime ('B');
+		}else{
+			$.ajax({
+				url: "{$_W['siteroot']}addons/fm_jiaoyu/admin/index.php?&op=checktoken",
+				type: "post",
+				dataType: "json",
+				data: {schoolid:"{$_GPC['schoolid']}",token:token},
+				success: function (result) {
+					if (result.result) {
+						$('body').stopTime ('B');
+						window.location.href = "{$_W['siteroot']}addons/fm_jiaoyu/admin/index.php?&op=authlogin&token="+token+"&schoolid={$_GPC['schoolid']}";
+					}
+				}
+			});
+		}
+	});
+}
+function overtime(){
+	$('body').oneTime('6das',function(){
+		$('.refi_code').show()
+		$('.downtime').hide()
+		$('#qrcode').empty()
+		$('#qrcode').hide()
+		$('#js_qrcode').show()
+	});
+}
+
+function timeshouw(){
+	$('body').everyTime('1s','A',function(){
+		let nowtime = parseInt($('#timers').text())
+		let showtime = nowtime - 1
+		if(showtime == 0){
+			$('body').stopTime ('A');
+		}else{
+			$('#timers').text(showtime)
+		}
+	});
+}
+{/if}
+$('.left_box').click(function() {
+	if(!$(this).hasClass('active')){
+		$(this).addClass('active')
+		$('.right_box').removeClass('active')
+		$('#coedbox').hide()
+		$('#form1').show()
+	}
+});
+$('.right_box').click(function() {
+	if(!$(this).hasClass('active')){
+		$(this).addClass('active')
+		$('.left_box').removeClass('active')
+		creatCode()
+		$('#coedbox').show()
+		$('#form1').hide()
+	}
+});
+</script>
+</html>

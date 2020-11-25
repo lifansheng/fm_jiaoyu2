@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+{php include $this->template('shoucecss');}
+<style type="text/css">
+	.selectList {position: fixed;left: 0;right: 0;top: 0;bottom: 0;-webkit-box-sizing: border-box;box-sizing: border-box;background-color: rgba(0,0,0,.53);
+text-align: center;z-index: 30;font-size: 20px;color: #fe6700;}
+.selectList .single {position: absolute;left: 6%;right: 6%;top: 5%;padding: 0 20px;background-color: #fff;padding-bottom: 33px;padding-top: 10px;}
+.selectList ul {width: 100%;height: auto;overflow: auto;}
+.selectList ul li {height: 50px;line-height: 50px;border-bottom: 1px solid #e9e9e9;padding: 0 10px;}
+.selectList ul li span.le {height: 50px;line-height: 50px;float: left;font-size: 16px;}
+.selectList ul li span.ri {float: right;height: 50px;line-height: 50px;font-size: 16px;}
+
+.header { width: 100%; height: 50px; line-height: 50px; position: fixed; z-index: 1000; top: 0; left: 0; box-shadow: 0 0 2px 0px rgba(0,0,0,0.3),0 0 6px 2px rgba(0,0,0,0.15); }
+.header .l { width: 50px; height: 50px; line-height: 50px; color: white; position: absolute; left: 0; top: 0; } 
+.header .m { width: 100%; height: 50px; line-height: 50px; text-align: center; color: white; font-size: 18px; } 
+.header .r { width: 50px; height: 50px; line-height: 50px; position: absolute; right: 0; top: 0; } 
+.mainColor { background: {$school['headcolor']} !important; } 
+.header .l a { font-size: 18px; color: white; display: block; width: 100%; height: 100%; text-align: center; }
+.head_til img{width: 25px;height: 25px;display: inline-block;float: left;border-radius: 40px;}
+body {background-color: #E7FAFF;}
+.bottom_control_row .prev_btn1 {margin: 15px 5px 15px 35px;float: left;width: 100px;background-color: #e5457f;border-radius: 3px;line-height: 35px;height: 35px;text-align: center;}
+.bottom_control_row .prev_btn1 a, .bottom_control_row .next_btn a {color: #fff;}
+.bottom_control_row .prev_btn2 {margin: 15px 5px 15px 35px;float: left;width: 100px;background-color: #e5457f;border-radius: 3px;line-height: 35px;height: 35px;text-align: center;}
+.bottom_control_row .prev_btn2 a, .bottom_control_row .next_btn a {color: #fff;}
+</style>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+{php include $this->template('port');}
+<title>{$school['title']}</title>
+</head>
+<body>
+<div class="header mainColor" id="titlebar">
+	<div class="l">
+		<a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="{php echo $this->createMobileUrl('detail', array('schoolid' => $schoolid,'weid' => $weid), true)}"></a>
+	</div>
+	<div class="m">
+		<a><span style="font-size: 18px">选择身份</span></a>
+	</div>
+	<div class="r">
+        <a href="javascript:;" class="choice_baby">
+            <img style="height: 30px;margin-top:10px" src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+        </a>
+	</div>
+</div>
+<div class="All">
+<div id="titlebar_bg" class="top_height_blank"></div>
+
+<div class="selectList" id="selectList" style="z-index:100000;">
+	<div class="single" style="z-index:100000;border-radius: 5%;">
+		<ul>
+			<span style="color:#444;">选择身份</span>
+		{loop $alluser $row}
+			<li onclick="isSelect1({$row['id']},{$row['type']},{$row['tid']});"><span class="le">{if $row['type'] == 1}{$row['bjname']} {else}老师{/if}</span><span class="ri">{if $row['type'] == 1}{$row['s_name']}{else}{$row['tname']}{/if}</span></li>
+		{/loop}	
+		</ul>
+	</div>
+</div>	
+</body>
+</html>
+<script type="text/javascript">
+		$(".choice_baby").on("click", function() {
+		
+		$("#selectList").show();
+	});
+	function isSelect1(userid,type,tid){
+		if(type == 1){
+			location.href = "{php echo $this->createMobileUrl('sgoodslist')}"+ '&from=detail&userid=' + userid + '&schoolid=' + {$schoolid} ;
+		}else{
+				
+			location.href = "{php echo $this->createMobileUrl('goodslist')}"+ '&from=detail&tid=' + tid + '&schoolid=' + {$schoolid} ;
+		}
+	
+	
+}
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+		document.title="评价公开课 {if !empty($userid)} - {$myname['name']} {if $myname['type'] == 1 } {$pard} {else} 老师 {/if} {/if}";
+	}
+}, 100);
+
+</script>
+<script>
+$(".manual_baby_situation_ul").on("click", ".li_block_2 div", function () {
+	$(this).addClass("on").siblings("div").removeClass("on");
+})
+
+
+</script>

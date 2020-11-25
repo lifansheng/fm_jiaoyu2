@@ -1,0 +1,153 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'display'}
+<script>
+require(['bootstrap'],function($){
+	$('.btn,.tips').hover(function(){
+		$(this).tooltip('show');
+	},function(){
+		$(this).tooltip('hide');
+	});
+});
+</script>
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">家长点到记录</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get"  class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="checkinhome" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按年级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="nj_id" id="xq" class="form-control">
+                            <option value="0"> 请选择年级</option>
+                            {loop $AllNj $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $_GPC['qh_id']} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">按班级</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <select style="margin-right:15px;" name="bj_id" id="bj_select" class="form-control">
+                            <option value="0"> 请选择班级</option>
+                            {loop $AllBj $row_b}
+                            <option value="{$row_b['sid']}" {if $row_b['sid'] == $_GPC['bj_id']} selected="selected"{/if}>{$row_b['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>
+
+                </div>
+				<div class="form-group ">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">按姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="sname" type="text" value="{$_GPC['sname']}">
+                    </div>
+                    <label class="col-xs-12 col-sm-3 col-md-1 control-label">开始时间</label>
+					<div class="col-sm-2 col-lg-2">
+						{php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d', $starttime), 'end' => date('Y-m-d', $endtime)));}
+					</div>
+					<div class="col-sm-2 col-lg-2" style="margin-left:55px">
+						<button class="btn btn-primary"><i class="fa fa-search"></i> 搜索</button>
+					</div>
+
+				</div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="get" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+                    <!-- <th class='with-checkbox' style="width: 3%;"><input type="checkbox" class="check_all" /></th> -->
+					<th style="width:10%">学生姓名</th>
+                    <th style="width:10%;">学生班级</th>
+					<th style="width:10%;">点到家长</th>
+                    <th style="width:10%;">点到时间</th>
+					<th class="qx_e_d" style="text-align:right; width:8%;">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+                    <!-- <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td> -->
+					<td>
+                        <img src="{$item['icon']}" draggable="false" style="height: 40px;width: 40px;border-radius: 50%;" >
+                        <span>{$item['s_name']}</span>
+                    </td>
+                    <td>{$item['njname']} | {$item['bjname']}</td>
+					<td>
+                        <img src="{$item['fansinfo']['avatar']}" draggable="false" style="height: 40px;width: 40px;border-radius: 50%;border:1px solid #e4e4e4" >
+                        <span>{$item['fansinfo']['nickname']}
+                        <span style="display: inline-block;padding:2px 5px;border-radius: 5px;background-color: #41cac0;color:white">{$item['gx']}</span>
+                    </td>
+					<td>{php echo date("Y-m-d H:i:s",$item['createtime']) }</td>
+					<td class="qx_e_d" style="text-align:right;">
+						<a class="btn btn-default btn-sm qx_3103" href="{php echo $this->createWebUrl('checkinhome', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+$(function(){
+	
+	{if !(IsHasQx($tid_global,1005102,1,$schoolid))}
+        $(".qx_e_d").hide();
+	{/if}
+	 
+})
+
+		$(document).ready(function() {
+			$("#xq").change(function() {
+				var cityId = $("#xq option:selected").attr('value');
+				var type = 1;
+				changeGrade(cityId, type, function() {
+				});
+			});
+		});
+		
+		function changeGrade(gradeId, type) {
+			//alert(cityId);
+			var schoolid = "{$schoolid}";
+			var classlevel = [];
+			//获取班次
+			$.post("{php echo $this->createWebUrl('indexajax',array('op'=>'getbjlist'))}", {'gradeId': gradeId, 'schoolid': schoolid}, function(data) {
+				data = JSON.parse(data);
+
+
+
+				classlevel = data.bjlist;
+				var htmls = '';
+				htmls += '<option value="">请选择班级</option>';
+				if (classlevel != '') {
+					for (var i in classlevel) {
+						htmls += '<option value="' + classlevel[i].sid + '">' + classlevel[i].sname + '</option>';
+					}
+				}
+				$('#bj_select').html(htmls);
+			});
+		}
+
+</script>
+{/if}
+{template 'public/footer'}

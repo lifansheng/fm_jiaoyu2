@@ -1,0 +1,27 @@
+{if $meetinfo['type'] == 1}
+<div class="text-item">与会人员</div>
+{if $fzlist}
+<div class="joiner-box">
+    <div>分组：</div>
+    <div class="joinlist">
+        {loop $fzlist $fi}
+        <span>{$fi['sname']}</span>
+        {/loop}
+    </div>
+</div>
+{/if}
+{if $tealist}
+<div class="joiner-box">
+    <div>教师：</div>
+    <div class="joinlist">
+        {loop $tealist $ti}
+        <span>{$ti['tname']}</span>
+        {/loop}
+    </div>
+    
+</div>
+{/if}
+{else}
+<div class="text-item">班级：{$bjlist}</div>
+{/if}
+<div class="text-item">内容:{php echo htmlspecialchars_decode($meetinfo['content'])}</div>

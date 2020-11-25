@@ -1,0 +1,574 @@
+{template 'public/header'}
+{template 'public/comhead'}
+
+<ul class="nav nav-tabs">
+    <li class="{if $operation == 'display'}active{/if} qx_4001 "><a href="{php echo $this->createWebUrl('visitors', array('op' => 'display', 'schoolid' => $schoolid))}">预约记录</a></li>
+    <li class="{if $operation == 'vislog'}active{/if} qx_4011"><a href="{php echo $this->createWebUrl('visitors', array('op' => 'vislog', 'schoolid' => $schoolid))}">访客记录</a></li>
+</ul>
+
+{if $operation == 'display'}
+<div class="main">
+	<style>
+	.form-control-excel { height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none; border: 1px solid #ccc;border-radius: 4px; -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+	.cLine {overflow: hidden;padding: 5px 0;color:#000000;}
+	.alert {padding: 8px 35px 0 10px;text-shadow: none;-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);background-color: #f9edbe;border: 1px solid #f0c36d;-webkit-border-radius: 2px;-moz-border-radius: 2px;border-radius: 2px;color: #333333;margin-top: 5px;}
+	.alert p {margin: 0 0 10px;display: block;}
+	.alert .bold{font-weight:bold;}
+	.label-over {background-color: #FB710B;}
+	</style>	
+    <div class="panel panel-info">
+        <div class="panel-heading">访客预约管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="visitors" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="status" value="{$_GPC['status']}"/>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">来访状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '0','schoolid' => $schoolid))}" class="btn {if $status == 0}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '1', 'schoolid' => $schoolid))}" class="btn {if $status == 1}btn-primary{else}btn-default{/if}">待确定</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '2', 'schoolid' => $schoolid))}" class="btn {if $status == 2}btn-primary{else}btn-default{/if}">预约成功</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '3', 'schoolid' => $schoolid))}" class="btn {if $status == 3}btn-primary{else}btn-default{/if}">拒绝</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '4', 'schoolid' => $schoolid))}" class="btn {if $status == 4}btn-primary{else}btn-default{/if}">访问中</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '5', 'schoolid' => $schoolid))}" class="btn {if $status == 5}btn-primary{else}btn-default{/if}">已结束</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'status' => '6', 'schoolid' => $schoolid))}" class="btn {if $status == 6}btn-primary{else}btn-default{/if}">已取消</a>
+						</div>
+					</div>
+				</div>
+				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="s_name" id="" type="text" value="{$_GPC['s_name']}">
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访老师</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="tname" id="" type="text" value="{$_GPC['tname']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访事由</label>
+					<div class="col-sm-2 col-lg-3">
+                        <select class="form-control" name="sy_id" id="chosebj2" style="margin-right:15px;" autocomplete="off">
+							<option value="">请选择</option>
+                            {loop $visireason $v}
+                            <option value="{$v['sid']}" {if $v['sid'] == $_GPC['sy_id']} selected="selected"{/if}>{$v['sname']}</option>
+                            {/loop}
+						</select>
+                    </div>
+				</div>
+				 <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访单位</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="unit" id="" type="text" value="{$_GPC['unit']}">
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访车牌</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="plate_num" id="" type="text" value="{$_GPC['plate_num']}">
+                    </div>
+					  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">身份证</label>
+                    <div class="col-sm-2 col-lg-3">
+                        <input class="form-control" name="idcard" id="" type="text" value="{$_GPC['idcard']}">
+                    </div>
+				</div>
+				
+				 <div class="form-group">
+                  
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访日期</label>
+                    <div class="col-sm-2 col-lg-2">
+                        {php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d H:i:s', $starttime), 'end' => date('Y-m-d H:i:s', $endtime)));}
+                    </div>	
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default" style="margin-left:100%"><i class="fa fa-search"></i>搜索</button>
+					</div>
+				</div>
+				
+            </form>		
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+        <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+        <table class="table table-hover">
+			<thead class="navbar-inner">
+				<tr>
+							<th class='with-checkbox' style="width: 20px;"><input type="checkbox" class="check_all" /></th>
+							<th>访客</th>
+							<th style="width:8%">单位</th>
+							<th style="width:7%">车牌号</th>
+							<th style="width:7%">访客电话</th>
+							<th>身份证</th>
+							<th style="width:7%;">访问老师</th>
+							<!--<th>老师电话</th>-->
+							<th>时间段</th>
+							<th style="width:10%; text-align:center;">事由</th>
+							<th>状态</th>
+							<th class="qx_e_d" style="text-align:right; width:14%;">操作</th>
+						</tr>
+			</thead>
+			<tbody>
+				{loop $list $item}
+				<tr>
+                    <td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+					<td style="text-align: center;">
+                        <img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($item['icon'])}{php echo tomedia($item['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" width="50"><br><span class="label label-warning">{$item['s_name']}</span></td>
+					<td>{$item['unit']}</td>
+					<td>{$item['plate_num']}</td>
+					<td><span class="label label-primary">{$item['tel']}</span></td>
+					<td>
+                        {$item['idcard']}
+                    </td>
+                    <td>
+						<span class="label label-success">{$item['tname']}	</span>
+                    </td>
+                    <!--<td>-->
+						<!--<span class="label label-danger">{$item['mobile']}</span>-->
+                    <!--</td>-->
+					<td>
+					   <span class="label label-info">{php echo date('m月d日 H:i', $item['starttime'])} 到 {php echo date('m月d日 H:i', $item['endtime'])}	</span>
+                    </td>	
+					<td>{$item['sname']}</td>
+					<td>
+						{php $time = time();}
+						{if $item['status'] == 1 && $item['endtime'] > $time}
+						<span class="label label-fail">预约待确定</span>
+						{else if $item['status'] ==2 && $item['endtime'] > $time}
+						<span class="label label-primary">预约成功</span>
+						{else if $item['status'] ==3}
+						<span class="label label-danger">访问拒绝</span>
+						{else if $item['status'] ==4 && $item['endtime'] > $time}
+						<span class="label label-success">正在访问</span>							
+						{else if $item['status'] ==5 && $item['endtime'] > $time}
+						<span class="label label-over">访问结束</span>
+						{else if $item['status'] ==6 }
+						<span class="label label-over">已取消</span>
+						{else if $item['status'] ==1 && $time > $item['endtime']}
+						<span class="label label-danger">已过期</span>	
+						{else if ($item['status'] ==2 || $item['status'] ==4 || $item['status'] ==5) && $time > $item['endtime']}
+						<span class="label label-danger">已失效</span>									
+						{/if}
+					</td>
+					<td class="qx_e_d" style="text-align:right;">
+						{if $item['status'] == 1 && $item['endtime'] > $time}
+						
+						<a class="btn btn-danger btn-sm qx_4002" href="#" onclick="refuse({$item['id']})" title="拒绝">拒绝</a>&nbsp;
+						<a class="btn btn-default btn-sm qx_4002" href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'op' => 'post', 'schoolid' => $schoolid))}" title="确定预约">确定</a>&nbsp;
+						{/if}
+
+						{if $item['status'] == 2 && $item['endtime'] > $time}
+						<a class="btn btn-danger btn-sm qx_4002" href="#" onclick="quxiao({$item['id']})" title="取消">取消</a>&nbsp;
+						{else}
+						<a class="btn btn-default btn-sm qx_4003" href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'op' => 'delete', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+						{/if}
+
+					</td>
+				</tr>
+				{/loop}
+			</tbody>
+			<tr>
+				<td colspan="10">
+					<input name="token" type="hidden" value="{$_W['token']}" />
+                    <input type="button" class="btn btn-primary qx_4003" name="btndeleteall" value="批量删除" />
+				</td>
+			</tr>
+		</table>
+        {$pager}
+    </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:2041 !important;">
+	<div class="modal-dialog modal-lg" role="document" >
+		<div class="modal-content" >
+			<div class="modal-header" style="color: black;">
+				<h4 class="modal-title" id="ModalTitle">请输入拒绝理由</h4>
+			</div>
+			<div class="modal-body">
+				<form method="post" class="form-horizontal form" >
+					<input type="hidden" name="id" id="this_id" value="" />
+					<input type="hidden" name="schoolid"  id="this_schoolid" value="{$schoolid}" />
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="form-group">
+								<label class="col-xs-12 col-sm-3 col-md-2 control-label">理由</label>
+								<div class="col-sm-2">
+									<textarea name="refuseinfo" id="refuseinfo" cols="60" rows="10"></textarea>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="submit2" onclick="upstarset()" >确定</button>
+				<button type="button" class="btn btn-default" id="close_modal" data-dismiss="modal">关闭</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+$(function(){
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的预约号!');
+            return false;
+        }
+        if(confirm("确认要删除选择的预约号?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('visitors', array('op' => 'deleteall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+					if(data.result){
+						alert(data.msg);
+						location.reload();					
+					}else{
+						alert(data.msg);
+					}				
+                },'json'
+            );
+        }
+    });
+});
+</script>
+<script type="text/javascript">
+	$('#credit1').click(function(){
+		$('#credit-status1').show();
+		$('#credit-status2').hide();
+		$("#credit1").attr("checked","checked" );
+		$("#credit2").removeAttr("checked");
+	});
+	$('#credit2').click(function(){
+		$('#credit-status2').show();
+		$('#credit-status1').hide();
+		$("#credit2").attr("checked","checked" );
+		$("#credit1").removeAttr("checked");		
+	});
+    function refuse(id){
+        $("#this_id").val(id);
+        $('#Modal1').modal('toggle');
+	}
+
+    function upstarset(){
+        let id = $("#this_id").val();
+        let refuseinfo = $('#refuseinfo').val();
+        $.ajax({
+            url: "{php echo $this->createWebUrl('visitors', array('op' => 'refuse', 'schoolid' => $schoolid))}",
+            type: "post",
+            data: {
+                id: id,
+                refuseinfo: refuseinfo,
+            },
+            success: function(result) {
+                let obj = jQuery.parseJSON(result);
+                alert(obj.msg);
+                $("#close_modal").trigger('click');
+                location.reload();
+            },
+            error: function(e) {
+                alert('访问网络失败');
+            }
+        },'json');
+    }
+
+    function quxiao(id){
+        $.ajax({
+            url: "{php echo $this->createWebUrl('visitors', array('op' => 'quxiao', 'schoolid' => $schoolid))}",
+            type: "post",
+            data: {
+                id: id,
+            },
+            success: function(data) {
+                let obj = jQuery.parseJSON(data);
+                alert(obj.msg);
+                location.reload();
+            },
+            error: function(e) {
+                alert('访问网络失败');
+            }
+        },'json');
+    }
+//	$(document).ready(function() {
+//		$("#chosebj2").change(function() {
+//			var sy_id = $("#chosebj2 option:selected").attr('value');
+//			if(sy_id != 0){
+//				window.location.href="{php echo $this->createWebUrl('visitors', array('op' => 'display','schoolid' => $schoolid))}"+'&sy_id='+sy_id;
+//			}
+//		});
+//	});
+</script>
+{/if}
+<link rel="stylesheet" href="{MODULE_URL}public/web/css/magnific-popup.css">
+{if $operation == 'vislog'}
+<div class="main">
+<style>
+.form-control-excel {height: 34px;padding: 6px 12px;font-size: 14px;line-height: 1.42857143;color: #555;background-color: #fff;background-image: none;border: 1px solid #ccc;border-radius: 4px;-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);box-shadow: inset 0 1px 1px rgba(0,0,0,.075);-webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;-o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;}
+</style>
+    <div class="panel panel-info">
+        <div class="panel-heading">访问记录管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="do" value="visitors" />
+                <input type="hidden" name="op" value="vislog" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<input type="hidden" name="status" value="{$_GPC['status']}"/>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-1 control-label">状态</label>
+					<div class="col-sm-9 col-xs-9 col-md-9">
+						<div class="btn-group">
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'op' => 'vislog', 'type' => '0', 'schoolid' => $schoolid))}" class="btn {if $type == 0}btn-primary{else}btn-default{/if}">不限</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'op' => 'vislog', 'type' => '1', 'schoolid' => $schoolid))}" class="btn {if $type == 1}btn-primary{else}btn-default{/if}">进校</a>
+							<a href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'op' => 'vislog', 'type' => '2', 'schoolid' => $schoolid))}" class="btn {if $type == 2}btn-primary{else}btn-default{/if}">离校</a>							
+						</div>
+					</div>
+				</div>
+				
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访姓名</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="s_name" id="" type="text" value="{$_GPC['s_name']}">
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">到访老师</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="tname" id="" type="text" value="{$_GPC['tname']}">
+                    </div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访事由</label>
+					<div class="col-sm-2 col-lg-3">
+                        <select class="form-control" name="sy_id" id="chosebj" style="margin-right:15px;" autocomplete="off">
+							<option value="">请选择</option>
+                            {loop $visireason $v}
+                            <option value="{$v['sid']}" {if $v['sid'] == $_GPC['sy_id']} selected="selected"{/if}>{$v['sname']}</option>
+                            {/loop}
+						</select>
+                    </div>
+				</div>
+				 <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访单位</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="unit" id="" type="text" value="{$_GPC['unit']}">
+                    </div>
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访车牌</label>
+                    <div class="col-sm-2 col-lg-2">
+                        <input class="form-control" name="plate_num" id="" type="text" value="{$_GPC['plate_num']}">
+                    </div>
+					  <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">身份证</label>
+                    <div class="col-sm-2 col-lg-3">
+                        <input class="form-control" name="idcard" id="" type="text" value="{$_GPC['idcard']}">
+                    </div>
+				</div>
+				
+				 <div class="form-group">
+                  
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">来访日期</label>
+                    <div class="col-sm-2 col-lg-2">
+                        {php echo tpl_form_field_daterange('createtime', array('start' => date('Y-m-d H:i:s', $starttime), 'end' => date('Y-m-d H:i:s', $endtime)));}
+                    </div>	
+					<div class="col-sm-2 col-lg-2">
+						<button class="btn btn-default" style="margin-left:100%"><i class="fa fa-search"></i>搜索</button>
+					</div>
+				</div>
+				
+            </form>		
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+			<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th class='with-checkbox' style="width: 20px;"><input type="checkbox" class="check_all" /></th>
+							<th style="width:10%">考勤机 </th>
+							<th style="width:10%">姓名</th>
+							<th style="width:8%">单位</th>
+							<th style="width:8%">车牌号</th>
+							<th style="width:6%;">身份证</th>
+							<th style="width:8%;">老师</th>
+							<!--<th style="width:8%;">电话</th>-->
+							<th style="width:12%;">事由</th>
+							<th style="width:8%;">照片</th>
+							<th style="width:8%;"></th>
+							<th style="width:8%;">状态</th>
+							<th class="qx_4012" style="text-align:right; width:10%;">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						{php $type = ['1'=>'进校', '2'=>'离校'];}
+						{loop $list $item}
+							<tr>
+								<td class="with-checkbox"><input type="checkbox" name="check" value="{$item['id']}"></td>
+								<td>
+								   {$item['name']}					   
+								</td>
+								<td>
+									{$item['s_name']}
+								</td>
+								<td>
+									{$item['unit']}							
+								</td>
+								<td>
+									{$item['plate_num']}
+								</td>
+								<td>
+									{$item['idcard']}
+								</td>
+								<td>
+									{$item['tname']}
+								</td>
+								<!--<td> -->
+									<!--{$item['mobile']}-->
+								<!--</td>-->
+								<td>
+									{$item['sname']}
+								</td>
+								<td>
+								{if $item['pic']}
+									<a href="{php echo tomedia($item['pic'])}" class="gallery-link">
+										<img src="{php echo tomedia($item['pic'])}" alt="image" style="width:50px;height:50px;">
+									</a>
+								{/if}
+								</td>
+								<td>
+									{if $item['pic2']}
+									<a href="{php echo tomedia($item['pic2'])}" target="_blank" class="gallery-link">
+										<img src="{php echo tomedia($item['pic2'])}" alt="image" style="width:50px;height:50px;">
+									</a>
+									{/if}
+								</td>
+								
+								<td>
+									<span class="label {if $type[$item['type']] == '进校'}label-info{else}label-warning{/if}">{$type[$item['type']]}</span><br><br>
+										
+									<span class="label label-danger">{php echo date('Y-m-d H:i:s', $item['createtime'])}</span>
+								</td>
+								
+								<td class="qx_4012" style="text-align:right;">
+									<a class="btn btn-default btn-sm" href="{php echo $this->createWebUrl('visitors', array('id' => $item['id'], 'op' => 'dellog', 'schoolid' => $schoolid))}" onclick="return confirm('此操作不可恢复，确认删除？');return false;" title="删除"><i class="fa fa-times"></i></a>
+								</td>
+							</tr>
+						{/loop}
+					</tbody>
+					<tr >
+						<td colspan="10">
+							<input name="token" type="hidden" value="{$_W['token']}" />
+							<input type="button" class="btn btn-primary qx_4012" name="btndeleteall" value="批量删除" />
+						</td>
+					</tr>
+				</table>
+			{$pager}
+			</form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.gallery-link').magnificPopup({type:'image'});
+    });
+</script>
+<script type="text/javascript">
+$(function(){
+	{if (!(IsHasQx($tid_global,1002303,1,$schoolid)))}
+		$(".qx_2303").hide();
+	{/if}
+	{if (!(IsHasQx($tid_global,1002304,1,$schoolid)))}
+		$(".qx_2304").hide();
+	{/if}
+	
+    $(".check_all").click(function(){
+        var checked = $(this).get(0).checked;
+        $("input[type=checkbox]").attr("checked",checked);
+    });
+
+    $("input[name=btndeleteall]").click(function(){
+        var check = $("input[type=checkbox][class!=check_all]:checked");
+        if(check.length < 1){
+            alert('请选择要删除的订单!');
+            return false;
+        }
+        if(confirm("确认要删除选择的订单?")){
+            var id = new Array();
+            check.each(function(i){
+                id[i] = $(this).val();
+            });
+            var url = "{php echo $this->createWebUrl('visitors', array('op' => 'dellogall','schoolid' => $schoolid))}";
+            $.post(
+                url,
+                {idArr:id},
+                function(data){
+                    if(data.result){
+					    alert(data.msg);
+                        location.reload();
+                    }else{
+                        alert(data.msg);
+                    }
+                },'json'
+            );
+        }
+    });
+
+});
+//$(document).ready(function() {
+//	$("#chosebj").change(function() {
+//		var sy_id = $("#chosebj option:selected").attr('value');
+//		if(sy_id != 0){
+//			window.location.href="{php echo $this->createWebUrl('visitors', array('op' => 'vislog','schoolid' => $schoolid))}"+'&sy_id='+sy_id;
+//		}
+//	});
+//});
+</script>
+{/if}
+<script>
+    $(function() {
+
+        var e_d = 2 ;
+        {if (!(IsHasQx($tid_global,1004001,1,$schoolid)))}
+        $(".qx_4001").hide();
+
+        {/if}
+		{if (!(IsHasQx($tid_global,1004002,1,$schoolid)))}
+		$(".qx_4002").hide();
+		e_d = e_d - 1 ;
+		{/if}
+		{if (!(IsHasQx($tid_global,1004003,1,$schoolid)))}
+		$(".qx_4003").hide();
+		e_d = e_d - 1 ;
+		{/if}
+		{if (!(IsHasQx($tid_global,1004011,1,$schoolid)))}
+		$(".qx_4011").hide();
+		{/if}
+		{if (!(IsHasQx($tid_global,1004012,1,$schoolid)))}
+		$(".qx_4012").hide();
+		{/if}
+		if(e_d == 0){
+			$(".qx_e_d").hide();
+		}
+
+    });
+
+
+
+
+</script>
+{template 'public/footer'}

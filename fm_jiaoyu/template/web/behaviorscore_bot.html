@@ -1,0 +1,28 @@
+{loop $bhs_list $key_bhs $row_bhs}
+<div class="BHS_event" id="BHS_event">
+<div class="BHS_event_order"> {php echo $key_bhs + 1}. </div>
+<div class="BHS_event_content" >
+    <div style="font-weight: bold;">
+       {$row_bhs['sname']}
+    </div>
+    <div class="BHS_event_score" >
+        <span>设置得分 : </span>
+        <span style="width: 300px;">
+            0分<input  name="score[{$row_bhs['sid']}]" type="range" class="score_range" min='0' max='5' step="0.5" value="{php echo $StuBHSList[$row_bhs['sid']]['score'] ? $StuBHSList[$row_bhs['sid']]['score'] : 5}">5分
+         </span>
+
+         <span >已设得分 : </span>
+         <span class="score_value" style="width: 20px;text-align: right;margin-right: 3px;">
+            {php echo $StuBHSList[$row_bhs['sid']]['score'] ? $StuBHSList[$row_bhs['sid']]['score'] : 5}
+          </span>分
+    </div>
+    <div>
+        <span>填写评语 :</span>
+        <span class="btn btn-primary Default_Word" onclick="GetDefaultWord({$row_bhs['sid']},this)" >快速评价</span>
+    </div>
+    <div style="width: 100%;" data-id="{$row_bhs['sid']}">
+        <textarea name="word[{$row_bhs['sid']}]"  class="BHS_word"  >{php echo $StuBHSList[$row_bhs['sid']]['word'] ? $StuBHSList[$row_bhs['sid']]['word'] : ''}</textarea>
+    </div>
+</div>
+</div>
+{/loop}

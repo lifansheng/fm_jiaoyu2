@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbum.css?v=5.00716" />
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/new_yab1.css?v=5.00120" />
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/web/font-awesome5/css/all.min.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+</head>
+<style type="text/css">
+    .isoverflow{overflow: hidden;}
+    .slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 100ms;animation-duration: 100ms;-webkit-animation-fill-mode: both;}
+    .slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+    .slide_left_menu {width: 50%!important;right: 0;background-color: #fff;z-index: 999;min-height: 100%;position: absolute;}
+    .slide_left_menu_til {height: 40px;line-height: 40px;box-sizing: border-box;padding: 0 40px 0 15px;position: relative;font-size: 16px;}
+    .slide_left_menu_ul {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+    .slide_left_menu_ul li {height: 40px;line-height: 40px;font-size: 15px;width: 100%;box-sizing: border-box;overflow: hidden;position: relative;}
+    .photos_header { width: calc(100vw - 20px); height: 38px; line-height: 38px; background-color: #fff;  margin: 10px 10px; padding: 0px 10px;}
+    .act{border-bottom: 2px solid #30c6e1;}
+    .photos_header > a { display: inline-block; width: 50%; color: #30c6e1; text-align: center; height: 36px; }
+    .photos_type_list li { background-color: #fff; padding: 0px 18px; height: 80px; color: #333; margin-bottom: 3px; border-radius: 10px; }
+    .photos_type_list li .photos_type_wrap img { display: inline-block; width: 70px; height: 70px; margin-right: 10px; vertical-align: top; border: 0;border-radius: 10px;}
+    .photos_type_wrap { width: 100%; display: -webkit-box; -webkit-box-align: center; }
+    .photos_type_list li .photos_type_wrap span { display: inline-block; width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 60px; padding-top: 10px; }
+	.reveal-modal {visibility: hidden;top: 30px; left: 2%;right:2%;background: #fff ;position: fixed;z-index: 101;    padding: 25px 18px 38px;}
+	.reveal-modal.small{ width: 200px; margin-left: -140px;}
+	.reveal-modal.medium{ width: 400px; margin-left: -240px;}
+	.reveal-modal.large{ width: 600px; margin-left: -340px;}
+	.reveal-modal.xlarge{ width: 800px; margin-left: -440px;}
+    .record_list li .user_img { width: 0.92rem; height: 0.92rem; }
+    .record_list li .user_img img { width: 0.92rem; height: 0.92rem; vertical-align: top; }
+    .record_list li .user_name { width: 1.6rem; height: 0.92rem; overflow: hidden; float: left; padding-left: 0.25rem; }
+    .record_list li .user_name .user_name_1 { line-height: 0.46rem; font-size: 0.3rem; color: #333; }
+    .record_list li .user_name .user_name_2 { line-height: 0.46rem; font-size: 0.24rem; color: #666; }
+    .record_list li .record_btn_1 { width: 1.5rem; height: 0.6rem; float: right; color: white; background-color: #ffa022; font-size: 0.26rem; line-height: 0.6rem; margin: 0.16rem 0.1rem; text-align: center; border-radius: 0.3rem 0.3rem 0.3rem 0.3rem; }
+    .user_name { height: 50px; text-align: left; color: #666; font-size: 14px; }
+	.user_name > input { float: right; display: block; width: 70%; border-radius: 3px; height: 34px; padding: 0 10px; margin-bottom: 10px; border: 1px solid #e4dede; box-sizing: border-box; }
+	.user_name > select { float: right; display: block; width: 70%; height: 34px; border-radius: 3px; padding: 0 10px; margin-bottom: 10px; border: 1px solid #ccc; -webkit-box-sizing: border-box; box-sizing: border-box; text-align: left; color: #666; font-size: 14px; }
+	.close_pupop_c { width: 200px; margin: 0 auto; }
+	.close_pupop_button_1 { background: #e74580; color: #fff; }
+	.close_pupop_button { width: 90px; height: 30px; border-radius: 5px; line-height: 30px; font-size: 16px; text-align: center; }
+	.close_pupop_button_2 { background: #56c454; color: #fff; margin-left: 20px; }
+	.reveal-modal-bg { position: fixed; height: 100%; width: 100%; background: #000; background: rgba(0,0,0,.8); z-index: 100; display: none; top: 0; left: 0; }
+	.float_l { float: left; }
+     .user_name_1 { line-height: 2rem; font-size: 1rem; color: #333; }
+    .user_name_2 { line-height: 0.7rem; font-size: 0.7rem; color: #666; }
+    .record_btn_1 { width: 3rem; height: 1.5rem; color: white; background-color: #ffa022; font-size: 0.7rem; line-height: 1.5rem; text-align: center; border-radius: 10px; }
+    .statistical_list li { min-height: 2.0rem; background-color: #fff; border-radius: 0.1rem; border: none; padding: 0.2rem 0; box-sizing: border-box; position: relative; }
+    .statistical_list li .time_til { background-color: #fff; width:30%; height: 3.6rem; box-sizing: border-box; text-align: center; vertical-align: middle; border-right: 1px solid #f0f0f2; float: left; }
+    .statistical_list li .time_til .time_til_day { color: #06c1ae; font-size: 1.54rem; line-height: 4rem; height: 1rem; }
+    .statistical_list li .li_content { position: relative; width: 70%; height: 100%; float: right; }
+    .statistical_list li .li_content .tips_2 { width: 50%; padding: 0; padding-top: 1.5rem; background: url({OSSURL}public/mobile/img/blueteeth.png) no-repeat; background-position: center 0.1rem; background-size: 1.1rem 1.1rem; text-align: center; display: inline-block; float: right; line-height: 1.5rem; }
+    .f_pink { color: #ff9f22; }
+    .statistical_list li .li_content .tips_1 { width: 50%; padding-top: 1.5rem; background: url({OSSURL}public/mobile/img/wendu.png) no-repeat; background-position: center 0.1rem; background-size: 1.1rem 1.1rem; text-align: center; display: inline-block; float: right; line-height: 1.5rem; font-size: -2rem; }
+    .record_search_box { height: 35px; line-height: 35px; box-sizing: border-box; position: relative; background-color: #fff; margin:0px 10px 5px 10px; }
+    .record_search_box .time_box { width: 48%; height: 1.6rem; box-sizing: border-box; background-color: #fff; float: left; border: none; position: relative; }
+    .record_search_box .time_box input { height: 1.6rem; line-height: 1.6rem; font-size: 0.8rem; -webkit-appearance: none; border: none; width: 100%; text-align: center; color: #666; }
+    .record_search_box .record_search_btn { height: 35px; width: 35px; background: url(https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/manual_search_icon.png) no-repeat center; background-size: 1.32rem 1.35rem; position: absolute; right: 0; }
+    .time_til_mounth { font-size: 0.8rem; line-height: 5rem; }
+    .aui-grids{ position: relative; overflow: hidden; background-color: #fff; margin: 0px 10px 0px 10px; }
+    .aui-grids-item{ height: 75px; width: 25%; float: left; position: relative; z-index: 0; padding: 0.4rem 0; font-size: 0.85rem; text-align: center; color: #fff; background-color: #fff; }
+    .aui-grids-item span{ text-align: center; width: 100%; display: block; color: #323232; font-size: 1rem; }
+    .aui-grids-image a span img{ width: 40px; height: 40px; display: block; border: none; margin: 0 auto; border-radius: 50%; }
+    .aui-grids-image a .aui-grids-item-text{ color: #666666; font-size: 0.7rem; margin-top: 0.3rem; padding-top: 4px; }
+    .slide_left_menu_ul li.active .fa-check{opacity: 1;}
+    .slide_left_menu_ul li .fa-check{opacity: 0;}
+
+    .ReMasterLoading{transform: translate(-50%,-50%);width: 200px;background-color: rgba(58,58,58,.7);z-index: 999;position: fixed;top:50%;left:50%;border-radius: 10px;color:white;display: none;}
+</style>
+<body>
+
+<div class="ReMasterLoading">
+    <div style="width: 100%;display: flex;justify-content: space-around;margin-top: 20px;" >
+        <i class="fas fa-spinner fa-spin" style="font-size: 40px;"></i>
+    </div>
+    <div style="text-align: center;margin-top: 10px;margin-bottom: 20px;" >获取数据中</div>
+</div>
+
+<div class="slide_left_menu_bg">
+	<div class="slide_left_menu">
+		<div class="slide_left_menu_til">班级列表</div>
+		<ul class="slide_left_menu_ul">
+            {loop $classList $row}
+            <li style="padding-left: 10px;" onclick="SelectBj({$row['bj_id']},'{$row['old_sname']}',this);"  {if $row['sid'] == $bjid}class="active"{/if}>
+                    <i class="fas fa-check" style="margin-right: 10px;color:#45cc9a"></i>
+                <span>{$row['old_sname']}</span></li>
+            {/loop}
+		</ul>
+	</div>
+</div>
+
+<div class="all">
+	<div class="header mainColor" style="z-index: 10;">
+		<div class="m"><span style="font-size: 18px" id="HeaderBjName">{$bjinfo['sname']}</span></div>
+		<div class="r">
+			<a href="javascript:;" class="choice_baby">
+				<img style="height: 30px;margin-top:10px" src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+			</a>
+		</div>
+    </div>
+    <div style="width: 100%;height: 55px;"></div>
+    <style>
+        .BlockTitle{color: #666666; font-size: 16px; padding: 10px;border-bottom: 1px solid #f1f1f1;display: flex;align-items: center;}
+        .BlockContent{padding-top: 10px;}
+        .BlockTitle .fa-minus,.BlockTitle.slide .fa-plus{display: inline-block;}
+        .BlockTitle .fa-plus,.BlockTitle.slide .fa-minus{display: none;}
+    </style>
+    <style>
+        .TopSelectDiv{width: 100%;height: 40px;background-color: white;margin:5px 0;display: flex;align-items: center;}
+        .MiddleMix{flex:1;position: relative;height: 100%;}
+        .MiddleMix .InfactInput{position: absolute;width: 100%;height: 100%;opacity: 0;z-index:2;}
+        .MiddleMix .ShowSpan{position: absolute;width: 100%;height: 100%;display: flex;align-items: center;text-align: center;z-index: 1;}
+    </style>
+    <div class="TopSelectDiv">
+        <div onclick="prevDate()" style="padding:0 10px"> <i class="fas fa-caret-left"></i> 前一天</div>
+        <div class="MiddleMix">
+            <input type="hidden" name="bjid" value="{$bjid}">
+            <input onchange="ChangeDate(this)" class="InfactInput" type="date" name="dates" value="{$date}">
+            <div class="ShowSpan"> <span style='flex:1'>{$date}</span> </div>
+        </div>
+        <div onclick="NextDate()"  style="padding:0 10px"> 后一天 <i class="fas fa-caret-right"></i></div>
+    </div>
+    <style>    
+        .aui-grids-item{width:calc(25% - 4px);margin: 2px;border-radius:5px 0 0 5px;transition:all .15s;}
+        .aui-grids-item.InShow{box-shadow: 0 0 3px 0px black;z-index: 1;}
+        .CheckDetailDiv{position: absolute; height:100%; width: 0; border-radius:0 5px 5px 0; left:100%; top: 0px;display: flex;transition: all .15s;background-color: white;overflow: hidden;}
+        .aui-grids-item:after{content:"";width: 4px;height: 100%;background-color: white;    position: absolute;top:0;right: 0;}
+        .aui-grids-item:nth-of-type(4n - 1):after,.aui-grids-item:nth-of-type(4n):after{left: 0;}
+        .aui-grids-item:nth-of-type(4n - 1) ,.aui-grids-item:nth-of-type(4n){border-radius:0 5px 5px 0; }
+        .aui-grids-item:nth-of-type(4n - 1) .CheckDetailDiv,.aui-grids-item:nth-of-type(4n) .CheckDetailDiv{right: 100%;left:unset;border-radius:5px 0 0 5px;}
+
+        .CheckInfo{width: 100%;overflow: hidden;color: black;min-width: 200px;text-align: left;}
+        .aui-grids-item.InShow .CheckDetailDiv{box-shadow: 0 0 3px 0px black;width: 200%;}
+        .CheckInfo.ckt{color:gray}
+    </style>
+    <div id="recordlist">
+        <div class="aui-grids aui-grids-image">
+            <div class="Block">
+                <div class="BlockTitle" onclick="SwitchSlideBlock(this)">
+                    <span style="flex:1"> 未点到</span>
+                    <i class="fas fa-minus" style="margin-right: 10px;font-size: 14px;" ></i>
+                    <i class="fas fa-plus" style="margin-right: 10px;font-size: 14px;" ></i>
+                </div>
+                <div class="BlockContent NotC">
+                    {loop $NotCheckedList $row}
+                    <a href="javascript:;" class="aui-grids-item" id="hide_{$row['id']}">
+                        <span>
+                            <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}">
+                        </span>
+                        <span class="aui-grids-item-text">{$row['s_name']}</span>
+                    </a>
+                    {/loop}
+                </div>
+                {if count(NotCheckedList) == 0}
+                    <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                        暂无未点到学生
+                    </div>
+                    {/if}
+            </div>
+        </div>
+        <div class="aui-grids aui-grids-image" style="margin: 10px 10px;padding-bottom: 20px;">
+            <div class="Block">
+                <div class="BlockTitle" style=" color: #40a8e8;" onclick="SwitchSlideBlock(this)">
+                    <span style="flex:1"> 已点到</span>
+                    <i class="fas fa-minus" style="margin-right: 10px;font-size: 14px;"></i>
+                    <i class="fas fa-plus" style="margin-right: 10px;font-size: 14px;"></i>
+                </div>
+                <div class="BlockContent Che">
+                    {loop $CheckedList $row}
+                    <a href="javascript:;" onclick="ShowCheckInfo(this)" class="aui-grids-item" id="hide_{$row['id']}">
+                        <div class="CheckDetailDiv">
+                            <div style="width: 100%;height: 100%;padding:10px">
+                                <div  class="CheckInfo" >
+                                    <div>点到家长</div>
+                                </div>
+                                <div  class="CheckInfo" >
+                                    <div>
+                                        <span style="display: inline-block;padding:2px 4px;background-color: rebeccapurple;border-radius: 5px;width: auto;font-size: 12px;color:white">{$row['gx']}</span>
+                                         {$row['realname']} </div>
+                                </div>
+                                <div  class="CheckInfo ckt" >
+                                    <div>点到时间：{$row['CheckTime']}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span>
+                            <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}">
+                        </span>
+                        <span class="aui-grids-item-text">{$row['s_name']}</span>
+                    </a>
+                    {/loop}
+                    {if count(CheckedList) == 0}
+                    <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                        暂无已点到学生
+                    </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(".choice_baby").on("click", function (e) {
+        e.stopPropagation();
+        $(".slide_left_menu_bg").addClass("show_menu_bg");
+    });
+    $(".slide_left_menu_bg").on("click", function () {
+        $(this).removeClass("show_menu_bg");
+    });
+
+
+    function SwitchSlideBlock(e) {
+        $(e).toggleClass("slide")
+        $(e).siblings(".BlockContent").slideToggle(200)
+    }
+
+    function SelectBj(id,name,e) {
+        $(".TopSelectDiv").find("input[name='bjid']").val(id)
+        $("#HeaderBjName").text(name)
+        $(e).siblings().removeClass("active")
+        $(e).addClass("active")
+        AjaxGetData()
+    }
+    
+    function prevDate(){
+        let dateStr = $(".TopSelectDiv").find("input[name='dates']").val();
+        dateStr = dateStr.replace(/-/g,"/");//一般得到的时间的格式都是：yyyy-MM-dd hh24:mi:ss，所以我就用了这个做例子，是/的格式，就不用replace了。  
+        let Dates = new Date(dateStr);
+        Dates=Dates.setDate(Dates.getDate() - 1);
+        Dates=new Date(Dates);
+        let Y = Dates.getFullYear();
+        let M = Dates.getMonth() + 1;
+        let D = Dates.getDate();
+        let times = Y + (M < 10 ? "-0" : "-") + M + (D < 10 ? "-0" : "-") + D;
+        $(".TopSelectDiv").find("input[name='dates']").val(times);
+        $(".TopSelectDiv").find("input[name='dates']").change()
+        AjaxGetData()
+    }
+
+    function NextDate(){
+        let dateStr = $(".TopSelectDiv").find("input[name='dates']").val();
+        dateStr = dateStr.replace(/-/g,"/");//一般得到的时间的格式都是：yyyy-MM-dd hh24:mi:ss，所以我就用了这个做例子，是/的格式，就不用replace了。  
+        let Dates = new Date(dateStr);
+        Dates=Dates.setDate(Dates.getDate() + 1);
+        Dates=new Date(Dates);
+        let Y = Dates.getFullYear();
+        let M = Dates.getMonth() + 1;
+        let D = Dates.getDate();
+        let times = Y + (M < 10 ? "-0" : "-") + M + (D < 10 ? "-0" : "-") + D;
+        $(".TopSelectDiv").find("input[name='dates']").val(times);
+        $(".TopSelectDiv").find("input[name='dates']").change()
+        AjaxGetData()
+    }
+
+
+    function ChangeDate(e){
+        let val = $(e).val()
+        $(e).siblings('.ShowSpan').find("span").text(val)
+        console.log(val)
+    }
+
+    function ShowCheckInfo(e){
+        $(e).addClass("InShow")
+        setTimeout(() => {
+            $("body").on("click",function(){
+                $(".InShow").removeClass("InShow")
+                setTimeout(() => {
+                    $("body").off("click")
+                }, 100);
+                console.log("1")
+            }) 
+        }, 100);
+    }
+
+    function AjaxGetData(){
+        $(".ReMasterLoading").show()
+        let date = $(".TopSelectDiv").find("input[name='dates']").val(),
+            bjid = $(".TopSelectDiv").find("input[name='bjid']").val();
+        let url = "{php echo $this->createMobileUrl('teacheckinhomelog', array('schoolid' => $schoolid,'op'=>'ajaxGetData','weid'=>$weid))}";
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "json",
+            data:{
+                bjid:bjid,
+                date:date
+            },
+            success: function (res) {
+                let NotCHtml = CheHtml = '';
+                $(".ReMasterLoading").hide()
+                res.NotCheck.forEach(x => {
+                    NotCHtml += `<a href="javascript:;"  class="aui-grids-item" id="hide_{$row['id']}">
+                        <span>
+                            <img src="${x.icon}" >
+                        </span>
+                        <span class="aui-grids-item-text">${x.s_name}</span>
+                    </a>`;
+                });
+                res.Check.forEach(x => {
+                    CheHtml += `<a href="javascript:;"  onclick="ShowCheckInfo(this)"  class="aui-grids-item" id="hide_{$row['id']}">
+                        <div class="CheckDetailDiv">
+                            <div style="width: 100%;height: 100%;padding:10px">
+                                <div  class="CheckInfo" >
+                                    <div>点到家长</div>
+                                </div>
+                                <div  class="CheckInfo" >
+                                    <div>
+                                        <span style="display: inline-block;padding:2px 4px;background-color: rebeccapurple;border-radius: 5px;width: auto;font-size: 12px;color:white">${x.gx}</span>
+                                         ${x.realname} </div>
+                                </div>
+                                <div  class="CheckInfo ckt" >
+                                    <div>点到时间：${x.CheckTime}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span>
+                            <img src="${x.icon}" >
+                        </span>
+                        <span class="aui-grids-item-text">${x.s_name}</span>
+                    </a>`;
+                });
+                if(NotCHtml === ''){
+                    NotCHtml = `<div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                        暂无未点到学生
+                    </div>`;
+                }
+                if(CheHtml === ''){
+                    CheHtml = `<div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                        暂无已点到学生
+                    </div>`;
+                }
+                $(".NotC").html(NotCHtml)
+                $(".Che").html(CheHtml)
+                $(".BlockTitle").removeClass("slide")
+                $(".BlockContent").slideDown(150)
+
+            },
+            error: function (jqXHR, textStatus, errorThrown){
+                console.log(jqXHR)
+                console.log(textStatus)
+                console.log(errorThrown)
+                //DoSomething
+            }
+        });
+    }
+</script>
+</body>
+{php include $this->template('newfooter');}
+</html>
+

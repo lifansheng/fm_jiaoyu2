@@ -1,0 +1,28 @@
+<div id="hasdklist">
+    {if !empty($hasdk)}
+    <div class="aui-grids aui-grids-image">
+    {loop $hasdk $item2}
+        <a href="javascript:;" onclick="GotoInfo(`{$item2['id']}`)" class="aui-grids-item">
+            <span>
+                <img src="{$item2['icon']}">
+            </span>
+            <span class="aui-grids-item-text">{$item2['s_name']}</span>
+        </a>
+    {/loop}
+    </div>
+{/if}
+</div>
+<div id="nohasdklist"  style=" display: none;">
+    {if !empty($nohasdk)}
+    <div class="aui-grids aui-grids-image">
+    {loop $nohasdk $item2}
+        <a href="javascript:;" class="aui-grids-item">
+            <span>
+                <img src="{$item2['icon']}" alt="">
+            </span>
+            <span class="aui-grids-item-text">{$item2['s_name']}</span>
+        </a>
+    {/loop}
+    </div>
+{/if}
+</div>

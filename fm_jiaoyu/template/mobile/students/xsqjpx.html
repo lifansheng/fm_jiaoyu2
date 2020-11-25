@@ -1,0 +1,299 @@
+<input id="orgcode" type="hidden" value="10098" />
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>请假申请</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mNewMsg.css?v=4.8" />	
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+<link href="{OSSURL}public/mobile/css/wx_sdk.css?v=062220170310" rel="stylesheet" />
+{php include $this->template('bjqcss');}
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+</head>
+<body>
+<div class="all">
+	<div class="msgBox">
+		<div class="campusBox">
+			<span class="l">{$language['xsqj_sqr']}</span>
+			<span class="c">{$student['s_name']}</span>
+		</div>
+		
+		<div class="timeBox">
+			<span class="l">请假类型：</span>
+			<span class="c">
+				 <select name="select" id="types" >
+					 <option value="">选择请假类型</option>
+					    <option value="病假">病假</option>
+					    <option value="事假">事假</option>
+					    <option value="其他">其他</option>
+				 </select>
+			</span>
+        </div>
+
+        <div class="timeBox">	
+			<span class="l">截止时间：</span>
+			<span class="r">
+				<input class="end endTime" type="date" id="endTime" value="{php echo date('Y-m-d', TIMESTAMP)}"/>
+			</span>				
+        </div>
+
+        <div class="timeBox">
+			<span class="l">选择课程：</span>
+			<span class="c">
+                <select name="select" id="kcid" >
+                    <option value="0">请选择课程</option>
+                    {loop $mykc $row}
+                    <option value="{$row['id']}">{$row['name']}</option>
+                    {/loop}
+                </select>
+			</span>
+        </div>
+
+        <div class="timeBox">
+			<span class="l">选择课时</span>
+			<span class="c" onclick="CheckKs()">点击选择</span>	
+        </div>
+        
+        <div class="timeBox">
+			<span class="l">{$language['xsqj_sjr']}</span>
+			<span class="c" >当前课程授课老师</span>	
+        </div>
+        <style>
+            .hasfold{
+                position: absolute;top:8px;right: 10px;display: none;
+            }
+            .hasfold i{
+                font-size: 16px;color: #67c7be;
+            }
+        </style>
+        <div class="timeBox" style="height: auto;position: relative;" id="showCheckKsInfo">
+            <div class="hasfold unfold" onclick="unfoldKs()"><i class="fa fa-plus" ></i></div>
+            <div class="hasfold fold" onclick="foldKs()"><i class="fa fa-minus" ></i></div>
+			<span class="l">已选课时</span>
+            <span class="c" id="checkKsInfo" style="white-space: normal;height: 30px;">
+            暂未选择课时
+            </span>	
+		</div>
+		<div class="textInfo">
+			<textarea rows="" cols="" id="contents" placeholder="请输入请假详细理由...（200字以内）"></textarea>
+		</div>
+		
+		<div class="msgSubmit">
+			<button class="mainColor" onclick="qjsubbtn();">提交</button>
+		</div>
+	</div>
+</div>
+<style>
+
+input[type="checkbox"] + label::before {
+    content: "\a0"; /*不换行空格*/
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 18px;
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+    border-radius: 2px;
+    border: 1px solid #01cd78;
+    line-height: 1; 
+    margin-right:10px;
+}
+input[type="checkbox"]:checked + label::before {
+    background-color: #01cd78;
+    background-clip: content-box;
+    width: 8px;
+    height: 8px;
+    padding: 2px;
+}
+</style>
+<div class="popUpBox" style="display: none">
+    <div class="trackMatte"></div>
+    <div class="popContentBox">
+        <div class="poptitle" id="sname">课表信息</div>
+        <div class="sectionContBox" id="infobox">
+            <div id="ksinfo" style="padding: 10px;">
+                
+            </div>
+            
+            <div class="btnBox">
+                <div class="btnPass" onclick="tijiao()">确定</div>
+                <div class="btnCancel">取消</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+{php include $this->template('port');} 
+<script>
+$('input').on('blur', function() {
+	var count = 0;
+	var screenHeight = window.screen.height;
+	var blurInterval = setInterval(function () {
+		$('body').css('min-height', (screenHeight-=10)+'px');
+		if (count >= 10) {
+			clearInterval(blurInterval);
+			$('body').css('min-height', '');
+		}
+		count++;
+	}, 10)
+});
+$('select').change(function() {
+	var count = 0;
+	var screenHeight = window.screen.height;
+	var blurInterval = setInterval(function () {
+		$('body').css('min-height', (screenHeight-=10)+'px');
+		if (count >= 10) {
+			clearInterval(blurInterval);
+			$('body').css('min-height', '');
+		}
+		count++;
+	}, 10)
+});
+$('textarea').change(function() {
+	var count = 0;
+	var screenHeight = window.screen.height;
+	var blurInterval = setInterval(function () {
+		$('body').css('min-height', (screenHeight-=10)+'px');
+		if (count >= 10) {
+			clearInterval(blurInterval);
+			$('body').css('min-height', '');
+		}
+		count++;
+	}, 10)
+});
+</script>
+
+<script type="text/javascript">
+var kcid = 0;
+var ksheight = 0;
+var ksidstr = '';
+var ksnamestr = '';
+function CheckKs(){ //选择当前课程的课时列表
+    kcid = $("#kcid").val();
+	endTime = $("#endTime").val();
+	ksidstr = ''
+    if(kcid == 0){
+        jTips("请先选择课程");
+		return;
+    }
+    $.ajax({
+        url: "{php echo $this->createMobileUrl('kcajax',array('op'=>'getNowKs','schoolid'=>$schoolid,'weid'=>$weid))}",
+        type: "post",
+        dataType: "json",
+        data:{kcid:kcid,endTime:endTime},
+        success: function (res) {
+            if(res.result === false){
+                jTips(res.msg);
+		        return;
+            }
+            if(res.result === true){
+                let kslist = res.data
+                let html = ''
+                $('.popUpBox').show();
+                for(item of kslist){
+                    html += `<div style="margin-bottom: 5px;"><input type="checkbox" name="ksid[]" id="${item.id}" value="${item.id}" data-name="${item.date} ${item.start}-${item.end}"><label for="${item.id}">${item.date} <span style="margin-left:10px;">${item.start}-${item.end}</span></label></div>`
+                }
+                $("#ksinfo").html(html)
+            }
+        }
+    });
+}
+
+function tijiao(){ //获取选择的课时str
+    ksheight=0
+    $('input[name="ksid[]"]:checked').each(function (index, obj) {
+		ksidstr += $(this).val()+',';
+        ksnamestr += $(this).attr('data-name')+'<br/>';
+        ksheight++
+    });
+    if(ksheight > 1){
+        $(".unfold").show()
+    }
+   $("#checkKsInfo").html(ksnamestr)
+   $('.popUpBox').hide();
+}
+
+function unfoldKs(){ //展开
+    $("#checkKsInfo").animate({'height':ksheight*30+'px'},150)
+    $(".fold").show()
+    $(".unfold").hide()
+}
+
+function foldKs(){ //折叠
+    $("#checkKsInfo").animate({'height':'30px'},150)
+    $(".unfold").show()
+    $(".fold").hide()
+}
+
+$('.btnCancel').click(function() { //弹窗关闭事件
+    $('.popUpBox').hide();
+});
+function qjsubbtn(){ //确认提交
+	if($("#types").val() == null || $("#types").val() == ""){
+		jTips("请假类型不能为空！");
+		return;
+	}else if($("#endTime").val() == null || $("#endTime").val() == ""){
+		jTips("{$language['xsqj_jstip']}");
+		return;
+	}else if($("#contents").val() == null || $("#contents").val() == ""){
+		jTips("请输入详细请假原由！");
+		return;
+	}else if(ksidstr == null || ksidstr == ''){
+		jTips("请选择课时");
+		return;
+	}
+	ajax_start_loading("加载中...");
+	var submitData = {
+		schoolid :"{$schoolid}",
+		openid :"{$openid}",
+		uid :"{$it['uid']}",
+		weid :"{$weid}",
+		sid :"{$student['id']}",
+		type : $("#types").val(),
+		endTime : $("#endTime").val(),  
+		content : $("#contents").val(),
+		ksidstr : ksidstr,
+		kcid : kcid,
+		schooltype : "{$schooltype}",
+	};
+	$.post("{php echo $this->createMobileUrl('kcajax',array('op'=>'stuqj_px','opt'=>'check'))}",submitData,function(data){
+		if(data.result){
+			ajax_stop_loading();
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('kcajax',array('op'=>'stuqj_px'))}",
+				data: submitData,	
+				dataType: 'json',
+				type: "post",
+				success: function (data) {
+					jTips(data.msg) 
+					setTimeout(function(){
+						window.location.href = "{php echo $this->createMobileUrl('leavelist')}"+"&schoolid="+"{$schoolid}";
+                	},1000)
+				}
+			});
+		}else{
+			ajax_stop_loading();
+			jTips(data.msg);
+		}
+	},'json');  
+}
+</script>
+
+{php include $this->template('footer');}
+<script type="text/javascript">
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+</script>
+</html>

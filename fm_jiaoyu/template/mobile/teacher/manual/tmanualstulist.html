@@ -1,0 +1,184 @@
+<!--
+ * @Discription: 教师端成长手册列表
+ * @Author: Hannibal·Lee
+ * @Date: 2020-04-20 10:30:31
+ * @LastEditTime: 2020-04-24 15:41:59
+ -->
+<!DOCTYPE html>
+<title>{$school['title']}</title>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.8"></script>
+    <link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab.css?v=1?v=1111" />
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.90120" />
+    <link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/filterword.js"></script>
+
+
+    <style>
+        * { box-sizing: border-box; }
+        body { font-size: 16px; margin: 0; background-color: #f3f3f3; }
+        ul, li { list-style: none; }
+        .TopHeader { width: 100%; height: 50px; display: flex; color: white; background-color: #06c1ae; }
+
+        .TopHeader .tm { flex: 1; line-height: 50px;padding-left: 10px; }
+        .TopHeader .tr { width: 50px; font-size: 24px; line-height: 50px; text-align: center; }
+
+        .FileContentBox { height: calc(100vh - 100px); width: 100vw; padding-top: 10px; }
+        .remodal_right { position: fixed; width: 100vw; height: 100vh; top: 0; z-index: 100; }
+        .remodal_right.onhide { transition-delay: 0.2s; transform: scale(0); }
+        .remodal_right.onshow { transform: scale(1); }
+        .remodal_backgroud { width: 100%; height: 100%; background-color: rgba(121, 121, 121, 0.45); }
+        .remodal_rightslide { height: 100%; width: 50%; background-color: white; position: absolute; top: 0; }
+        .remodal_right.onshow .remodal_rightslide { right: 0; transition: right 0.2s; }
+        .remodal_right.onhide .remodal_rightslide { right: -50%; transition: right 0.2s; }
+        .remodal_rightslide .remodal_slide_top { width: 100%; height: 40px; line-height: 40px; text-align: center; border-bottom: 1px solid #c1c1c1; }
+        .content_ul { width: 100%; height: calc(100% - 40px); overflow: scroll }
+        .content_ul li { height: 35px; line-height: 35px; width: 100%; padding: 0 10px; position: relative; border-bottom: 1px solid #c1c1c1; }
+        .content_ul li i { position: absolute; top: 0; right: 5px; line-height: 35px; color: #06c1ae; font-size: 20px; text-shadow: 0px 0px 3px #18675f; display: none; }
+        li.active i { display: block; }
+
+
+        .file_itembox { width: 100%; height: 120px; display: flex; background-color: white; padding: 10px; margin-bottom: 10px; }
+        .file_itembox .status { position: absolute; top: -10px; right: -10px; background-color: #35cec7; padding: 1px 10px; border-radius: 0 0 0 10px; color: white; font-size: 14px; }
+
+        .personal_Search{padding:2px 10px;width: 100%;height: 30px;}
+.personal_Search>input{width: 100%;height: 100%;border-radius: 3px;padding:0 5px;border: 1px solid #d2d2d2;}
+    </style>
+</head>
+
+<body>
+
+    <div class="FileContentBox">
+
+        <style>
+            .BoxTopSlide{height: 2px;width: calc(50% - 5px);position: absolute;background-color: #06c1ae;z-index: 3;}
+            .NeedBottomLine{border-bottom: 1px solid #d6d6d6;}
+        </style>
+
+<div class="personal_Search">
+    <input type="text" placeholder="输入姓名筛选" id="keywords">
+</div>
+
+        <div class="SendBox" style="width: 100%;background-color: white;padding:5px;position: relative;height: calc(100% - 40px);margin-top: 10px;" >
+           <div class="BoxTop" style="display: flex;height: 30px;line-height: 30px;" >
+                <div tab-key="0" class="boxTopItem" style="flex:1;text-align: center;">未发送</div>
+                <div tab-key="1" class="boxTopItem" style="flex:1;text-align: center;">已发送</div>
+           </div>
+           <div class="BoxTopSlide"> </div>
+
+           <script>
+               $(function(){
+                   $(".boxTopItem[tab-key=0]").click()
+               })
+               $(".boxTopItem").on("click",function(){
+                   $(this).siblings().removeClass("active")
+                   $(this).addClass("active")
+                   $(".BoxContent").animate({
+                       'margin-left':Number($(this).attr("tab-key")) * -100 + '%'
+                   },150)
+                   $(".BoxTopSlide").animate({
+                       'left':Number($(this).attr("tab-key")) * 50 + '%',
+                       'margin-left':(1 - Number($(this).attr("tab-key"))) * 5 + 'px'
+                   },150)
+               })
+           </script>
+            <div style="width:100%;position: relative;overflow: hidden;height: calc(100% - 32px);margin-top: 1px;border-top: 1px solid #d6d6d6;" >
+                <div class="BoxContent" style="width: 200%;left:0;display: flex;height: 100%;" >
+                    <div style="width:50%;height: 100%;overflow-y: auto;">
+                        {loop $list $kl}
+                        {if $kl['is_send'] != 1}
+                        <div class="StuLine" style="display: flex;height: 50px;line-height: 50px;padding:0 10px;font-size: 16px;" onclick="gotopage(`{$kl['sid']}`)">
+                            <div>
+                                <img src="{if !empty($kl['icon'])}{php echo tomedia($kl['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="height: 40px;width: 40px;border-radius: 50%;margin-top: 5px;">
+                            </div>
+                            <div class="NeedBottomLine stuName" style="flex:1;margin-left: 10px;padding:0 5px">
+                                {$kl['s_name']}
+                            </div>
+                            <div class="NeedBottomLine">
+                               {$kl['done']}/{$kl['allc']}页
+                            </div>
+                        </div>
+                        {/if}
+                        {/loop}
+                    </div>
+                    <div style="width:50%;height: 100%;overflow-y: auto;">
+                        {loop $list $kl}
+                        {if $kl['is_send'] == 1}
+                        <div class="StuLine" style="display: flex;height: 50px;line-height: 50px;padding:0 10p;font-size: 16px;" onclick="gotopage(`{$kl['sid']}`)">
+                            <div>
+                                <img src="{if !empty($kl['icon'])}{php echo tomedia($kl['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" style="height: 40px;width: 40px;border-radius: 50%;margin-top: 5px;">
+                            </div>
+                            <div class="NeedBottomLine" style="flex:1;margin-left: 10px;padding:0 5px">
+                                {$kl['s_name']}
+                            </div>
+                            <div class="NeedBottomLine">
+                               {$kl['done']}/{$kl['allc']}页
+                            </div>
+                        </div>
+                        {/if}
+                        {/loop}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="width: 100%;height: 50px;display: flex;justify-content: space-evenly;padding:10px" >
+        <div style="line-height: 26px;padding:2px 30px;background-color: #e2992b;height: 30px;border-radius: 15px;color:white" onclick="goback()">返回</div>
+        <div style="line-height: 26px;padding:2px 30px;background-color: #06c1ae;height: 30px;border-radius: 15px;color:white" onclick="sendManual()">发送</div>
+    </div>
+    <script>
+        $(function () {
+            $(".remodal_backgroud").on('click', function () {
+                $(".remodal_right").removeClass("onshow")
+                $(".remodal_right").addClass("onhide")
+            })
+        })
+
+        function SwitchClass(id) {
+            window.location.href = "{php echo $this->createMobileUrl('tmanuallist',array('op'=>'display','schoolid'=> $schoolid))}" + "&bj_id=" + id;
+        }
+
+        function showBjList() {
+            $(".remodal_right").addClass("onshow")
+            $(".remodal_right").removeClass("onhide")
+        }
+
+        function goback(){
+            window.location.href = "{php echo $this->createMobileUrl('tmanuallist',array('op'=>'display','schoolid'=> $schoolid))}" + "&bj_id=" + `{$_GPC['bj_id']}`;
+        }
+
+        function sendManual(){
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'sendManual','schoolid'=> $schoolid,'weid'=>$weid))}",{bjid:`{$_GPC['bj_id']}`,gid:`{$_GPC['fileid']}`},
+            function(data){
+                console.log(data)
+                alert(data.msg)
+                location.reload()
+            },'json');
+        }
+
+        function IntoDetail(id) {
+            window.location.href = "{php echo $this->createMobileUrl('tmanualstulist',array('op'=>'display','schoolid'=> $schoolid,'bj_id'=>$bj_id ))}" + "&fileid=" + id;
+        }
+
+        function gotopage(sid){
+            window.location.href = "{php echo $this->createMobileUrl('tmanuallookstupage',array('op'=>'display','schoolid'=> $schoolid))}" + "&sid=" + sid + "&id=" + `{$_GPC['fileid']}`;
+        }
+
+
+        new FilterWord({
+            'inputDom':'#keywords',
+            'actDom':'.StuLine',
+            'txtDom':'.stuName',
+            'isSlide':true
+        }).filter_init()
+
+    </script>
+
+</body>
+{php include $this->template('newfooter');}
+
+</html>

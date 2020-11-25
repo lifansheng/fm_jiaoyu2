@@ -1,0 +1,122 @@
+{if $type == 1}
+    <div class="fenge"><i></i><p>老师对{$student['s_name']}的打分</p></div>
+	<div class="star_box">
+		{loop $tea_star_stu $it}
+		<div class="one_star_box">
+			{$it['starh5']}
+		</div>
+		{/loop}
+	</div>
+    <div class="fenge"><i></i><p>老师对{$student['s_name']}打分</p></div>
+    {if $teaplxs}
+        {loop $teaplxs $row}
+            <div class="comment_item">
+                <img src="{$row['masthumb']}">
+                <text class="n">{$row['mastname']}
+                    <span class="label label-{if $row['is_show'] == 1}warning{else}success{/if} btn-xs pull-right">{if $row['is_show'] == 1}隐藏{else}显示{/if}</span>
+                    <input style="top:-10px;" class="weui_switchs" {if $row['is_show'] == 0}checked{/if} onclick="opt_pl({$row['id']},'hide',this)" type="checkbox">
+                </text>
+                <text class="c">{$row['content']}</text>
+                {if $row['audio']}
+                <div class="reply_viceo">
+                    <div class="audio_div">
+                        <audio style="width:100%;height: 36px;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+                    </div>
+                </div>
+                {/if}
+                {if $row['photo']}
+                <div class="reply_video">
+                    {$row['photo']}
+                </div>
+                {/if}
+                <div class="reply_shearebox">
+                    <div class="sherbox_replys"><img src="{OSSURL}public/mobile/img/bv_comment_icon.png"/>&nbsp;&nbsp;{$row['allrelpyss']}</div>
+                </div>
+                {if $row['star'] >0}
+                <text class="t"><ul id="box">{$row['h5']}</ul></text>
+                {/if}
+                <text class="t">{if $row['ksname']}<button type="button" class="btn btn-info btn-xs">{$row['ksname']}</button>{/if} {$row['mastime']}</text>
+                {loop $row['allrelpy'] $item}
+                    <div class="reply">
+                        <text class="n">{$item['name']}
+                            <span class="label label-{if $item['is_show'] == 1}warning{else}success{/if} btn-xs pull-right">{if $item['is_show'] == 1}隐藏{else}显示{/if}</span>
+                            <input style="top:-10px;" class="weui_switchs" {if $item['is_show'] == 0}checked{/if} onclick="opt_pl({$item['id']},'hide',this)" type="checkbox">
+                        </text>
+                        <text class="c">{$item['content']}</text>
+                        <text class="t">{$item['reptime']}</text>
+                    </div>
+                {/loop}
+            </div>
+        {/loop}
+        <div class="comment_tips">
+            <i>-</i>您可控制评论是否显示<i>-</i>
+        </div>
+    {else}
+    <div class="default" style="text-align:center">
+        <image src="{MODULE_URL}public/mobile/img/comment_bg.png"></image>
+        <div>暂无评论留言，尝试编辑课程开启评论功能,听听用户的声音</div>
+    </div>
+    {/if}
+{/if}
+
+{if $type == 2}
+    <div class="fenge"><i></i><p>{$student['s_name']}对老师的打分</p></div>
+    <div class="star_box">
+        {loop $stu_star_tea $it}	
+        <div class="one_star_box">
+            <div class="star_name">{$it['tname']}:</div>   
+            {$it['starh5']}
+        </div>
+        {/loop}
+    </div>
+    <div class="fenge"><i></i><p>{$student['s_name']}对老师的打分</p></div>
+    {if $stuplks}
+        {loop $stuplks $row}
+            <div class="comment_item">
+                <img src="{$row['masthumb']}">
+                <text class="n">{$row['mastsname']}
+                    <span class="label label-{if $row['is_show'] == 1}warning{else}success{/if} btn-xs pull-right">{if $row['is_show'] == 1}隐藏{else}显示{/if}</span>
+                    <input style="top:-10px;" class="weui_switchs" {if $row['is_show'] == 0}checked{/if} onclick="opt_pl({$row['id']},'hide',this)" type="checkbox">
+                </text>
+                <text class="c">{$row['content']}</text>
+                {if $row['audio']}
+                <div class="reply_viceo">
+                    <div class="audio_div">
+                        <audio style="width:100%;height: 36px;" src="{$row['audio']}" controls>该浏览器不支持audio属性</audio>
+                    </div>
+                </div>
+                {/if}
+                {if $row['photo']}
+                <div class="reply_video">
+                    {$row['photo']}
+                </div>
+                {/if}
+                <div class="reply_shearebox">
+                    <div class="sherbox_replys"><img src="{OSSURL}public/mobile/img/bv_comment_icon.png"/>&nbsp;&nbsp;{$row['allrelpyss']}</div>
+                </div>
+                {if $row['star'] >0}
+                <text class="t"><ul id="box">{$row['h5']}</ul></text>
+                {/if}
+                <text class="t">{if $row['ksname']}<button type="button" class="btn btn-info btn-xs">{$row['ksname']}</button>{/if} {$row['mastime']}</text>
+                {loop $row['allrelpy'] $item}
+                    <div class="reply">
+                        <text class="n">{$item['name']}
+                            <span class="label label-{if $item['is_show'] == 1}warning{else}success{/if} btn-xs pull-right">{if $item['is_show'] == 1}隐藏{else}显示{/if}</span>
+                            <input style="top:-10px;" class="weui_switchs" {if $item['is_show'] == 0}checked{/if} onclick="opt_pl({$item['id']},'hide',this)" type="checkbox">
+                        </text>
+                        <text class="c">{$item['content']}</text>
+                        <text class="t">{$item['reptime']}</text>
+                    </div>
+                {/loop}
+            </div>
+        {/loop}
+        <div class="comment_tips">
+            <i>-</i>您可控制评论是否显示<i>-</i>
+        </div>
+    {else}
+    <div class="default" style="text-align:center">
+        <image src="{MODULE_URL}public/mobile/img/comment_bg.png"></image>
+        <div>暂无评论留言，尝试编辑课程开启评论功能,听听用户的声音</div>
+    </div>
+    {/if}
+{/if}

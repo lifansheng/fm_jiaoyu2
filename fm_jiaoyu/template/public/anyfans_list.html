@@ -1,0 +1,105 @@
+{if $type == 'any_fanslist'}
+<style>
+.check_fans { width: 40px; height: 40px; position: absolute; }
+</style>
+{loop $list $row}
+<a class="headImg fans_c_box" onclick="fans_c_box(this)" data-uid="{$row['openid']}">
+	<img class="check_fans" style="display:none" src="{MODULE_URL}public/mobile/img/check_icon_on_bg.png">
+	<img class="fans_icon" src="{$row['avatar']}">
+	<div class="line-limit-length">{$row['nickname']}</div>
+</a>
+{/loop}
+<script>
+function fans_c_box(elm,uid){
+	if($(elm).hasClass('fans_cheaded')){
+		$(elm).find('.check_fans').hide()
+		$(elm).removeClass('fans_cheaded')
+	}else{
+		$(elm).find('.check_fans').show()
+		$(elm).addClass('fans_cheaded')
+	}
+}
+</script>
+{/if}
+{if $type == 'team_info'}
+	{loop $list $item}
+	<tr>
+		<td  style="text-align: center;"><img class="sign_header" src="{$item['icon']}"><p style="overflow: hidden; white-space: nowrap;text-overflow: ellipsis; width: 90px;">{$item['name']}</p></td>
+		<td>{if $item['is_really'] == 0}{$item['mobile']}{else}虚拟成员{/if}</td>
+		<td>
+			{if $item['is_really'] == 0}
+				{if $item['order_status'] == 1}<span class="label label-danger weifu">未付</span>{/if}
+				{if $item['order_status'] == 2}<span class="label label-success yifu">已付</span>{/if}
+				{if $item['order_status'] == 3}
+					<span class="label label-warning tuifei">已退</span>
+					{if $item['tuifei'] == 3}
+						<p><span class="label label-info">操作人:{$item['tfuser']}</span>
+					{/if}
+				{/if}
+				{if empty($item['order_status'])}<span class="label label-danger weifu">未付</span>{/if}
+			{/if}
+		</td>
+		<td style="">{if $item['belong']['tname']}<img class="sign_header" src="{$item['belong']['ticon']}">{$item['belong']['tname']}{/if}</td>
+		<td style="">{if $item['belong']['name']}<img class="sign_header" src="{$item['belong']['icon']}">{$item['belong']['name']}{/if}</td>
+		<td>{$item['pktname']}</td>
+		<td> 
+			<span class="label label-info">{$item['belong']['comfrom']}</span>
+		</td>
+		<td style="text-align:right;">
+		{if $item['endtime'] >  TIMESTAMP }
+			{if $item['is_really'] == 1}
+				<button type="button" class="btn btn-primary btn-xs" onclick="del_xnfans(this,{$item['id']});">移除</button>
+			{/if}	
+		{else}
+			{if !$item['is_success'] && $item['is_really'] == 0 && $item['order_status'] == 2}
+				<button type="button" class="btn btn-danger btn-xs" onclick="rebackorder(this,{$item['id']});">退费</button><!--处理人数未满,已到期的队伍-->
+			{/if}
+		{/if}
+		</td>
+	</tr>
+	{/loop}
+<script>
+function del_xnfans(elm,id){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('kecheng', array('op'=>'del_xnfans'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			id:id,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.reslut) {
+				$(elm).parent().parent().hide(200)
+				get_teamlist()
+			}else{
+				alert(data.msg)
+			}
+		}		
+	});
+}
+function rebackorder(elm,id){
+	$.ajax({
+		url: "{php echo $this->createWebUrl('kecheng', array('op'=>'rebackorder'))}",
+		type: "post",
+		dataType: "json",
+		data: {
+			id:id,
+			schoolid:"{$schoolid}"
+		},
+		success: function (data) {
+			if (data.result) {
+				var tips = $(elm).parent().parent().children().find('.yifu')
+				tips.removeClass("label-success")
+				tips.addClass("label-warning")
+				tips.text('已退')
+				$(elm).hide(200)
+				alert(data.msg)
+			}else{
+				alert(data.msg)
+			}
+		}		
+	});
+}
+</script>	
+{/if}

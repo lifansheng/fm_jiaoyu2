@@ -1,0 +1,30 @@
+{loop $leave1 $v}
+		<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft">
+					<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+				</div>
+				<div class="erwei" id="erwei{$v['id']}">
+				{if $ertype && $v['qrcode_id']}
+					<img src="{OSSURL}public/mobile/img/20180317214727.png" class="img-responsive">
+				{/if}
+				</div>
+							
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox">
+						{if $v['sex'] == 1}<div class="boytip"></div>{/if}
+						{if $v['sex'] == 2}<div class="girltip"></div>{/if}						
+						<span class="teacherInfo">{$v['s_name']}</span>					
+						{if $v['pard']}<div class="wexintip"></div>{/if}
+						
+					</div>
+					<p class="notifyCreateTime">{$v['banji']}&nbsp;&nbsp;&nbsp;{if $v['numberid']}<span class="notifyCreateTime">学号:{$v['numberid']}</span>{/if}</p>
+					
+					<span class="teacherInfo" style="color:#da7131;">已签：<span style="color:blue">{$v['yq']}</span>课时</span>	
+					<span class="teacherInfo" style="color:#da7131;">总共：<span style="color:blue">{$v['buy']}</span>课时</span>
+					<span class="teacherInfo" style="color:#da7131;">剩余：<span style="color:blue">{$v['rest']}</span>课时</span>							
+				</div>
+			</div>
+		</li>
+		{/loop}	

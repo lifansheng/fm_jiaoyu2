@@ -1,0 +1,236 @@
+<div class="card-header d-flex justify-content-between align-items-center border-bottom">
+	<h5 class="mb-0">动态管理</h5>
+	<div class="app-file-action-icons d-flex align-items-center">
+		<i class="fa fa-trash cursor-pointer mr-2" onclick="delBjq(`{$bjqid}`)"></i>
+	</div>
+</div>
+<div class="card-content">
+	<ul class="nav nav-tabs justify-content-center" role="tablist">
+		<li class="nav-item pt-50 ml-2 active">
+			<a class="nav-link active d-flex align-items-center" id="details-tab" data-toggle="tab" href="#details" aria-controls="details" role="tab" aria-selected="true"><i class="fa fa-wechat mr-50"></i>内容</a>
+		</li>
+		<li class="nav-item pt-50 ">
+			<a class="nav-link d-flex align-items-center" id="activity-tab" data-toggle="tab" href="#activity" aria-controls="activity" role="tab" aria-selected="false"><i class="fa fa-comment mr-50"></i>评论</a>
+		</li>
+		<li class="nav-item pt-50 ">
+			<a class="nav-link d-flex align-items-center" id="dianzan-tab" data-toggle="tab" href="#dianzan" aria-controls="dianzan" role="tab" aria-selected="false"><i class="fa fa-heart mr-50"></i>点赞</a>
+		</li>
+		<li class="nav-item pt-50 ">
+			<a class="nav-link d-flex align-items-center" id="contrl-tab" data-toggle="tab" href="#contrl" aria-controls="contrl" role="tab" aria-selected="false"><i class="fa fa-gear mr-50"></i>控制</a>
+		</li>
+	</ul>
+	<div class="tab-content chat-profile-rightover pl-0">
+		<div class="tab-pane active" id="details" aria-labelledby="details-tab" role="tabpanel">
+			<div class="card-body mt-2">
+				<!-- 文字内容 -->
+				<p class="description pb-1">{$bjqInfo['content']}</p>
+				<!-- 分享链接 -->
+				{if $bjqInfo['link']}
+				<p class="description pb-2"><a href="{$bjqInfo['link']}" target="_blank">{$bjqInfo['linkdesc']}</a></p>
+				{/if}
+				<script>
+				icon_replace($(".description"));
+				</script>
+				<!-- 视频内容 -->
+				{if $bjqInfo['video']}
+				<div class="border-bottom d-flex align-items-center flex-column pb-1">
+					<video id="video" style="position: relative; max-height: 200px;" controls="controls" webkit-playsinline="" playsinline="">
+						<source src="{$bjqInfo['video']}" type="video/mp4">
+					</video>
+				</div>
+				{/if}
+				<!-- 语音内容 -->
+				{if $bjqInfo['audio']}
+				<div class="border-bottom d-flex align-items-center flex-column pb-1">
+					<div class="app-audio">
+						<div class="inner">
+							<div id="audio-music-4" class="wx audioLeft clearfix">
+								<img alt="语音头像" class="audioLogo" width="40" height="40" src="{$bjqInfo['avatar']}">
+								<div class="audio_def js-audio-wx-{$bjqInfo['id']}" id="jp_jplayer_{$bjqInfo['id']}">
+								<span style="" class="audio-time">{$bjqInfo['audiotime']}’</span>
+									<audio id="jp_audio_{$bjqInfo['id']}" preload="none" src="{php echo tomedia($bjqInfo['audio'])}"></audio>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<script>
+				$(function () {
+					//背景音乐播放
+					var myaudio = document.getElementById("jp_audio_{$bjqInfo['id']}");
+					$(".js-audio-wx-{$bjqInfo['id']}").on("click", function () {
+						if ($(this).hasClass("audio_play")) {
+							$(".js-audio-wx-{$bjqInfo['id']}").addClass("audio_def");
+							$(".js-audio-wx-{$bjqInfo['id']}").removeClass("audio_play");
+							myaudio.pause();
+						} else {
+							$(".js-audio-wx-{$bjqInfo['id']}").addClass("audio_play");
+							$(".js-audio-wx-{$bjqInfo['id']}").removeClass("audio_def");
+							myaudio.play();
+						}
+						myaudio.addEventListener('ended', function () {
+							$(".js-audio-wx-{$bjqInfo['id']}").addClass("audio_def");
+							$(".js-audio-wx-{$bjqInfo['id']}").removeClass("audio_play");
+							audioEnded();
+						}, false);
+					})
+				});
+				</script>
+				{/if}
+				<!-- 图片列表 --><!-- 有图片的情况下加载JS -->
+				{if $picurlList}
+				<script type="text/javascript" src="{OSSURL}public/mobile/js/swipe.js"></script>
+				<script src="{OSSURL}public/mobile/js/banner.js"></script>
+				<script src="{OSSURL}template/public/js/jquery.picEyes.js"></script>
+				<div class="border-bottom pb-1">
+					<div class="showPic">
+						<div id="banner_box" class="box_swipe cursor-pointer" style="width: 100%; margin: 0px auto; visibility: visible;overflow: hidden;">
+							<ul id="bheight">
+								{loop $picurlList $row}
+								<li>
+									<a class="showbigpic">
+										<img src="{php echo tomedia($row['picurl'])}" width="100%" style="max-height:350px;">
+									</a>
+								</li>
+								{/loop}
+							</ul>
+						</div>
+					</div>
+				</div>
+				<script>
+				$(function(){
+					$('.showbigpic').picEyes();
+				});
+				</script>
+				{/if}
+			</div>
+		</div>
+		<div class="tab-pane pl-0" id="activity" aria-labelledby="activity-tab" role="tabpanel">
+			<div class="card-body mt-2">
+				<ul class="widget-timeline mb-0">
+					{loop $plList $item}
+					<li class="timeline-items timeline-icon-{$item['status']} active">
+						<div class="timeline-time">{$item['time']}</div>
+						<h6 class="timeline-title"></h6>
+						<p class="timeline-text">{$item['shername']}<i class="fa fa-trash ml-2 danger cursor-pointer" onclick="delpl(this,`{$item['id']}`,`{$item['sherid']}`)"></i></p>
+						<div class="timeline-content"><img src="{$item['avatar']}" alt="PSD" height="30" width="25" class="mr-50">{$item['content']}</div>
+					</li>
+					{/loop}
+					
+				</ul>
+				<script>
+				icon_replace($(".timeline-content"));
+				</script>
+			</div>
+		</div>
+		<div class="tab-pane" id="dianzan" aria-labelledby="dianzan-tab" role="tabpanel">
+			<div class="card-body mt-2">
+				{loop $dzList $item}
+				<div class="fansboxs mb-1 ml-1">
+					<img src="{$item['avatar']}" alt="" width="30" height="30"/>
+					<span class="fansname">{$item['zname']}</span>
+				</div>
+				{/loop}
+			</div>
+		</div>
+		<div class="tab-pane" id="contrl" aria-labelledby="contrl-tab" role="tabpanel">
+			<div class="card-body mt-2">
+				<label class="app-file-label">控制设置</label>
+				<div class="d-flex justify-content-between align-items-center mt-75">
+					<p><i class="fa fa-eye"></i> 是否审核</p>
+					<input id="allow_open" name="allow_open" class="weui_switch" type="checkbox" {if $bjqInfo['isopen'] == '0'}checked{/if}>
+				</div>
+				<div class="d-flex justify-content-between align-items-center">
+					<p><i class="fa fa-comments"></i>  允许评论</p>
+					<input id="allow_pl" name="allow_pl" class="weui_switch" type="checkbox" {if $bjqInfo['is_private'] == 'N'}checked{/if}>
+				</div>
+				<label class="app-file-label">信息</label>
+				<div class="d-flex justify-content-between align-items-center mt-75"><p><i class="fa fa-file-word-o"></i> 文字</p><p class="font-weight-bold">{$strlen}字</p></div>
+				{if $bjqInfo['video']}
+				<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-file-movie-o"></i> 视频</p><p class="font-weight-bold">1个</p></div>
+				{/if}
+				{if $bjqInfo['audio']}
+				<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-file-sound-o"></i> 语音</p><p class="font-weight-bold">1个</p></div>
+				{/if}
+				<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-file-photo-o"></i> 图片</p><p class="font-weight-bold">{php echo count($picurlList)}个</p></div>
+				<div class="d-flex justify-content-between align-items-center"><p><i class="fa fa-paper-plane-o"></i> 链接</p><p class="font-weight-bold">{if $bjqInfo['linkdesc']}有{else}无{/if}</p></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	var bjqid = `{$bjqid}`
+	// 删除班级圈
+	function delBjq(id){
+		if(confirm("确认要将当前班级圈删除吗?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('usercenter', array('op'=>'delbjq','schoolid' => $schoolid,'weid'=>$weid))}",
+				type: "post",
+				dataType: "json",
+				data:{id:id},
+				success: function (res) {
+					WIDC.masonry('remove', $(".masonry").find(`[dataid='${id}']`),true)
+					WIDC.masonry()
+					$(".chat-overlay").removeClass('show')
+					$(".chat-profile").removeClass('show')
+				}
+			});
+		}
+		
+	}
+	//审核开关控制
+	$("#allow_open").bind("change", function () {
+		let isopen = 0;
+		if($("#allow_open").prop('checked')){
+			isopen = 0;
+		}else{
+			isopen = 1;
+		}
+		$.ajax({
+			url: "{php echo $this->createWebUrl('usercenter', array('op'=>'bjqswitch','schoolid' => $schoolid,'weid'=>$weid))}",
+			type: "post",
+			dataType: "json",
+			data:{isopen:isopen,bjqid:bjqid,type:'isopen'},
+			success: function (res) {
+			}
+		});
+	});
+	//评论开关控制
+	$("#allow_pl").bind("change", function () {
+		let allow_pl = 'N';
+		if($("#allow_pl").prop('checked')){
+			allow_pl = 'N';
+		}else{
+			allow_pl = 'Y';
+		}
+		$.ajax({
+			url: "{php echo $this->createWebUrl('usercenter', array('op'=>'bjqswitch','schoolid' => $schoolid,'weid'=>$weid))}",
+			type: "post",
+			dataType: "json",
+			data:{allow_pl:allow_pl,bjqid:bjqid,type:'allow_pl'},
+			success: function (res) {
+			}
+		});
+	});
+
+	//删除评论
+	function delpl(obj,plid,sherid){
+		if(confirm("确认要将当前评论删除吗?")){
+			$.ajax({
+				url: "{php echo $this->createWebUrl('usercenter', array('op'=>'delpl','schoolid' => $schoolid,'weid'=>$weid))}",
+				type: "post",
+				dataType: "json",
+				data:{plid:plid},
+				success: function (res) {
+					let plnum = Number($(`.masonry [dataid='${sherid}'] .reply_num`).html()) - 1;
+					if(res.result == true){
+						alert(res.msg)
+						$(obj).parent().parent().remove()
+						$(`.masonry [dataid='${sherid}'] .reply_num`).html(plnum);
+					}
+				}
+			});
+		}
+		
+	}
+</script>

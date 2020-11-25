@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+</head>
+	<body>
+		<div class="all">
+			<div id="titlebar" class="header mainColor">
+				<div class="l">
+					<a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a>
+				</div>
+				<div class="m">
+					<span>访问进度</span>
+				</div>
+			</div>
+			
+			{php $time = time();}
+			<div id="titlebar_bg" class="_header"></div>
+			<div class="bangdingForm">
+				<div class="bangdingBox">
+					<div class="infoBox">
+						<ul>
+							<li>
+								<span class="f">已提交</span>
+							</li>
+							<li>
+								<span class="r">待确定</span>
+							</li>
+							<li>
+								<span {if $item['status'] == 1}class="n"{else}class="r"{/if}>{if $item['status'] == 1}未确定{else if $item['status'] == 2 && ($item['starttime'] > $time)}预约成功{else if $item['status'] == 2 && ($item['endtime'] > $time) && ($time > $item['starttime'])}访问中{else if $item['status'] == 2 && ($time > $item['endtime'])}访问结束{/if}</span>
+							</li>							
+						</ul>	
+					</div>				
+				</div>
+			</div>
+			{if $item['qrcode']}
+			<div class="bangdingForm">
+				<div class="bangdingBox">
+					<div class="headerBox2">
+						<div class="headerinfo1">
+							<span class="h"><img src="{php echo tomedia($school['logo']);}"></img></span>
+							<span class="t">{$school['title']}</span>
+						</div>
+					</div>				
+					<div class="campusBottom">
+						<div class="tips">扫一扫下方二维码</div>
+						<img id="qrcodeurl" alt="" src="{php echo tomedia($item['qrcode']);}?{php echo time()}">
+					</div>				
+				</div>
+			</div>
+			{/if}				
+			<div class="bangdingForm">
+				<div class="bangdingBox">
+					<div class="headerBox3">
+						<div class="headerinfo3">
+							<span class="t">申请信息</span>
+						</div>
+					</div>					
+					<div class="infoBox2">
+						<ul>
+								<li>
+									<span class="l">访客姓名：</span>
+									<span class="r">{$item['s_name']}</span>
+								</li>
+								<li>
+									<span class="l">访客单位：</span>
+									<span class="r">{$item['unit']}</span>
+								</li>
+								<li>
+									<span class="l">时间段：</span>
+									<span class="r">{php echo date('m月d日 H:i', $item['starttime'])}&nbsp;&nbsp;到&nbsp;&nbsp;{php echo date('m月d日 H:i', $item['endtime'])}</span>
+								</li>
+								<li>
+									<span class="l">审核状态：</span>
+									<span class="r">{if $item['status'] == 1}<span class="diary_tag_notify">预约待确定</span>{else if $item['status'] == 2 && ($item['starttime'] > $time)}<span class="diary_tag_other">预约成功</span>{else if $item['status'] == 2 && ($item['endtime'] > $time) && ($time > $item['starttime'])}<span class="diary_tag_other">访问中</span>{else if $item['status'] == 2 && ($time > $item['endtime'])}<span class="diary_tag_other">访问结束</span>{/if}</span>
+								
+								<li>
+									<span class="l">老师姓名</span>
+									<span class="r">{$teacher['tname']}</span>
+								</li>
+								<li>
+									<span class="l">老师手机：</span>
+									<span class="r">{$teacher['mobile']}</span>
+								</li>	
+								<li>
+								<span class="l">单位：</span>
+								<span class="r">{$item['unit']}</span>
+								</li>
+								<li>
+									<span class="l">车牌：</span>
+									<span class="r">{$item['plate_num']}</span>
+								</li>
+								<li>
+									<span class="l">访问事由：</span>
+									<span class="r">{$visireason['sname']}</span>
+								</li>	
+						</ul>					
+					</div>					
+				</div>
+			</div>			
+		</div>
+	</body>
+<script type="text/javascript">
+<!-- 提醒审核功能消息推送未写入 -->
+<!-- function tixing(id){ -->
+	<!-- jConfirm("{$language['visitorsjc_jstip']}？", "确定对话框", function (isConfirm) { -->
+		<!-- if(isConfirm){ -->
+			<!-- var submitData = { -->
+				<!-- id : id, -->
+				<!-- schoolid :"{$schoolid}", -->
+				<!-- openid :"{$openid}", -->
+				<!-- weid :"{$weid}", -->
+				<!-- uid :"{$fan['uid']}", -->
+				<!-- s_name : "{$item['name']}", -->
+				<!-- njid : "{$item['nj_id']}", -->
+				<!-- bjid : "{$item['bj_id']}", -->
+				<!-- mobile : "{$item['mobile']}", -->
+			<!-- }; -->
+				<!-- $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'txshbm'))}",submitData,function(data){ -->
+				<!-- if(data.result){ -->
+					<!-- jTips(data.msg); -->
+				<!-- }else{ -->
+					<!-- jTips(data.msg); -->
+				<!-- } -->
+			<!-- },'json');  -->
+		<!-- } -->
+    <!-- }); -->
+<!-- } -->
+</script>
+{php include $this->template('footer');}
+</html>

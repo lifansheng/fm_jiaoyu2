@@ -1,0 +1,179 @@
+<div class="jlxtypebox" id="jx_boxs">
+    {if $wqdnum != 0}
+    <div class="stu_nubline text-primary">
+        <span class="stutype">未签到</span>
+        <span style="margin-left: 10px;" onclick="CheckAll(this)">全选</span>
+        <span onclick="CheckNotAll(this)">全不选</span>
+        <span class="stunub">{$wqdnum}人</span>
+        <span class="badge badge-light-info badge-sm cursor-pointer mr-2 float-right wait_qr_btn" style="display:none" onclick="saveqd()">确认</span>
+    </div>
+    <div class="stu_list">	
+        {loop $students $row}
+        {if !$row['ischeck']}
+        <div class="stu_box cursor-pointer wait_qr noact" sid="{$row['id']}" leixing='1' logid='0'>
+            <img src="{$row['icon']}">
+            <div class="stu_name"><small class="text-muted">{$row['s_name']}</small></div>
+        </div>
+        {/if}
+        {/loop}
+    </div>
+    {/if}
+    {if $dxwqrnum != 0}
+    <div class="stu_nubline text-primary">
+        <span class="stutype">待确认</span>
+        <span style="margin-left: 10px;" onclick="CheckAll(this)">全选</span>
+        <span onclick="CheckNotAll(this)">全不选</span>
+        <span class="stunub">{$dxwqrnum}人</span>
+        <span class="badge badge-light-info badge-sm cursor-pointer mr-2 float-right wait_qr_btn" style="display:none" onclick="saveqd()">确认</span>
+    </div>
+    <div class="stu_list">	
+        {loop $students $row}
+        {if $row['dxqrcheck']}
+        <div class="stu_box cursor-pointer wait_qr noact" sid="{$row['id']}" leixing='1' logid="{$row['dxqrcheck']}">
+            <img src="{$row['icon']}">
+             <div class="stu_name"><small class="text-muted">{$row['s_name']}</small></div>
+        </div>
+        {/if}
+        {/loop}
+    </div>
+    {/if}	
+    {if $yqdnum != 0}
+    <div class="stu_nubline text-primary"><span class="stutype">已签</span><span class="stunub">{$yqdnum}人</span></div>
+    <div class="stu_list">			
+        
+        {loop $students $row}
+        {if $row['ischeck']}
+        <div class="stu_box alread_qr" sid="{$row['id']}">
+            <img src="{$row['icon']}">
+             <div class="stu_name"><small class="text-muted">{$row['s_name']}</small></div>
+        </div>
+        {/if}
+        {/loop}
+    </div>
+    {/if}
+</div>
+<div class="jlxtypebox" id="lx_boxs" style="display:none">
+    {if $wqdnumpm != 0}
+    <div class="stu_nubline text-primary">
+        <span class="stutype">未签离</span>
+        <span style="margin-left: 10px;" onclick="CheckAll(this)">全选</span>
+        <span onclick="CheckNotAll(this)">全不选</span>
+        <span class="stunub">{$wqdnumpm}人</span>
+        <span class="badge badge-light-info badge-sm cursor-pointer mr-2 float-right wait_qr_btn" style="display:none" onclick="saveqd()">确认</span>
+    </div>
+    <div class="stu_list">	
+        {loop $students $row}
+        {if !$row['ischeckpm']}
+        <div class="stu_box cursor-pointer wait_qr noact" sid="{$row['id']}" leixing='2' logid="0">
+            <img src="{$row['icon']}">
+             <div class="stu_name"><small class="text-muted">{$row['s_name']}</small></div>
+        </div>
+        {/if}
+        {/loop}
+    </div>
+    {/if}
+    {if $lxwqrnum != 0}
+    <div class="stu_nubline text-primary">
+        <span class="stutype">待确认</span>
+        <span style="margin-left: 10px;" onclick="CheckAll(this)">全选</span>
+        <span onclick="CheckNotAll(this)">全不选</span>
+        <span class="stunub">{$lxwqrnum}人</span>
+        <span class="badge badge-light-info badge-sm cursor-pointer mr-2 float-right wait_qr_btn" style="display:none" onclick="saveqd()">确认</span>
+    </div>
+    <div class="stu_list">	
+        {loop $students $row}
+        {if $row['lxqrcheck']}
+        <div class="stu_box cursor-pointer wait_qr noact" sid="{$row['id']}" leixing='2' logid="{$row['lxqrcheck']}">
+            <img src="{$row['icon']}">
+             <div class="stu_name"><small class="text-muted">{$row['s_name']}</small></div>
+        </div>
+        {/if}
+        {/loop}
+    </div>
+    {/if}	
+    {if $yqdnumpm != 0}
+    <div class="stu_nubline text-primary"><span class="stutype">已签</span><span class="stunub">{$yqdnumpm}人</span></div>
+    <div class="stu_list">			
+        {loop $students $row}
+        {if $row['ischeckpm']}
+        <div class="stu_box alread_qr" sid="{$row['id']}">
+            <img src="{$row['icon']}">
+             <div class="stu_name"><small class="text-muted">{$row['s_name']}</small></div>
+        </div>
+        {/if}
+        {/loop}
+    </div>
+    {/if}
+</div>
+<div class="jlxtypebox" id="qj_boxs" style="display:none">
+    <div class="stu_nubline text-primary"><span class="stutype">请假</span><span class="stunub">{php echo count($xsqj)}人</span></div>
+    <div class="stu_list">	
+        {loop $xsqj $row2}
+        <div class="stu_box alread_qr" sid="{$row['id']}">
+            <img src="{$row['icon']}">
+            <div class="stu_name">{$row2['s_name']}</div>
+        </div>
+        {/loop}
+    </div>
+</div>
+
+<script>
+//单选已签到待确认学生
+$('.stu_list .wait_qr').click(function() {
+	if($(this).hasClass('noact')){
+		$(this).removeClass('noact');
+		$(this).addClass('act');
+		$('.wait_qr_btn').show(200)
+		if($(".stu_list .wait_qr.noact").length == 0){
+			//同时处理上面全选按钮为已勾选
+			if($('.dqrqx').hasClass('noact')){
+				$('.dqrqx').removeClass('noact');
+				$('.dqrqx').addClass('act');
+			}
+		}
+	}else{
+		$(this).addClass('noact');
+		$(this).removeClass('act');
+		//处理都未选择 隐藏确认按钮
+		if($(".stu_list .wait_qr.act").length == 0){
+			$('.wait_qr_btn').hide(200)
+		}
+		//同时处理上面全选按钮为未勾选
+		if($('.dqrqx').hasClass('act')){
+			$('.dqrqx').removeClass('act');
+			$('.dqrqx').addClass('noact');
+		}
+	}
+});
+
+
+function saveqd(){
+    var data = []
+    $(".stu_list .act").each(function(){
+        let studata = {sid:$(this).attr('sid'),leixing:$(this).attr('leixing'),logid:$(this).attr('logid')}
+        data.push(studata)
+    })
+    ReToastGlobal('签到中')
+    $.ajax({
+		url: "{php echo $this->createWebUrl('usercenter', array('op'=>'saveqd','schoolid' => $schoolid))}",
+		type: "post",
+		dataType: "json",
+		data: {bjid:jlxbjid,data:data,tid:tid,userid:userid},
+		success: function (res) {
+            ReToastGlobal(res.info)
+            show_xsjlx()
+		}
+	});
+}
+
+function CheckAll(e){
+    $(e).parent().next().children().removeClass('noact')
+    $(e).parent().next().children().addClass('act')
+    $('.wait_qr_btn').show(200)
+}
+function CheckNotAll(e){
+    $(e).parent().next().children().removeClass('act')
+    $(e).parent().next().children().addClass('noact')
+    $('.wait_qr_btn').hide(200)
+}
+</script>

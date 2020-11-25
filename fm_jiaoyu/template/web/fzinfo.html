@@ -1,0 +1,143 @@
+<!--
+ * @Discription:  
+ * @Author: Hannibal·Lee
+ * @Date: 2020-03-10 16:15:45
+ * @LastEditTime: 2020-03-10 18:30:29
+ -->
+<div class="modal-dialog">
+    <div class="modal-content" style="border-radius: 20px;">
+        <div class="modal-header">
+            <h4 class="modal-title" style="text-align:center;color:#333;font-size: 17px;">{$nowfz['sname']}分组</h4>
+        </div>
+        <div class="modal-body" style="width: 100%;">
+            <div class="js-menu-container" ng-controller="MenuCtrl" ng-cloak>
+                <div class="panel we7-panel">
+                    <div class="panel-body system-menu-list">
+                        <ul class="one">
+                            <li class="menu-item menu-open">
+                                <div class="table-div table-div-menu" style="padding: 12px 37px;">
+                                    <div class="table-div__item name">{$nowfz['sname']}分组({php echo count($nowfztea)}人)</div>
+                                    <div class="table-div__item name"></div>
+                                    <div class="table-div__item action">
+                                        <div class="link-group">
+                                            <a href="javascript:;" class="toggle"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="two nowfztea">
+                                    <li class="menu-item">
+                                        <div class="input-group text-info" id="nowfztea">
+                                        {loop $nowfztea $row}
+                                            <label class="checkbox-inline" style="width:80px;margin-left: 10px" id="hide_{$row['id']}"><input class="pre idss" data-name="{$row['tname']}" type="checkbox" value="{$row['id']}" checked style="float: none;" onchange="changefz(this,`{$row['id']}`,`{$row['tname']}`,'nowfztea')"/>{$row['tname']}</label>
+                                        {/loop}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            {loop $nonowfz $menu}
+                            <li class="menu-item">
+                                <div class="table-div table-div-menu" style="padding: 12px 37px;">
+                                    <div class="table-div__item name">{$menu['sname']}</div>
+                                    <div class="table-div__item name"></div>
+                                    <div class="table-div__item action">
+                                        <div class="link-group">
+                                            <a href="javascript:;" class="toggle"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="two nonowfztea">
+                                    <li class="menu-item">
+                                        <div class="input-group text-info" id="nonowfztea">
+                                        {loop $menu['nonowfztea'] $r}
+                                            <label class="checkbox-inline" style="width:80px;margin-left: 10px" id="hide_{$r['id']}"><input class="pre idss" data-name="{$r['tname']}" type="checkbox" value="{$r['id']}" style="float: none;" onchange="changefz(this,`{$r['id']}`,`{$r['tname']}`,'nonowfztea')"/>{$r['tname']}</label>
+                                        {/loop}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                            {/loop}
+                            <li class="menu-item">
+                                <div class="table-div table-div-menu" style="padding: 12px 37px;">
+                                    <div class="table-div__item name">未分组({php echo count($nofz)}人)</div>
+                                    <div class="table-div__item name"></div>
+                                    <div class="table-div__item action">
+                                        <div class="link-group">
+                                            <a href="javascript:;" class="toggle"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <ul class="two nofz">
+                                    <li class="menu-item">
+                                        <div class="input-group text-info" id="nofz">
+                                        {loop $nofz $row}
+                                            <label class="checkbox-inline" style="width:80px;margin-left: 10px" id="hide_{$row['id']}"><input class="pre idss" data-name="{$row['tname']}" type="checkbox" value="{$row['id']}" style="float: none;" onchange="changefz(this,`{$row['id']}`,`{$row['tname']}`,'nofz')"/>{$row['tname']}</label>
+                                        {/loop}
+                                        </div>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <script>
+                    $('.toggle').click(function () {
+                        $(this).parent().parent().parent().parent().toggleClass('menu-open')
+                    })
+                </script>
+            </div>
+            <script type="text/javascript">
+                $(function(){
+                    angular.bootstrap($('.js-menu-container'), ['systemApp']);
+                });
+            </script>
+        </div>
+        <div class="modal-footer" style="border-radius: 6px;">
+            <input type="hidden" id="zdfzid" value="{$nowfz['sid']}">
+            <input type="submit" onclick="tijiao()" class="btn btn-success" value="确定">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">关闭</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var delTid = [];
+    function changefz(e,tid,tname,type){
+        let html = '';
+        if(type != 'nowfztea'){
+            if($(e).prop('checked')){
+                let html = `<label class="checkbox-inline" id="hide_${tid}" style="width:80px;margin-left: 10px"><input class="pre idss" data-name="${tname}" type="checkbox" value="${tid}" checked style="float: none;" onchange="changefz(this,'${tid}','${tname}','${type}')"/>${tname}</label>`;
+                $(e).prop("checked",false);
+                $("#hide_"+tid).hide()
+                $("#hide_"+tid).remove()
+                $('#nowfztea').append(html)
+            }else{
+            let html = `<label class="checkbox-inline" id="hide_${tid}" style="width:80px;margin-left: 10px"><input class="pre idss" data-name="${tname}" type="checkbox" value="${tid}" style="float: none;" onchange="changefz(this,'${tid}','${tname}','${type}')"/>${tname}</label>`;
+                $(e).prop("checked",false);
+                $("#hide_"+tid).hide()
+                $("#hide_"+tid).remove()
+                $('#'+type).append(html)
+            }
+        }else{
+            if(!$(e).prop('checked')){
+                delTid.push($(e).val());
+            }
+        }
+    }
+    function tijiao(){
+        let tidArr = [];
+        $('.idss').each(function () {
+            if($(this).is(':checked')){
+                tidArr.push($(this).val());
+            }
+        });
+        let fzid = $("#zdfzid").val();
+        if(tidArr == null || tidArr == ''){
+            alert('请选择老师')
+            return
+        }
+        $.post("{php echo $this->createWebUrl('jsfz',array('op'=>'AddJsFz','schoolid'=>$schoolid))}", {'fzid': fzid ,'tidArr':tidArr,'delTid':delTid}, function(data) {
+            alert('设置成功')
+            $('#Modal3').modal('toggle'); 
+        });
+    }
+</script>

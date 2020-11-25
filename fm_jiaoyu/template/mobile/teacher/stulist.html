@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+<meta name="HandheldFriendly" content="true" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+{php echo register_jssdks();}
+<style type="text/css">
+
+.header { width: 100%; height: 50px; line-height: 50px; position: fixed; z-index: 1000; top: 0; left: 0; box-shadow: 0 0 2px 0px rgba(0,0,0,0.3),0 0 6px 2px rgba(0,0,0,0.15); } .header .l { width: 50px; height: 50px; line-height: 50px; color: white; position: absolute; left: 0; top: 0; } .header .m { width: 100%; height: 50px; line-height: 50px; text-align: center; color: white; font-size: 18px; } .header .r { width: 50px; height: 50px; line-height: 50px; position: absolute; right: 0; top: 0; } .mainColor { background: #06c1ae !important; } .header .l a { font-size: 18px; color: white; display: block; width: 100%; height: 100%; text-align: center; }
+.add_link_box{
+width:100%;position: absolute;left:0;top:60px;bottom:0;z-index: 9999;background-color:rgba(0,0,0,0.5);display: none}
+.add_link_info_wrap{padding:0 10px;margin:0 auto;display: -webkit-box;-webkit-box-orient:vertical;-webkit-box-pack: center;-webkit-box-align: center;height:100%;}
+.my_add_link_inner{width: 100%;height:190px;background-color: #fff;border-radius: 10px;padding: 10px 0;}
+.my_add_link_inner h3{text-align: center;color:#666;}
+.add_link_wrap{height:35px;line-height: 35px;overflow: hidden;padding: 10px; }
+.my_link_title {width: 80px;float: left;color: #666666;}
+.my_add_link_txt{height:35px;line-height: 35px;box-sizing: border-box;width:70%;outline: none;border:1px solid #dcdcdc;border-radius: 3px;float:left;}
+.add_link_btn_wrap{padding: 10px;overflow:hidden;}
+.add_link_btn_sure {float: left;width: 40%;height: 35px;line-height: 35px;background: #06c1ae;font-size: 16px;border-radius: 20px;color: #fff;border: none;padding: 0;margin: 0 5%;outline: none;}
+#add_link_btn_cancel {background: #ffb24e;}
+.link_title {text-align: center;color: #333333;font-size: 16px;margin-top: 2px;}
+.main {margin: 10px 10px;box-shadow: 0px 0px 0px rgba(0,0,0,0);background: #FFF;padding: 0;border-radius: 10px;padding-bottom: 10px;}
+.main_text a {cursor: pointer !important;text-decoration: underline !important;color: #0094ff;}
+.main img {margin-top: 0px;}
+.common_no_audit_status {background-color: initial;}
+.baby_diary_img_list {margin-left: 5px;margin-top: 5px;padding-bottom: 10px;}
+.baby_diary_img_listOther {margin-left: 0;margin-top: 10px;padding-left: 12px;}
+.baby_diary_img_list li {width: 32.5%;height: 70px;overflow: hidden;box-sizing: border-box;padding: 2px;float: left;margin: 0;}
+.notifyImgItem {width: 30.5% !important;position: relative;}
+.btn_closeImg {position: absolute;width: 10px;top: 0;right: 4px;}
+.F_div {right: 30px;bottom:75px}
+.F_divs {left: 30px;bottom:75px;width: 60px;height: 60px;background: #ff6665;box-shadow: 1px 1px 2px 0px #909090;border-radius: 50px;position: fixed;}
+.createQrcode { width: 50px; height: 27px; right: 0; top: 113px; background-color:#06c1ae; border-radius: 50px 0 0 50px; z-index: 2; position: fixed;}
+.baby_diary_img_listOther {padding-left: 10px;border-bottom: 1px solid #f0f0f2;}
+#notifyContent {padding: 10px;background-color: white;border: 1px solid #f0f0f2;}
+.main_text p, .main_text a {display: inline-block;}
+.main, .linkDataUrl {cursor: pointer !important;}
+.linkDataUrl {text-decoration: underline !important;}
+.pv-img {position: relative;}
+.imgDesc {position: absolute;right: 15px;height: 20px;line-height: 20px;font-size: 16px;color: white;text-align: right;z-index: 99;}
+p img {margin: 10px 0 !important;} 
+.slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;/* animation-fill-mode: both; */}
+.slide_left_menu_bg_other.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;/* animation-fill-mode: both; */}
+.slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+.slide_left_menu_bg_other {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;
+z-index: 1000;overflow-y: scroll;display: none;}
+.slide_left_menu {width: 50%!important;right: 0;background-color: #fff;z-index: 999;min-height: 100%;position: absolute;}
+.slide_left_menu_ul_other {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+.slide_left_menu_ul_other li {height: 50px;line-height: 50px;border-bottom: 1px solid #ccc;font-size: 16px;width: 100%;box-sizing: border-box;padding: 0 10px 0 10px;overflow: hidden;
+position: relative;}
+.slide_left_menu_ul_other li.act {background: url({OSSURL}public/mobile/img/be_choose_icon.png) right center no-repeat;background-size: 16px;background-origin: content-box;-moz-background-origin: content-box;-webkit-background-origin: content-box;}
+.slide_left_menu_ul li.act {background: url({OSSURL}public/mobile/img/be_choose_icon_02.png) right center no-repeat;background-size: 16px;background-origin: content-box;-moz-background-origin: content-box;-webkit-background-origin: content-box;}
+.slide_left_menu_ul_other li:last-of-type {border-bottom: none;}
+.slide_left_menu_ul_other li .user_img {width: 50px;height: 50px;position: absolute;left: -5px;top: 0;box-sizing: border-box;padding: 10px;}
+.slide_left_menu_ul_other li .user_img img {width: 100%;height: 100%;border-radius: 50%;}
+.slide_left_menu_ul_other li .change_user {width: 40px;height: 100%;position: absolute;right: 0;top: 0;background: url({OSSURL}public/mobile/img/be_choose_icon.png) center no-repeat;background-size: 30px;}
+.slide_left_menu_til {height: 40px;line-height: 40px;box-sizing: border-box;padding: 0 40px 0 15px;position: relative;font-size: 16px;}
+.slide_left_menu_ul {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+.slide_left_menu_ul li {height: 50px;line-height: 50px;/*border-bottom: 1px solid #ccc;*/font-size: 16px;width: 100%;box-sizing: border-box;padding: 0 10px 0 50px;overflow: hidden;
+position: relative;}
+.hederRightBox {width: 21px;height: 100%;display: inline-block;position: absolute;right: 20px;}
+.hederRightBox a {width: 100%;height: 21px;display: inline-block;position: absolute;top: 50%;transform: translateY(-50%);-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);}
+.audit_statusNew, .audit_statusPass, .audit_statusPassReject {width: 50px;height: 20px;position: absolute;top: 0;right: 0;font-size: 11px;display: -webkit-box;display: -moz-box;
+display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;
+-webkit-box-pack: center;-moz-box-pack: center;-ms-flex-pack: center;-webkit-justify-content: center;justify-content: center;border-top-right-radius: 10px;border-bottom-left-radius: 10px;}
+.audit_statusPass {background-color: #cccccc;color: #333333;}
+.audit_statusNew {background-color: #ff9f22;color: white;}
+.wexintip {height: 20px;width: 20px;background: url({OSSURL}public/mobile/img/weixinicon.png) right center no-repeat;align-items: center;background-size: 16px;}
+.boytip {height: 20px;width: 20px;background: url({OSSURL}public/mobile/img/boy_icon.png) right center no-repeat;align-items: center;background-size: 16px;}
+.girltip {height: 20px;width: 20px;background: url({OSSURL}public/mobile/img/girl_icon.png) right center no-repeat;align-items: center;background-size: 16px;}
+.pard2 {height: 20px;background: #ff9f22;color: white;display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;font-size: 11px;margin-left: 5px;padding: 0 4px;border-radius: 5px;}
+.pard3 {height: 20px;background: #199fbf;color: white;display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;font-size: 11px;margin-left: 5px;padding: 0 4px;border-radius: 5px;}
+.pard4 {height: 20px;background: #31a914;color: white;display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;font-size: 11px;margin-left: 5px;padding: 0 4px;border-radius: 5px;}
+.pard5 {height: 20px;background: #da7f1f;color: white;display: -webkit-box;display: -moz-box;display: -ms-flexbox;display: -webkit-flex;display: flex;-webkit-box-align: center;-moz-box-align: center;-ms-flex-align: center;-webkit-align-items: center;align-items: center;font-size: 11px;margin-left: 5px;padding: 0 4px;border-radius: 5px;}
+.erwei {width: 15.5px;height: 15px;position: absolute;top: 90%;right: 35px;transform: translateY(-50%);-webkit-transform: translateY(-50%);-moz-transform: translateY(-50%);-ms-transform: translateY(-50%);-o-transform: translateY(-50%);}
+.btnEditBox {top: 90%;right: 61px;}
+.btnDeleteBox {top: 90%;}
+.erwei>img {position: absolute;top: 0;left: 0;right: 0;bottom: 0;width: 15px;}
+#attendance {width: 94%;border-radius: 3%;height: 80px;margin-left: 3%;float: left;background: white;}
+#attendance .r1, .m1, .l1 {float: left;height: 70px;width: 30%;margin-top: 5px;}
+#attendance div {text-align: center;}
+.t div.t1, div.t2, div.t3 {width: 100%;height: 34px;line-height: 40px;}
+#num1, #num2, #num3 {font-size: 22px;}
+#num1 {color: #14C682;}
+#attendance .m1 {border-width: 1px;	width: 35%;}
+#attendance .r1, .m1, .l1 {float: left;height: 70px;margin-top: 5px;}
+.t .t3 {color: #14C682;}
+.user_name {text-align: left;color: #666;font-size: 14px;width: 100%;}
+.btn {height: 44px;display: block;background-color: #7bb52d;font: 20px "黑体";text-align: center;color: #fff;cursor: pointer;}
+.user_name > input {    display: block;width: 100%;border-radius: 3px;height: 34px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #e4dede;/* -webkit-box-sizing: border-box; */box-sizing: border-box;}
+.user_name > select {display: block;width: 100%;height: 34px;border-radius: 3px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;
+box-sizing: border-box;text-align: left;color: #666;font-size: 14px;}
+.close_pupop_c {width: 200px; margin: 0 auto;}
+.close_pupop_button {width: 90px;height: 30px;border-radius: 5px;line-height: 30px;font-size: 16px;text-align: center;}
+.close_pupop_button_1 {background: #e74580;color: #fff;}
+.close_pupop_button_2 {background: #56c454;color: #fff;margin-left: 20px;}
+.user_name > input {    display: block;width: 100%;border-radius: 3px;height: 34px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #e4dede;/* -webkit-box-sizing: border-box; */box-sizing: border-box;}
+.user_name > select {display: block;width: 100%;height: 34px;border-radius: 3px;padding: 0 10px;margin-bottom: 10px;border: 1px solid #ccc;-webkit-box-sizing: border-box;
+box-sizing: border-box;text-align: left;color: #666;font-size: 14px;}
+.head_buy1 {position: relative;height: 100px;}
+.head_buy1 .head_img1{height: 100px;text-align: center;}
+.head_buy1 .head_img1>img{height: 100px;}
+.famiyls {width: 100%;text-align: left;color: #666;display: inline-flex;border-bottom:1px solid #e9e9e9;margin-top: 20px;}
+.left{width: 50%;float: left;display: flex;}
+.left_img>img{height: 36px; margin-top: -16px;border-radius: 50%;}
+.left_pard{text-align: center;}
+.left_name{line-height: 36px;padding: 5px;}
+.right{width: 50%;float: right;}
+.right>span{line-height: 43px; margin-left: 10px;float: left;}
+.weui_switch {font-size: 14px;-webkit-appearance: none;-moz-appearance: none;appearance: none;position: relative;width: 48px;height: 28px;border: 1px solid #DFDFDF;outline: 0;border-radius: 16px;box-sizing: border-box;background: #DFDFDF;vertical-align: middle;float: right;top: 8px;right: 12px;}
+.weui_switch:before {content: " ";position: absolute;top: 0;left: 0;width: 46px;height: 26px;border-radius: 15px;background-color: #FDFDFD;-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.weui_switch:after {content: " ";position: absolute;top: 0;left: 0;width: 26px;height: 26px;border-radius: 15px;background-color: #FFFFFF;box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);-webkit-transition: -webkit-transform .3s;transition: transform .3s;}
+.manual_student_list_search {padding: 10px;box-sizing: border-box;width: 98%;margin-top: 62px;margin-bottom: 8px;left: 5px;height: 42px;border: 1px solid #d4d4d4;position: relative;background-color: #fff;border-radius: 6px;}
+.manual_student_list_search .search_text {border: none;height: 22px;line-height: 22px;font-size: 14px;box-sizing: border-box;width: 100%;padding-right: 30px;}
+.manual_student_list_search .search_btn {width: 22px;height: 22px;background: url({OSSURL}public/mobile/img/manual_search_icon.png) no-repeat center;background-size: 22px;position: absolute;right: 10px;
+top: 10px;}
+</style>
+
+<title>{$school['title']}</title>
+</head>
+<body>
+{php include $this->template('port');}
+<div id="BlackBg" class="BlackBg"></div>
+<div class="header mainColor">
+	<div id="titlebar" class="l"><a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a></div>
+	<div class="m"><a><span style="font-size: 18px">{$title_name}</span></a></div>
+	<div class="r">
+        <a href="javascript:;" class="choice_baby">
+            <img style="height: 30px;margin-top:10px" src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+        </a>
+	</div>
+</div>
+<div class="manual_student_list_search">
+	<input type="text" id="search" value="" placeholder="请输入学生姓名、手机号、学号" class="search_text">
+	<div class="search_btn" onclick="search();"></div>
+</div>
+<div id="attendance">
+	<div class="r1">
+		<div class="t">
+			<div id="num1">{$bjallrs}人</div>
+			<div class="t1">本班人数</div>
+		</div>
+	</div>
+	<div class="m1">
+		<div class="t">
+			<div id="num1">{$bjxs}人</div>
+			<div class="t2">绑定人数</div>
+		</div>
+	</div>
+	<div class="l1">
+		<div class="t">
+			<div id="num1">{$alljz}个</div>
+			<div class="t2">已绑微信</div>
+		</div>
+	</div>
+</div>
+<div class="All">       
+	<div class="top_head_blank" style="height:0px"></div>	
+	<div class="listContent">
+		<div id="shousuo"></div>
+		{loop $leave $v}
+		<li class="main" time="{$v['id']}" id="{$v['id']}" style="display: block;">
+			<div class="cutting"></div>
+			<div class="notifyTopBox">
+				<div class="notifyTopLeft">
+					<img src="{if $v['icon']}{php echo tomedia($v['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" class="teacherImgError" />
+				</div>
+				<div class="erwei qx_00502" id="erwei{$v['id']}">
+				{if $ertype && $v['qrcode_id']}
+					<img src="{OSSURL}public/mobile/img/20180317214727.png" class="img-responsive">
+				{/if}
+				</div>
+				<div class="btnEditBox qx_00502" onclick="itemEdit({$v['id']});return false;">
+					<img src="{OSSURL}public/mobile/img/btn_edit_01.png" class="img-responsive">
+				</div>
+				{if !$_W['schooltype']}
+				<div class="btnDeleteBox qx_00503" onclick="del_notice({$v['id']});return false;">
+					<img src="{OSSURL}public/mobile/img/btn_delete_01.png" class="img-responsive">
+				</div>
+				{/if}
+				<div class="notifyTopRight">
+					<div class="notifyTopRightTopBox">
+						{if $v['sex'] == 1}
+							<div class="boytip"></div>
+						{else}
+							<div class="girltip"></div>
+						{/if}
+						<span class="teacherInfo">{$v['s_name']}</span>					
+						{if $v['pard']}<div class="wexintip"></div>{/if}
+						{if $v['pard']}
+							{loop $v['pard'] $vs}
+								<div class="{if $vs['pardid'] ==2}pard2{/if}{if $vs['pardid'] ==3}pard3{/if}{if $vs['pardid'] ==4}pard4{/if}{if $vs['pardid'] ==5}pard5{/if}">{$vs['guanxi']}</div>
+							{/loop}
+						{else}	
+							<div class="JobLeaderBox">未绑定</div>
+						{/if}
+					</div>
+					{if $_W['schooltype']}
+					<span class="teacherInfo" style="color:#da7131;">已签:<span style="color:blue">{$v['yq']}</span>课时</span>	
+					<span class="teacherInfo" style="color:#da7131;">总购:<span style="color:blue">{$v['buy']}</span>课时</span>
+					<span class="teacherInfo" style="color:#da7131;">剩余:<span style="color:blue">{$v['rest']}</span>课时</span>
+					{else}
+						<p class="notifyCreateTime">{$v['banji']}</p>
+					{/if}
+					{if $v['numberid']}<p class="notifyCreateTime">学号:{$v['numberid']}</p>{/if}
+				</div>
+			</div>
+		</li>
+		{/loop}	
+	</div>
+<div class="clear"></div>
+<div class="clear"></div>
+<div class="clear"></div>	
+	<div class="slide_left_menu_bg">
+		<div class="slide_left_menu">
+			<div class="slide_left_menu_til">班级列表</div>
+			<ul class="slide_left_menu_ul">
+			{if $_W['schooltype']}
+				{loop $MyKcList $row}
+							
+				<li onclick="SelectByKc({$row['id']});" {if $kc_id == $row['id']}class="act"{/if}>
+					<div>
+						{$row['name']}
+						{if $row['end'] < $nowtime}
+						【已结课】
+						{/if}
+					</div>
+				</li>
+							
+				{/loop}	
+			{else}
+				{if is_njzr($teachers['id'])}
+					{if $bjlists}
+						{loop $bjlists $row}
+							{if !in_array($row['bj_id'], $bjlists)}
+							<?php $bjlists[] = $row['bj_id'];?>
+								<li onclick="isSelect({$row['bj_id']});" {if $bj_id == $row['bj_id']}class="act"{/if}><div>{$row['bjname']}</div></li>
+							{/if}
+						{/loop}	
+					{/if}		
+						{loop $mynjlist $row}
+							{if $bjlists}
+								{loop $row['bjlist'] $item}
+									{if !in_array($item['sid'], $bjlists)}
+										<li onclick="isSelect({$item['sid']});" {if $bj_id == $item['sid']}class="act"{/if}><div>{$item['sname']}</div></li>
+									{/if}
+								{/loop}
+							{else}
+								{loop $row['bjlist'] $item}
+									<li onclick="isSelect({$item['sid']});" {if $bj_id == $item['sid']}class="act"{/if}><div>{$item['sname']}</div></li>
+								{/loop}				
+							{/if}
+						{/loop}			
+				{else}
+					{if $teachers['status'] == 2}
+						{loop $bjlist $row}
+							<li onclick="isSelect({$row['sid']});" {if $bj_id == $row['sid']}class="act"{/if}><div>{$row['sname']}</div></li>
+						{/loop}
+					{else}
+						{loop $bjlists $row}
+							{if !in_array($row['bj_id'], $bjlists)}
+							<?php $bjlists[] = $row['bj_id'];?>
+								<li onclick="isSelect({$row['bj_id']});" {if $bj_id == $row['bj_id']}class="act"{/if}><div>{$row['bjname']}</div></li>
+							{/if}
+						{/loop}					
+					{/if}
+				{/if}
+			{/if}
+			</ul>
+		</div>
+	</div>	
+	<div class="popUpBox" style="display: none">
+		<div class="trackMatte"></div>
+		<div class="popContentBox">
+			<input type="hidden" id="sid" value="" />
+			<input type="hidden" id="ertype" value="{if $ertype}1{else}2{/if}" />
+			<div class="poptitle" id="sname">学生信息</div>
+			<div id="erinfomsg">
+				{if $ertype}
+				<div class="head_buy1" id="ewcode">
+					<div class="head_img1"><img src=""></div>
+				</div>
+				<div class="popinfo">长按可保存或发送给家长学生</div>
+				{/if}
+				<div class="sectionContBox">
+					<div id="family" class="qx_00502">
+					</div>
+					<div class="btnBox">
+						{if $ertype}
+						<div class="btnPass qx_00502" id="creatqr" onclick="creatqr();">生成二维码</div>
+						{/if}
+						<div class="btnCancel">关闭</div>
+					</div>
+				</div>
+			</div>
+			<div class="sectionContBox" id="infobox" style="display: none">
+				<div class="user_name">
+					<input type="text" placeholder="学生姓名" id="s_name" value="">
+				</div>
+				<div class="user_name">
+					<select class="feedback_title" id="sex">
+						<option value="1">男</option>
+						<option value="2">女</option>
+					</select>					
+				</div>
+				<div class="user_name">
+					<input type="text" placeholder="预留手机号" id="mobile" value="">
+				</div>
+				<div class="user_name">
+					<input type="text" placeholder="绑定码" id="code" value="">
+				</div>				
+				<div class="user_name">
+					<input type="text" placeholder="学号" id="numberid" value="">
+				</div>
+				<div class="user_name">
+					<input type="text" placeholder="家庭住址" id="area_addr" value="">
+				</div>	
+				<div class="btnBox">
+					<div class="btnPass" id="tijiao">提交</div>
+					<div class="btnCancel">取消</div>
+				</div>
+			</div>
+			<div id="poster" style="display: none">
+				<div style="text-align: center;">
+					{$school['title']}({$title_name})
+					<p class="notifyCreateTime">长按保存您的邀请卡，邀请家长一起绑定</p>
+				</div>
+				<div class="sectionContBox" style="text-align: center;">
+					<div class="family" id="qrcode">
+					</div>
+				</div>
+				<div style="text-align: center; color: #558ac1; margin-bottom: 5px;" >
+					<a onclick="refreshPic()">刷新</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	{if !$_W['schooltype']}
+    <div class="F_div qx_00502">
+        <div class="F_div_text ">新增</div>
+    </div>
+	{/if}
+   <!-- <div class="F_divs" >
+        <div class="F_div_text" style="font-size: 13px;">生成海报</div>
+	</div>	 -->
+	{if !$_W['schooltype'] && $bj_id}
+   	<div class="createQrcode" >
+        <div class="F_div_text" style=" font-size: 13px; margin-top: 5px; text-align: center; display: flex; justify-content: space-around; line-height: 16px;"> <img src="{OSSURL}public/mobile/img/add_baby.png" style="width: 15px; height: 15px; background-color: #fff; border-radius: 50%;"> 分享</div>
+	</div>	
+	{/if}
+</div>
+</body>
+</html>
+<script src="{OSSURL}public/mobile/js/scroll_load_news.js?v=1717"></script>
+<script>
+$('input').on('blur', function() {
+	var count = 0;
+	var screenHeight = window.screen.height;
+	var blurInterval = setInterval(function () {
+		$('body').css('min-height', (screenHeight-=10)+'px');
+		if (count >= 10) {
+			clearInterval(blurInterval);
+			$('body').css('min-height', '');
+		}
+		count++;
+	}, 10)
+});
+$('select').on('blur', function() {
+	var count = 0;
+	var screenHeight = window.screen.height;
+	var blurInterval = setInterval(function () {
+		$('body').css('min-height', (screenHeight-=10)+'px');
+		if (count >= 10) {
+			clearInterval(blurInterval);
+			$('body').css('min-height', '');
+		}
+		count++;
+	}, 10)
+});
+</script>
+<script type="text/javascript">
+setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+	}
+}, 100);
+
+/*解绑家长*/
+function del_user(userid) {
+	e = window.event;
+	e.stopPropagation();
+	jConfirm('解绑后将删除此微信产生的数据,确认解绑吗？', '', function(r) {
+		if (r) {
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('techerajax',array('op'=>'jzjb'))}",
+				data: {userid:userid,schoolid:"{$schoolid}"},	
+				dataType: 'json',
+				type: "post",
+				success: function (data) {
+					jTips(data.msg, function () {
+						if(data.result){
+							$("#"+userid).hide();
+						}
+						return true;
+					});
+				}
+			});
+		}
+	});
+}
+
+function search() {
+	jTips('查询中..');
+	e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	var search = $("#search").val();
+	$.ajax({
+		type: "POST",
+		url: "{php echo $this->createMobileUrl('techerajax', array('op' => 'search_stu_info'))}",
+		dataType: "html",
+		data: {
+			search: search,
+			{if $_W['schooltype']}
+			kc_id:"{$kc_id}",
+			schoolType:'1',
+			{else}
+			bj_id:"{$bj_id}",
+			schoolType:'2',
+			{/if}
+			schoolid:"{$schoolid}"
+		},
+		success: function(datas) {
+			if ($.trim(datas)) {
+				$('html,body').addClass('popNoscroll');
+				$('html,body').removeClass('popNoscroll');	
+				$('body').animate({scrollTop:'0'},500);	
+				$('#shousuo').empty();
+				$('#shousuo').prepend(datas);
+			} else {
+				jTips('未查询到数据');
+			}
+		}
+	});
+}
+$(function () {
+	{if !(IsHasQx($tid_global,2000502,2,$schoolid))}
+		$(".qx_00502").hide();
+	{/if}
+	{if !(IsHasQx($tid_global,2000503,2,$schoolid))}
+		$(".qx_00503").hide();
+	{/if}
+	$('body').on('click',  '.main', function(e) {
+		if (!$(e.target).parent().is('.notifyImgItem')) {
+			$('.popUpBox').show();
+			$('#poster').hide();
+			$('#creatqr').show();
+			{if !(IsHasQx($tid_global,2000502,2,$schoolid))}
+				$(".qx_00502").hide();
+			{/if}
+			$('#erinfomsg').show();
+			$('#infobox').hide();
+			$("#family").empty();
+			var sid = $(this).attr('id');
+			$("#sid").val(sid);
+			var ertype = $("#ertype").val();
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('techerajax', array('op' => 'get_stu_info'), true)}",
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					sid: sid,
+					schoolid:"{$schoolid}"
+				},
+				success: function(data) {
+					if (data.result) {
+						if(ertype == 1){
+							if(data.overtime){
+								var html = '<div class="head_img1"><img src="{MODULE_URL}public/mobile/img/overtimeqr.png"></div>';
+							}else{
+								var html = '<div class="head_img1"><img src="'+data['ercode']+'"></div>';
+								$("#creatqr").hide();
+							}
+							$("#ewcode").empty();
+							$("#ewcode").append(html);
+						}
+						$("#sname").html(data.s_name);
+						var family = data.family;
+						if (family.length > 0) {
+							var htmls = "";
+							for (var i = 0; i < family.length; i++) {
+								var userid = family[i].id;
+								var username = family[i].username;
+								if(!username){
+									var username = "";
+								}								
+								var pard = family[i].pard;
+								var avatar = family[i].avatar;
+								if(!avatar){
+									var avatar = "{MODULE_URL}public/mobile/img/gh_default_stu.jpg";
+								}
+								var isjy = family[i].isjy;
+								var ischeck = family[i].ischeck;
+								htmls += "<div class='famiyls' id="+userid+"><div class='left'><div class='left_img'><img src="+avatar+"><div class='left_pard'>"+pard+"</div></div><div class='left_name'>"+username+"</div></div><div class='right'><span id='msg_word"+userid+"'>"+isjy+"</span><input "+ischeck+" class='weui_switch' type='checkbox' onclick='change_msg(" + userid + ");'/></div><div class='btnDeleteBox' onclick='del_user("+userid+");return false;' style='position: relative;'><img src='{OSSURL}public/mobile/img/btn_delete_01.png' class='img-responsive'></div></div>";
+							}
+							$("#family").append(htmls);
+						}
+					}else{
+						jTips(data.msg);
+					}
+				}
+			});
+		} 
+	});
+});
+
+function itemEdit(id, e) {
+	e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	$('.popUpBox').show();
+	$('#erinfomsg').hide();
+	$('#poster').hide();
+	$('#infobox').show();
+	var sid = id;
+	$("#sid").val(sid);
+	$.ajax({
+		url: "{php echo $this->createMobileUrl('techerajax', array('op' => 'get_stu_info'), true)}",
+		type: 'POST',
+		dataType: 'json',
+		data: {
+			sid: sid,
+			schoolid:"{$schoolid}"
+		},
+		success: function(data) {
+			if (data.result) {
+				$("#sex").val(data.sex);
+				$("#mobile").val(data.mobile);
+				$("#sname").html(data.s_name);
+				$("#s_name").val(data.s_name);
+				$("#code").val(data.code);
+				$("#area_addr").val(data.area_addr);
+				$("#numberid").val(data.numberid);
+			}else{
+				jTips(data.msg);
+			}
+		}
+	});
+}
+$(".F_div").click(function(e) {
+var spic = "{$school['spic']}";
+if(!spic){
+	jTips('请联系管理设置校园学生默认头像');
+	return false;
+}
+	e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	$('.popUpBox').show();
+	$('#erinfomsg').hide();
+	$('#poster').hide();
+	$('#infobox').show();
+	$("#sid").val("");
+	$("#sid").val("");
+	$("#code").val("");
+	$("#mobile").val("");
+	$("#sname").html("新增学生");
+	$("#s_name").val("");
+	$("#area_addr").val("");
+	$("#numberid").val("");
+});
+$("#tijiao").click(function(e) {
+    e = e || window.event;
+	e.stopPropagation();
+	var sid = $("#sid").val();
+	var sex = $("#sex").val();
+	var code = $("#code").val();
+	var mobile = $("#mobile").val();
+	var s_name = $("#s_name").val();
+	var area_addr = $("#area_addr").val();
+	var numberid = $("#numberid").val();
+    if($("#s_name").val() == null || $("#s_name").val() == ""){
+        jTips("请输入姓名");
+        return;
+    }
+    if($("#code").val() == null || $("#code").val() == ""){
+        if($("#mobile").val() == null || $("#mobile").val() == ""){
+			jTips("请输入绑定码或手机号");
+			return;
+        }
+	}
+
+	if($("#mobile").val() == null || $("#mobile").val() == ""){
+		if($("#code").val() == null || $("#code").val() == ""){
+			jTips("请输入绑定码或手机号");
+			return;
+		}
+	}
+
+    ajax_start_loading("数据提交中，请稍等...");
+
+    $.ajax({
+		type: "POST",
+		url: "{php echo $this->createMobileUrl('techerajax', array('op' => 'set_stu_info'))}",
+		dataType: "html",
+		data: {
+			sid: sid,
+			sex: sex,
+			code: code,
+			mobile: mobile,
+			s_name: s_name,
+			area_addr: area_addr,
+			numberid: numberid,
+			{if $_W['schooltype']}
+			kc_id:"{$kc_id}",
+			schoolType:'1',
+			{else}
+			bj_id:"{$bj_id}",
+			schoolType:'2',
+			{/if}
+			schoolid:"{$schoolid}"
+		},
+		success: function(datas) {
+			ajax_stop_loading();
+			if ($.trim(datas)) {
+				$('html,body').addClass('popNoscroll');
+				if(sid){
+					jTips("修改成功");
+					$('li[id="' + sid + '"]').remove();
+					clear_page_session('teacher_notify');					
+				}else{
+					jTips("新增学生成功");
+				}
+				$('.popUpBox').hide();
+				$('html,body').removeClass('popNoscroll');	
+				$('body').animate({scrollTop:'0'},500);	
+				$('.listContent').prepend(datas);
+			} else {
+				jTips('操作失败');
+			}
+
+		}
+	});
+});
+function change_msg(id){
+	var id = id;
+	$.post("{php echo $this->createMobileUrl('techerajax', array('op' => 'change_msg'))}",{id:id,schoolid:'{$schoolid}'}, function(data){
+		if(data.result){			
+			$("#msg_word"+id).html(data.msg);		
+		}else{
+			jTips(data.msg);	
+		}
+	},'json');	 
+}
+function creatqr(){
+	jTips("加载中");
+	var sid = $("#sid").val();
+	$.post("{php echo $this->createMobileUrl('comajax', array('op' => 'get_user_qr'))}",{id:sid,schoolid:'{$schoolid}'}, function(data){
+		if(data.result){
+			var html = '<div class="head_img1"><img src="'+data['qrimg']+'"></div>';
+			var html2 = '<img src="{OSSURL}public/mobile/img/20180317214727.png" class="img-responsive">';	
+			jTips(data.msg);
+			$("#ewcode").empty();
+			$("#erwei"+sid).empty();
+			$("#ewcode").append(html);	
+			$("#erwei"+sid).append(html2);
+			$("#creatqr").hide();
+		}else{
+			jTips(data.msg);	
+		}
+	},'json');	 
+}
+
+$('.btnCancel').click(function() {
+	$('.popUpBox').hide();
+	$('html,body').removeClass('popNoscroll');
+});
+
+$('.trackMatte').click(function() {
+	$('.popUpBox').hide();
+	$('html,body').removeClass('popNoscroll');
+});
+
+// 底部加载更多
+new Scroll_load({
+	"limit": "0",
+	"pageSize": 10,
+	"ajax_switch": true,
+	"ul_box": ".listContent",
+	"li_item": ".listContent .main",
+	{if $_W['schooltype']}
+	"ajax_url": "{php echo $this->createMobileUrl('stulist', array('schoolid' => $schoolid, 'kc_id' => $kc_id), true)}",
+	schoolType:'1',
+	{else}
+	"ajax_url": "{php echo $this->createMobileUrl('stulist', array('schoolid' => $schoolid, 'bj_id' => $bj_id), true)}",
+	{/if}
+	"page_name": "teacher_notify",
+	"after_ajax": function () {
+		{if !(IsHasQx($tid_global,2000502,2,$schoolid))}
+			$(".qx_00502").hide();
+		{/if}
+		{if !(IsHasQx($tid_global,2000503,2,$schoolid))}
+			$(".qx_00503").hide();
+		{/if}
+	}
+}).load_init();
+
+/*删除学生*/
+function del_notice(id, e) {
+	e = window.event;
+	e.stopPropagation();
+	jConfirm('删除后所有绑定微信将解绑,确认删除此学生吗？', '', function(r) {
+		if (r) {
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('techerajax', array('op' => 'delstu'), true)}",
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					sid: id,
+					schoolid:"{$schoolid}"
+				},
+				success: function(datas) {
+					jTips(datas.msg, function() {
+						if (datas.result) {
+							$('li[id="' + id + '"]').remove();
+							clear_page_session('teacher_notify');
+						}
+					});
+				}
+			});
+		}
+	});
+}
+
+$(".choice_baby").on("click", function(e) {
+	e.stopPropagation();
+	$(".slide_left_menu_bg").addClass("show_menu_bg");
+});
+$(".slide_left_menu_bg").on("click", function() {
+	$(this).removeClass("show_menu_bg");
+});
+$(function ($) {
+	$("#showbjlist").on('click', function () {
+		$('#selectList').show();
+	});
+	$("#showhistory").on('click', function () {
+		$('#user_info').show();
+	});	
+	$("#clos").on('click', function () {
+		$('#user_info').hide();
+	});		
+	$("#BlackBg").on('click', function () {
+		$('#user_info').hide();
+		$('#selectList').hide();
+	});				
+});
+function isSelect(bjid){
+	jTips("数据加载中！···");
+	location.href = "{php echo $this->createMobileUrl('stulist', array('schoolid' => $schoolid), true)}"+ '&bj_id=' + bjid;
+}
+
+function SelectByKc(id){
+	jTips("数据加载中！···");
+	location.href = "{php echo $this->createMobileUrl('stulist', array('schoolid' => $schoolid), true)}"+ '&kc_id=' + id;
+}
+
+$(".F_divs").click(function(e) {
+	e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	wxScanQRCode();
+});
+function wxScanQRCode(){
+	wx.scanQRCode({
+	needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+	scanType: ["qrCode"], // 指定扫二维码
+		success: function (res) {
+			var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+			var str = result.replace('http://weixin.qq.com/q/','');
+			jTips(str);
+		}
+	});
+}
+var refresh = false;
+$(".createQrcode").click(function(e) {
+	e = window.event;
+	e.stopPropagation();
+	e.preventDefault();
+	createQrcode()
+});
+function createQrcode(){
+	// jTips('加载中')
+	$.post("{php echo $this->createMobileUrl('comajax', array('op' => 'createqrcode'))}",{bjid:'{$bj_id}',schoolid:'{$schoolid}',weid:'{$weid}',refresh:refresh}, function(data){
+		$('#family').empty()
+		let contet = '<img onclick="wxImageShow(this);" src="'+data.qrimg+'" style="width:80%"/>';
+		$('#qrcode').html(contet)
+		$('.popUpBox').show();
+		$('.poptitle').hide();
+		$('#erinfomsg').hide();
+		$('#infobox').hide();
+		$('#poster').show();
+		
+	},'json');	
+}
+//刷新
+function refreshPic(){
+	refresh = true
+	createQrcode()
+}
+//显示大图
+function wxImageShow(elm){
+	var srcList = new Array();
+	var pic = $(elm).attr("src")
+	srcList.push(pic);
+	WeixinApi.imagePreview(pic, srcList);
+}
+var WeixinApi = (function () {
+	return {
+        imagePreview    :imagePreview
+    }; 
+    "use strict";
+    function imagePreview(curSrc,srcList) {
+        if(!curSrc || !srcList || srcList.length == 0) {
+            return;
+        }
+        WeixinJSBridge.invoke('imagePreview', {
+            'current' : curSrc,
+            'urls' : srcList
+        });
+    }
+    return {
+        version         :"2.5",
+        imagePreview    :imagePreview
+    };
+})();
+
+</script>
+{php include $this->template('newfooter');} 

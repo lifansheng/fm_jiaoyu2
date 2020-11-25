@@ -1,0 +1,84 @@
+<div style="display: flex;width: calc(100% - 30px);">
+    <div style="font-size: 20px;"><b>{$Tdata['title']}</b></div>
+    <div style="margin-left: 10px;font-size: 18px;">第{$Tdata['checknub']}节课</div>
+    {if $Tdata['status'] == 1}
+    <div style="width: 50px; height: 22px; line-height: 22px; border-radius: 10px; margin-left: 10px; border: 1px solid #0fc9f3; color: #0fc9f3; text-align: center;">
+        授课中
+    </div>
+    {else if $Tdata['status'] == 2}
+    <div style="width: 50px; height: 19px; line-height: 19px; border-radius: 10px; margin-left: 10px; border: 1px solid #ccc; color: #ccc; text-align: center;">
+        未开始
+    </div>
+    {else if $Tdata['status'] == 3}
+    <div style="width: 50px; height: 19px; line-height: 19px; border-radius: 10px; margin-left: 10px; border: 1px solid #ef4f42; color: #ef4f42; text-align: center;">
+        已结束
+    </div>
+    {/if}
+    <div style="margin-left: 60px;"><i class="fa fa-map-marker"></i>{$Tdata['addinfo']}</div>
+    <div style="margin-left: 15px;">
+        <i class="fa fa-clock-o"></i>
+         <span>{$Tdata['date']}</span>	
+         <span>{$Tdata['day']}</span>	
+         <span>{$Tdata['sd_id']}</span>	
+    </div>
+</div>
+<div style="width: calc(100% - 30px);margin-top: 10px;display: flex;">
+    <div class="KcContainer">
+        <p>
+            <span class="titlecolor">主讲老师:</span>
+            <span>{$Tdata['zjtea']}</span>
+        </p>
+        <p>
+            <span class="titlecolor">辅导老师:</span>
+            <span>{$Tdata['fdtea']}</span>
+        </p>
+        <p>
+            <span class="titlecolor">消费金额:</span>
+            <span>{$Tdata['xfje']}元</span>
+        </p>
+    </div>
+    <div class="KcContainer">
+        <p>
+            <span class="titlecolor">到课学生总数:</span>
+            <span>{$Tdata['SignAll']}</span>
+        </p>
+        <p>
+            <span class="titlecolor">老师已评学生数:</span>
+            <span>{$Tdata['teapj']}</span>
+        </p>
+        <p>
+            <span class="titlecolor">学生已评老师数:</span>
+            <span>{$Tdata['stupj']}</span>
+        </p>
+    </div>
+    <div class="KcContainer" style="display: flex; justify-content: space-between">
+        <div>
+            <p>
+                <span class="titlecolor">自主签到数:</span>
+                <span>{$Tdata['SignStu']}</span>
+            </p>
+            <p>
+                <span class="titlecolor">老师代签数:</span>
+                <span>{$Tdata['SignTea']}</span>
+            </p>
+            <p>
+                <span class="titlecolor">考勤打卡数:</span>
+                <span>{$Tdata['SignKqk']}</span>
+            </p>
+        </div>
+        <div>
+            <p>
+                <span class="titlecolor">请假数:</span>
+                <span>{$Tdata['SignQj']}</span>
+            </p>
+            <p>
+                <span class="titlecolor">旷课数:</span>
+                <span>{$Tdata['SignQk']}</span>
+            </p>
+            <p>
+                <span class="titlecolor">未签数:</span>
+                <span>{$Tdata['SignNo']}</span>
+            </p>
+        </div>
+    </div>
+</div>

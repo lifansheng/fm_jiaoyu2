@@ -1,0 +1,72 @@
+ 
+ <div class="panel panel-info">
+    <div class="panel-heading" style="background-color:unset;color:black">学生信息</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal original" role="form">
+			{if $is_find}
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生头像：</label>
+					<div class="col-sm-2 col-lg-2">
+					 <img style="width:50px;height:50px;border-radius:50%;" src="{if !empty($students['icon'])}{php echo tomedia($students['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" width="50" style="border-radius: 3px;" />
+					 </div>	
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生姓名：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['s_name']}</span>
+						<input class="form-control" name="stuId"  id="stuId" type="hidden" value="{$students['id']}">
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生年级：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['njname']}</span>
+					</div>
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;text-align:right">学生班级：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['bjname']}</span>
+					</div>					
+				</div>
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">当前余额：</label>
+					<div class="col-sm-2 col-lg-2" style="padding-left:0">
+						<span class="form-control" style="padding-left:0;border:unset">{$students['chongzhi']}</span>
+					</div>	
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">操作余额：</label>
+					<div class="col-sm-2 col-lg-2">
+						<input class="form-control" name="refound"  id="refound" type="text" value="{$_GPC['bookworth']}">
+					</div>	
+					<div class="col-sm-2 col-lg-2 newRecord" style="width:8%;" >
+						<a class="btn btn-primary qx_602" onclick="refound();"  >退款</a>				
+					</div>	
+					 			
+				</div>
+			{else}	
+				<div class="form-group ">
+					<label class="col-xs-12 col-sm-2 col-md-2 col-lg-1 control-label" style="width: 100px;">未查询到学生</label>
+				</div>
+			{/if}
+            </form>
+			
+        </div>
+    </div>
+
+<script>
+function refound(op){
+	var stuid = $("#stuId").val();
+	var refound = $("#refound").val();
+	if(refound <= 0){
+		alert("操作余额必须大于0");
+		return;
+	}
+	$.post("{php echo $this->createWebUrl('yuerefound',array('op'=>'changecardrefound','schoolid'=>$schoolid))}", {'stuid': stuid,'refound':refound,'dealop':op}, function(data1) {	
+		if(data1.result){
+			alert(data1.msg);
+			getdetail();
+		}else{
+			alert(data1.msg);
+		}
+		console.log(data1);
+	},'json');
+
+
+}
+
+
+</script>

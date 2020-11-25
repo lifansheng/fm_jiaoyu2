@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>{$school['title']}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <link rel="stylesheet" href="{MODULE_URL}public/mobile/css/weixin.css">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mAlbum.css?v=5.00716" />	
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=5.00120" />
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/new_yab1.css?v=5.00120" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+    {php include $this->template('port');}
+</head>
+<style type="text/css">
+    .isoverflow{overflow: hidden;}
+    .slide_left_menu_bg.show_menu_bg {display: block;-webkit-animation-name: fadeIn;animation-name: fadeIn;-webkit-animation-duration: 600ms;animation-duration: 600ms;-webkit-animation-fill-mode: both;}
+    .slide_left_menu_bg {width: 100%;z-index: 998;background: rgba(0, 0, 0, 0.5);position: fixed;min-height: 100%;top: 0;left: 0;zoom: 1;overflow: hidden;display: none;height: 100%;z-index: 1000;overflow-y: scroll;}
+    .slide_left_menu {width: 50%!important;right: 0;background-color: #fff;z-index: 999;min-height: 100%;position: absolute;}
+    .slide_left_menu_til {height: 40px;line-height: 40px;box-sizing: border-box;padding: 0 40px 0 15px;position: relative;font-size: 16px;}
+    .slide_left_menu_ul {width: 100%;border: 1px solid #ccc;border-left: none;border-right: none;box-sizing: border-box;padding: 0 10px;}
+    .slide_left_menu_ul li {height: 50px;line-height: 50px;font-size: 16px;width: 100%;box-sizing: border-box;overflow: hidden;position: relative;}
+    .photos_header { width: calc(100vw - 20px); height: 38px; line-height: 38px; background-color: #fff;  margin: 10px 10px; padding: 0px 10px;}
+    .act{border-bottom: 2px solid #30c6e1;}
+    .photos_header > a { display: inline-block; width: 50%; color: #30c6e1; text-align: center; height: 36px; }
+    .photos_type_list li { background-color: #fff; padding: 0px 18px; height: 80px; color: #333; margin-bottom: 3px; border-radius: 10px; } 
+    .photos_type_list li .photos_type_wrap img { display: inline-block; width: 70px; height: 70px; margin-right: 10px; vertical-align: top; border: 0;border-radius: 10px;}
+    .photos_type_wrap { width: 100%; display: -webkit-box; -webkit-box-align: center; }
+    .photos_type_list li .photos_type_wrap span { display: inline-block; width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 60px; padding-top: 10px; }
+	.reveal-modal {visibility: hidden;top: 30px; left: 2%;right:2%;background: #fff ;position: fixed;z-index: 101;    padding: 25px 18px 38px;}
+	.reveal-modal.small{ width: 200px; margin-left: -140px;}
+	.reveal-modal.medium{ width: 400px; margin-left: -240px;}
+	.reveal-modal.large{ width: 600px; margin-left: -340px;}
+	.reveal-modal.xlarge{ width: 800px; margin-left: -440px;}
+    .record_list li .user_img { width: 0.92rem; height: 0.92rem; }
+    .record_list li .user_img img { width: 0.92rem; height: 0.92rem; vertical-align: top; }
+    .record_list li .user_name { width: 1.6rem; height: 0.92rem; overflow: hidden; float: left; padding-left: 0.25rem; }
+    .record_list li .user_name .user_name_1 { line-height: 0.46rem; font-size: 0.3rem; color: #333; }
+    .record_list li .user_name .user_name_2 { line-height: 0.46rem; font-size: 0.24rem; color: #666; }
+    .record_list li .record_btn_1 { width: 1.5rem; height: 0.6rem; float: right; color: white; background-color: #ffa022; font-size: 0.26rem; line-height: 0.6rem; margin: 0.16rem 0.1rem; text-align: center; border-radius: 0.3rem 0.3rem 0.3rem 0.3rem; }
+    .user_name { height: 50px; text-align: left; color: #666; font-size: 14px; }
+	.user_name > input { float: right; display: block; width: 70%; border-radius: 3px; height: 34px; padding: 0 10px; margin-bottom: 10px; border: 1px solid #e4dede; box-sizing: border-box; }
+	.user_name > select { float: right; display: block; width: 70%; height: 34px; border-radius: 3px; padding: 0 10px; margin-bottom: 10px; border: 1px solid #ccc; -webkit-box-sizing: border-box; box-sizing: border-box; text-align: left; color: #666; font-size: 14px; }
+	.close_pupop_c { width: 200px; margin: 0 auto; }
+	.close_pupop_button_1 { background: #e74580; color: #fff; }
+	.close_pupop_button { width: 90px; height: 30px; border-radius: 5px; line-height: 30px; font-size: 16px; text-align: center; }
+	.close_pupop_button_2 { background: #56c454; color: #fff; margin-left: 20px; }
+	.reveal-modal-bg { position: fixed; height: 100%; width: 100%; background: #000; background: rgba(0,0,0,.8); z-index: 100; display: none; top: 0; left: 0; }
+	.float_l { float: left; }
+     .user_name_1 { line-height: 2rem; font-size: 1rem; color: #333; }
+    .user_name_2 { line-height: 0.7rem; font-size: 0.7rem; color: #666; }
+    .record_btn_1 { width: 3rem; height: 1.5rem; color: white; background-color: #ffa022; font-size: 0.7rem; line-height: 1.5rem; text-align: center; border-radius: 10px; }
+    .statistical_list li { min-height: 2.0rem; background-color: #fff; border-radius: 0.1rem; border: none; padding: 0.2rem 0; box-sizing: border-box; position: relative; }
+    .statistical_list li .time_til { background-color: #fff; width:30%; height: 3.6rem; box-sizing: border-box; text-align: center; vertical-align: middle; border-right: 1px solid #f0f0f2; float: left; }
+    .statistical_list li .time_til .time_til_day { color: #06c1ae; font-size: 1.54rem; line-height: 4rem; height: 1rem; }
+    .statistical_list li .li_content { position: relative; width: 70%; height: 100%; float: right; }
+    .statistical_list li .li_content .tips_2 { width: 50%; padding: 0; padding-top: 1.5rem; background: url({OSSURL}public/mobile/img/blueteeth.png) no-repeat; background-position: center 0.1rem; background-size: 1.1rem 1.1rem; text-align: center; display: inline-block; float: right; line-height: 1.5rem; }
+    .f_pink { color: #ff9f22; }
+    .statistical_list li .li_content .tips_1 { width: 50%; padding-top: 1.5rem; background: url({OSSURL}public/mobile/img/wendu.png) no-repeat; background-position: center 0.1rem; background-size: 1.1rem 1.1rem; text-align: center; display: inline-block; float: right; line-height: 1.5rem; font-size: -2rem; }
+    .record_search_box { height: 35px; line-height: 35px; box-sizing: border-box; position: relative; background-color: #fff; margin:0px 10px 5px 10px; }
+    .record_search_box .time_box { width: 48%; height: 1.6rem; box-sizing: border-box; background-color: #fff; float: left; border: none; position: relative; }
+    .record_search_box .time_box input { height: 1.6rem; line-height: 1.6rem; font-size: 0.8rem; -webkit-appearance: none; border: none; width: 100%; text-align: center; color: #666; }
+    .record_search_box .record_search_btn { height: 35px; width: 35px; background: url(https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/manual_search_icon.png) no-repeat center; background-size: 1.32rem 1.35rem; position: absolute; right: 0; }
+    .time_til_mounth { font-size: 0.8rem; line-height: 5rem; }
+    .aui-grids{ position: relative; overflow: hidden; background-color: #fff; margin: 0px 10px 0px 10px; }
+    .aui-grids-item{ height: 75px; width: 25%; float: left; position: relative; z-index: 0; padding: 0.4rem 0; font-size: 0.85rem; text-align: center; color: #fff; background-color: #fff; }
+    .aui-grids-item span{ text-align: center; width: 100%; display: block; color: #323232; font-size: 1rem; }
+    .aui-grids-image a span img{ width: 40px; height: 40px; display: block; border: none; margin: 0 auto; border-radius: 50%; }
+    .aui-grids-image a .aui-grids-item-text{ color: #666666; font-size: 0.7rem; margin-top: 0.3rem; padding-top: 4px; }
+</style>
+<body>
+<div class="slide_left_menu_bg">
+	<div class="slide_left_menu">
+		<div class="slide_left_menu_til">班级列表</div>
+		<ul class="slide_left_menu_ul">	
+			{if is_njzr($teacher['id'])}
+					{loop $bjlists $row}
+						{if !in_array($row['bj_id'], $bjlists)}
+						<?php $bjlists[] = $row['bj_id'];?>
+							<li onclick="isSelect({$row['bj_id']});" {if $bj_id == $row['bj_id']}class="act"{/if}><div>{$row['bjname']}</div></li>
+						{/if}
+					{/loop}		
+					{loop $mynjlist $row}
+						{loop $row['bjlist'] $item}
+						{if !in_array($item['sid'], $bjlists)}
+						<li onclick="isSelect({$item['sid']});" {if $bj_id == $item['sid']}class="act"{/if}><div>{$item['sname']}</div></li>
+						{/if}
+						{/loop}
+					{/loop}			
+			{else}
+				{if $teacher['status'] == 2}
+					{loop $bjlist $row}
+						<li onclick="isSelect({$row['sid']});" {if $bj_id == $row['sid']}class="act"{/if}><div>{$row['sname']}</div></li>
+					{/loop}
+				{else}
+					{loop $bjlists $row}
+						{if !in_array($row['bj_id'], $bjlists)}
+						<?php $bjlists[] = $row['bj_id'];?>
+							<li onclick="isSelect({$row['bj_id']});" {if $bj_id == $row['bj_id']}class="act"{/if}><div>{$row['bjname']}</div></li>
+						{/if}
+					{/loop}					
+				{/if}
+			{/if}		
+		</ul>
+	</div>
+</div>
+<div class="all">	
+	<div class="header mainColor" style="z-index: 10;">
+		<div class="m"><span style="font-size: 18px">{$nowbj['sname']}</span></div>
+		<div class="r">
+			<a href="javascript:;" class="choice_baby">
+				<img style="height: 30px;margin-top:10px" src="{OSSURL}public/mobile/img/selectMean.png" class="img-responsive">
+			</a>
+		</div>
+    </div>
+	<div class="photos_header" style="margin-top:55px;">
+        <a class="act" id="record">记录</a><a id='statistics'>统计</a>
+    </div>
+    <div id="recordlist" style="    height: calc(100vh - 155px); overflow: auto;">
+        <div class="aui-grids aui-grids-image">
+            <div style=" color: #666666; font-size: 16px; padding: 10px;">未检测学员<span style="font-size: 12px;">(点击头像进行记录)</span></div>
+            {loop $students $row}
+                {if $row['smc'] == 0}
+                <a href="javascript:;" onclick="ShowAddModal(`{$row['id']}`)" class="aui-grids-item" id="hide_{$row['id']}">
+                    <span>
+                        <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" >
+                    </span>
+                    <span class="aui-grids-item-text">{$row['s_name']}</span>
+                </a>
+                {/if}
+            {/loop}
+        </div>
+        <div class="aui-grids aui-grids-image" style="margin: 10px 10px">
+            <div style=" color: #40a8e8; font-size: 16px; padding: 10px;" >已检测学员</div>
+            <?php
+                $CountDone = 0;
+            ?>
+            <div id="hasjc">
+
+            {loop $students $row}
+                {if $row['smc'] > 0}
+                <?php
+                    $CountDone++;
+                ?>
+                    <a href="javascript:;" onclick="gomcdetail(`{$row['id']}`,`{$row['bj_id']}`)" class="aui-grids-item">
+                        <span>
+                            <img src="{if $row['icon']}{php echo tomedia($row['icon'])}{else}{php echo tomedia($school['spic'])}{/if}" >
+                        </span>
+                        <span class="aui-grids-item-text">{$row['s_name']}</span>
+                    </a>
+                {/if}
+               
+            {/loop}
+            {if $CountDone == 0}
+            <div id="NoCheckStu" style="margin-left: 20px;margin-bottom: 10px;">
+                暂无已检测学员
+            </div>
+        {/if}
+        </div>
+
+        </div>
+    </div>
+
+    <div id="statisticslist" style="display: none;">
+        <div class="record_search_box">
+            <div class="time_box">
+                <input type="date" placeholder="开始时间" id="start"/>
+            </div>
+            <div class="time_box">
+                <input type="date" placeholder="结束时间" id="end"/>
+            </div>
+            <div class="record_search_btn" onclick="submitForm()"></div>
+        </div>
+        <div id="StaUlDiv" style="height: calc(100vh - 195px); overflow: auto;">
+            <ul class="photos_type_list statistical_list" style="  margin: 0px 10px;" id="statisticsul">
+                {loop $checkdata $key $row}
+                <li class="mainli" time="{$key}" ctype='statistics'>
+                    <div class="time_til">
+                        {if $row['istoday']}
+                        <div class="time_til_day">
+                            今天
+                        </div>
+                        {else}
+                            <div class="time_til_day">
+                                {$row['day']}
+                            </div>
+                            <div class="time_til_mounth">{$row['month']}</div>
+                        {/if}
+                    </div>
+                    <div class="li_content">
+                        {if !$row['istoday']}
+                        <div class="tips_2" ><a href="{php echo $this->createMobileUrl('mclist', array('op' => 'display', 'schoolid' => $schoolid, 'bj_id'=> $bj_id, 'createdate'=>$row['createdate'], 'type' => 2))}">未检测<br><span class="f_pink"> {$row['ecount']} </span></a></div>
+                        {else}
+                        <div class="tips_2" id='gocheck'>未检测<br><span class="f_pink"> {$row['ecount']} </span></div>
+                        {/if}
+                        <div class="tips_1" ><a href="{php echo $this->createMobileUrl('mclist', array('op' => 'display', 'schoolid' => $schoolid, 'bj_id'=> $bj_id, 'createdate'=>$row['createdate'], 'type' => 1))}">已检测<br><span class="f_pink"> {$row['scount']} </span></a></div>
+                    </div>
+                </li>   
+                {/loop}
+            </ul>
+        </div>
+       
+    </div>
+</div>
+</body>
+<div style="position: fixed; width: 100%; height: 100%; z-index: 2000; top:0;display: none;" id="showBig">
+    <div onclick="javascript:window.history.back()" style="position: absolute; width: 100%; height: 100%;background-color: rgba(0, 0, 0, 0.49);z-index: 1;"  class="showBig">
+    </div>
+    <div style="position: absolute;width: 100%;background-color: white;padding: 10px; border-radius: 0 0 10px 10px; top:-100vh;z-index: 2;height: 90vh;"  class="showItem">
+        <ul style="    height: calc(90vh - 60px);
+        overflow: auto;
+        margin-bottom: 10px;">
+            <li class="user_name">
+                <label style="line-height: 34px;"><span style="color: red;">*</span>体&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;温:</label>
+                <input type="text" placeholder="例:36.5" id="tiwen">
+            </li>
+            {if keep_MC()}
+            <li class="user_name">
+            <label style="line-height: 34px;">身&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;高:</label>
+                <input type="number" placeholder="例:130" id="height">
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">体重(KG):</label>
+                <input type="number" placeholder="例:36" id="weight">
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">左眼视力:</label>
+                <input type="text" placeholder="例:4.2" id="lefteye">
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">右眼视力:</label>
+                <input type="text" placeholder="例:5.0" id="righteye">
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">口&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;腔:</label>
+                <select class="feedback_title" id="mouth">
+                    <option value="1">正常</option>
+                    <option value="2">不正常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">疱&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;疹:</label>
+                <select class="feedback_title" id="herpes">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">手掌疱疹:</label>
+                <select class="feedback_title" id="handHerpes">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">指甲:</label>
+                <select class="feedback_title" id="nail">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            {/if}
+            <li class="user_name">
+                <label style="line-height: 34px;">咳&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;嗽:</label>
+                <select class="feedback_title" id="cough">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">呕&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;吐:</label>
+                <select class="feedback_title" id="vomit">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">外&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;伤:</label>
+                <select class="feedback_title" id="trauma">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">腹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;泻:</label>
+                <select class="feedback_title" id="diarrhea">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">感&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;冒:</label>
+                <select class="feedback_title" id="cold">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <li class="user_name">
+                <label style="line-height: 34px;">头&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;痛:</label>
+                <select class="feedback_title" id="headache">
+                    <option value="1">正常</option>
+                    <option value="2">异常</option>
+                </select>
+            </li>
+            <input type="hidden" id ='sid'>
+        </ul>
+        <div class="close_pupop_c">
+            <div id="tijiao1" class="close_pupop_button close_pupop_button_1 float_l">确定</div>
+            <div id="close" class="close-reveal-modal close_pupop_button close_pupop_button_2 float_l">取消</div>
+        </div>
+    </div>
+</div>
+{if keep_MC()}
+
+<style>
+    .FLoatRightTag{
+        position: fixed;
+        bottom: 100px;
+        right: 0px;
+        width: 81px;
+        height: 30px;
+        line-height: 30px;
+        background-color: #58d6d0;
+        border-radius: 15px 0 0 15px;
+        padding-left: 15px;
+    }
+</style>
+
+<div class="FLoatRightTag" onclick="gotechars();">
+    <div class="">查看图表</div>
+</div>
+{/if}
+<div class="reveal-modal-bg" style="display: none; cursor: pointer;"></div>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=5.00311"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/datetimeUtil.min.js?v=5.00311"></script>
+<script>
+    var ScrollDiv = $("#StaUlDiv")
+</script>
+<script src="{OSSURL}public/mobile/js/scroll.muti.stushare.js?v=1717"></script>
+<script>
+
+
+        /****************************  阻止返回键  ***************************/
+        var PageHistory = [];
+
+        function PushHistoryStack(funcName){
+            var state = {
+                title: "title",
+                url: "#"
+            };
+            window.history.pushState(state, "title", "#");
+            PageHistory.push(funcName)
+        }
+
+        function PopHistoryStack(){
+            if(PageHistory.length > 0){
+                eval(PageHistory.pop() + '()')
+            }else {
+                window.history.back()
+            }
+        }
+
+        window.addEventListener("popstate", function(e) {
+            PopHistoryStack()
+        }, false);
+
+        /****************************  阻止返回键  ***************************/
+
+
+
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+$(".choice_baby").on("click", function(e) {
+	e.stopPropagation();
+	$(".slide_left_menu_bg").addClass("show_menu_bg");
+});
+$(".slide_left_menu_bg").on("click", function() {
+    $(this).removeClass("show_menu_bg");
+});
+function isSelect(id){
+    location.href = "{php echo $this->createMobileUrl('morningcheck', array('schoolid' => $schoolid), true)}"+ '&bj_id=' + id;
+}
+
+function gotechars(){
+    location.href = "{php echo $this->createMobileUrl('tmcechars', array('schoolid' => $schoolid), true)}"+ '&bj_id=' + `{$bj_id}`;
+}
+function gomcdetail(sid,bj_id){
+    location.href = `{php echo $this->createMobileUrl('tmcdetail', array('schoolid' => $schoolid), true)}`+'&sid='+sid+'&bj_id='+bj_id;
+}
+</script>
+{php include $this->template('newfooter');}
+</html>
+<script>
+    
+    
+/*记录与统计切换*/
+$("#record").click(function () {
+    ActUl = `#recordul`;
+    $(window).on("scroll", scroll_fun);
+    scroll_load_obj.ajax_switch = true;
+	$("#statisticslist").hide();
+	$("#statistics").removeClass('act');
+	$("#record").addClass('act'); 
+	$("#recordlist").show();
+}); 
+$("#gocheck").click(function () {
+    ActUl = `#recordul`;
+    $(window).on("scroll", scroll_fun);
+    scroll_load_obj.ajax_switch = true;
+	$("#statisticslist").hide();
+	$("#statistics").removeClass('act');
+	$("#record").addClass('act'); 
+	$("#recordlist").show();
+}); 
+$("#statistics").click(function () {
+    ActUl = `#statisticsul`;
+    $(window).on("scroll", scroll_fun);
+    scroll_load_obj.ajax_switch = true;
+	$("#recordlist").hide();
+    $("#record").removeClass('act'); 
+	$("#statistics").addClass('act');
+	$("#statisticslist").show();
+});
+/*显示记体温model*/
+function ShowAddModal(sid){
+    PushHistoryStack('HideBack')
+    $("#showBig").show();
+    $("#showBig .showItem").animate({top:0},300);
+    let schoolid = `{$schoolid}`
+    $("body").addClass('isoverflow');
+    $("#sid").val(sid)
+    $.post("{php echo $this->createMobileUrl('techerajax', array('op' => 'GetOneMC'))}",{'sid':sid,'schoolid':schoolid}, function(data){
+		if(data.result){
+            newdata = data.data
+            $("#height").val(newdata.height)
+            $("#weight").val(newdata.weight)
+            $("#lefteye").val(newdata.lefteye)
+            $("#righteye").val(newdata.righteye)
+            $("#tiwen").val('')
+            $("#cough").val(newdata.cough)
+            $("#vomit").val(newdata.vomit)
+            $("#trauma").val(newdata.trauma)
+            $("#diarrhea").val(newdata.diarrhea)
+            $("#cold").val(newdata.cold)
+            $("#headache").val(newdata.headache)
+            $("#mouth").val(newdata.mouth)
+            $("#herpes").val(newdata.herpes)
+            $("#handHerpes").val(newdata.handHerpes)
+            $("#nail").val(newdata.nail)
+		}else{
+            $("#height").val('')
+            $("#weight").val('')
+            $("#lefteye").val('')
+            $("#righteye").val('')
+            $("#tiwen").val('')
+            $("#cough").val(1)
+            $("#vomit").val(1)
+            $("#trauma").val(1)
+            $("#diarrhea").val(1)
+            $("#cold").val(1)
+            $("#headache").val(1)
+            $("#mouth").val(1)
+            $("#herpes").val(1)
+            $("#handHerpes").val(1)
+            $("#nail").val(1)
+		}
+	},'json');	
+}
+$("#close").click(function(){
+    window.history.back()
+})
+function HideBack(){
+    $("body").removeClass('isoverflow');
+    $("#showBig .showItem").animate({top:'-100vh'},300,function(){
+        $('#showBig').hide()
+    })
+}
+/*显示记体温model*/
+
+$("#tijiao1").click(function(){
+    if($("#tiwen").val() == ''){
+        jTips("请填写体温");
+        return;
+    }
+    `{if keep_MC()}`
+        if($("#height").val() == ''){
+            jTips("请填写身高");
+            return;
+        }
+        if($("#weight").val() == ''){
+            jTips("请填写体重");
+            return;
+        }
+        if($("#lefteye").val() == ''){
+            jTips("请填写左眼视力");
+            return;
+        }
+        if($("#righteye").val() == ''){
+            jTips("请填写右眼视力");
+            return;
+        }
+        if($("#mouth").val() == '' || $("#mouth").val() == 0){
+            jTips("请选择口腔状况");
+            return;
+        }
+        if($("#herpes").val() == '' || $("#herpes").val() == 0){
+            jTips("请选择疱疹状况");
+            return;
+        }
+        if($("#handHerpes").val() == '' || $("#handHerpes").val() == 0){
+            jTips("请选择手掌疱疹状况");
+            return;
+        }
+        if($("#nail").val() == '' || $("#nail").val() == 0){
+            jTips("请选择指甲状况");
+            return;
+        }
+    `{/if}`
+    data = {
+            'height'    :   $("#height").val(),
+            'weight'    :   $("#weight").val(),
+            'lefteye'   :   $("#lefteye").val(),
+            'righteye'  :   $("#righteye").val(),
+            'tiwen'     :   $("#tiwen").val(),
+            'mouth'     :   $("#mouth").val(),
+            'cough'     :   $("#cough").val(),
+            'vomit'     :   $("#vomit").val(),
+            'trauma'    :   $("#trauma").val(),
+            'diarrhea'  :   $("#diarrhea").val(),
+            'cold'      :   $("#cold").val(),
+            'headache'  :   $("#headache").val(),
+            'herpes'    :   $("#herpes").val(),
+            'handHerpes':   $("#handHerpes").val(),
+            'nail'      :   $("#nail").val(),
+            'sid'       :   $("#sid").val(),
+            'bj_id'     :   `{$bj_id}`,
+            'tid'       :   `{$tid_global}`,
+            'schoolid'  :   `{$schoolid}`,
+            'weid'      :   `{$weid}`
+        }
+	$.post("{php echo $this->createMobileUrl('techerajax', array('op' => 'AddMC'))}",data, function(data){
+		if(data.result){
+            let sdata = data.data;
+            $("#hide_"+sdata.id).hide();
+                html = `<a href="javascript:;" onclick="gomcdetail(${sdata.id})" class="aui-grids-item">
+                            <span>
+                                <img src="${sdata.icon}" >
+                            </span>
+                            <span class="aui-grids-item-text">${sdata.s_name}</span>
+                        </a>`
+                $("#hasjc").append(html) 
+                $("#NoCheckStu").hide()
+		}else{
+			alert(data.msg);	
+        }
+        HideBack()
+	},'json');	
+	
+})
+
+//按时间搜索
+function submitForm(){
+    let start = $("#start").val()
+    let end = $("#end").val()
+    $.post("{php echo $this->createMobileUrl('morningcheck', array('op' => 'scroll_more', 'schoolid' => $schoolid, 'bj_id'=> $bj_id, 'ctype' => 'statistics'))}",{'start' : start, 'end' : end}, function(data){
+        $("#statisticsul").html(data)
+        scroll_load_obj.ajax_switch = true;
+        $(ScrollDiv).on("scroll", scroll_fun);
+	},'html');	
+}
+
+
+// 底部加载更多
+new Scroll_load({
+    "limit": "0",
+    "pageSize": 28,
+    "ajax_switch": true,
+    "ul_box": ".photos_type_list",
+    "li_item": ".photos_type_list .mainli",
+    'param' : ['time','ctype'],
+    "ajax_url": "{php echo $this->createMobileUrl('morningcheck', array('schoolid' => $schoolid, 'bj_id' => $bj_id,'op'=>'scroll_more'))}",
+    "page_name": "parent_home_index",
+    "after_ajax": function () {
+    }
+}).load_init();
+</script>

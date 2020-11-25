@@ -1,0 +1,95 @@
+<div class="form-group" style="width:100%" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>卡类型</label>
+    <div class="col-sm-2 col-lg-3">
+        <select style="margin-right:15px;" name="cardtype" class="form-control">
+            <option value="1" {if $item['cardtype'] ==1} selected="selected"{/if}>IC卡</option>
+            <option value="2" {if $item['cardtype'] ==2 || empty($item['cardtype'])} selected="selected"{/if}>ID卡</option>
+        </select>
+        <div class="help-block">无特殊情况此处选择ID卡</div>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>城市名称</label>
+    <div class="col-sm-2 col-lg-3">
+        <input type="text" class="form-control" name="cityname" value="{$item['cityname']}" placeholder="输入城市名称">
+        <div class="help-block">输入城市，如：长沙</div>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>城市ID</label>
+    <div class="col-sm-2 col-lg-3">
+        <input type="text" class="form-control" name="areaid" value="{$item['areaid']}" placeholder="城市ID">
+        <div class="help-block">ID对照表，<a href="https://blog.csdn.net/wu9797/article/details/78768938">点击查看</a></div>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>模式选择</label>
+    <div class="col-sm-2 col-lg-3">
+        <select style="margin-right:15px;" name="model_type" class="form-control">
+                <option value="1" {if $item['model_type'] ==1} selected="selected"{/if}>班级模式</option>
+                <option value="2" {if $item['model_type'] ==2} selected="selected"{/if}>考试模式</option>
+                <option value="3" {if $item['model_type'] ==3} selected="selected"{/if}>视频模式</option>
+        </select>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-3 control-label" style="color: red;font-size: 18px;right: -300px;">班级模式基础设置</label>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>{if $schooltype}绑定教室{else}绑定班级{/if}</label>
+    <div class="col-sm-2 col-lg-3">
+        {if $schooltype}
+        <select style="margin-right:15px;" name="js_id" class="form-control">
+        <option value="0">选择教室</option>
+            {loop $allroom $row}
+                <option value="{$row['sid']}" {if $row['sid'] ==$item['js_id']} selected="selected"{/if}>{$row['sname']}</option>
+            {/loop}
+        </select>
+        {else}
+        <select style="margin-right:15px;" name="bj_id" class="form-control">
+        <option value="0">选择班级</option>
+            {loop $class $row}
+                <option value="{$row['id']}" {if $row['id'] ==$item['bj_id']} selected="selected"{/if}>{$row['classes']}</option>
+            {/loop}
+        </select>
+        {/if}
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label">班级封面</label>
+    <div class="col-sm-2 col-lg-9">
+        {php echo tpl_form_field_image('class_img', $banner['class_img'])}
+        <div class="help-block">宽高比例推荐，4:3</div>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-3 control-label" style="color: red;font-size: 18px;right: -300px;">考试模式基础设置</label>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>选择期号</label>
+    <div class="col-sm-2 col-lg-3">
+        <select style="margin-right:15px;" name="qh_id" class="form-control">
+            <option value="0">选择期号</option>
+            {loop $qh $row}
+                <option value="{$row['sid']}" {if $row['sid'] ==$item['qh_id']} selected="selected"{/if}>{$row['sname']}</option>
+            {/loop}
+        </select>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>考场名称</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" class="form-control" name="exam_room_name" value="{$item['exam_room_name']}" placeholder="输入考场名称">
+        <div class="help-block">考场名称，如：第一考场</div>
+    </div>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-3 control-label" style="color: red;font-size: 18px;right: -300px;">公屏模式基础设置</label>
+</div>
+<div class="form-group" style="width:100%">
+    <label class="col-xs-12 col-sm-3 col-md-2 control-label"><span class="require">* </span>视频地址</label>
+    <div class="col-sm-9 col-xs-12">
+        <input type="text" class="form-control" name="video_url" value="{$banner['video_url']}" placeholder="输入视频固定地址">
+        <div class="help-block">输入视频固定地址</div>
+    </div>
+</div>

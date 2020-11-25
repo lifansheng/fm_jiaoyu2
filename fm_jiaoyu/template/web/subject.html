@@ -1,0 +1,451 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<input type="hidden" name="schoolid" value="{$schoolid}" />
+<div class="panel panel-info">
+	<div class="panel-body">
+		{php echo $this -> set_tabbar($action1, $schoolid, $_W['role'], $_W['isfounder'], $_W['schooltype']);}
+	</div>
+</div>
+<ul class="nav nav-tabs">
+	<li class="qx_edit {if $operation == 'post'}active{/if}"><a
+			href="{php echo $this->createWebUrl('subject', array('op' => 'post', 'schoolid' => $schoolid))}">添加科目</a>
+	</li>
+	<li {if $operation=='display' }class="active" {/if}><a
+			href="{php echo $this->createWebUrl('subject', array('op' => 'display', 'schoolid' => $schoolid))}">科目管理</a>
+	</li>
+</ul>
+<style>
+	.cLine {
+		overflow: hidden;
+		padding: 5px 0;
+		color: #06c1ae;
+	}
+
+	.alert {
+		padding: 8px 35px 0 10px;
+		text-shadow: none;
+		-webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		-moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+		background-color: #f9edbe;
+		border: 1px solid #f0c36d;
+		-webkit-border-radius: 2px;
+		-moz-border-radius: 2px;
+		border-radius: 2px;
+		color: #333333;
+		margin-top: 5px;
+	}
+
+	.alert p {
+		margin: 0 0 10px;
+		display: block;
+	}
+
+	.alert .bold {
+		font-weight: bold;
+	}
+</style>
+<div class="cLine">
+	<div class="alert">
+		<p><span class="bold">使用方法：</span>
+			填写科目,如 语文,数学,英语....</br>
+			<strong>
+				<font color='red'>特别提醒: 当你删除该科目项的时候,该科目项下相关的所有数据都会被删除,请谨慎操作!以免丢失数据!</font>
+			</strong>
+		</p>
+	</div>
+</div>
+{if $operation == 'post'}
+<div class="main">
+	<form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+		<input type="hidden" name="parentid" value="{$parent['id']}" />
+		<input type="hidden" name="schoolid" value="{$schoolid}" />
+
+		<div class="panel panel-default">
+			<div class="panel-heading">科目管理</div>
+			<div class="panel-body">
+				<div id="custom-url">
+					{if !empty($sid)}
+					<input type="hidden" name="old" value="111" />
+					<div class="form-group" style="line-height: 30px;">
+						<label class="col-sm-2" style="width:5%">排序</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort" placeholder="排序" class="form-control"
+								value="{$subject['ssort']}" />
+						</div>
+
+						<label class="col-sm-2" style="width:5%">科目名称</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="catename" placeholder="科目名称" class="form-control"
+								value="{$subject['sname']}" />
+						</div>
+						<label class="col-sm-2" style="width:5%">简称</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="abbrevia" placeholder="科目简称" class="form-control"
+								value="{$subject['abbrevia']}" />
+						</div>
+						<label class="col-sm-2" style="width:5%">简称颜色</label>
+						<div class="col-sm-2">
+							<script type="text/javascript">
+								$(function () {
+									$(".colorpicker").each(function () {
+										var elm = this;
+										util.colorpicker(elm, function (color) {
+											$(elm).parent().prev().prev().val(color.toHexString());
+											$(elm).parent().prev().css("background-color", color.toHexString());
+										});
+									});
+									$(".colorclean").click(function () {
+										$(this).parent().prev().prev().val("");
+										$(this).parent().prev().css("background-color", "#FFF");
+									});
+								});
+							</script>
+							<div class="row row-fix">
+								<div class="col-xs-8 col-sm-8" style="width: 300px;">
+									<div class="input-group">
+										<input class="form-control" type="text" name="color" placeholder="请选择颜色"
+											value="{if $subject['color']}{$subject['color']}{else}#06c1ae{/if}">
+										<span class="input-group-addon"
+											style="width:35px;border-left:none;background-color:{if $subject['color']}{$subject['color']}{else}#06c1ae{/if}"></span>
+										<span class="input-group-btn">
+											<button class="btn btn-default colorpicker" type="button">选择颜色 <i
+													class="fa fa-caret-down"></i></button>
+											<button class="btn btn-default colorclean" type="button"><span><i
+														class="fa fa-remove"></i></span></button>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<label class="col-sm-2" style="width:5%">科目图标</label>
+						<div class="input-group">
+							{php echo tpl_form_field_image('icon', $subject['icon'])}
+							<div class="help-block">显示在前端部分位置,留空则显示学校LOGO</div>
+						</div>
+					</div>
+					{else}
+					<input type="hidden" name="new[]" value="111" />
+					<div class="form-group" style="line-height: 30px;">
+						<label class="col-sm-2" style="width:5%">排序</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="" />
+						</div>
+						<label class="col-sm-2" style="width:5%">科目名称</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="catename_new[]" placeholder="科目名称" class="form-control" value="" />
+						</div>
+
+						<label class="col-sm-2" style="width:5%">简称</label>
+						<div class="col-sm-2 col-lg-2">
+							<input type="text" name="abbrevia_new[]" placeholder="科目简称" class="form-control"
+								value="{$subject['abbrevia']}" />
+						</div>
+						<label class="col-sm-2" style="width:5%">简称颜色</label>
+						<div class="col-sm-2">
+							<script type="text/javascript">
+								$(function () {
+									$(".colorpicker").each(function () {
+										var elm = this;
+										util.colorpicker(elm, function (color) {
+											$(elm).parent().prev().prev().val(color.toHexString());
+											$(elm).parent().prev().css("background-color", color.toHexString());
+										});
+									});
+									$(".colorclean").click(function () {
+										$(this).parent().prev().prev().val("");
+										$(this).parent().prev().css("background-color", "#FFF");
+									});
+								});
+							</script>
+							<div class="row row-fix">
+								<div class="col-xs-8 col-sm-8" style="width: 300px;">
+									<div class="input-group">
+										<input class="form-control" type="text" name="color_new[]" placeholder="请选择颜色"
+											value="">
+										<span class="input-group-addon"
+											style="width:35px;border-left:none;background-color:#06c1ae"></span>
+										<span class="input-group-btn">
+											<button class="btn btn-default colorpicker" type="button">选择颜色 <i
+													class="fa fa-caret-down"></i></button>
+											<button class="btn btn-default colorclean" type="button"><span><i
+														class="fa fa-remove"></i></span></button>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<label class="col-sm-2" style="width:5%">科目图标</label>
+						<div class="input-group">
+							<script type="text/javascript">
+								function showImageDialog(elm, opts, options) {
+									require(["util"], function (util) {
+										var btn = $(elm);
+										var ipt = btn.parent().prev();
+										var val = ipt.val();
+										var img = ipt.parent().next().children();
+										options = { 'global': false, 'class_extra': '', 'direct': true, 'multiple': false, 'fileSizeLimit': 5120000 };
+										util.image(val, function (url) {
+											if (url.url) {
+												if (img.length > 0) {
+													img.get(0).src = url.url;
+												}
+												ipt.val(url.attachment);
+												ipt.attr("filename", url.filename);
+												ipt.attr("url", url.url);
+											}
+											if (url.media_id) {
+												if (img.length > 0) {
+													img.get(0).src = "";
+												}
+												ipt.val(url.media_id);
+											}
+										}, options);
+									});
+								}
+								function deleteImage(elm) {
+									$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+									$(elm).parent().prev().find("input").val("");
+								}
+							</script>
+							<div class="input-group ">
+								<input type="text" name="icon_new[]" value="" class="form-control" autocomplete="off">
+								<span class="input-group-btn">
+									<button class="btn btn-default" type="button"
+										onclick="showImageDialog(this);">选择图片</button>
+								</span>
+							</div>
+							<div class="input-group " style="margin-top:.5em;">
+								<img src="./resource/images/nopic.jpg"
+									onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'"
+									class="img-responsive img-thumbnail" width="150" />
+								<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片"
+									onclick="deleteImage(this)">×</em>
+							</div>
+							<div class="help-block">显示在前端部分位置,留空则显示学校LOGO</div>
+						</div>
+					</div>
+					{/if}
+				</div>
+				<div class="clearfix template">
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-3 col-md-2 control-label"></label>
+						<div class="col-sm-9 col-xs-12">
+							<a href="javascript:;" id="custom-url-add"><i class="fa fa-plus-circle"></i> 添加科目</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+		</div>
+	</form>
+</div>
+
+<div style="display: none;" id="addHtml">
+	<input type="hidden" name="new[]" value="111" />
+	<div class="form-group" style="line-height: 30px;">
+		<label class="col-sm-2" style="width:5%">排序</label>
+		<div class="col-sm-2 col-lg-2">
+			<input type="text" name="ssort_new[]" placeholder="排序" class="form-control" value="" />
+		</div>
+		<label class="col-sm-2" style="width:5%">科目名称</label>
+		<div class="col-sm-2 col-lg-2">
+			<input type="text" name="catename_new[]" placeholder="科目名称" class="form-control" value="" />
+		</div>
+
+		<label class="col-sm-2" style="width:5%">简称</label>
+		<div class="col-sm-2 col-lg-2">
+			<input type="text" name="abbrevia_new[]" placeholder="科目简称" class="form-control" />
+		</div>
+		<label class="col-sm-2" style="width:5%">简称颜色</label>
+		<div class="col-sm-2">
+			<script type="text/javascript">
+				$(function () {
+					$(".colorpicker").each(function () {
+						var elm = this;
+						util.colorpicker(elm, function (color) {
+							$(elm).parent().prev().prev().val(color.toHexString());
+							$(elm).parent().prev().css("background-color", color.toHexString());
+						});
+					});
+					$(".colorclean").click(function () {
+						$(this).parent().prev().prev().val("");
+						$(this).parent().prev().css("background-color", "#FFF");
+					});
+				});
+			</script>
+			<div class="row row-fix">
+				<div class="col-xs-8 col-sm-8" style="width: 300px;">
+					<div class="input-group">
+						<input class="form-control" type="text" name="color_new[]" placeholder="请选择颜色" value="#06c1ae">
+						<span class="input-group-addon"
+							style="width:35px;border-left:none;background-color:#06c1ae"></span>
+						<span class="input-group-btn">
+							<button class="btn btn-default colorpicker" type="button">选择颜色 <i
+									class="fa fa-caret-down"></i></button>
+							<button class="btn btn-default colorclean" type="button"><span><i
+										class="fa fa-remove"></i></span></button>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<label class="col-sm-2" style="width:5%">科目图标</label>
+		<div class="input-group">
+			<script type="text/javascript">
+				function showImageDialog(elm, opts, options) {
+					require(["util"], function (util) {
+						var btn = $(elm);
+						var ipt = btn.parent().prev();
+						var val = ipt.val();
+						var img = ipt.parent().next().children();
+						options = { 'global': false, 'class_extra': '', 'direct': true, 'multiple': false, 'fileSizeLimit': 5120000 };
+						util.image(val, function (url) {
+							if (url.url) {
+								if (img.length > 0) {
+									img.get(0).src = url.url;
+								}
+								ipt.val(url.attachment);
+								ipt.attr("filename", url.filename);
+								ipt.attr("url", url.url);
+							}
+							if (url.media_id) {
+								if (img.length > 0) {
+									img.get(0).src = "";
+								}
+								ipt.val(url.media_id);
+							}
+						}, options);
+					});
+				}
+				function deleteImage(elm) {
+					$(elm).prev().attr("src", "./resource/images/nopic.jpg");
+					$(elm).parent().prev().find("input").val("");
+				}
+			</script>
+			<div class="input-group ">
+				<input type="text" name="icon_new[]" value="" class="form-control" autocomplete="off">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button" onclick="showImageDialog(this);">选择图片</button>
+				</span>
+			</div>
+			<div class="input-group " style="margin-top:.5em;">
+				<img src="./resource/images/nopic.jpg"
+					onerror="this.src='./resource/images/nopic.jpg'; this.title='图片未找到.'"
+					class="img-responsive img-thumbnail" width="150" />
+				<em class="close" style="position:absolute; top: 0px; right: -14px;" title="删除这张图片"
+					onclick="deleteImage(this)">×</em>
+			</div>
+			<div class="help-block">显示在前端部分位置,留空则显示学校LOGO</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('#custom-url-add').click(function () {
+		let addHtml = $("#addHtml").html()
+		$('#custom-url').append(addHtml);
+	});
+	$(document).on('click', '.custom-url-del', function () {
+		$(this).parent().parent().remove();
+		return false;
+	});	
+</script>
+{elseif $operation == 'display'}
+<div class="main">
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<a class="btn btn-primary" href="javascript:location.reload()"><i class="fa fa-refresh"></i>刷新</a>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<form action="" method="post" class="form-horizontal form">
+			<input type="hidden" name="schoolid" value="{$schoolid}" />
+			<div class="table-responsive panel-body">
+				<table class="table table-hover">
+					<thead class="navbar-inner">
+						<tr>
+							<th style="width:100px;">序号</th>
+							<th>科目图标</th>
+							<th>科目名称</th>
+							<th>科目简称</th>
+							<th>简称颜色</th>
+							{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+							<th class="qx_00214">是否已同步</th>
+							{/if}
+							<th class="qx_e_d" style="text-align:right;">编辑/删除</th>
+						</tr>
+					</thead>
+					<tbody id="level-list">
+						{loop $subject $row}
+						<tr>
+							<td>
+								<div class="type-parent">{$row['sid']}</div>
+							</td>
+							<td><img style="width:50px;height:50px;border-radius:50%;"
+									src="{if !empty($row['icon'])}{php echo tomedia($row['icon'])}{else}{php echo tomedia($logo['logo'])}{/if}"
+									width="50" style="border-radius: 3px;" /></td>
+							<td>
+								<div class="type-parent">{$row['sname']}&nbsp;&nbsp;</div>
+							</td>
+							<td>
+								<div class="type-parent">{$row['abbrevia']}</div>
+							</td>
+							<td>
+								<div class="type-parent">{$row['color']}<span class="input-group-addon"
+										style="width:35px;border-left:none;background-color:{$row['color']}"></span>
+								</div>
+							</td>
+							{if ($tid_global =='founder' || $tid_global == 'owner') && keep_hxy() == 1}
+							<td>
+								{if !empty($row['typt_id'])}
+								<span class="label label-primary">已同步</span>
+								{/if}
+							</td>
+							{/if}
+							<td class="qx_e_d" style="text-align:right;"><a class="btn btn-default btn-sm qx_edit"
+									href="{php echo $this->createWebUrl('subject', array('op' => 'post', 'sid' => $row['sid'], 'schoolid' => $schoolid))}"
+									title="编辑"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;<a
+									class="btn btn-default btn-sm qx_delete"
+									href="{php echo $this->createWebUrl('subject', array('op' => 'delete', 'sid' => $row['sid'], 'schoolid' => $schoolid))}"
+									onclick="return confirm('确认删除此分类吗？');return false;" title="删除"><i
+										class="fa fa-times"></i></a></td>
+						</tr>
+						{/loop}
+						<!--tr>
+                        <td colspan="3">
+                            <input name="submit" type="submit" class="btn btn-primary" value="批量更新排序">
+                            <input type="hidden" name="token" value="{$_W['token']}" />
+                        </td>
+                    </tr-->
+					</tbody>
+				</table>
+			</div>
+		</form>
+	</div>
+	{$pager}
+</div>
+<script type="text/javascript">
+	$(document).ready(function () {
+		var e_d = 2;
+		{ if !(IsHasQx($tid_global, 1000262, 1, $schoolid))}
+		$(".qx_edit").hide();
+		e_d = e_d - 1;
+		{
+			/if}
+			{ if !(IsHasQx($tid_global, 1000263, 1, $schoolid))}
+			$(".qx_delete").hide();
+			e_d = e_d - 1;
+			{
+				/if}
+				if (e_d == 0) {
+					$(".qx_e_d").hide();
+				}
+			});	
+</script>
+{/if}
+{template 'public/footer'}

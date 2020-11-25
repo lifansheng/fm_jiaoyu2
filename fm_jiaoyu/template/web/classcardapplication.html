@@ -1,0 +1,145 @@
+{template 'public/header'}
+{template 'public/comhead'}
+{if $operation == 'post'}
+<div class="main">
+	<form action="" method="post" class="form-horizontal form"	enctype="multipart/form-data">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="row-fluid">
+					<div class="span8 control-group">
+						<a class="btn btn-default" href="{php echo $this->createWebUrl('classcardapplication', array('schoolid' => $schoolid, 'op' => 'display' ))}"><i class="fa fa-search"></i>班级应用</a>
+						<a class="btn {if $operation == 'post'}btn-primary {else}btn-default"{/if} href="{php echo $this->createWebUrl('classcardapplication', array('schoolid' => $schoolid, 'op' => 'post' ))}"><i class="fa fa-edit"></i>添加班级应用</a>
+					</div>
+				</div>
+			</div>
+			<div class="panel-body">
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>应用名称</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="application_name" class="form-control" value="{$vo['application_name']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>应用包名</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="application_id" class="form-control" value="{$vo['application_id']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>应用下载</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="download_url" class="form-control" value="{$vo['download_url']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>应用版本</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="number" name="version_code" class="form-control" value="{$vo['version_code']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label"><span style="color:red">*</span>版本名称</label>
+					<div class="col-sm-9 col-xs-12">
+						<input type="text" name="version_name" class="form-control" value="{$vo['version_name']}" />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-3 col-md-2 control-label">图标URL</label>
+					<div class="col-sm-9 col-xs-12">
+						{php echo tpl_form_field_image('application_icon', $vo['application_icon'])}
+
+						<div class="help-block">每张图片宽高请设置为相同的宽高！！！</div>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-12 col-sm-2 col-md-2  control-label" >选择班级</label>
+					<div class="col-sm-9 col-xs-6">
+						<div class="input-group text-info">
+
+							{loop $banji $uni}
+							{php $is = $this->uniarr($uniarr,$uni['sid']);}
+							<label for="uni_{$uni['sid']}" class="checkbox-inline"><input id="uni_{$uni['sid']}" type="checkbox" name="arr[]" value="{$uni['sid']}"{if ($is)}checked="checked"{/if}> {$uni['sname']}</label>
+							{/loop}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group col-sm-12">
+			<input type="submit" name="submit" value="提交" class="btn btn-primary col-lg-1" />
+			<input type="hidden" name="token" value="{$_W['token']}" />
+		</div>
+	</form>
+</div>
+{elseif $operation == 'display'}
+<div class="main">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<div class="row-fluid">
+				<div class="span8 control-group">
+					<a class="btn qx_edit {if $operation == 'post'}btn-primary {else}btn-default"{/if} href="{php echo $this->createWebUrl('classcardapplication', array('schoolid' => $schoolid, 'op' => 'post' ))}"><i class="fa fa-edit"></i>添加班级应用</a>
+				</div>
+			</div>
+		</div>
+		<form method="post" class="form-horizontal" id="formfans">
+			<input type="hidden" name="op" value="del" />
+			<div style="position:relative">
+				<div class="panel-body table-responsive">
+					<table class="table table-hover" style="position:relative">
+						<thead class="navbar-inner">
+						<tr>
+							<th style="width:30px;">ID</th>
+							<th>应用名称</th>
+							<th>应用包名</th>
+							<th>图标URL</th>
+							<th>应用下载</th>
+							<th>应用版本</th>
+							<th>版本名称</th>
+							<th class="qx_e_d">操作</th>
+						</tr>
+						</thead>
+						<tbody>
+						{loop $list $v}
+						<tr>
+							<td>{$v['id']}</td>
+							<td>{$v['application_name']}</td>
+							<td>{$v['application_id']}</td>
+							<td><img src="{php echo tomedia($v['application_icon'])}" width="50"></td>
+							<td>{$v['download_url']}</td>
+							<td>{$v['version_code']}</td>
+							<td>{$v['version_name']}次</td>
+							<td class="qx_e_d" style="text-align:left;">
+								<a href="{php echo $this->createWebUrl('classcardapplication', array('op' => 'post', 'id' => $v['id'], 'schoolid' => $schoolid))}" data-toggle="tooltip" data-placement="top"  class="btn btn-default btn-sm manage qx_edit"><i class="fa fa-edit"></i>修改</a>
+								<a href="{php echo $this->createWebUrl('classcardapplication', array('op' => 'delete', 'id' => $v['id'],'schoolid' => $schoolid))}" data-toggle="tooltip" data-placement="top"  class="btn btn-default btn-sm manage qx_delete"><i class="fa fa-del"></i>删除</a>
+							</td>
+						</tr>
+						{/loop}
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</form>
+		{$pager}
+	</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var e_d = 2 ;
+        {if !(IsHasQx($tid_global,1000502,1,$schoolid))}
+        $(".qx_edit").hide();
+        e_d = e_d -1;
+        {/if}
+            {if !(IsHasQx($tid_global,1000503,1,$schoolid))}
+            $(".qx_delete").hide();
+            e_d = e_d -1;
+            {/if}
+                if(e_d == 0){
+                    $(".qx_e_d").hide();
+                }
+            });
+</script>
+{/if}
+{template 'public/footer'}

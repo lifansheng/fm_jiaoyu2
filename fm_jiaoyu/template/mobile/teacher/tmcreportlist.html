@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/kqtjCss.css?v=5.1"/>
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link rel="stylesheet" type="text/css" href="{OSSURL}public/mobile/css/new_yab1.css?v=1?v=1111" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.9"></script>
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/vue.min.js"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/jquery.reveal.js"></script>
+<link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+
+{php include $this->template('port');}
+<style>
+    .arrange-detail>ol {box-sizing: border-box;}
+    .form-order>.form-line {margin-bottom: 5px;}
+    .form-order>.form-line {margin-bottom: 12px;margin-top: 12px;}
+    .btnthis {height: 30px;background-color: #7bb52d;font: 16px "黑体";text-align: center;color: #fff;cursor: pointer;border-radius:10px}
+    .div_closd{margin-left:13%; width:30%;color: #fff;background-color: #f1ad31;border-color: #f1ad31;float:left;line-height:30px}
+    .div_sure{margin-right:13%; width:30%;float:right;line-height:30px}
+    .ovfHiden{overflow:hidden}
+    .startdate{width: 60%;margin: 3px 0px;height: 30px;line-height: 30px;border: 1px solid #e1e1e1;border-radius: 3px;font-size: 14px;background-attachment: fixed;text-align: center;padding: 0;margin: 0;outline-style: none;-webkit-tap-highlight-color: rgba(0,0,0,0);-webkit-appearance: none;}
+    .trhead{height:30px}
+    .thhead{background:white;float:left;height:40px;line-height:40px;text-align:center;font-size:16px;}
+    .td_mutirow{background:white;border-bottom:1px solid #EDEEF0;border-right:1px solid #EDEEF0;}
+    .tdsinglerow{background:white;height:30px;line-height:30px;border-bottom:1px solid #EDEEF0;}
+    .SelectInRange{text-align:center;text-align-last:center;width:90%;margin:8px;height:30px;border-radius: 3px;}
+    .reveal-modal-bg {position: fixed;height: 100%;width: 100%;background: rgba(0,0,0,0.25);z-index: 105;display: none;top: 0;left: 0; }
+    .reveal-modal {top:50px !important;visibility: hidden; background: #fff ;position: fixed;z-index: 101;padding: 25px 18px 38px;-moz-border-radius: 5px;-webkit-border-radius: 5px;border-radius: 5px; -moz-box-shadow: 0 0 10px rgba(0,0,0,.4);-webkit-box-shadow: 0 0 10px rgba(0,0,0,.4);-box-shadow: 0 0 10px rgba(0,0,0,.4);}
+    .Select-event{display: inline-block;height: 32px;border:1px solid #D7d7d7;font-size: 12px;line-height: 32px;width:72px;border-radius:4px;margin-right:8px;text-align:center}
+    .CheckTypes{width:25%;margin-right: 5%;}
+    .EVENT-SELECT{background-color: rgba(38, 123, 255, 0.2);border-color:#0885ff !important }
+    .CheckObj{padding:1px 3px;border-radius: 5px;font-size: 12px}
+    #attendance{margin-left: 3px;box-shadow:2px 2px 10px #c1c1c1;border-radius: 5px;width:98%;height:170px;padding:10px;float: unset}
+    .CheckLog{width:100%;height: 60px;border-top: 1px solid #e6e6e6;background-color: white}
+    .CheckMoreBtn{border:1px solid #1b90d4;border-radius: 5px;padding:1px 3px}
+</style>
+</head>
+<body id="kqtjbody">
+	<div id="attendance">
+		<div @click="ChangeCondition()">
+            <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;"> 
+                <span style="font-size: 16px;" >晨检报告统计</span>     
+            </div>
+            <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;"> 
+				<span style="float:left" >当前班级：</span> 
+				<span style="display:block;float:left">{{DoneData.bjname}}</span> 
+            </div>
+            <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;"> 
+				<span style="float:left" >报告类型：</span> 
+				<span style="display:block;float:left">{{DoneData.typename}}</span> 
+            </div>
+            <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left;"> 
+				<span style="float:left" >查看年份：</span> 
+				<span style="display:block;float:left">{{DoneData.year}}</span> 
+            </div>
+            <div style="width:100%;font-size:16px;height: 30px;line-height:30px;float: left; display: none;" class="xqbgbox"> 
+				<span style="float:left" >查看学期：</span> 
+				<span style="display:block;float:left">{{DoneData.xq}}</span> 
+			</div>
+			<div style="float: left;width:100%;font-size:14px;height: 40px;line-height:40px;"> 
+				<span  style="font-size: 12px;color:gray;float: right;padding-right: 10px">点击更改筛选条件</span>
+			</div> 
+		</div>
+
+		<div class="component-dialog dialog-order reveal-modal" id="zixunkefu" style="z-index: 109;left:5vw;width:calc(90vw - 36px)" >
+			<div class="component-dialog dialog-order"  id="detail_range" style="box-sizing: border-box;">
+				<div class="component-dialog-title" style="margin-bottom: 10px">筛选条件</div>
+				<div class="component-dialog-body">
+                    <div class="form-line">
+						<div class="input-wrapper" style="border:none;">
+							<span style="padding: 8px;float: left;color:gray">选择班级</span></br>
+							<div style="width:100%;padding-top:7px;position: relative;height: 40px" >
+                                <span class="Select-event" style="position: absolute; top: 13px; left: 0px;width:45%" >{{bjname}}</span>
+								<select @change="ChangeBj()" id="bjSelect" v-model="bjid" class="Select-event" style="position: absolute; top: 13px; left: 0px;width:45%;opacity: 0;" >
+                                    <option v-for="item in bjList" :value="item.id" >{{item.name}}</option> 
+                                </select>     
+                            </div>
+						</div>
+                    </div>
+                    <div class="form-line">
+						<div class="input-wrapper" style="border:none;">
+							<span style="padding: 8px;float: left;color:gray">选择类型</span></br>
+							<div style="width:100%;padding-top:7px;position: relative;height: 40px" >
+                                <span class="Select-event" style="position: absolute; top: 13px; left: 0px;width:45%" >{{typename}}</span>
+								<select @change="ChangeType()" id="typeSelect" v-model="typeid" class="Select-event" style="position: absolute; top: 13px; left: 0px;width:45%;opacity: 0;" >
+                                    <option v-for="item in searchType" :value="item.id" >{{item.name}}</option> 
+                                </select>     
+                            </div>
+						</div>
+                    </div>
+                    
+                    <div class="form-line">
+						<div class="input-wrapper" style="border:none;">
+							<span style="padding: 8px;float: left;color:gray">选择年份</span></br>
+                            <div style="width:100%;padding-top:7px;position: relative;height: 40px" >
+                                <span class="Select-event" style="position: absolute; top: 13px; left: 0px;width:45%" >{{year}}</span>
+								<select @change="ChangeAp()"  v-model="yearListKey" class="Select-event"  style="position: absolute; top: 13px; left: 0px;width:45%;opacity: 0;" >
+                                    <option v-for="(itemnj,key) in yearList" :value="key" >{{itemnj.name}}</option> 
+                                </select>     
+                            </div>
+						</div>
+                    </div>
+                    <div class="form-line xqbgbox" style="display: none;">
+						<div class="input-wrapper" style="border:none;">
+							<span style="padding: 8px;float: left;color:gray">选择学期</span></br>
+							<div style="width:100%;padding-top:7px;position: relative;height: 40px" >
+                                <span class="Select-event" style="position: absolute; top: 13px; left: 0px;width:45%" >{{xq}}</span>
+								<select @change="ChangeRoom()" id="xqSelect" v-model="xqListKey" class="Select-event"  style="position: absolute; top: 13px; left: 0px;width:45%;opacity: 0;" >
+                                    <option v-for="itembj in xqList" :value="itembj.id" >{{itembj.name}}</option> 
+                                </select>     
+                            </div>
+						</div>
+                    </div>
+                    
+					<div class="component-dialog-footer" style="margin-top: 20px">
+						<div type="button" class="btn-default btnthis div_closd"  onclick="closed()" >取消</div>
+						<div type="button" class="btn-primary btnthis div_sure"   data-opttype="yes" @click="ChangeDone()">确定</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="main_detail"  style="margin-left: 3px;float:unset;margin-left: 1%;width:98%;background-color: white;border-radius: 8px 8px 0px 0px;overflow: hidden;">
+		<div class="trhead" style="width:calc(100% - 1px);height: 40px;">
+			<div class="thhead" style="width:30%;border-radius: 0px 5px 0px 0px;">学生</div>
+			<div class="thhead" style="width:50%;">标题</div>
+			<div class="thhead" style="width:20%;border-radius: 0px 5px 0px 0px;">报告详情</div>
+		</div>
+		<div id="table_info" style="font-size: 12px">
+			{loop $list $key_l $item}
+			<li class="CheckLog" time="{$key_l}">
+				<div class="thhead" style="width:30%;font-size: 12px;height: 60px;line-height: 20px">
+					<div style="height: 40px;width:100%">
+					<img src="{php echo tomedia($item['icon'])}" style="height: 37px;width:37px;border-radius: 50%;;margin-top: 2px">
+					</div>
+					<span>{$item['s_name']}</span>
+				</div>
+				<div class="thhead" style="width:50%;font-size: 12px;;text-align: center;height: 50px;line-height: 25px;padding:5px 0">
+					<span>{$item['title']}</span> 
+				</div>
+				<div class="thhead" style="width:20%;font-size: 12px;height: 60px;line-height: 60px">
+					<span class="CheckMoreBtn" onclick="ChaKanXiangQing(`{$item['id']}`,`{$item['type']}`)">查看详情</span>
+				</div>
+			</li>
+			{/loop}
+		</div>
+	</div>
+	<div style="position: fixed;bottom: 70px;right: 10px;height: 50px;width: 50px;" onclick="backToTOP()">
+		<img src="{MODULE_URL}public/mobile/img/backtotop_icon.png" style="height: 40px;width:40px;border-radius: 50%;">
+    </div>		
+    <div style="position: fixed;top: 40px;right: 10px;height: 60px;width: 60px;" onclick="backToTOP()">
+        <div class="thhead" style="font-size: 12px;">
+            <span class="CheckMoreBtn" onclick="getReport()">获取报告</span>
+        </div>
+    </div>
+
+
+
+<style>
+    .getreport-modal,.getreport-modal *{box-sizing: border-box;}
+    .getreport-modal{position: fixed;top:0;left:0;height: 0;width: 0;overflow: hidden;background-color: rgba(70,70,70,.6);z-index: 999;transition: all .00001s .05s ;}
+    .getreport-modal .content-box{position: absolute;top:10%;width: 90%;margin-left: 5%;background-color: white;max-height: 60%;border-radius: 5px;min-height: 20%;transform: scale(.8);transition:transform .0001ss, opacity .05s;opacity: 0;padding-top: 10px;}
+    .getreport-modal.inshow{height: 100vh;width: 100vw;transition: all .00001s .00001s ;}
+    .getreport-modal.inshow .content-box{transform: scale(1);opacity: 1;transition: transform .15s,opacity .0001s}
+
+    .rep-content-header{width: 100%;height: 30px;line-height: 30px;text-align: center;font-weight: bold;font-size: 16px}
+    .rep-content-body{padding:10px}
+    .rep-content-footer{display: flex;justify-content: space-evenly;padding:10px 0}
+    .rep-cell{width: 100%;padding:5px 0;}
+    .rep-cell .rep-porgress{position: relative;width: 100%;height: 14px;background-color: #dadada;border-radius: 2px;overflow: hidden;} 
+    .rep-cell .rep-porgress .rep-porgress-progress{position: absolute;height: 100%;background-color: #00a1ff;transition: width .15s;} 
+    .rep-porgress .rep-porgress-progress .porgress-word{position: absolute;font-size: 12px;line-height: 14px;margin-left: 5px;left:100%}
+    .porgress-word.left{right:5px;left:unset !important;color: white;}
+    .por-content{width: 100%;padding:0 5px;border-radius: 3px;width: 100%;    max-height: calc(60vh - 205px);overflow-y: auto;position: relative;}
+    .por-word{width: calc(100% - 80px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis;font-size: 12px;}
+    .detailpor-word{
+            height:0px;
+            overflow:hidden;
+            display: flex;
+            flex-direction: column;
+            /* transition: max-height 4s ; */
+        }
+        .detailpor-word.inshow{height:auto;}
+    .detailpor-word .por-word{overflow:unset;white-space:unset;text-overflow:unset;margin-left: 15px;position: relative;}
+    .detailpor-word .por-word:before{content:'';width: 5px;height: 5px;border-radius: 50%;background-color: #464646;position: absolute;top:calc(50% - 2px);left:-12px}
+    i.roateCaret{transform: rotate(180deg);}
+
+    
+ 
+    .detail-btn{text-align: right;width: 100%;font-size: 12px;line-height: 20px;padding-right: 3px;transition: height .15s;height: 20px;}
+    .NoHeight{height: 0;}
+
+    .prespor{line-height: 20px;display: flex;}
+    .prespor.success,.por-word.success{color:#1e80da}
+    .prespor.error,.por-word.error{color:#da1e1e}
+    .prespor.fail,.por-word.fail{color:#e49226}
+</style>
+
+    <div class="getreport-modal" :class="{inshow:modalShow}" id="report-get">
+        <div class="content-box">
+            <div class="rep-content-header">
+                获取健康报告
+            </div>
+            <div class="rep-content-body" >
+                <div class="rep-cell">
+                    <div  style="font-size: 13px;line-height: 25px;" >
+                       获取进度
+                    </div>
+                    <div class="rep-porgress"> 
+                       <div class="rep-porgress-progress" :style="{width:progress + '%'}" >
+                           <div class="porgress-word" :class="{left: progress > 50 }">{{progress}}%</div>
+                       </div>
+                   </div>
+               </div>
+               <div class="rep-cell" style="position: relative;">
+                   <div class="detail-btn"  :class="{NoHeight:!detailPor}">
+                    <span style="position: absolute;width: 60px;right: 0;z-index: 2" @click="SwitchProSort()">详细进度 <i :class="{roateCaret:detailPor}" style="transition: .15s;" class="fas fa-caret-down" ></i></span>
+                   </div>
+                    <div  :style="{backgroundColor: detailPor ? '#ececec' : 'white' }" class="por-content"  ref="porlist">
+                        <transition >
+                            <div  :class="{inshow:detailPor}" class="detailpor-word"  >
+                                <span v-for="(item,index) in contentText" :key="index" :class="item.divStatus" class="por-word"> {{item.text}} </span>
+                            </div>
+                        </transition>
+                        <div class="prespor" :class="presentText.divStatus">
+                            <span style="width: 15px;text-align: center;display: flex;align-items: center;" >
+                                <i class="fas" :class="presentText.iconStatus" style="font-size: 10px;"></i> 
+                            </span>
+                            <span class="por-word"> {{presentText.text}} </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="rep-content-footer" >
+                <div v-if="!btnStatus"  style="font-size: 13px;line-height: 25px;" >
+                    获取完成前请勿关闭或退出当前页 !!!
+                 </div>
+                 <span @click="DoneSync()" v-else style="display: inline-block;padding:5px 20px;color:white;background-color: #508fd0;border-radius: 5px;">
+                    关闭
+                 </span>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="{OSSURL}public/mobile/js/vue.min.js?v=1717"></script>
+       
+    <script>
+        var ReportVue = new Vue({
+            el:"#report-get",
+            data:function(){
+                return {
+                    btnStatus:false,
+                    contentText:[],
+                    studentList:[],
+                    presentText:{
+                        text:"开始获取健康报告",
+                        iconStatus:'fa-sync fa-spin',
+                        divStatus:'await'
+                    },
+                    modalShow:false,
+                    progress:0.01,
+                    detailPor:false,
+                    // iconStatus:'fa-sync',
+                    // divStatus:'await',
+                    nowIndex:0
+                }
+            },
+            methods:{
+                //关闭按钮执行动作
+                DoneSync(){
+                    this.ToggleModal('close')
+                },
+                //改变弹窗状态
+                ToggleModal(status){
+                    if(status === 'open'){
+                        this.modalShow = true
+                    }else{
+                        this.modalShow = false
+                    }
+                    this.GetStudentList(`{$bjlists[0]['bj_id']}`)
+                },
+                //切换详细进度
+                SwitchProSort(){
+                    this.detailPor = !this.detailPor
+                    this.$nextTick(() => {
+                        this.$refs.porlist.scrollTop = this.$refs.porlist.scrollHeight;
+                    });
+                   
+                },
+                //新增一条进度
+                AddPorgress(text,value,status){
+
+                    let statusArray = ['success','await','error','fail'],
+                        List={
+                            success:'fa-check',
+                            await:'fa-sync  fa-spin',
+                            error:'fa-exclamation-triangle',
+                            fail:'fa-times'
+                        };
+
+                    if(typeof(status) !== 'string' || statusArray.indexOf(status) === -1){
+                        status = 'await';
+                    }
+                    if(status !== 'await' && status !== 'fail'){
+                        this.btnStatus = !this.btnStatus
+                    }
+                    // this.divStatus = status;
+                    // this.iconStatus = List[status]
+                    this.contentText.push(this.presentText);
+                    this.presentText = {
+                        text:text,
+                        iconStatus:List[status],
+                        divStatus:status
+                    };
+                    if(typeof(Number(value)) === 'number' ){
+                        this.progress = value;
+                    }
+                    this.$nextTick(() => {
+                        this.$refs.porlist.scrollTop = this.$refs.porlist.scrollHeight;
+                    });
+                },
+                //获取学生列表
+                GetStudentList(classId){
+                    let self = this
+                    // this.$refs.porlist.scrollTop = this.$refs.porlist.offsetHeight;
+                    self.AddPorgress("获取学生列表",self.progress)
+                    axios.post("{php echo $this->createMobileUrl('tmcreportlist', array('schoolid' => $schoolid,'op'=>'getStuList'))}",{
+                        bjid:classId
+                    }).then(function(res){
+                        let data = res.data
+                        if(data.status){
+                            self.AddPorgress("获取学生成功，共"+ data.data.length +"名学生",0.02)
+                            self.studentList = data.data
+                            self.GetStudentReport(0)
+                        }else{
+                            self.AddPorgress(data.msg,self.progress,'error')
+                        }
+                    }).catch(function(error){
+                        self.AddPorgress("网络错误，请稍后重试",self.progress,'error')
+                    })
+                },
+                //获取单个学生的健康报告
+                GetStudentReport(index){
+                    let self = this
+                    stuId = self.studentList[index].id;
+                    stuName = self.studentList[index].stuName;
+                    self.AddPorgress("获取第"+ (index + 1) +"名学生【"+stuName+"】的健康报告",self.progress)
+                    axios.post(" {php echo $this->createMobileUrl('tmcreportlist', array('schoolid' => $schoolid,'op'=>'getStudentReport'))} ",{
+                        id:stuId
+                    }).then(function(res){
+                        
+                        let data = res.data
+                        if(data.status){
+                            self.AddPorgress("学生【"+stuName+"】的健康报告获取成功",Number((index + 1)/(self.studentList.length + 3)*100).toFixed(2))
+                        }else{
+                            self.AddPorgress("学生【"+stuName+"】的健康报告获取失败",self.progress,'fail')
+                        }
+                        if(index + 1 < self.studentList.length ){
+                            self.GetStudentReport(index+1)
+                        }else{
+                            self.AddPorgress("所有学生健康报告均已获取",100,'success')
+                        }
+                    }).catch(function(error){
+                        self.AddPorgress("网络错误，请稍后重试",self.progress,'error')
+                    })
+                }
+
+            }
+        })
+
+
+        function RepModal(){
+            $("#report-get").toggleClass("inshow")
+        }
+
+        //弹出弹窗
+        function getReport(){
+            ReportVue.ToggleModal('open')
+        }
+    </script>
+
+
+    <script src="{OSSURL}public/mobile/js/scroll.muti.common.js?v=1717"></script>
+    <script language="javascript">
+
+        function backToTOP(){
+            $('html,body').animate({
+                    'scrollTop':0
+                },100)
+        }
+
+$("body").append('<div id="common_progress" class="common_progress_bg" style=""><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>');
+
+function ajax_start_loading(text) {
+    $("#common_progress").css("display", "block");
+    $("body").css("position", "fixed");
+    $(".common_progress").css("margin-left", $(window).width() / 2 - 80);
+    if (text) {
+        $("#common_progress span").text(text);
+    }
+}
+// 关闭菊花转
+
+
+
+function ajax_stop_loading() {
+    $("#common_progress").hide();
+    $("body").css("position", "static");
+}
+
+var scroll_load_obj = null;
+
+//重名函数 后面的覆盖前面的，这个地方对scroll_fun 重新定义了下
+function scroll_fun() {
+    // var bottom = $(".has_show_over");
+    var winHeight = window.innerHeight || document.documentElement.clientHeight,
+        scrollTop = document.body.scrollTop || document.documentElement.scrollTop,
+        documentHeight = $(document).height();
+    //将当前的浏览器滚动的高度存在浏览器缓存变量scroll_top
+    // sessionStorage.setItem('scroll_top' + scroll_load_obj.page_name, scrollTop);
+    //判断是否滚到差不多浏览器底部
+    if (parseInt(winHeight) + parseInt(scrollTop) + 5 > parseInt(documentHeight)) {
+        var self = scroll_load_obj;
+        $(window).off("scroll", scroll_fun);
+        if (self.ajax_switch) {
+            //这里做ajax
+            self.ajax_switch = false;  //把ajax锁关了防止不断ajax
+            var datanumb = $(self.ul_box).children('li').length;
+            if(datanumb >= 1){
+                $('.has_show_over').show();
+                $('.has_show_over').animate({height:"45px"});
+                $(".jzz").removeClass('jzz_over');
+                $('.jzz_text').text('加载中');
+            }
+            var search_type='';
+            var search_content='';
+            if($('#search_input').length>0){
+                typesearch_content = $.trim($('#search_input').val());
+                $('.type_item.checked').each(function () {
+                    if (search_type != '') {
+                        search_type += ',' + $(this).attr('type');
+                    } else {
+                        search_type += $(this).attr('type');
+                    }
+                })
+            }
+            if (index_type_item != '') {
+                search_type = index_type_item;
+            }
+
+            var GetLiData = {};
+            for(let item of self.param){
+                //$(self.ul_box).children('li').eq($(self.ul_box).children('li').length-1)
+                //GetLiData[item] = $(param.li_item).eq($(param.li_item).length-1).attr(`${item}`) || -1 ;
+                GetLiData[item] = $(self.ul_box).children(`${self.li_item}`).eq($(self.ul_box).children(`${self.li_item}`).length-1).attr(`${item}`) || -1 ;
+            }
+         
+
+		 //TODO: 要传的数据
+            var post_data = { 
+                limit: $(self.ul_box).children('li').eq($(self.ul_box).children('li').length-1).attr('time'),
+                noticeytpe: $("#noticeytpe").val(),
+                LiData : GetLiData,
+                limit_org:self.limit_org,
+                content: search_content,
+                //这个地方将一些其他参数加上去
+                Apid       : TopVue.DoneData.Apid,
+                xqListKey: TopVue.DoneData.xqListKey,
+                bjid: TopVue.DoneData.bjid,
+                typeid: TopVue.DoneData.typeid
+            };
+            $('.has_show_over').show();
+
+
+			//TODO: 实际执行的ajax
+            $.ajax({
+                type: 'POST',
+                url: self.ajax_url,
+                data: post_data,
+                dataType: "html",
+                success: function (data) {
+                    //载入更多内容
+                    if ($.trim(data)) {
+                        $(self.ul_box).append(data);
+                        // sessionStorage.setItem('cache_html' + self.page_name, $(self.ul_box).html());
+                        //self.limit = $(self.ul_box).children('li').eq($(self.ul_box).children('li').length-1).attr('time');
+                        // sessionStorage.setItem('limit' + self.page_name, self.limit);
+                        if (typeof (self.after_ajax) != 'undefined') {
+                            self.after_ajax();
+                        }
+                        $(window).on("scroll", scroll_fun);
+                        self.ajax_switch = true;
+                    } else {
+                        $('.has_show_over').show();
+                        $('.jzz_text').text('数据已加载完毕');
+                        $(".jzz").addClass('jzz_over');
+                        $(window).off("scroll", scroll_fun);
+                        $('.has_show_over').animate({height:"0"});
+
+                    }
+                },
+                error: function () {
+                    jTips('加载失败！');
+                    $(window).on("scroll", scroll_fun);
+                    self.ajax_switch = true;
+                }
+            }) //ajax结束
+        }
+    }
+}
+
+var TopVue = new Vue({
+	el: '#attendance' ,
+	data: function () {
+		return{
+			year   : "{$year}",
+			xq   : "{$xq}",
+			bjid   : "{$bjlists[0]['sid']}",
+			bjname   : "{$bjlists[0]['old_sname']}",
+			typename   : "月度报告",
+			typeid   : "1",
+			yearListKey: 1,
+            yearList  :[],
+			xqListKey: 1,
+			xqList :[],
+			bjList :[],
+			searchType :[],
+			DoneData : {
+				year   : "{$year}",
+				xq   : "{$xq}",
+				typeid   : "1",
+				typename   : "月度报告",
+				bjname   : "{$bjlists[0]['old_sname']}",
+				bjid   : "{$bjlists[0]['sid']}",
+				yearListKey: 1,
+				xqListKey: 1,
+			},
+		}
+	},
+	methods:{
+		ChangeAp:function(){
+			if(this.yearListKey != -1){
+				this.year = this.yearList[this.yearListKey]['name']
+			}else{
+				this.year = "{$year}"	
+			}
+			this.xqListKey = -1 ;
+			this.xq =  "不限学期";
+		},
+		ChangeRoom:function(){
+			this.xq = $("#xqSelect option:selected").text();
+		},
+        ChangeBj:function(){
+			this.bjname = $("#bjSelect option:selected").text();
+		},
+        ChangeType:function(){
+			this.typename = $("#typeSelect option:selected").text();
+            if($("#typeSelect option:selected").val() == 2){ //学期报告
+                $(".xqbgbox").show()
+            }else{ //年度-月度
+                $(".xqbgbox").hide()
+            }
+		},
+		ChangeCondition:function(){
+			this.yearListKey   = this.DoneData.yearListKey
+			this.xqListKey = this.DoneData.xqListKey
+			this.year      = this.DoneData.year
+			this.xq    = this.DoneData.xq
+			this.bjname    = this.DoneData.bjname
+			this.typename    = this.DoneData.typename
+			this.bjid    = this.DoneData.bjid
+			this.typeid    = this.DoneData.typeid
+			$('#zixunkefu').reveal();
+		},
+
+		ChangeDone:function(){
+			let self = this;
+			ajax_start_loading("获取数据中");
+			$('#zixunkefu').trigger('reveal:close');
+			self.DoneData.year      = self.year
+			self.DoneData.xq    = self.xq;
+			self.DoneData.bjname    = self.bjname;
+			self.DoneData.bjid    = self.bjid;
+			self.DoneData.typename    = self.typename;
+			self.DoneData.typeid    = self.typeid;
+			self.DoneData.xqListKey = self.xqListKey
+			self.DoneData.yearListKey   = self.yearListKey
+			$.ajax({
+				url: "{php echo $this->createMobileUrl('tmcreportlist', array('schoolid' => $schoolid,'op'=>'More_Data' ), true)}",
+				data : self.DoneData,	
+				dataType: 'html',
+				type: "post",
+				success: function (data) {
+					$("#table_info").html(data);
+					scroll_load_obj.ajax_switch = true;
+					$(window).on("scroll", scroll_fun);
+					ajax_stop_loading();
+				}
+			});	
+		}
+	},
+    created:function(){ //首次进入时初始化数据
+        let self = this;
+        $.ajax({
+            url: "{php echo $this->createMobileUrl('tmcreportlist', array('schoolid' => $schoolid,'op'=>'GetApData' ), true)}",	
+            dataType: 'json',
+            type: "post",
+            success: function (data) {
+                self.yearList = data.yearList
+                self.xqList = data.xqList;
+                self.bjList = data.bjList;
+                self.searchType = data.searchType;
+            }
+        });	
+    },
+
+})
+
+function ChaKanXiangQing(id,type){
+    if(type == 1){
+        location.href = "{php echo $this->createMobileUrl('mcreportinfo', array('schoolid' => $schoolid,'op'=>'display' ))}&id="+id;
+    }else if(type == 2){
+        location.href = "{php echo $this->createMobileUrl('mcreportinfoxq', array('schoolid' => $schoolid,'op'=>'display' ))}&id="+id;
+    }else if(type == 3){
+        location.href = "{php echo $this->createMobileUrl('mcreportinfoyear', array('schoolid' => $schoolid,'op'=>'display' ))}&id="+id;
+    }
+}
+
+function closed(){
+	$('#zixunkefu').trigger('reveal:close');
+	
+};
+ 
+new Scroll_load({
+        "limit"      : "0",
+        "ajax_switch": true,
+        "ul_box"     : "#table_info",
+        "li_item"    : ".CheckLog",
+        "param"      : ["time"],
+        "ajax_url"   : "{php echo $this->createMobileUrl('tmcreportlist', array('schoolid' => $schoolid,'op'=>'More_Data' ), true)}",
+        "page_name"  : "teacher_notify",
+        "after_ajax": function () {
+        }
+    }).load_init();
+ 
+</script>	
+{php include $this->template('newfooter');}
+</body>
+</html>

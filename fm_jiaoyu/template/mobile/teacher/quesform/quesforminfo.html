@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/mGrzxTeacher.css?v=4.8" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.80120" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/pageContent.css?v=4.80120" />
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.10.1.min.js?v=4.9"></script>
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/activityNotice.css?v=4.80120" />
+{php echo register_jssdks();}
+</head>
+<body>
+    <div id="titlebar" class="header mainColor">
+        <div class="l">
+            <a class="backOff" style="background:url({OSSURL}public/mobile/img/ic_arrow_left_48px_white.svg) no-repeat;background-size: 55% 55%;background-position: 50%;" href="javascript:history.go(-1);"></a>
+        </div>
+        <div class="m">
+        <span style="font-size: 18px">内容详情</span>   
+        </div>
+    </div>
+    <div id="titlebar_bg" class="_header"></div>
+    <input type="hidden"  id="hide_sid"  value="{$it['sid']}">
+    <input type="hidden"  id="hide_tid"  value="{$it['tid']}">
+    <input type="hidden"  id="hide_schoolid"  value="{$schoolid}">
+    <input type="hidden"  id="hide_weid"  value="{$weid}">
+    <header class="headerTtitle">
+		<h3 class="title">{$leave['title']}</h3>
+        {if ( (!is_showpf() && ($teacher['status'] == 2 || $leave['tid'] == $it['tid'])) || (is_showpf() && ($leave['is_research'] != 1 || IsHasQx($tid_global,2000204,2,$schoolid)) ) )}
+        <div class="queryResult">
+            <img src="{OSSURL}public/mobile/img/headerLeftBg.png" class="img-responsive">
+            <span>查看结果</span>
+        </div>
+		{/if}
+		
+	</header>
+    <div class="publishInfo" style="height: 25px;display: flex;">
+        <span class="source">发布者：{$leave['tname']}</span>
+        <span class="time">{php echo (date('m-d H:m',$leave['createtime']))}</span>
+        <span class="read"></span>
+	</div>
+
+	<style>
+		.send-people{padding-top: 5px;height: auto !important;}
+		.send-people span{display: inline-block;padding:0 10px 0 0;line-height: 20px;height: 20px;white-space: nowrap;position: relative;}
+		.send-people span:not(:last-of-type):after{content:"";width: 1px;height: 80%;position: absolute;top:10%;right: 5px;background-color: gray;}
+	</style>
+	<div class="publishInfo" style="min-height: 30px;display: flex;height: auto;">
+        <span class="source" style="margin-right: 0;height: 30px;">发送对象：</span>
+		<div class="time send-people" style="flex:1;margin-left: 0;">
+			{if $leave['usertype'] == 'bj' || $leave['usertype'] == 'jsfz'}
+				{loop $arr $row}
+				<span >{$row['name']}</span></br>
+				{/loop}	
+			{/if}
+			{if $leave['usertype'] == 'school'}
+			<span >全体师生</span>
+			{/if}
+			{if $leave['usertype'] == 'alltea'} 
+			<span >全体老师</span>	
+			{/if}
+		</div>
+    </div>
+    <div class="content">		
+        <pre id="neirong">{php echo htmlspecialchars_decode($leave['content'])}</pre><br/>			
+    </div>	
+		{if !empty($ZY_contents)}
+		<div class="questionContent">
+			<div class="questionBox">
+                <input type="hidden" id="txtQuestionnaireId" value="{$leaveid}">
+                {if !empty($testAA)}
+                    <span style="color:red;padding-left: 10px;"> 你已经提交过本次问卷，不能再提交了哦~</span></br></br>
+                    <span style="color:blue;padding-left: 10px;">你的回答：</span>
+                {/if}
+				{loop $ZY_contents $key $row}
+                    {if $ZY_contents[$key]['type'] == '1'}
+                    <div class="question" name="{$ZY_contents[$key]['qorder']}" tag="a"> 
+                        {$ZY_contents[$key]['qorder']}.&nbsp{$ZY_contents[$key]['title']}
+					    {loop $ZY_contents[$key]['content'] $keys $rows}
+						    {if $testAA[$ZY_contents[$key]['qorder']] == $keys }
+						 	    <p class="answerOption"><span class="radioOptionsIco" readonly>
+						            <img src="{OSSURL}public/mobile/img/radioChecked_01.png" alt="图片无法显示" class="img-unresponsive" readonly>
+                            {else}
+							    <p class="answerOption"><span class="radioOptionsIco">
+                                    <img src="{OSSURL}public/mobile/img/radioNochecked_02.png" alt="图片无法显示" class="img-responsive">
+                            {/if}
+                                <input type="radio" name="answerOption_{$ZY_contents[$key]['qorder']}" tag="{$keys}">
+                                </span>
+                            {$ZY_contents[$key]['content'][$keys]['title']} 
+                           
+                                </p>
+					    {/loop}
+					</div>
+					{elseif $ZY_contents[$key]['type'] == '2'}
+					<div class="question" name="{$ZY_contents[$key]['qorder']}" tag="b">
+                        {$ZY_contents[$key]['qorder']}.&nbsp{$ZY_contents[$key]['title']}
+					    {loop $ZY_contents[$key]['content'] $keys $rows}
+                        <p class="answerOption">
+                            {if $testAA}
+                                {if in_array($keys, $testAA[$ZY_contents[$key]['qorder']]) }
+                                <span class="checkBoxOptionsIco">
+                                    <img src="{OSSURL}public/mobile/img/checkBoxChecked_01.png" alt="图片无法显示" class="img-responsive">
+                                    <input type="checkbox" name="answerOption_{$ZY_contents[$key]['qorder']}" tag="{$keys}">
+                                </span>
+                                {else}
+                                <span class="checkBoxOptionsIco">
+                                    <img src="{OSSURL}public/mobile/img/checkBoxNochecked_02.png" alt="图片无法显示" class="img-responsive">	
+                                    <input type="checkbox" name="answerOption_{$ZY_contents[$key]['qorder']}" tag="{$keys}">
+                                </span>
+                                {/if}
+                            {else}
+                            <span class="checkBoxOptionsIco">
+                                <img src="{OSSURL}public/mobile/img/checkBoxNochecked_02.png" alt="图片无法显示" class="img-responsive">	
+                                <input type="checkbox" name="answerOption_{$ZY_contents[$key]['qorder']}" tag="{$keys}">
+                            </span>
+                            {/if}
+                            {$ZY_contents[$key]['content'][$keys]['title']}
+                           
+                        </p>
+				        {/loop}
+				    </div>
+					{elseif $ZY_contents[$key]['type'] == '3'}
+					<div class="question" name="{$ZY_contents[$key]['qorder']}" tag="c">
+                        {$ZY_contents[$key]['qorder']}.&nbsp{$ZY_contents[$key]['title']}
+                        <p class="answerOption">
+                            {if !empty($testAA[$ZY_contents[$key]['qorder']]) }
+                            <textarea name="txtAnswerOption" cols="3" rows="4" placeholder="{$testAA[$ZY_contents[$key]['qorder']]}" tag="b65f7ee0-2b6c-4e75-935c-2a56aa88d400" disabled ></textarea>
+                            {else}
+                            <textarea name="txtAnswerOption" cols="3" rows="4" placeholder="请回答。。。。。。" tag="b65f7ee0-2b6c-4e75-935c-2a56aa88d400" ></textarea>
+                            {/if}
+                        </p>
+                    </div>
+                    {/if}
+                {/loop}
+                {if empty($testAA)}
+                <button type="button" id="btSubmit">提交</button>
+                {/if}
+            </div>
+		</div>
+		{/if}
+		{if $leave['usertype'] != 'school' || $leave['usertype'] != 'alltea'}
+		<div class="commentBox">
+			<div class="mobile_comment" >
+				<div class="commentTitle">
+					<span class="l">
+                        {if $leave['usertype'] == 'bj'}指定班级{/if}
+                        {if $leave['usertype'] == 'jsfz'}指定老师组{/if}
+                        {if $leave['usertype'] == 'school'}全体师生{/if}
+                        {if $leave['usertype'] == 'alltea'}全体老师{/if}
+                    </span>
+				</div>
+				<ul class="commentList">
+					<li class="comment_li">
+						{if $leave['usertype'] == 'bj' || $leave['usertype'] == 'jsfz'}
+							{loop $arr $row}
+							<span style="margin-left:5px;">{$row['name']}</span></br>
+							{/loop}	
+						{/if}
+						{if $leave['usertype'] == 'school'}
+						<span style="margin-left:5px;">全体师生</span>
+						{/if}
+						{if $leave['usertype'] == 'alltea'}
+						<span style="margin-left:5px;">全体老师</span>	
+						{/if}
+					</li>				
+				</ul>
+			</div>			
+		</div>
+		{/if}
+    {php include $this->template('comtool/notice_commont');}
+    {php include $this->template('comad');}
+</body>
+<script src="{OSSURL}public/mobile/js/faceMap.js?v=5.61" type="text/javascript"></script>
+{php include $this->template('port');}
+<script>
+    var WeixinApi = (function () {
+        return {
+            imagePreview    :imagePreview
+        };
+        "use strict";
+        
+        function imagePreview(curSrc,srcList) {
+            if(!curSrc || !srcList || srcList.length == 0) {
+                return;
+            }
+            WeixinJSBridge.invoke('imagePreview', {
+                'current' : curSrc,
+                'urls' : srcList
+            });
+        }
+        return {
+            version         :"2.5",
+            ready           :wxJsBridgeReady,
+            imagePreview    :imagePreview
+        };
+    })();
+    var srcList = new Array();
+    function wxImageShow(src){
+        WeixinApi.imagePreview(src, srcList);
+    }
+    setTimeout(function() {
+	if(window.__wxjs_environment === 'miniprogram'){
+		$("#titlebar").hide();
+		$("#titlebar_bg").hide();
+		document.title="通知详情";
+	}
+}, 100);
+$(".queryResult").on("click", function() {
+	{if !empty($ZY_contents)}
+		window.location.href = "{php echo $this->createMobileUrl('quesformdata', array('schoolid' => $schoolid,'leaveid'=>$leaveid), true)}"
+	{else}
+		showCheckBox();
+	{/if}
+});
+function showCheckBox(){
+    window.location.href = "{php echo $this->createMobileUrl('recod', array('schoolid' => $schoolid,'noticeid'=>$leave['id']), true)}"
+};
+$(".vvv").on("click", function() {
+	gotodetail();
+});
+function gotodetail(){
+	{if !empty($ZY_contents)}
+		window.location.href = "{php echo $this->createMobileUrl('quesformdata', array('schoolid' => $schoolid,'leaveid'=>$leaveid), true)}"
+	{else}
+		showCheckBox();
+	{/if}
+}
+icon_replace($("#neirong"));
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+$(function () {
+
+	//给图片增加点击放大功能
+    $(".content").find("img").each(function(){
+        let src = $(this).attr("src");
+        srcList.push(src);
+        $(this).attr("onclick","wxImageShow('"+src+"');");
+    });
+
+	
+
+    //背景音乐播放
+	var myaudio = document.getElementById("jp_audio_1");
+	//myaudio.play();
+	$(".audioBar").on("touchstart", function (e) {
+		e.stopPropagation();
+		if ($(this).hasClass("on")) {
+			myaudio.pause();
+		} else {
+			myaudio.play();
+		}
+	});
+});	
+</script>
+{if empty($testAA)}
+<script>
+	var hasSubmit = 'False';
+	var hasObject = 'True';
+
+	$(".radioOptionsIco").click(function () {
+		var value = $(this).children("img").attr("src");
+		if (value == "{OSSURL}public/mobile/img/radioChecked_01.png") {
+			$(this).children("img").attr("src", "{OSSURL}public/mobile/img/radioNochecked_02.png");
+			$(this).children("input").removeAttr("checked");
+		} else {
+			$(this).children("img").attr("src", "{OSSURL}public/mobile/img/radioChecked_01.png");
+			$(this).children("input").attr("checked", "checked");
+			$(this).parent().siblings(".answerOption").find(".radioOptionsIco").children("img").attr("src", "{OSSURL}public/mobile/img/radioNochecked_02.png");
+			$(this).parent().siblings(".answerOption").find(".radioOptionsIco").children("input").removeAttr("checked");
+		}
+	})
+	$(".checkBoxOptionsIco").click(function() {
+        var value = $(this).children("img").attr("src");
+		if (value == "{OSSURL}public/mobile/img/checkBoxChecked_01.png") {
+			$(this).children("img").attr("src", "{OSSURL}public/mobile/img/checkBoxNochecked_02.png");
+			$(this).children("input").removeAttr("checked");
+		} else {
+			$(this).children("img").attr("src", "{OSSURL}public/mobile/img/checkBoxChecked_01.png");
+			$(this).children("input").attr("checked", "checked");
+		}
+	});
+
+	$(".btnTrue").click(function () {
+		$(".popUpBox").css("display", "none");
+		if (hasObject == "True" && hasSubmit == "True") {
+			btnSubmit();
+		}
+	});
+	$(".btnFalse").click(function () {
+		location.href = "/1046/Notify";
+		$(".popUpBox").css("display", "none");
+	});
+
+
+	$("#btSubmit").click(function () {
+		if (hasObject == "False" || hasSubmit == "True") {
+			$(".popUpBox").css("display", "block");
+		}
+		else {
+			btnSubmit();
+		}
+	});
+        //提交
+	function btnSubmit() {
+		var zy_sid             = $("#hide_sid").val();
+		var zy_tid             = $("#hide_tid").val();
+		var zy_weid            = $("#hide_weid").val();
+		var zy_schoolid        = $("#hide_schoolid").val();
+		var txtQuestionnaireId = $("#txtQuestionnaireId").val();
+
+		var txtItemJson = "";
+		var d = 0;
+		$(".questionContent").find('.question').each(function () {
+			d++;
+			var txtQueId = $(this).attr("name");
+			var txtQueType = $(this).attr("tag");
+            //问答题
+			if (txtQueType == "c") {
+				var txtQueAnswerId = $(this).find("[name=txtAnswerOption]").attr("tag");
+				var txtAnserContent = $(this).find('[name=txtAnswerOption]').val();
+				
+				if( txtAnserContent.indexOf('"') != -1 )
+				{
+				    txtAnserContent1 = txtAnserContent.replace(/"/g,"“");
+				}else{
+					txtAnserContent1 = txtAnserContent ;
+				}
+				//alert(txtAnserContent1);
+				if (txtAnserContent != "") {
+                        txtItemJson += "{\"tmid\":\"" + txtQueId + "\",\"type\":\"" + txtQueType + "\",\"huida\":\"" + txtAnserContent1 + "\"},";
+				}
+			} else {
+				var radioObj = $(this).find("[name=answerOption_" + txtQueId + "]");
+				for (var j = 0; j < radioObj.length; j++) {
+					if (radioObj[j].checked) {
+						var txtQueAnswerId = $(radioObj[j]).attr("tag");
+                            txtItemJson += "{\"tmid\":\"" + txtQueId +  "\",\"type\":\"" + txtQueType + "\",\"huida\":\"" + txtQueAnswerId + "\"},";
+					}
+				}
+			}
+
+        });
+		
+        if (txtItemJson != "") {
+            txtItemJson = "[" + txtItemJson.substr(0, txtItemJson.length - 1) + "]";
+        } else {
+            jTips("还没填写任何内容！不能提交哦");
+            return false;
+        }
+		    jConfirm('提交回答后不可修改，是否确认提交？', '确认对话框', function (r){
+	        if(r){
+		$.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'tjzy'))}",{"tid":zy_tid, "sid":zy_sid,"weid":zy_weid,"schoolid":zy_schoolid,"userid":{$userid}, "txtQuestionnaireId": txtQuestionnaireId, "txtItemJson": txtItemJson, hasSubmit: hasSubmit },function(data){
+					if(data.result){
+						jTips(data.info);
+						window.location.href = "{php echo $this->createMobileUrl('quesformlist', array('schoolid' => $schoolid), true)}"
+					}else{
+						jTips(data.info);
+						window.location.href = "{php echo $this->createMobileUrl('quesformlist', array('schoolid' => $schoolid), true)}"
+					}
+		},'json');}else{
+			return false;
+		}});
+	}
+</script>
+{/if}
+{php include $this->template('newfooter');}
+</html>

@@ -1,0 +1,43 @@
+<style>
+    .datas_ul.blackUI:nth-of-type(even){
+        background-color: #fff;
+    }
+    .datas_ul.blackUI:nth-of-type(odd){
+        background-color: #edfffd !important;
+    }
+</style>
+<div class="datas_ul wihtUI">
+    <ul>学生</ul>
+    <ul style="width:30%;">类型</ul>
+    <ul>状态</ul>
+    <!-- <ul>出勤</ul>
+    <ul>缺勤</ul>
+    <ul>请假</ul> -->
+</div>
+<div id="ajax_datas">
+    {loop $list $row}
+        <div class="datas_ul blackUI">
+            <ul>{$row['sname']}</ul>
+            <ul style="width:30%;">{if $row['s_type'] == 2} <span style="color: #56c71f;">住校</span> {else}<span style="color: darksalmon;">走读</span>{/if}</ul>
+            <ul>{$row['status']}</ul>
+            <!-- <ul>{$row['chuqin']}</ul>
+            <ul>{$row['queqin']}</ul>
+            <ul>{$row['qjStuCount']}</ul> -->
+        </div>
+    {/loop}
+</div>
+
+<script>
+    $("#dayhtml").html(`{$date}`)
+    $("#timehtml").html(`{$time}`)
+    $("#date").val(`{$date}`)
+    $("#time").val(`{$time}`)
+    let html = '';
+    if(`{$istrue}`){
+        html = `<div class="next_right" onclick="next()">后一天 ></div>`
+    }else{
+        html = `<div class="next_right" style="color:#ccc">后一天 ></div>`
+    }
+    $("#next_day").html(html)
+    
+</script>

@@ -1,0 +1,2178 @@
+<!DOCTYPE html>
+<html lang="en" style="font-size: 100px;">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bjqCss.css?v=4.9">
+    <link href="{OSSURL}public/mobile/css/wx_sdk.css?v=1717" rel="stylesheet" />
+    {php echo register_jssdks();}
+    <script type="text/javascript" src="https://manger.weimeizhan.com/web/resource/js/lib/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="{MODULE_URL}public/web/js/touch.min.js"></script>
+    <link href="{$_W['siteroot']}web/resource/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{MODULE_URL}public/web/font-awesome5/css/all.min.css" rel="stylesheet">
+    <script src=" {MODULE_URL}public/mobile/js/echarts/4.3.0/echarts.min.js"></script>
+    <script src="{$_W['siteroot']}addons/fm_jiaoyu/public/web/js/start_chart_init.js"></script>
+    <link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/manual_mobile.css?v=1.0">
+    {php include $this->template('port');}
+    <title>Document</title>
+
+    <style>
+        .TopBtnBox{
+            width: 100%;height: 60px;display: flex;justify-content: space-evenly;
+        }
+        .TopBtnBox>span{
+            padding:0 20px;border-radius: 15px;height: 30px;margin-top: 15px;line-height: 30px;
+        }
+        .nc_editor-page{height: 100%;width: 800px;}
+    </style>
+
+</head>
+
+<body style="margin:0">
+    <div class="Main">
+        <div class="content-cell-box" style="background-color: #656565;height: calc(100vh - 40px);">
+        <div class="TopBtnBox" >
+            <span onclick="javascript:goback()" style="background-color: coral;">返回</span>
+            <span style="background-color: #34cfc2;" onclick="SavePage()">保存</span>
+        </div>
+        <div style="width: 100vw;overflow: auto;height: calc(100% - 60px);position: relative;">
+            <div class="nc_editor-page">
+                <div style="position: absolute;width: 80px;height: 40px;color:white;text-align: center;top:calc(50% - 20px);left:0" >
+                    <div><<< </div>
+                    <div>滑动更多</div>
+                </div>
+                <!-- 放大缩小box -->
+                <div id="zoom-div">
+                    <div class="changeimgbox" onclick="OpenAlbumList();$('#zoom-div').hide();">
+                        <i class="fas fa-image"></i>
+                        <div style="font-size:12px" >替换</div>
+                    </div>
+                    <div class="ZoomUpAndDownBox" >
+                        <div onclick="ZoomImg('add')"  class="ZoomUp"><i class="fas fa-plus"></i></div>
+                        <div onclick="ZoomImg('min')"><i class="fas fa-minus"></i></div>
+                    </div>
+                </div>
+                <!-- 中间页 -->
+                <div id="tpl_mask_div"
+                    style="background-color: white;">
+                    <div class="tpl_page" id="tpl_page">
+                        <div class="pageBackMask" id="pageBackMask" > </div>
+                        <div class="img_container_list container_list"   style="z-index: 14;position: absolute;"> </div>
+                        <div class="title_container_list container_list" style="position:absolute;z-index:16;">   </div>
+                        <div class="score_container_list container_list" style="position:absolute;z-index:16;">   </div>
+                        <div class="txt_container_list container_list"   style="position:absolute;z-index:16;">   </div>
+                        <div class="show_container_list container_list"  style="position:absolute;z-index:16;">   </div>
+                        <div class="video_container_list container_list" style="position:absolute;z-index:16;">   </div>
+                        <div class="chart_container_list container_list" style="position:absolute;z-index:16;">  </div>
+                    </div>
+                </div>
+                <div style="position: absolute;width: 80px;height: 40px;color:white;text-align: center;top:calc(50% - 20px);right: 0;" >
+                    <div>>>></div>
+                    <div>滑动更多</div>
+                </div>
+            </div>
+        </div>
+            <!-- 底部切换页 -->
+            <div  class="bottom_change_Box">
+                <div class="pageBtn" style="border-right: 1px solid black;" onclick="Prev()">上一页</div>
+                <div style="flex: 1;text-align: center;">  <span id="NowPageIn"></span>/<span id="AllPageC"></span></div>
+                <div class="pageBtn" style="border-left: 1px solid black;" onclick="Next()">下一页</div>
+            </div>
+        </div>
+        <!-- 相册列表弹窗 -->
+        <div class="AlbumModal " id="AlbumList">
+            <div class="AlbumBackBtn" onclick="window.history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="Album_Top">
+                <div class="Album_TypeBox">
+                    <div class="Album_type InActive" data-type="class" onclick="ChangeAlbumType(this)" >班级相册</div>
+                    <div class="Album_type" data-type="personal" onclick="ChangeAlbumType(this)">个人相册</div>
+                </div>
+                <div class="Album_Top_Line"></div>
+            </div>
+            <div class="AlbumContentRootBox">
+                <div class="AlbumBox">
+                    <div class="tab_tab"  data-target="class">
+                        <ul  style="width: 100%;">
+                            {loop $bjphototype $row}
+                            <li class="ClassAlbumLi" onclick="OpenImgList(0,`{$row['ctype']}`,2,`{$row['sname']}`)" >
+                                <div class="CA_leftImg" >
+                                    {if $row['picurl']}
+                                    <img src="{php echo tomedia($row['picurl'])}">
+                                    {else}
+                                    <img src="{php echo tomedia($school['spic'])}">
+                                    {/if}
+                                </div>
+                                <div class="CA_rightTxt">
+                                    <div> {$row['sname']} </div>
+                                    <div> {$row['total']}张 </div>
+                                </div>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                    <div class="tab_tab"  data-target="personal">
+                        <div class="personal_Search">
+                            <input type="text" placeholder="输入姓名筛选" id="keywords">
+                        </div>
+                        <div class="personalAlbumRootBox" >
+                            <ul class="PersonalLeftUl">
+                                {loop $bjstu $row}
+                                <li class="{if $row['id'] == $_GPC['sid']}active{/if} bjstulist" onclick="ChangeStuAlbum(this,`{$row['id']}`)">
+                                    <span class="A_name">{$row['sname']}</span>
+                                    <span class="A_count">{$row['total']}张</span>
+                                </li>
+                                {/loop}
+                            </ul>
+                            <div style="flex:1;position: relative;">
+                                <div Id="SpinLayer" style="position: absolute;width: 100%;height: 100%;background-color: white;display: none;" >
+                                    <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                        <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                     </div>
+                                </div>
+                                <ul class="personalRightUl" >
+                                    {loop $grphototype $row}
+                                    <li onclick="OpenImgList(`{$_GPC['sid']}`,`{$row['ctype']}`,1,`{$row['sname']}`)" >
+                                        <div class="AlbumTitle">
+                                            <div style="flex: 1;">{$row['sname']}</div>
+                                            <div style="width: 40px;">{$row['total']}张</div>
+                                        </div>
+                                        <div class="AlbumThumb" >
+                                            {if $row['picurl']}
+                                            <img src="{php echo tomedia($row['picurl'])}" style="border-radius:10px">
+                                            {else}
+                                            <img src="{php echo tomedia($school['spic'])}" style="border-radius:10px">
+                                            {/if}
+                                        </div>
+                                    </li>
+                                    {/loop}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 相册详情弹窗 -->
+        <div class="AlbumModal " id="imglist" style="z-index: 111;">
+            <div class="AlbumIngListTop">
+              <i class="fas fa-angle-left" style="font-size: 28px; margin-left: 5px;position: absolute;left:0;line-height: 35px;" onclick="window.history.back()"></i>
+                <span id="xctitle">相册名称</span>
+            </div>
+            <div class="AlbumIngListContent" id="xclist">
+            </div>
+            <input type="hidden" id='sid'>
+            <input type="hidden" id='type'>
+            <input type="hidden" id='ctype'>
+            <div class="photos_edit" style="z-index:4;">
+                <style>
+                    #ShowImgBtn:after{
+                        content:"";
+                        height: 17px;
+                        margin-top: 9px;
+                        width: 1px;
+                        background-color: #34cfc2;
+                        position: absolute;
+                        right:0;
+                        top:0;
+                    }
+                </style>
+                <!-- <a onclick="UploadImg()" id="btn_upload_img">上传图片</a> -->
+                <a id="ShowImgBtn" style="color:gray;position: relative;" onclick="showImg()">预览</a>
+                <a onclick="ImgSure()">确定</a>
+            </div>
+            <div class="AlbumBackBtn" onclick="UploadImg()" id="btn_upload_img" style="line-height: 16px; height: 40px; width: 40px; font-size: 16px; text-align: center; align-items: center;bottom:130px;right: 26px;">
+                <span>上传<br/>图片</span>
+            </div>
+            <div class="AlbumBackBtn" onclick="window.history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+        </div>
+        <!-- 视频列表弹窗 -->
+        <div class="AlbumModal " id="AlbumVideoList">
+            <div class="AlbumBackBtn" onclick="window.history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="Album_Top">
+                <div class="Album_TypeBox">
+                    <div class="AlbumVideo_type InActive" data-type="class" onclick="ChangeAlbumVideoType(this)" >班级视频</div>
+                    <div class="AlbumVideo_type" data-type="personal" onclick="ChangeAlbumVideoType(this)">个人视频</div>
+                </div>
+                <div class="Album_Top_Line"></div>
+            </div>
+            <div class="AlbumContentRootBox">
+                <div class="AlbumBox">
+                    <div class="tab_tab"  data-target="class">
+                        <ul  style="width: 100%;">
+                            {loop $bjvideotype $row}
+                            <li class="ClassAlbumLi" onclick="OpenVideoList(0,`{$row['ctype']}`,2,`{$row['sname']}`)" >
+                                <div class="CA_leftImg" >
+                                    {if $row['picurl']}
+                                    <img src="{php echo tomedia($row['picurl'])}">
+                                    {else}
+                                    <img src="{php echo tomedia($school['spic'])}">
+                                    {/if}
+                                </div>
+                                <div class="CA_rightTxt">
+                                    <div> {$row['sname']} </div>
+                                    <div> {$row['total']}张 </div>
+                                </div>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                    <div class="tab_tab"  data-target="personal">
+                        <div class="personal_Search">
+                            <input type="text" placeholder="输入姓名筛选" id="keywords">
+                        </div>
+
+                        <div class="personalAlbumRootBox" >
+                            <ul class="PersonalLeftUl">
+                                {loop $bjstuVideo $row}
+                                <li class="{if $row['id'] == $_GPC['sid']}active{/if} bjstulist" onclick="ChangeStuAlbumVideo(this,`{$row['id']}`)">
+                                    <span class="A_name">{$row['sname']}</span>
+                                    <span class="A_count">{$row['total']}张</span>
+                                </li>
+                                {/loop}
+                            </ul>
+                            <div style="flex:1;position: relative;">
+                                <div Id="SpinLayerVideo" style="position: absolute;width: 100%;height: 100%;background-color: white;display: none;" >
+                                    <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                        <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img//loading/loading-eight-point-blue.gif" alt="">
+                                     </div>
+                                </div>
+                                <ul class="personalRightUl" >
+                                    {loop $grvideotype $row}
+                                    <li onclick="OpenVideoList(`{$_GPC['sid']}`,`{$row['ctype']}`,1,`{$row['sname']}`)" >
+                                        <div class="AlbumTitle">
+                                            <div style="flex: 1;">{$row['sname']}</div>
+                                            <div style="width: 40px;">{$row['total']}张</div>
+                                        </div>
+                                        <div class="AlbumThumb" >
+                                            {if $row['picurl']}
+                                            <img src="{php echo tomedia($row['picurl'])}" style="border-radius:10px">
+                                            {else}
+                                            <img src="{php echo tomedia($school['spic'])}" style="border-radius:10px">
+                                            {/if}
+                                        </div>
+                                    </li>
+                                    {/loop}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       <!-- 视频详情弹窗 -->
+        <div class="AlbumModal " id="videolist" style="z-index: 111;">
+            <div class="AlbumBackBtn add_video_btn2" style="line-height: 16px; height: 40px; width: 40px; font-size: 16px; text-align: center; align-items: center;bottom:130px;right: 26px;">
+                <span>上传<br/>视频</span>
+            </div>
+            <div class="AlbumBackBtn" onclick="window.history.back()">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="AlbumIngListTop">
+              <i class="fas fa-angle-left" style="font-size: 28px; margin-left: 5px;position: absolute;left:0;line-height: 35px;" onclick="window.history.back()"></i>
+                <span id="videotitle">视频名称</span>
+            </div>
+            <div class="AlbumIngListContent" id="vlist">
+            </div>
+            <input type="hidden" id='sid'>
+            <input type="hidden" id='type'>
+            <input type="hidden" id='ctype'>
+            <div class="photos_edit" style="z-index:4;">
+                <style>
+                    #LookVideoBtn:after{
+                        content:"";
+                        height: 17px;
+                        margin-top: 9px;
+                        width: 1px;
+                        background-color: #34cfc2;
+                        position: absolute;
+                        right:0;
+                        top:0;
+                    }
+                </style>
+                <a id="LookVideoBtn" style="color:gray;position: relative;" onclick="lookvideo()">预览</a>
+                <a onclick="sure()">确定</a>
+                <a id="vtijiao" class="send_btn" style="display: none;">提交</a>
+            </div>
+        </div>
+
+        <!-- 文本弹出框 -->
+        <div class="AlbumModal" id="AlbumTxt">
+            <div class="AlbumTxt_Top">
+                <textarea id="TxtContent" style="resize: none;width: 100%; height: 100%; border-radius: 10px;padding: 10px;" ></textarea>
+                <div style="display: inline-block;position: absolute;right: 0px;bottom: 0;font-size: 12px;"></div>
+            </div>
+            <div class="AlbumContentRootBox" style="width: 94%; left: 3%;">
+                <div class="AlbumBox">
+                    <div class="tab_tab"  data-target="class">
+                        <ul style="width: 100%;" id="scpylist">
+                            {loop $bjphototype $row}
+                            <li class="ClassAlbumLi" style="min-height: 50px;padding: 5px;" onclick="AppendTxt(`{$row['sname']}`)" >
+                                <div> {$row['sname']}{$row['sname']}{$row['sname']}{$row['sname']}{$row['sname']} </div>
+                            </li>
+                            {/loop}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="txt_edit" style="z-index:4;position: absolute;">
+                <a onclick="AddTxt()" id="btn_upload_img">提交</a>
+                <a onclick="window.history.back()" style="color: #fd5959;">取消</a>
+            </div>
+        </div>
+
+        <!-- 上传视频弹窗 -->
+        <div class="select_type_bg">
+            <div class="media_upload_tips" style="display: none; line-height: 20px; position: fixed; bottom: 180px; left: 0; width: 100%; box-sizing: border-box; padding: 10px; color: #eee; font-size: 12px; text-align: center;">温馨提醒：为了保证您上传视频的速度，使用安卓手机用户拍摄视频请先通过 录像里面的设置功能将 录像的分辨率调低。视频文件大小不宜超过3mb。</div>
+            <div class="local_audio_btn"  style="bottom:61px;" >录音</div>
+            <div class="local_img_btn">本地图片</div>
+            <!-- <div class="web_img_btn" >从收藏夹选择图片</div> -->
+            <div id="local_media_btn" class="local_media_btn">
+                <div id="local_media_btn2" style="position: relative; width: 100%; text-align: center; height: 50px;">本地视频</div>
+            </div>
+            <!-- <div class="web_media_btn" >从收藏夹选择视频</div> -->
+            <div class="select_type_cancel">取消</div>
+            <div class="video_bg">
+                <div class="close_video_btn">关闭</div>
+            </div>
+        </div>
+
+        <div class="feedback_content_box">
+            <!-- 视频列表  -->
+            <ul class="media_list">
+            </ul>
+            <div class="clear1"></div>
+        </div>
+
+        <div class="upload" style="display:none">
+            <div>
+                <input type="file" id="fileUpload" style="position:absolute;top:0;left:0;">
+                <label class="status" style="display:none">上传状态: <span id="status"></span></label>
+            </div>
+            <div class="upload-type" style="display:none">
+                上传方式一, 使用 UploadAuth 上传:
+                <button id="authUpload">开始上传</button>
+                <span></span>
+            </div>
+        </div>
+        <!-- 图表弹窗 -->
+        <div style="position: fixed; width: 100%; height: 100%; z-index: 2000; top:0;display: none;" id="showBig">
+            <div onclick="HideBack()"
+                style="position: absolute; width: 100%; height: 100%;background-color: rgba(0, 0, 0, 0.49);z-index: 1;"
+                class="showBig">
+            </div>
+            <div style="position: absolute;width: 100%;background-color: white;padding: 10px; border-radius: 0 0 10px 10px; top:-100vh;z-index: 2;"
+                class="showItem">
+                <ul>
+                    <li class="user_name">
+                        <label style="line-height: 34px;"><span style="color: red;">*</span>开始时间:</label>
+                        <input type="date" placeholder="开始时间" id="start" />
+                    </li>
+                    <li class="user_name">
+                        <label style="line-height: 34px;"><span style="color: red;">*</span>结束时间:</label>
+                        <input type="date" placeholder="结束时间" id="end" />
+                    </li>
+                </ul>
+                <div class="close_pupop_c">
+                    <div onclick="tijiao(this)" class="close_pupop_button close_pupop_button_1 float_l">确定</div>
+                    <div id="closeChart" class="close-reveal-modal close_pupop_button close_pupop_button_2 float_l">取消</div>
+                </div>
+            </div>
+        </div>
+        <!-- 视频预览弹窗 -->
+        <div style="position: fixed; width: 100%; height: 100%; z-index: 2000; top:0;display: none;" id="showVideo">
+            <div onclick="HideBack()"
+                style="position: absolute; width: 100%; height: 100%;background-color: rgba(0, 0, 0, 0.49);z-index: 1;"
+                class="showBig">
+            </div>
+            <div style="position: absolute;width: 100%;background-color: rgba(0, 0, 0, 0);padding: 10px; border-radius: 0 0 10px 10px; top:-100vh;z-index: 2;min-height: 500px;"
+                class="showItem">
+                <div id="videosource">
+
+                </div>
+
+            </div>
+        </div>
+        <!-- 上传照片弹窗 -->
+        <div class="slide_left_menu_bg">
+            <div class="slide_left_menu">
+                <div class="slide_left_menu_til">上传图片</div>
+                <div class="xcBody">
+                    <div class="xcShareBox">
+                        <div class="r">
+                            <div id="imageBox" class="imageBox">
+                                <div id="imageBoxBody">
+                                    <div id="DivFixedPosition"></div>
+                                    <div class="imagePage">
+                                        <div class="imageTotalBox"><img alt="image" id="addImages" onclick="wxChooseImage()"
+                                                src="{OSSURL}public/mobile/img/insertImage.png" class="addImages">
+                                            <div class="imageTotal">(0/9)</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="pic" class="pic parent">
+
+                                </div>
+                                <div class="sendInfo wot pr">
+                                    <a href="javascript:sendPhoto();" class="sendBtn brSmall f15 db c2"
+                                        style="background-color: #34cfc2;">确定</a>
+                                    <a href="javascript:hidediv();" class="sendBtn cancelNewBtn brSmall f15 db c2">取消</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        /****************************  阻止返回键  ***************************/
+        var PageHistory = [];
+
+        function PushHistoryStack(funcName){
+            var state = {
+                title: "title",
+                url: "#"
+            };
+            window.history.pushState(state, "title", "#");
+            PageHistory.push(funcName)
+        }
+
+        function PopHistoryStack(){
+            if(PageHistory.length > 0){
+                eval(PageHistory.pop() + '()')
+            }else {
+                window.history.back()
+            }
+        }
+
+        window.addEventListener("popstate", function(e) {
+            PopHistoryStack()
+        }, false);
+
+        /****************************  阻止返回键  ***************************/
+
+        var NowTagId = 0; //当前操作页面
+
+
+
+        /******************************************* 相册弹框相关 start *************************************/
+        function CancelAlbumList(){ //取消相册列表弹窗
+            IsBlockReturn = false;
+            $(".Album_type[data-type='class']").click()
+            $("#AlbumList").removeClass("OnShow")
+        }
+
+        function OpenAlbumList(){ //打开相册列表弹窗
+            $("#AlbumList").addClass("OnShow")
+            IsBlockReturn = true;
+            PushHistoryStack('CancelAlbumList')
+        }
+
+        function CancelImgList(){ // 取消相册图片弹窗
+            IsBlockReturn = true;
+            $("#imglist").removeClass("OnShow")
+        }
+
+        function ChangeStuAlbum(e,sid){ //切换学生相册
+            $("#SpinLayer").show()
+            let xctypedata = {
+                weid : `{$weid}`,
+                schoolid : `{$schoolid}`,
+                sid : sid,
+                bj_id : `{$bj_id}`,
+                is_video : 0
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'getgrxctype'))}", xctypedata, function(res) {
+                let data = res.data;
+                let html = '';
+                for(item of data){
+                    html += `<li onclick="OpenImgList(${sid},'${item.ctype}',1,'${item.sname}')" >
+                                <div class="AlbumTitle">
+                                    <div style="flex: 1;">${item.sname}</div>
+                                    <div style="width: 40px;">${item.total}张</div>
+                                </div>
+                                <div class="AlbumThumb" >
+                                    <img src="${item.picurl}" style="border-radius:10px">
+                                </div>
+                            </li>`
+                }
+                $(".personalRightUl").html(html);
+            $("#SpinLayer").hide()
+
+            },'json');
+            $(e).siblings().removeClass("active")
+            $(e).addClass("active")
+        }
+
+        function OpenImgList(sid,ctype,type,title){ //打开相册图片
+            $("#ShowImgBtn").css("color","gray")
+            let xcdata = {
+                schoolid : `{$schoolid}`,
+                sid : sid,
+                bj_id : `{$bj_id}`,
+                type : type,
+                ctype : ctype,
+                is_video : 0,
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'getbjxclist'))}", xcdata, function(res) {
+                let data = res.data;
+                let html = '';
+                for(item of data){
+                    html += `<div><img src="${item.thumb}" dascr="../attachment/${item.picurl}"  onclick="AddImgToContainer(this)" alt=""></div>`
+                }
+                if(res.isallow){
+                    $(".photos_edit").show()
+                }else{
+                    $(".photos_edit").hide()
+                }
+                $("#xclist").html(html);
+                $("#xctitle").html(title);
+            },'json');
+            $("#imglist").addClass("OnShow")
+            PushHistoryStack('CancelImgList')
+            //如果有上传照片就传递相关的数据
+            $("#sid").val(sid)
+            $("#type").val(type)
+            $("#ctype").val(ctype)
+        }
+
+        function ChangeAlbumType(e){ //切换相册类型
+            let type = $(e).data("type")
+            $(".Album_type").removeClass("InActive")
+            $(e).addClass("InActive")
+            if(type == 'personal'){
+                $(".Album_Top_Line").animate({'left':'50vw'},150)
+                $(".AlbumBox").animate({'left':'-100%'},150)
+                $("#keywords").val('')
+                $(".PersonalLeftUl .bjstulist").show()
+                $($(".PersonalLeftUl .bjstulist")[0]).click()
+            }else{
+                $(".Album_Top_Line").animate({'left':0},150)
+                $(".AlbumBox").animate({'left':'0'},150)
+            }
+        }
+
+        function AddImgToContainer(e){ //相册弹框图片点击事件，写入容器
+            $(".selectbox").removeClass('selectbox')
+            $(e).addClass('selectbox');
+            $(".selectboxParent").removeClass('selectboxParent')
+            $(e).parent().addClass('selectboxParent');
+            $("#ShowImgBtn").css("color","#2eb6ea")
+            var img_box_elm = $('.img_container_list .is_select'); //被选中的容器
+            if (!img_box_elm.length) return;
+            img_box_elm.data('zoom_num','1');
+            var src = $(e).attr('dascr'); //图片链接
+            var box_W = $(img_box_elm).width(); //容器宽
+            var box_H = $(img_box_elm).height(); //容器高
+            is_change = true;
+            render_img(img_box_elm, src, box_W, box_H);
+            is_change = true;
+            $('.nc_page_ul .act').data('change', 'true');
+
+            PageList.map(v => {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d , t) {
+                        if (container_uid === Number(d.Position.zIndex)) {
+                            d.Client.PhotoUrl = src;
+                            page_item_data = v
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+
+            window.history.back();
+            window.history.back();
+        }
+
+        function ImgSure(){
+            var img_box_elm = $('.img_container_list .is_select'); //被选中的容器
+            if (!img_box_elm.length) return;
+            img_box_elm.data('zoom_num','1');
+            var src = $('.selectbox').attr('dascr'); //图片链接
+            var box_W = $(img_box_elm).width(); //容器宽
+            var box_H = $(img_box_elm).height(); //容器高
+            is_change = true;
+            render_img(img_box_elm, src, box_W, box_H);
+            is_change = true;
+            $('.nc_page_ul .act').data('change', 'true');
+            window.history.back();
+            window.history.back();
+        }
+
+
+        /******************************************* 相册弹框相关 end  *************************************/
+
+        /******************************************* 视频弹框相关 start  *************************************/
+
+        function AddVideoToContainer(e){ //视频弹框图片点击事件，写入容器
+            //TODO:增加class样式
+            $(".selectbox").removeClass('selectbox')
+            $(e).addClass('selectbox');
+            $(".selectboxParent").removeClass('selectboxParent')
+            $(e).parent().addClass('selectboxParent');
+            $("#LookVideoBtn").css("color","#2eb6ea")
+            var img_box_elm = $('.video_container_list .is_select'); //被选中的容器
+            let container_uid = Number($(img_box_elm).css('z-index'));
+            if (!img_box_elm.length) return;
+            img_box_elm.data('zoom_num','1');
+            var src = $(e).attr('dascr'); //图片链接
+            $($(img_box_elm).find('img')[0]).attr('src',src)
+            $(img_box_elm).attr("isvalue",'true')
+            PageList.map(v => {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d , t) {
+                        if (container_uid === Number(d.Position.zIndex)) {
+                            d.Client.videoQrUrl = src;
+                            page_item_data = v
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+            window.history.back();
+            window.history.back();
+        }
+        //预览
+        function lookvideo(){
+            let videosrc = $(".selectbox").attr('videosrc');
+            let videopic = $(".selectbox").attr('src');
+            if(!videosrc){
+                jTips('请选择需要预览的视频')
+                return
+            }
+            $("#showVideo").show();
+            $("#showVideo .showItem").animate({top:0},300);
+            let html = `<video style="width: 100%;height: 600px;" id="video" controls="controls" poster="${videopic}" x-webkit-airplay="true" x5-playsinline="true" webkit-playsinline="true" playsinline="true">
+                    <source src="${videosrc}" type="video/mp4">
+                </video>`
+            $("#videosource").html(html)
+            $("body").addClass('isoverflow');
+        }
+        function sure(){
+            var img_box_elm = $('.video_container_list .is_select'); //被选中的容器
+            let container_uid = Number($(img_box_elm).css('z-index'));
+            if (!img_box_elm.length) return;
+            img_box_elm.data('zoom_num','1');
+            var src = $(".selectbox").attr('dascr'); //图片链接
+            $($(img_box_elm).find('img')[0]).attr('src',src)
+            $(img_box_elm).attr("isvalue",'true')
+            PageList.map(v => {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d , t) {
+                        if (container_uid === Number(d.Position.zIndex)) {
+                            d.Client.videoQrUrl = src;
+                            page_item_data = v
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+            window.history.back();
+            window.history.back();
+        }
+        function CancelAlbumVideoList(){ //取消视频列表弹窗
+            IsBlockReturn = false;
+            $(".AlbumVideo_type[data-type='class']").click()
+            $("#AlbumVideoList").removeClass("OnShow")
+        }
+
+        function OpenAlbumVideoList(){ //打开视频列表弹窗
+            $("#AlbumVideoList").addClass("OnShow")
+            IsBlockReturn = true;
+            PushHistoryStack('CancelAlbumVideoList')
+        }
+
+        function CancelVideoList(){ // 取消视频图片弹窗
+            IsBlockReturn = true;
+            $("#videolist").removeClass("OnShow")
+
+
+        }
+
+        function ChangeAlbumVideoType(e){ //切换视频类型
+            let type = $(e).data("type")
+            $(".AlbumVideo_type").removeClass("InActive")
+            $(e).addClass("InActive")
+            if(type == 'personal'){
+                $(".Album_Top_Line").animate({'left':'50vw'},150)
+                $(".AlbumBox").animate({'left':'-100%'},150)
+                $("#keywords").val('')
+                $(".PersonalLeftUl .bjstulist").show()
+                $($(".PersonalLeftUl .bjstulist")[0]).click()
+            }else{
+                $(".Album_Top_Line").animate({'left':0},150)
+                $(".AlbumBox").animate({'left':'0'},150)
+            }
+        }
+
+        function ChangeStuAlbumVideo(e,sid){ //切换学生视频
+            $("#SpinLayerVideo").show()
+            let xctypedata = {
+                weid : `{$weid}`,
+                schoolid : `{$schoolid}`,
+                sid : sid,
+                bj_id : `{$bj_id}`,
+                is_video : 1,
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'getgrxctype'))}", xctypedata, function(res) {
+                let data = res.data;
+                let html = '';
+                for(item of data){
+                    html += `<li onclick="OpenVideoList(${sid},'${item.ctype}',1,'${item.sname}')" >
+                                <div class="AlbumTitle">
+                                    <div style="flex: 1;">${item.sname}</div>
+                                    <div style="width: 40px;">${item.total}张</div>
+                                </div>
+                                <div class="AlbumThumb" >
+                                    <img src="${item.picurl}" style="border-radius:10px">
+                                </div>
+                            </li>`
+                }
+                $(".personalRightUl").html(html);
+            $("#SpinLayerVideo").hide()
+
+            },'json');
+            $(e).siblings().removeClass("active")
+            $(e).addClass("active")
+        }
+
+        function OpenVideoList(sid,ctype,type,title){ //打开视频列表
+        $("#LookVideoBtn").css("color","gray")
+            let xcdata = {
+                schoolid : `{$schoolid}`,
+                sid : sid,
+                bj_id : `{$bj_id}`,
+                type : type,
+                ctype : ctype,
+                is_video : 1,
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'getbjxclist'))}", xcdata, function(res) {
+                let data = res.data;
+                let html = '';
+
+                for(item of data){
+                    html += `<div><img src="${item.thumb}" dascr="${item.videoqrcode}" videosrc="${item.video}"  onclick="AddVideoToContainer(this)" alt=""></div>`
+                }
+                if(res.isallow){
+                    $(".photos_edit").show()
+                }else{
+                    $(".photos_edit").hide()
+                }
+                $("#vlist").html(html);
+                $("#videotitle").html(title);
+            },'json');
+            $("#videolist").addClass("OnShow")
+            PushHistoryStack('CancelVideoList')
+
+            //如果有上传照片就传递相关的数据
+            $("#sid").val(sid)
+            $("#type").val(type)
+            $("#ctype").val(ctype)
+        }
+        /******************************************* 视频弹框相关 end  *************************************/
+
+
+
+        //模拟测试数据
+        var PageList = []
+        //模拟当前档案未启用
+        var IsBlockReturn = false;
+        var current_page_data = null;
+        var dragSrc
+        var ox, oy;
+        var is_input_change = false;
+
+        function _Init() {
+            let FirstData = {
+                id : `{$_GPC['id']}`,
+                schoolid : `{$_GPC['schoolid']}`,
+                sid : `{$_GPC['sid']}`,
+                sf : 'stu'
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'GetFirstPage'))}", FirstData, function(data) {
+                PageList = data.data;
+                renderPageContainer(PageList[0])
+                NowTagId = PageList[0].tagid
+                $("#AllPageC").text(PageList.length)
+                $("#NowPageIn").text(1)
+            },'json');
+        }
+
+        function clearAllList() { //清除展示区域原有容器
+            $('.container_list').html('')
+        }
+
+        function renderPageContainer(page_item) { //渲染中间单个页面
+            clearAllList()
+            $('#zoom-div').hide();
+            $('.lock_mask').hide();
+            if (!page_item) return;
+            var tpl_W = '750px',
+                tpl_H = '530px',
+                lst_print_page_containers = [];//容器数组
+            lst_print_page_containers = page_item.data.pageData;
+            $('#tpl_mask_div').css({
+                'width': tpl_W,
+                'height': tpl_H,
+                '-webkit-transform': 'scale(0.85)',
+                'transform': 'scale(0.85)',
+                '-webkit-transform-origin': 'center',
+                'transform-origin': 'center',
+            });
+            $('#tpl_page').css({
+                'width': tpl_W,
+                'height': tpl_H,
+                '-webkit-transform-origin': 'center',
+                'transform-origin': 'center',
+            });
+            $('#tpl_mask_div').show();
+            $('.pageBackMask').css({
+                'background': 'url(' + page_item.data.backimgurl + ') no-repeat center',
+                'background-size': '100% 100%',
+                'z-index': 13
+            });
+            lst_print_page_containers.map(function (v) {
+                if (v.itemType === 'circular') {
+                    $('.img_container_list').append(render_circular(v));
+                } else if (v.itemType == "square") {
+                    $('.img_container_list').append(render_square(v));
+                } else if (v.itemType == "textarea") {
+                    $('.txt_container_list').append(render_txt(v));
+                } else if (v.itemType == "justshow") {
+                    $('.show_container_list').append(render_show(v));
+                } else if (v.itemType == "score") {
+                    $('.score_container_list').append(render_score(v));
+                }else if(v.itemType === 'video'){
+                    $('.video_container_list').append(render_video(v));
+                }else if(v.itemType === 'chart'){
+                    $('.chart_container_list').append(render_chart(v))
+                }
+            })
+            ImgContainerListenerAdd()
+            ScoreContainerListenerAdd()
+            select_lock = true;
+            add_zoom_fn()
+            TxtContainerListenerAdd()
+            ChartContainerListenerAdd()
+            VideoContainerListenerAdd()
+            page_to_render_img()
+            page_to_render_chart()
+            $(".right_tabs_items.tabs-item[tab-tag=auth]").click()
+            $("#PageAuth").val(page_item.auth)
+        }
+
+
+
+        function render_score(score_msg) {//渲染评分容器
+            var z_index = 0, width = 0, height = 0, top = 0, left = 0, rotate = 'rotate(0deg)', container_type = '', font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, area_width = 1, area_height = 1, small_font_size = 1, _ary;
+            let ItemClient = score_msg.Client;
+            let ItemPosition = score_msg.Position;
+            width = ItemClient.width;
+            height = ItemClient.height;
+            top = ItemPosition.top;
+            left = ItemPosition.left;
+            let lineHeight = ItemClient.lineHeight
+            z_index = ItemPosition.zIndex;
+            color = ItemClient.fontColor;
+            font_size = Number(ItemClient.fontSize);
+            score_content = ItemClient.scoreData
+            var styleS, htmlS, imgS = '';
+            styleS ="position:absolute;z-index:" + z_index +";top:" + top + "px;left: " + left + "px;width: " + width + "px;height: " + height + "px;transform:" + rotate + ";-webkit-transform:" + rotate + ";";
+            score_styleS ="font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;transform:scale(" + small_font_size + ");-webkit-transform:scale(" + small_font_size + ");display:-webkit-box;-webkit-box-orient:vertical;-webkit-box-pack:center;width:100%;line-height: " + lineHeight +" px;"
+
+            let ItemWidth = 100 / (score_content.length + 1)
+            for(let IIs in score_content){
+                let InputRound = 'scoreInputRound'
+                if(Number(ItemClient.setValue) === Number(IIs)){
+                    InputRound += ' inSelect'
+                }
+                let ImgBoxS = '';
+                let TxtBoxS = '';
+                if(ItemClient.scoreImgData[IIs] !== ''){
+                    ImgBoxS = ` <img src="${ItemClient.scoreImgData[IIs]}" style="margin-right:5px;height:${font_size + 3}px;width:${font_size + 3}px">`;
+                }
+                if(score_content[IIs] !== ''){
+                    TxtBoxS = ` <span class="scorecom" style="color:${color};line-height: ${lineHeight}px;font-size:${font_size}px;">${score_content[IIs]}</span>`
+                }
+                imgS += ` <div class="scoreItem_01" style="width:${ItemWidth}%">
+                ${ImgBoxS}
+                <div class="${InputRound}" data-setValue="${IIs}" style="height: ${font_size + 1}px;width: ${font_size + 1}px;border-radius: 50%;border:1px solid gray;background-color:white"></div>
+                    ${TxtBoxS}
+                </div>`;
+            }
+
+            htmlS = '<div  class="container_box container_score" style="' + styleS + '">' +
+                    '   <li  draggable="false" class="scoreItem" style="display:flex;align-items:center">' +
+                    '       <div class="scoreItemTxt" data-font_size="' + font_size + '" style="width:'+ItemWidth + '%;position:relative;"><span style="' + score_styleS + '"  >'+ ItemClient.title +'</input></div>' + imgS +
+                    '   </li>' +
+                    '</div>';
+            return htmlS;
+        }
+
+        function render_circular(ImgContainer) { //渲染圆形容器
+            let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+            ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+            ItemPosition = ImgContainer.Position
+            ItemClient = ImgContainer.Client
+            styleS =`position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;border-radius: 50%;-webkit-border-radius: 50%;transform:0;-webkit-transform:0;`;
+            htmlS = `<div data-src="${ItemClient.PhotoUrl}" data-offset_value="${ItemClient.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ItemClient.ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+            return htmlS;
+        }
+
+        function render_square(ImgContainer) { //渲染方形容器
+            let ExInfo03 = 1,ItemPosition,ItemClient,styleS,htmlS;
+            ExInfo03 = ImgContainer.ExInfo03 ? ImgContainer.ExInfo03 : 1;
+            ItemPosition = ImgContainer.Position
+            ItemClient = ImgContainer.Client
+            styleS =`position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;transform:0;-webkit-transform:0;`;
+            htmlS = `<div data-src="${ImgContainer.PhotoUrl}" data-offset_value="${ImgContainer.OffsetValue}" data-container_uid = "${ImgContainer.tagid}" data-zoom_num="${ExInfo03}" type="circular" class="container_box img_box" style="${styleS}"></div>`;
+            return htmlS;
+        }
+
+        function render_txt(txt_msg) {//渲染文本容器
+            var font_size = 12, color = '#ffffff', letter_spacing = 1, line_height = 15, z_index = 1, width = 100, height = 30, top = 0, left = 0, rotate = 0, area_width = 100, area_height = 100, small_font_size = 1, container_uid = '', text_container = '', text_placeholder = '请输入文字'
+            ;
+            if (txt_msg) {
+                ItemCLient = txt_msg.Client;
+                ItemPosition = txt_msg.Position;
+
+                //font_family = txt_font_family;
+                width = ItemCLient.width;
+                height = ItemCLient.height;
+                top = ItemPosition.top;
+                left = ItemPosition.left;
+                //rotate = styleObj.rotate;
+                z_index = ItemPosition.zIndex;
+                font_size = ItemCLient.fontSize;
+                line_height = ItemCLient.lineHeight;
+                typeid = ItemCLient.typeid;
+                color = ItemCLient.fontColor;
+                maxLength = ItemCLient.maxLength;
+                text_container =  ItemCLient.TextContent === undefined ? "" : ItemCLient.TextContent;
+
+                txt_msg.ContainerText ? text_placeholder = txt_msg.ContainerText : null;
+            }
+
+            var styleS =
+                "position:absolute;z-index:" + z_index +
+                ";top: " + top + "px;left: " + left + "px;width: " + width + "px;height: " + height + "px;"
+            var txt_style =
+                "position: absolute;z-index: 2;width:100%;height:100%;font-size:" + font_size + "px;color:" + color + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+            var num_style = 'display: inline-block;position: absolute;right: 0px;bottom: 0;font-size: 12px;';
+            var txt_Html = '<textarea data-typeid="'+ typeid + '" data-container_uid="' + container_uid + '" style="' + txt_style + '" placeholder="' + text_placeholder + '" maxlength="' +maxLength + '">' + text_container + '</textarea><div class="max_num" max_num="' +maxLength + '" style="' + num_style + '">' + text_container.length + '/' + maxLength + '</div>';
+            var htmlS = '<div container_uid="' + container_uid + '" type="txt"  font_size = "' + font_size + '" class="container_box txt_box" style="' + styleS + '">' + txt_Html +
+                '</div>';
+            return htmlS;
+        }
+
+        function render_show(ShowContainer) {//渲染展示容器
+            let ItemClient = ShowContainer.Client;
+            let ItemPosition = ShowContainer.Position;
+            var area_width = 100, area_height = 100, small_font_size = 1, font_size = 12; showS = '';
+            font_size = ItemClient.fontSize;
+            if(ItemClient.showInfo == "schoolQrcode" || ItemClient.showInfo == "schoolLogo"){
+                showS = '<img src = "' + `${ItemClient.showTitle}` + '" style="width:100%;height:100%;">';
+            }else{
+                showS = ItemClient.showTitle;
+            }
+            var styleS =
+                "position:absolute;z-index:" + ItemPosition.zIndex +
+                ";top: " + ItemPosition.top + "px;left:" + ItemPosition.left + "px;width: " + ItemClient.width + "px;height: " + ItemClient.height + "px;transform:rotate(0deg);-webkit-transform:rotate(0deg);text-align: center;"
+            var txt_style =
+                "position: absolute;z-index: 2;width:" + 100 + "%;height:" + 100 + "%;font-size:" + ItemClient.fontSize + "px;color:" + ItemClient.fontColor + ";background-color: transparent;resize: none;display: block;transform-origin:left top 0;-webkit-transform-origin:left top 0;"
+            var txt_Html = '<div style="' + txt_style + '">' + showS + '</div>';
+            var htmlS = '<div type="show" font_size = "' + font_size + '" show_type="' + ItemClient.showInfo + '" class="container_box" style="' + styleS + '">' +
+                txt_Html +
+                '</div>';
+            return htmlS;
+        }
+
+
+        function render_video(VideoContainer){ //渲染视频容器
+            let ItemClient = VideoContainer.Client
+            let ItemPosition = VideoContainer.Position
+            let videoQrUrl = `${ItemClient.videoQrUrl}` ? `${ItemClient.videoQrUrl}` : "https://manger.weimeizhan.com/addons/fm_jiaoyu/public/web/images/qrcode_example.png";
+            let html = `<div type="video" class="container_box video_box" style="position:absolute;z-index:${ItemPosition.zIndex}; top: ${ItemPosition.top}px;left: ${ItemPosition.left}px;width: ${ItemClient.width}px;height: ${ItemClient.height}px;transform:rotate(0);-webkit-transform:rotate(0);">
+                <div style="display:flex;flex-direction:column;height:100%">
+                    <img src="${videoQrUrl}" style="width: 100%;object-fit: contain; height: 1px; flex: 1;margin-bottom:4px"/>
+                    <div class="videocom"  style="border-top: 1px solid #c1c1c1;width: 100%; top: 170px; padding: 3px; font-size:${ItemClient.fontSize}px; color:${ItemClient.fontColor}; line-height:${ItemClient.lineHeight}px;white-space: normal; word-break: break-all; word-wrap: break-word;"> <span style="height:100%;width:100%;overflow:hidden;resize:none;background-color: transparent;" >${ItemClient.description}</span> </div>
+                </div>
+                </div>`;
+        return html;
+        }
+
+        function render_chart(ImgContainer) { //渲染chart容器
+            ItemPosition = ImgContainer.Position
+            ItemClient = ImgContainer.Client
+            var chartMenu =''
+            if(ItemClient.chartMenu){
+                chartMenu = ItemClient.chartMenu.toString();;
+            }
+            styleS =`background-color:white;position:absolute;z-index:${ItemPosition.zIndex}; top:${ItemPosition.top}px;left:${ItemPosition.left}px;width:${ItemClient.width}px;height:${ItemClient.height}px;`;
+            htmlS = `<div data-container_uid ="${ImgContainer.tagid}" data-chart_type="${ItemClient.ChartType}" data-ChartBgColor="${ItemClient.ChartBgColor}" data-time_start="${ItemClient.start}" data-time_end="${ItemClient.end}" data-chartMenu="${chartMenu}" type="chart" class="container_box chart_box" style="${styleS}"></div>`;
+            return htmlS;
+        }
+
+        function ScoreContainerListenerAdd(){ //评分容器点击事件监听
+            $(".container_box.container_score").off("click")
+            $(".container_box.container_score").on("click",function() {
+                $('#zoom-div').hide();
+                $('.img_container_list .img_box').removeClass('is_select');
+            })
+            $(".container_box.container_score").find(".scoreItem_01").find("*").off("click")
+            $(".container_box.container_score").find(".scoreItem_01").find("*").on("click",function(){
+                $(this).parent().parent().parent().find(".scoreInputRound").removeClass("inSelect")
+                $(this).parent().find(".scoreInputRound").addClass("inSelect")
+                let setValue = Number($(this).parent().find(".scoreInputRound").attr("data-setValue"))
+                let container_uid = Number($(this).parent().parent().parent().css("z-index"))
+                PageList.map( (v) => {
+                    if (v.tagid == NowTagId) {
+                        v.data.pageData.map(function (d, t) {
+                            if (container_uid == Number(d.Position.zIndex)) {
+                                d.Client.setValue = setValue;
+                                page_item_data = v
+                            }
+                        })
+                    }
+                })
+                var is_ok = check_page_ok(page_item_data);
+            })
+        }
+
+        function ImgContainerListenerAdd(){ //图片容器动态添加监听事件
+            $(".img_box").off('click')
+            $(".img_box").on('click', function () {
+                $(".img_box").removeClass('is_select')
+                $(this).addClass('is_select')
+                if ($(this).find('img').length) {
+                    show_zoom_div($(this));
+                }else{
+                    OpenAlbumList()
+                }
+            })
+        }
+
+        function TxtContainerListenerAdd() { //文本事件监听
+            $('.txt_container_list>div').find('textarea').off('click')
+            $('.txt_container_list>div').find('textarea').on('click', function () {
+                $(".img_container_list").find('.is_select').removeClass('is_select')
+                $(".chart_container_list").find('.is_select').removeClass('is_select')
+                $(".video_container_list").find('.select_txt').removeClass('select_txt')
+                $(".score_container_list").find('.is_select').removeClass('is_select')
+                $(".show_container_list").find('.is_select').removeClass('is_select')
+                let typeid = $(this).attr('data-typeid');
+                // 获取评语
+                $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'GetScpy','schoolid'=>$schoolid))}",{sid:typeid},function(res){
+                    let html = '';
+                    for(item of res.data){
+                        html += `<li class="ClassAlbumLi" style="min-height: 50px;padding: 5px;" onclick="AppendTxt('${item.title}')" >
+                                <div> ${item.title} </div>
+                            </li>`
+                    }
+                    $("#scpylist").html(html)
+                },'json');
+                PageList.map((v) => {
+                    if (v.tagid === NowTagId) {
+                        let pagedata = v.data.pageData
+                        pagedata.map((vl)=>{
+                            if(vl.itemType == 'textarea'){
+                                let maxlength = vl.Client.maxLength
+                                if(`${vl.Client.TextContent}` === 'undefined'){
+                                    var TextContentLength = 0
+                                }else{
+                                    var TextContentLength = `${vl.Client.TextContent.length}`
+                                }
+                                $("#TxtContent").val(vl.Client.TextContent)
+                                $('#TxtContent').next().html(`<span id="word">${TextContentLength}</span>/${maxlength}`)
+                                $('#TxtContent').attr('maxLength',`${maxlength}`)
+                            }
+                        })
+                    }
+                })
+                $("#AlbumTxt").addClass("OnShow")
+                IsBlockReturn = true;
+                PushHistoryStack('CancelAlbumTxt')
+
+                $('#zoom-div').hide();
+                $('.img_container_list .img_box').removeClass('is_select');
+                is_input_change = false;
+                // search_comment_data($(this).data('container_uid'));
+                $('.txt_container_list>div').find('textarea').removeClass('select_txt').css({
+                    'border': 'none'
+                });
+                $(this).addClass('select_txt');
+                if (!$('.nc_tabs div[data-tab_active=rmk]').hasClass('tab_is_active')) {
+                    $('.nc_tabs div[data-tab_active=rmk]').click();
+                }
+                $(this).css({
+                    'border': '1px solid #ccc'
+                });
+            })
+
+        }
+
+        function ChartContainerListenerAdd(){ //图表事件监听
+            $(".chart_container_list").find(".chart_box").off("click")
+            $(".chart_container_list").find(".chart_box").on("click",function(){
+                $('#zoom-div').hide();
+                $(".img_container_list").find('.is_select').removeClass('is_select')
+                $(".video_container_list").find('.is_select').removeClass('is_select')
+                $(".txt_container_list").find('.select_txt').removeClass('select_txt')
+                $(".score_container_list").find('.is_select').removeClass('is_select')
+                $(".show_container_list").find('.is_select').removeClass('is_select')
+                $(this).addClass('is_select')
+                ShowChartModal()
+            })
+            let page_item_data;
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    page_item_data = v;
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+        }
+
+        function VideoContainerListenerAdd(){ //视频事件监听
+            $(".video_container_list").find(".video_box").off("click")
+            $(".video_container_list").find(".video_box").on("click",function() {
+                $('#zoom-div').hide();
+                $(".img_container_list").find('.is_select').removeClass('is_select')
+                $(".chart_container_list").find('.is_select').removeClass('is_select')
+                $(".txt_container_list").find('.select_txt').removeClass('select_txt')
+                $(".score_container_list").find('.is_select').removeClass('is_select')
+                $(".show_container_list").find('.is_select').removeClass('is_select')
+                $(this).addClass('is_select')
+                OpenAlbumVideoList()
+            })
+        }
+
+        function Next() { //中间下一个
+            let NowIndex;
+            PageList.map((v, index) => {
+                if (v.tagid === NowTagId) {
+                    NowIndex = index + 1
+                }
+            })
+            if (PageList[NowIndex] !== undefined) {
+                NowTagId = PageList[NowIndex].tagid
+                renderPageContainer(PageList[NowIndex])
+                $("#NowPageIn").text(NowIndex+1)
+            }else {
+                jTips("已经是最后一页啦")
+
+            }
+        }
+
+        function Prev() { //中间上一个
+            let NowIndex;
+            PageList.map((v, index) => {
+                if (v.tagid === NowTagId) {
+                    NowIndex = index - 1
+                }
+            })
+            if (PageList[NowIndex] !== undefined) {
+                NowTagId = PageList[NowIndex].tagid
+                renderPageContainer(PageList[NowIndex])
+                $("#NowPageIn").text(NowIndex+1)
+            }else {
+                jTips("已经是第一页啦")
+
+            }
+
+        }
+
+        function ClearAllClick() {
+            $("#tpl_page").find(".container_box").removeClass("is_select")
+        }
+
+        function set_txt_to_pages() { //设置文本数据到总数据
+            var txt_area = $('.txt_container_list>div .select_txt');
+            if (!txt_area.length) return;
+            $('.nc_page_ul .act').data('change', 'true');
+            var container_uid = Number($(txt_area).parent().css('z-index'));
+            var txt = $(txt_area).val();
+            var page_item_data = '';
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == Number(d.Position.zIndex)) {
+                            d.Client.TextContent = txt;
+                            page_item_data = v;
+                        }
+                    })
+                }
+            })
+            var is_ok = check_page_ok(page_item_data);
+
+            is_change = true;
+            //自动切换
+            //  leader_auto_init(PageList, is_input_change);
+        }
+
+        function render_chart_box(v){ // 生成chart图表
+            var start = $(v).attr('data-time_start');
+            var end = $(v).attr('data-time_end');
+            var charttype = $(v).attr('data-chart_type');
+            var ChartBgColor = $(v).attr('data-ChartBgColor') === undefined ? $(v).attr('data-ChartBgColor') : '#ffffff' ;
+            var chartMenu = $(v).attr('data-chartMenu');
+         
+            let W = $(v).css("width")
+            let H = $(v).css("height")
+            let ChartData = {
+                'start' : start,
+                'end' : end,
+                'type' : charttype,
+                'sid' : `{$_GPC['sid']}`,
+                'chartMenu' : chartMenu,
+            }
+            $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'GetChart','schoolid'=>$schoolid))}",ChartData,function(datas){
+                if(datas.type == 1){
+                    var ds = PieOption['webzzfb'];
+                    ds.legend = {
+                        textStyle:{
+                            fontSize:8
+                        },
+                        itemWidth:8,
+                        itemHeight:8,
+                    };
+                    ds.legend.data = datas.title;
+				    ds.series[0].data = datas.data;
+                }else if (datas.type == 2){
+                    ds = PieOption['webchartstumc_new'];
+                    ds.xAxis [0].data = datas.date;
+                    ds.legend.data = datas.ds.legend
+                    ds.series = datas.series
+                    ds.series.map((x,y)=>{
+                        ds.series[y]['label'] = { //每个点上显示数值
+                            show: true,
+                            color:'#333',
+                            fontSize:8,
+                            formatter: function (value,x) {
+                                return Number(value.data).toFixed(1);
+                            }
+                        }
+                    })
+                }
+                let loa = `<div class="ChartsSpin" style="position: absolute;width: `+W+`;height:`+H+`;" >
+                                    <div style="position: absolute; left: 50%; transform: translate(-50%,-50%); top: 60px;">
+                                        <img style="height: 30px;width: 30px;" src="https://manger.weimeizhan.com/addons/fm_jiaoyu/public/mobile/img/loading/loading-eight-point-blue.gif" alt="">
+                                     </div>
+                                </div>
+                    `;
+                $(v).html(loa)
+                ds.backgroundColor = ChartBgColor
+                var myChart = echarts.init($(v)[0]);
+                myChart.setOption(ds,true);
+                setTimeout(function(){
+                    let chartImgUrl = myChart.getConnectedDataURL({
+                         type:'jpg',
+                         backgroundColor:`${ChartBgColor}`,
+                    });
+                    let NewHtml = `
+                        <img style="width:100%;height:100%;" src="${chartImgUrl}">
+                    `;
+                    $(v).html(NewHtml)
+                    var container_uid = Number($(v).css('z-index'));
+                    PageList.map( (v) => {
+                        if (v.tagid == NowTagId) {
+                            v.data.pageData.map(function (d, t) {
+                                if (container_uid == d.Position.zIndex && d.itemType === "chart") {
+                                    d.Client.ChartImg = `${chartImgUrl}`;
+                                }
+                            })
+                        }
+                    })
+
+                },1200)
+
+                $(window).resize(myChart.resize);
+//USPUTRH5ZMEK
+            },'json');
+        }
+
+        function render_img(img_box_elm, photoUrl, box_W, box_H, offset_value) {//渲染图片
+            var left = 0;
+            var top = 0;
+            var img = new Image();
+            img.src = photoUrl;
+            img.onload = function () {
+                var container_uid = Number($(img_box_elm).css('z-index'));
+                var zoom_num = $(img_box_elm).data('zoom_num');
+                var zoom_size, imgW, imgH;
+                var width = img.width;
+                var height = img.height;
+                var kW = box_W;
+                var kH = box_H;
+                if (height * kW / width > kH) {
+                    zoom_size = kW / width / 0.9;//容器的宽除以图片的宽除以0.9
+                    imgW = width * zoom_size//图片按0.9缩放后的宽
+                    imgH = height * zoom_size//图片按0.9缩放后的高
+                } else {
+                    zoom_size = kH / height / 0.9;//容器的宽除以图片的宽除以0.9
+                    imgW = width * zoom_size//图片按0.9缩放后的宽
+                    imgH = height * zoom_size//图片按0.9缩放后的高
+                }
+                if (offset_value) {
+                    var offset_value_ary = offset_value.split(',');
+                    left = offset_value_ary[0] * imgW * zoom_num;
+                    top = offset_value_ary[1] * imgH * zoom_num;
+                }
+                $(img_box_elm).html("<img class='targetObj' data-width='" + imgW + "'  data-height='" + imgH + "' style='position: relative;width:" + imgW * zoom_num + "px;height:" + imgH * zoom_num + "px;left:" + left + "px;top:" + top + "px;' src='" + photoUrl + "'ondragstart='return false' />");
+
+
+                var $targetObj = $(img_box_elm).find(".targetObj");
+                // //初始化拖动手势
+                touch.on($targetObj, "touchstart", image_touch_moving_start);
+                touch.on($targetObj, 'drag', boximage_touch_moving);
+                touch.on($targetObj, 'touchmove', function (e) {
+                    e.preventDefault();
+                });
+                touch.on($targetObj, 'dragend', image_touch_moving_end);
+
+
+                var page_item_data = '';
+                PageList.map(function (v, i) {
+                    if (v.tagid == NowTagId) {
+                        v.data.pageData.map(function (d, t) {
+                            if (container_uid == Number(d.Position.zIndex)) {
+                                var OffsetValue = left / (imgW * zoom_num) + ',' + top / (imgH * zoom_num);
+                                d.Client.ExInfo03 = zoom_num;
+                                d.Client.PhotoUrl = photoUrl;
+                                d.Client.OffsetValue = OffsetValue;
+                                page_item_data = v;
+                            }
+                        })
+                    }
+                })
+                var is_ok = check_page_ok(page_item_data);
+                // 自动切换下一个框
+                // leader_auto_init(PageList, is_input_change);
+                showLoad = false;
+            }
+            // img.onerror = function () {
+            //     showLoad = false;
+            //     clearTimeout(timeNum);
+            //     layer.closeAll();
+            // }
+        }
+
+        function image_touch_moving_start(ev) {// 图片开始移动
+            ox = parseFloat($(this).css('left').replace("px", ""));
+            oy = parseFloat($(this).css('top').replace("px", ""));
+        }
+
+        function boximage_touch_moving(ev) {//图片移动中
+            ev.preventDefault();
+            var container_uid = Number($(this).parent().css('z-index'));
+            let my = ev.y + oy;
+            let mx = ev.x + ox;
+            var myMax = -($(this).height() - $(this).parent().height());
+            my = my > 0 ? 0 : (my < myMax ? myMax : my);
+            var mxMax = -($(this).width() - $(this).parent().width());
+            mx = mx > 0 ? 0 : (mx < mxMax ? mxMax : mx);
+            $(this).css({
+                left: mx,
+                top: my,
+            })
+            var img_W = $(this).width();
+            var img_H = $(this).height();
+            $('.nc_page_ul .act').data('change', 'true');
+
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == Number(d.Position.zIndex)) {
+                            var OffsetValue = mx / img_W + ',' + my / img_H;
+                            d.Client.OffsetValue = OffsetValue;
+                        }
+                    })
+                }
+            })
+            is_change = true;
+        }
+
+        function image_touch_moving_end(ev) {//图片移动结束
+            ev.preventDefault();
+            ox = 0;
+            oy = 0;
+        }
+
+        function check_page_ok(page_item) { //检查当前页面是否已完成
+        if (!page_item) return;
+        var is_ok = true;
+        page_item.data.pageData.map(function (v, i) {
+            if (v.itemType == "circular" || v.itemType == 'square') {
+                if (!v.Client.PhotoUrl || !v.Client.OffsetValue) {
+                    is_ok = false;
+                }
+            } else if (v.itemType == "textarea") {
+                if (!v.Client.TextContent) {
+                    is_ok = false;
+                }
+            }else if (v.itemType == "video") {
+                if (!Boolean(v.Client.videoQrUrl)) {
+                    is_ok = false;
+                }
+            }
+            else if (v.itemType == "score") {
+                if (v.Client.setValue === undefined ) {
+                    is_ok = false;
+                }
+            }
+        })
+        page_item.is_ok = is_ok
+        return is_ok;
+    }
+
+        function page_to_render_img() { //切换模板页渲染图片数据
+            var img_container_list = $('.img_container_list .img_box').toArray();
+            img_container_list.map(function (v, i) {
+                var photoUrl = $(v).data('src');
+                if (photoUrl) {
+                    var offset_value = $(v).data('offset_value');
+                    render_img(v, photoUrl, $(v).width(), $(v).height(), $(v).data('offset_value'));
+                }
+            })
+        }
+
+        function page_to_render_chart() { //切换模板页渲染图片数据
+            var chart_container_list = $('.chart_container_list .chart_box').toArray();
+            chart_container_list.map(function (v, i) {
+                render_chart_box(v);
+            })
+        }
+
+        function add_zoom_fn() { //放大缩小监听事件
+            $('.zoom-big,.zoom-small').off('click');
+            $('.zoom-big,.zoom-small').on('click', function () {
+                var img_box_elm = $('.img_container_list .is_select');
+                if (!img_box_elm.length) return;
+                var select_img = img_box_elm.find('img');
+                if (!select_img.length) return;
+                    container_uid = Number(img_box_elm.css('z-index')),
+                    zoom_num = Number(img_box_elm.data('zoom_num')),
+                    width = select_img.data('width'),
+                    height = select_img.data('height'),
+                    _left = '',
+                    _top = '',
+                    offset_value = '';
+                if ($(this).hasClass('zoom-big')) {
+                    //放大
+                    zoom_num += 0.1;
+                } else {
+                    //缩小
+                    zoom_num -= 0.1;
+                    if (zoom_num < 1) return;
+                }
+                select_img.css({
+                    'width': width * zoom_num,
+                    'height': height * zoom_num,
+                });
+                zoom_num = zoom_num.toFixed(2);
+                var _width = select_img.css('width').replace('px', '') - 0;
+                var _height = select_img.css('height').replace('px', '') - 0;
+                if (_width - Math.abs(select_img.css('left').replace('px', '') - 0) < img_box_elm.css('width').replace('px', '') - 0) {
+                    select_img.css('left', select_img.css('left').replace('px', '') - 0 + ((img_box_elm.css('width').replace('px', '') - 0) - (_width - Math.abs(select_img.css('left').replace('px', '') - 0))));
+                }
+                if (_height - Math.abs(select_img.css('top').replace('px', '') - 0) < img_box_elm.css('height').replace('px', '') - 0) {
+                    select_img.css('top', select_img.css('top').replace('px', '') - 0 + ((img_box_elm.css('height').replace('px', '') - 0) - (_height - Math.abs(select_img.css('top').replace('px', '') - 0))));
+                }
+                _left = select_img.css('left').replace('px', '') - 0;
+                _top = select_img.css('top').replace('px', '') - 0;
+                offset_value = _left / (width * zoom_num) + ',' + _top / (height * zoom_num);
+
+                img_box_elm.data('zoom_num', zoom_num);
+                is_change = true;
+                PageList.map(function (v, i) {
+                    if (v.tagid == NowTagId) {
+                        v.data.pageData.map(function (d, t) {
+                            if (container_uid == Number(d.Position.zIndex)) {
+                                d.Client.ExInfo03 = zoom_num;
+                                d.Client.OffsetValue = offset_value;
+                            }
+                        })
+                    }
+                })
+            });
+        }
+
+        function ZoomImg(type){ // 图片放大缩小函数
+            var img_box_elm = $('.img_container_list .is_select');
+            if (!img_box_elm.length) return;
+            var select_img = img_box_elm.find('img');
+            if (!select_img.length) return;
+            var  container_uid = Number(img_box_elm.css('z-index')),
+                zoom_num = Number(img_box_elm.data('zoom_num')),
+                width = select_img.data('width'),
+                height = select_img.data('height'),
+                _left = '',
+                _top = '',
+                offset_value = '';
+            if (type === 'add') { //放大
+                zoom_num += 0.1;
+            } else {//缩小
+                zoom_num -= 0.1;
+                if (zoom_num < 1) return;
+            }
+            select_img.css({
+                'width': width * zoom_num,
+                'height': height * zoom_num,
+            });
+            zoom_num = zoom_num.toFixed(2);
+            var _width = select_img.css('width').replace('px', '') - 0;
+            var _height = select_img.css('height').replace('px', '') - 0;
+            if (_width - Math.abs(select_img.css('left').replace('px', '') - 0) < img_box_elm.css('width').replace('px', '') - 0) {
+                select_img.css('left', select_img.css('left').replace('px', '') - 0 + ((img_box_elm.css('width').replace('px', '') - 0) - (_width - Math.abs(select_img.css('left').replace('px', '') - 0))));
+            }
+            if (_height - Math.abs(select_img.css('top').replace('px', '') - 0) < img_box_elm.css('height').replace('px', '') - 0) {
+                select_img.css('top', select_img.css('top').replace('px', '') - 0 + ((img_box_elm.css('height').replace('px', '') - 0) - (_height - Math.abs(select_img.css('top').replace('px', '') - 0))));
+            }
+            _left = select_img.css('left').replace('px', '') - 0;
+            _top = select_img.css('top').replace('px', '') - 0;
+            offset_value = _left / (width * zoom_num) + ',' + _top / (height * zoom_num);
+            img_box_elm.data('zoom_num', zoom_num);
+            is_change = true;
+            PageList.map(function (v, i) {
+                if (v.tagid == NowTagId) {
+                    v.data.pageData.map(function (d, t) {
+                        if (container_uid == Number(d.Position.zIndex)) {
+                            d.Client.ExInfo03 = zoom_num;
+                            d.Client.OffsetValue = offset_value;
+                        }
+                    })
+                }
+            })
+        }
+
+        function show_zoom_div(elm) {//显示放大缩小
+            var top = $(elm).offset().top + $(elm).height() - 50;
+            var left = $(elm).offset().left - $('.content-cell-box.side.left').width() + $(elm).width() / 2 - 20;
+            $('#zoom-div').css({
+                'display': '-webkit-box',
+                'display': '-moz-box',
+                'display': '-ms-flexbox',
+                'display': '-webkit-flex',
+                'display': 'flex',
+                'top': top + 'px',
+                'left': left + 'px',
+            })
+        }
+
+        function CancelAlbumTxt(){ //取消相册列表弹窗
+            IsBlockReturn = false;
+            $("#AlbumTxt").removeClass("OnShow")
+        }
+
+        function AppendTxt(txt){ //文本容器弹窗 - 评语赋值顶部文本框
+        PageList.map((v) => {
+            if (v.tagid === NowTagId) {
+                let pagedata = v.data.pageData
+                pagedata.map((vl)=>{
+                    if(vl.itemType == 'textarea'){
+                        let maxlength = vl.Client.maxLength
+                        let txtlength = txt.length;
+                        if(maxlength < txtlength){
+                            jTips('文字超出限制,请输入或者重新选择');
+                        }else{
+                            $("#TxtContent").val(txt)
+                            $("#word").text(maxlength - txtlength);
+                        }
+                    }
+                })
+            }
+        })
+
+    }
+
+        $("#TxtContent").keyup(function(){ //监听文本容器弹窗文字个数
+            let len = $(this).val().length;
+            let max = $(this).attr('maxLength')
+            if(len > max){
+                $(this).val($(this).val().substring(0,max));
+                $("#word").text(0);
+            }
+            var num = max - len;
+            if(num<0){
+                $("#word").text(0);
+            }else{
+                $("#word").text(len);
+            }
+        });
+
+        function AddTxt(){ //将文本弹窗的文字赋值给文本容器
+            let TxtContent = $("#TxtContent").val();
+            $('.select_txt').html(TxtContent)
+            $("#AlbumTxt").removeClass("OnShow")
+            set_txt_to_pages();
+            $('.txt_container_list>div').find('textarea').removeClass('select_txt');
+            window.history.back()
+        }
+
+$(function(){
+    $("#keywords").bind("input propertychange",function(event){ //模糊匹配输入信息
+        let con = false ;
+        keywords = $("#keywords").val();
+        $(".PersonalLeftUl").find(".bjstulist").each(function(){
+
+            let s_name = $(this).find(".A_name").text();
+            let hass_name = s_name.search(keywords);
+            if(hass_name == -1 ){
+                $(this).hide();
+            }else{
+                $(this).show();
+                if(con === false ){
+                    $(this).click()
+                    con = true
+                }
+            }
+        });
+    });
+
+    _Init()
+})
+
+    </script>
+
+
+
+</body>
+
+</html>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/PromptBoxUtil.js?v=5.00311"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/swiper.jquery.min.js?v=5.0"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/imageUtil.js?v=5.00111"></script>
+<script type="text/javascript" src="{OSSURL}public/mobile/js/datetimeUtil.min.js?v=5.00311"></script>
+<script>
+    var PB = new PromptBox();
+    var WXChooseImageCount = 9;
+    var oss = '{OSSURL}';
+    var images = {
+        localId: [],
+        serverId: []
+    };
+    //上传图片
+    function UploadImg(){
+        images.localId = []
+        images.serverId = []
+        $(".baseUploadImg").parent().remove();
+        $(".imageTotal").html('(0/9)');
+        $(".slide_left_menu_bg").addClass("show_menu_bg");
+        PageHistory.push('hidediv')
+    }
+    function hidediv(){
+        $(".slide_left_menu_bg").removeClass("show_menu_bg");
+    }
+    /**
+    * 新增图片
+    */
+    function addImages(base64){
+        var DivFixedPosition = document.getElementById("DivFixedPosition");
+        var imageBoxBody = document.getElementById("imageBoxBody");
+        var imagePage = document.createElement("div");
+        imagePage.setAttribute("class","imagePage");
+        imageBoxBody.insertBefore(imagePage,DivFixedPosition);
+        $(imagePage).html('<img alt="image" src="'+base64+'"  class="boxImages baseUploadImg"><span class="deleteImage" style= "background: url(http://weimeizhanoss.oss-cn-shenzhen.aliyuncs.com/public/mobile/img/deleteImage.png); background-size: 100%;display: inline;float: right;height: 25%;position: absolute;right: 0px;width: 25%;z-index: 4;" onclick="deleteImage(this)"></span>');
+        setImageHeight();
+        imagesTotal()
+    }
+    /**
+    * 计算图片数量
+    */
+    function imagesTotal(){
+        $(".imageTotal").html('('+$(".deleteImage").length+'/9)');
+        $(".imageTotal").length<9 && $(".imageTotal").show();
+        $(".deleteImage").length!= 0 && $(".addImages").show();
+        $(".deleteImage").length==9 && $(".addImages,.imageTotal").hide();
+    }
+    /**
+    * 删除图片
+    * @param span
+    */
+    function deleteImage(span){
+        var deleteNode = span.parentNode;
+        var arrayIndex = $.inArray($(span.parentNode).find('img').attr("src"),images.localId)
+        images.localId.splice(arrayIndex,1);
+        images.serverId.splice(arrayIndex,1);
+        deleteNode.parentNode.removeChild(span.parentNode);
+        imagesTotal();
+    }
+
+    /**
+    * 微信选择图片
+    */
+    function wxChooseImage(){
+        wx.chooseImage({
+            count: WXChooseImageCount,
+            sizeType: ['compressed'],
+            success: function (res) {
+                setTimeout(function(){
+                    images.localId = images.localId.concat(res.localIds);
+                    imagesUploadWx(res.localIds);
+                },1000)
+            }
+        });
+    };
+    function imagesUploadWx(localIds) {
+        var i = 0, length = localIds.length;
+        PB.prompt("开始上传照片","forever");
+        function upload() {
+            wx.uploadImage({
+                localId: localIds[i],
+                isShowProgressTips:0,//// 默认为1，显示进度提示
+                success: function (res) {
+                    setTimeout(function(){
+                        addImages(localIds[i]);
+                    i++;
+                    PB.prompt("已完成上传 "+(i)+"/"+length,"forever");
+                    images.serverId.push(res.serverId);
+                    if($(".deleteImage").length==9){
+                        PB.prompt("上传图片最多9张！")
+                        return;
+                    }
+                    if (i < length) {
+                        upload();
+                    }
+                    if(i==length){
+                        PB.prompt("已完成上传");
+                    }
+                    },1000)
+                },
+                fail: function (res) {
+                alert(JSON.stringify(res));
+                }
+            });
+            }
+        upload();
+    };
+    /**
+    * 设置图片的高
+    */
+    function setImageHeight(){
+        var imageWidth = $(".boxImages")[0].offsetWidth;
+        $(".boxImages").height(imageWidth);
+    }
+    // 上传图片
+    function sendPhoto(){
+        var photoUrls = images.serverId.join(',');
+        if (confirm("确定提交吗?")) {
+            PB.prompt("提交中，请稍等~","forever");
+            var submitData = {
+                weid:"{$weid}",
+                bj_id : `{$bj_id}`,
+                sid : $("#sid").val(),
+                userid : `{$userid['id']}`,
+                type : $("#type").val(),
+                ctype : $("#ctype").val(),
+                schoolid : "{$schoolid}",
+                photoUrls : photoUrls,
+            };
+
+            $.post("{php echo $this->createMobileUrl('comajax',array('op'=>'AddPhoto'))}",submitData,function(data){
+                let picarr = data.picarr;
+                if(data.result){
+                    let html = '';
+                    for(item of picarr){
+                        html += `<div><img src="${item.picurlimg}" dascr="../attachment/${item.picurl}"  onclick="AddImgToContainer(this)" alt=""></div>`
+                    }
+                    $("#xclist").prepend(html);
+                    hidediv()
+                    PB.prompt(data.msg);
+                }else{
+                    PB.prompt(data.msg);
+                }
+            },'json');
+        }
+    }
+
+
+</script>
+<!-- 视频上传相关操作 -->
+<script src="{OSSURL}public/mobile/js/common.js?v=1717"></script>
+<script type="text/javascript">
+    var ROOT_URL = "{OSSURL}";
+    var MODULE_URL = "{MODULE_URL}";
+        $(document).ready(function () {
+            //针对ios设备 点击文本框头部跑掉的处理方法
+            var ios_nav = /ios | iPhone | iPad/i.test(navigator.userAgent);
+            var top_div = $(".top");
+            if (ios_nav && top_div.length > 0) {
+                $("input[type=text]").on("focus", function () {
+                    top_div.css("position", "absolute");
+                    this.scrollIntoView();
+                }).on("blur", function () {
+                    top_div.css("position", "fixed");
+                });
+            }
+        });
+</script>
+
+<script src="{OSSURL}public/mobile/js/wxUpload_v0.3.js?v=1717"></script>
+<script src="{OSSURL}public/mobile/js/favorite.js?v=1717"></script>
+
+<script type="text/javascript">
+
+function CancelVideoUpload(){
+    $(".select_type_cancel").click()
+}
+
+	$(function () {
+		//点击上传视频按钮
+		$('.add_video_btn2').one('click', function () {
+			PageHistory.push('CancelVideoUpload')
+		});
+
+		//删除已选视频
+		$('.media_list').on('click', '.del_btn', function (e) {
+			e.stopPropagation();
+			$(this).closest('.vod_li').hide(200);
+			$('.add_video_btn2').one('click', function () {
+				//run_video_init();
+				$('#fileUpload').click();
+			});
+
+		})
+
+		var submit_wxsdkSendData = true;
+		var choose_img_params = {
+			choose_img_btn: ".local_img_btn",
+            upload_btn: ".send_btn", //提交按钮
+			img_showlist: ".pic_list", //图片显示的列表
+			record_btn: ".record_btn",
+			video_btn: ".video_btn",
+			video_list: ".video_list",
+			del_video_btn: "delete_voice_btn",
+			img_max_length: 9,
+			video_max_length: 1,
+			// upload_video_url: "{php echo $this->createMobileUrl('bjqajax',array('op'=>'donwvioce'))}",   //音频的url
+			wxsdkcheckForm: function () {
+				// 验证成功
+				return true;
+			},
+			wxsdkSendData: function (imgServerid, videoServerid, videoTime, media_receiveid) {
+				if (submit_wxsdkSendData) {
+					submit_wxsdkSendData = false;
+					var url = "{php echo $this->createMobileUrl('comajax',array('op'=>'UploadVideo'))}";
+					var receiveid = [];
+					var receivetime = 0;
+					$(".media_list li").each(function () {
+						receiveid.push($(this).children(".favorites_play_icon").attr("receive_id"));
+						receivetime = $(this).children("audio").attr("receive_time");
+					});
+					var favourite_mediaid = '';
+					if ($('.media_list li').not('.vod_li').length > 0) {
+						favourite_mediaid = $('.media_list li').children(".favorites_play_icon").attr("receive_id");
+					}
+					var data = {
+						weid:"{$weid}",
+						schoolid : "{$schoolid}",
+						receiveid: receiveid,
+						receivetime: receivetime,
+						videoMediaId: media_receiveid,
+						favourVideoMediaId: favourite_mediaid,
+						bj_id: `{$bj_id}`,
+						sid: $("#sid").val(),
+						userid: `{$userid['id']}`,
+						type: $("#type").val(),
+						ctype: $("#ctype").val(),
+					}
+					ajax_upload(url, data, this);
+				}
+			}
+		};
+		$.wx_upload = $.extend($.wx_upload, choose_img_params);
+		$.wx_upload.init();
+		wx.ready(function () {
+			wx.hideAllNonBaseMenuItem();
+			wx.onVoicePlayEnd({
+				complete: function (res) {
+					$.wx_upload.wxsdkonVoicePlayEnd(res.localId);
+				}
+			});
+			wx.onVoiceRecordEnd({
+				success: function (res) {
+					jTips("超过1分钟!");
+					$.wx_upload.wxsdkonVoiceRecordEnd(res.localId);
+				}
+			});
+		});
+	});
+
+
+	function ajax_upload(url, data, self) {
+		$.ajax({
+			url: url,
+			data: data,
+			type: "POST",
+			dataType: "json",
+			success: function (result) {
+				//提交后 隐藏加载层
+				self.hideLoadingMsg();
+				jTips(result.info, function () {
+                    html = `<img src="${result.thumb}" dascr="${result.qrcode}" onclick="AddVideoToContainer(this)">`
+                    $("#vlist").prepend(html);
+					if (result.status == 1) {
+						localStorage.removeItem("yab_parent_diary_type");//清除本地存储
+					} else {
+						$.wx_upload.success_video_arr = [];
+					}
+				});
+
+			},
+			error: function () {
+				//提交后 隐藏加载层
+				self.hideLoadingMsg();
+				$.wx_upload.success_img_arr = [];
+				$.wx_upload.fail_local_img_arr = [];
+				$.wx_upload.fail_server_img_arr = [];
+				$.wx_upload.success_video_arr = [];
+				$.wx_upload.fail_local_video_arr = [];
+				$.wx_upload.fail_server_video_arr = [];
+				jTips("非常抱歉，出现了点小问题，可以尝试刷新重试！");
+			},
+		});
+	};
+</script>
+<script src="{MODULE_URL}public/mobile/js/aliyun-upload-sdk/aliyun-upload-sdk-1.5.0.min.js"></script>
+<script src="{MODULE_URL}public/mobile/js/aliyun-upload-sdk/lib/es6-promise.min.js"></script>
+<script src="{MODULE_URL}public/mobile/js/aliyun-upload-sdk/lib/aliyun-oss-sdk-5.3.1.min.js"></script>
+
+
+<script>
+    $(document).ready(function () {
+      /**
+       * 创建一个上传对象
+       * 使用 UploadAuth 上传方式
+       */
+      function createUploader () {
+        var uploader = new AliyunUpload.Vod({
+          timeout: 60000,
+          partSize: 1048576,
+          parallel:  5,
+          retryCount:  3,
+          retryDuration: 2,
+          region: 'cn-shanghai',
+          userId: 1494184150208356,
+          // 添加文件成功
+          addFileSuccess: function (uploadInfo) {
+            //$('#authUpload').attr('disabled', false)
+            $('#resumeUpload').attr('disabled', false)
+            $('#status').text('添加文件成功, 等待上传...')
+			var _media_list = '<li class="vod_li"><div class="favorites_play_icon" ></div><img src="' + ROOT_URL + "public/mobile/img/wait_check_bg.png" + '"><div class="del_btn" vod_id="' + uploadInfo.videoId + '"></div></li>';
+			$(".media_list").html(_media_list);
+			$.wx_upload.hideLoadingMsg();
+          },
+          // 开始上传
+          onUploadstarted: function (uploadInfo) {
+			if (!uploadInfo.videoId) {
+                let description = "普通视频";
+                let tag = "相册视频";
+                var createUrl = "{php echo $this->createMobileUrl('bjqajax',array('op'=>'CreateAliUploadVideo','schoolid'=> $schoolid))}" + "&title=123"  + "&filename=" + uploadInfo.file.name + "&description="+description+"&tag="+tag+"&coverurl="
+                $.get(createUrl, function (data) {
+                var uploadAuth = data.UploadAuth
+                var uploadAddress = data.UploadAddress
+                var videoId = data.VideoId
+                uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+                }, 'json')
+                $('#progress_text').text('开始上传视频...');
+            } else {
+				  var refreshUrl = "{php echo $this->createMobileUrl('bjqajax',array('op'=>'CreateAliUploadVideo','schoolid'=> $schoolid))}&VideoId=" + uploadInfo.videoId
+				  $.get(refreshUrl, function (data) {
+					var uploadAuth = data.UploadAuth
+					var uploadAddress = data.UploadAddress
+					var videoId = data.VideoId
+					uploader.setUploadAuthAndAddress(uploadInfo, uploadAuth, uploadAddress,videoId)
+				  }, 'json')
+            }
+          },
+          // 文件上传成功
+          onUploadSucceed: function (uploadInfo) {
+			$('#progress_text').text('处理视频中...');
+            $.wx_upload.success_media_id = uploadInfo.videoId;
+			//$.wx_upload.hideLoadingMsg();
+			 if ($.wx_upload.fail_local_img_arr.length > 0 || $.wx_upload.fail_server_img_arr.length > 0 || $.wx_upload.fail_local_video_arr.length > 0 || $.wx_upload.fail_server_video_arr.length > 0) {
+				$.wx_upload.showErrorMsg();
+			} else {
+				$.wx_upload.wxsdkSendData($.wx_upload.success_img_arr, $.wx_upload.success_video_arr, $.wx_upload.video_time, uploadInfo.videoId);
+			}
+            $('#status').text('文件上传成功!')
+          },
+          // 文件上传失败
+          onUploadFailed: function (uploadInfo, code, message) {
+            $('#status').text('文件上传失败!')
+          },
+          // 取消文件上传
+          onUploadCanceled: function (uploadInfo, code, message) {
+            $('#status').text('文件上传已暂停!')
+          },
+          // 文件上传进度，单位：字节, 可以在这个函数中拿到上传进度并显示在页面上
+          onUploadProgress: function (uploadInfo, totalSize, progress) {
+            var progressPercent = Math.ceil(progress * 100)
+            //$('#auth-progress').text(progressPercent)
+            //$('#status').text('文件上传中...')
+			$.wx_upload.showLoadingMsg();
+			if (progressPercent) {
+				$('#progress_text').text('视频上传' + progressPercent + "%");
+			}
+          },
+          // 上传凭证超时
+          onUploadTokenExpired: function (uploadInfo) {
+            $('#status').text('文件上传超时!')
+
+            let refreshUrl = "{php echo $this->createMobileUrl('bjqajax',array('op'=>'CreateAliUploadVideo','schoolid'=> $schoolid))}&VideoId=" + uploadInfo.videoId
+            $.get(refreshUrl, function (data) {
+              var uploadAuth = data.UploadAuth
+              uploader.resumeUploadWithAuth(uploadAuth)
+            }, 'json')
+          },
+          // 全部文件上传结束
+          onUploadEnd: function (uploadInfo) {
+            $('#status').text('文件上传完毕!')
+          }
+        })
+        return uploader
+      }
+
+      var uploader = null
+	$('#local_media_btn2').on('click', function () {
+		$('#fileUpload').click();
+	})
+
+      $('#fileUpload').on('change', function (e) {
+        var file = e.target.files[0]
+        if (!file) {
+          alert("请先选择需要上传的文件!")
+          return
+        }
+        var Title = file.name
+        var userData = '{"Vod":{}}'
+        if (uploader) {
+          uploader.stopUpload()
+          $('#auth-progress').text('0')
+          $('#status').text("")
+        }
+        uploader = createUploader()
+        uploader.addFile(file, null, null, null, userData)
+        $('#pauseUpload').attr('disabled', true)
+        $('#resumeUpload').attr('disabled', true)
+        $("#vtijiao").click();
+      })
+      $('#authUpload').on('click', function () {
+        if (uploader !== null) {
+          uploader.startUpload()
+          $('#pauseUpload').attr('disabled', false)
+        }
+      })
+      // 暂停上传
+      $('#pauseUpload').on('click', function () {
+        if (uploader !== null) {
+          uploader.stopUpload()
+          $('#resumeUpload').attr('disabled', false)
+          $('#pauseUpload').attr('disabled', true)
+        }
+      })
+      $('#resumeUpload').on('click', function () {
+        if (uploader !== null) {
+          uploader.startUpload()
+          $('#resumeUpload').attr('disabled', true)
+          $('#pauseUpload').attr('disabled', false)
+        }
+      })
+
+    })
+
+
+
+//    图表弹窗及相关操作
+    function ShowChartModal(){
+        $("#showBig").show();
+        $("#showBig .showItem").animate({top:0},300);
+        $("body").addClass('isoverflow');
+        var img_box_elm = $('.chart_container_list .is_select');
+        let container_uid = Number($(img_box_elm).css('z-index'));
+        PageList.map(v => {
+            if (v.tagid == NowTagId) {
+                v.data.pageData.map(function (d , t) {
+                    if (container_uid === Number(d.Position.zIndex) && d.itemType == 'chart') {
+                        $("#start").val(d.Client.start)
+                        $("#end").val(d.Client.end)
+                    }
+                })
+            }
+        })
+
+    }
+    $("#closeChart").click(function(){
+        HideBack()
+    })
+    function HideBack(){
+        $("#showBig .showItem").animate({top:'-100vh'},300,function(){
+            $('#showBig').hide()
+        })
+        $("#showVideo .showItem").animate({top:'-100vh'},300,function(){
+            $('#showVideo').hide()
+        })
+    }
+    function tijiao(e){
+        var img_box_elm = $('.chart_container_list .is_select'); //被选中的容器
+        let container_uid = Number($(img_box_elm).css('z-index'));
+        if (!img_box_elm.length) return;
+        PageList.map(v => {
+            if (v.tagid == NowTagId) {
+                v.data.pageData.map(function (d , t) {
+                    if (container_uid === Number(d.Position.zIndex) && d.itemType == 'chart') {
+                        d.Client.start = $("#start").val()
+                        d.Client.end = $("#end").val()
+                        $(img_box_elm).attr('data-time_start',$("#start").val())
+                        $(img_box_elm).attr('data-time_end',$("#end").val())
+                        render_chart_box(img_box_elm)
+                    }
+                })
+            }
+        })
+        HideBack()
+    }
+
+
+    // 图片放大
+    function showImg(){
+        var this_img_arr =[];
+        let videopic = $(".selectbox").attr('src');
+        
+        var this_img = $('.selectbox').attr('src');
+        if(!this_img){
+                jTips('请选择需要预览的图片')
+                return
+            }
+        this_img_arr.push(this_img)
+        wx.previewImage({
+            current: this_img, // 当前显示图片的http链接
+            urls: this_img_arr // 需要预览的图片http链接列表
+        });
+    }
+
+    /*******************************保存**********************************/
+    function SavePage(){
+        let html  = document.documentElement.outerHTML
+        // $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'SavePage','schoolid'=>$schoolid, 'weid'=>$weid))}", {'PageList': PageList}, function(res) {
+        //     alert(res.msg)
+        // },'json');
+        $.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'SavePage','schoolid'=>$schoolid, 'weid'=>$weid))}", {'PageList': PageList,'html':html}, function(res) {
+            alert(res.msg)
+            location.href = "{php echo $this->createMobileUrl('smanuallookstupage',array('op'=>'display','schoolid'=> $schoolid))}" + "&sid=" + `{$_GPC['sid']}` + "&id=" + `{$_GPC['id']}`;
+        },'json');
+    }
+    /*******************************保存**********************************/
+    function goback(){
+        location.href = "{php echo $this->createMobileUrl('smanuallookstupage',array('op'=>'display','schoolid'=> $schoolid))}" + "&sid=" + `{$_GPC['sid']}` + "&id=" + `{$_GPC['id']}`;
+    }
+</script>
+

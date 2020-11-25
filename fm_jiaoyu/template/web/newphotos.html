@@ -1,0 +1,716 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<link rel="stylesheet" type="text/css" href="{MODULE_URL}public/web/css/main.css"/>
+{if $operation == 'basic'}
+<style>
+.modal-backdrop{z-index:1000 !important;}
+</style>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">相册管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+				<input type="hidden" name="op" value="basic" />
+                <input type="hidden" name="do" value="photos" />
+				<input type="hidden" name="schoolid" value="{$schoolid}" />
+				 <div class="form-group">
+                    {if $_W['schooltype']}
+                    <label class="col-sm-1 control-label">按课程</label>
+                    <div class="col-sm-2">
+                        <select name="kcid" class="form-control">
+                            <option value="">请选择课程搜索</option>
+                            {loop $kclist $row}
+                            <option value="{$row['id']}" {if $row['id'] == $kcid} selected="selected"{/if}>{$row['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>		
+                    {else}
+                    <label class="col-sm-1 control-label">按班级</label>
+                    <div class="col-sm-2">
+                        <select name="bj_id" class="form-control">
+                            <option value="">请选择班级搜索</option>
+                            {loop $bjlist $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $bj_id} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>		
+                    {/if}
+									
+                    <div class="col-sm-2 col-lg-2">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div>
+					<div class="col-sm-2 col-lg-2">
+						<a class="btn btn-default qx_1602 "onclick="show_order('')" ><i class="fa fa-qrcode">&nbsp;&nbsp;新增相册</i></a>	
+					  </div>  
+				</div>	
+            </form>
+        </div>
+	</div>	
+	<div class="panel panel-default">
+        <div class="table-responsive panel-body">
+			<div id="queue-setting-index-body">
+				<div class="panel panel-info">
+					<div class="panel-body">
+						<!--导航-->
+						<ul class="nav nav-tabs">
+							<li class="{if ($operation == 'basic' || $operation == 'GetPhotoData')}active{/if}">
+								<a href="{php echo $this->createWebUrl('photos', array('op' => 'basic', 'schoolid' => $schoolid))}">{$xcname}</a>
+							</li >
+							<li class="{if ($operation == 'private')}active{/if}">
+								<a href="{php echo $this->createWebUrl('photos', array('op' => 'private', 'schoolid' => $schoolid))}">个人相册</a>
+							</li >
+						</ul>
+					</div>
+				</div>
+				<div class="viewList">
+                    <!-- {$xcname} -->
+                    {loop $bjphototype $item}
+					<div class="viewBox">
+						<div class="nameAndTime">
+							<span class="name">{$item['sname']}</span>
+							<span name="publishdate" class="time"></span>
+						</div>
+						<div class="content">					
+							<a class="lightgray" >{$item['sname']}</a>	
+						</div>
+						<div class="gallery" style="margin:5px;">
+								<div class="picBox">
+									<table name="imgTable" width="100%" height="100%" border="1" bordercolor="white">
+										<tr>
+											<td>
+												<div class="img">
+                                                    <img src="{php echo tomedia($item['picurl'])}" alt="">
+												</div>
+											</td>
+										</tr>
+									</table>				
+								</div>	
+							<div class="likeAndDel" style="margin:5px;">
+								<div class="l">							
+									<span>照片（{$item['total']}）</span>									
+								</div>						
+								<div class="r" style="margin-right:7px">
+                                    {if $item['ctype'] != 0 && is_numeric($item['ctype'])}
+                                    <button type="button" onclick="del(`{$item['ctype']}`)" class="btn btn-sm btn-info">删除</button>
+                                    <button type="button" onclick="show_order(`{$item['ctype']}`)" class="btn btn-sm btn-info">修改</button>
+                                    {/if}
+                                    {if $_W['schooltype']}
+                                        <a class="btn btn-xs btn-info" href="{php echo $this->createWebUrl('photos', array('op' => 'GetPhotoData', 'schoolid' => $schoolid,'kcid'=>$item['kcid'],'type'=>2,'ctype'=>$item['ctype']))}">查看详情</a>
+                                    {else}
+                                        <a class="btn btn-xs btn-info" href="{php echo $this->createWebUrl('photos', array('op' => 'GetPhotoData', 'schoolid' => $schoolid,'bj_id'=>$item['bj_id'],'type'=>2,'ctype'=>$item['ctype']))}">查看详情</a>
+                                    {/if}
+									
+								</div>						
+							</div>
+						</div>
+						
+                    </div>	
+                    {/loop}
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>	
+
+{elseif $operation == 'GetPhotoData'}
+<style>
+    .modal-backdrop{z-index:1000 !important;}
+</style>
+<link rel="stylesheet" href="{MODULE_URL}public/web/css/magnific-popup.css">
+<div class="panel panel-info">
+    <div class="panel-heading"><a href="{php echo $this->createWebUrl('photos', array('op' => 'basic', 'schoolid' => $schoolid))}"><i class="fa fa-chevron-left"></i>返回相册列表</a></div>
+</div>
+<div class="main">
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <div id="queue-setting-index-body">
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="width: 20%;">{$com['sname']}
+                        {if $_GPC[type] == 2}
+                        <button class="btn btn-default "onclick="ShowAddPic()"><i class="fa fa-qrcode">&nbsp;&nbsp;上传照片</i></button>
+                        {/if}
+						<button type="button" onclick="delAll(`{$_GPC['bj_id']}`,`{$_GPC['ctype']}`)" class="btn btn-info">删除所有</button>
+                    </div>
+                </div>
+                
+                <div class="uploadList">
+                    <div class="" style="border-bottom: 1px solid #dbe1e8;">
+                        <div class="">
+                            <label class="control-label" style="float: left;width: 25%;"></label>
+                            <p class="form-control-static">
+                                <span class="time" style="float: right;"></span>
+                            </p>                            
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div style="margin:10px 0"></div>
+                    <div class="photoList" style="width:100%;margin:10px 0;">
+                        <div id="addPhotoBox1" name="addPhotoBox">
+                            <div class="gallery" data-toggle="lightbox-gallery">
+                                {loop $list2 $row}
+                                    <div class="photoBox" style="width:300px;height:300px;position: relative">                                
+                                        <div class="img" style="width:300px;height:300px;">
+                                                <div class="gallery-image">
+                                                    {if $row['is_video'] == 1}  
+                                                    <div class="picBox" style="width: 100%;">
+                                                        <a class="btn btn-primary qx_1603" style="background-color:red;z-index:1000;position: absolute;float:right;" href="{php echo $this->createWebUrl('photos', array('op' => 'deleteone', 'schoolid' => $schoolid, 'photoid' => $row['id']))}" onclick="return confirm('确认删除本视频？');return false;">删除</a>            
+                                                        <video id="video" style="position: relative; max-height: 300px;" controls="controls">
+                                                            <source src="{php echo tomedia($row['video'])}" type="video/mp4">
+                                                        </video>
+                                                        
+                                                    </div>
+                                                    {else}
+                                                    <a href="{php echo tomedia($row['picurl'])}" target="_blank" class="gallery-link">
+                                                        <img src="{php echo tomedia($row['picurl'])}" alt="image" style="width:100%;">
+                                                        <a class="btn btn-primary qx_1603" style="background-color:red;z-index:1000;position: absolute;float:right;" href="{php echo $this->createWebUrl('photos', array('op' => 'deleteone', 'schoolid' => $schoolid, 'photoid' => $row['id']))}" onclick="return confirm('确认删除本张照片？');return false;">删除</a>
+                                                    </a>
+                                                    {/if}
+                                                </div>
+                                        </div>  
+                                        <div style="position: absolute; width: 300px; height: 30px; bottom: -2px; text-align: right; background-color: #000000; color: #fff; font-size: 16px; opacity: 0.5;
+                                        line-height: 30px;">
+											{php echo date('y-m-d H:i',$row['createtime'])}
+										</div>
+                                    </div>
+                                {/loop}
+                            </div>
+                        </div>
+                    </div>
+                    {$pager}
+                </div>
+            </div>
+        </div>
+    </div>  
+</div>  
+{elseif $operation == 'private'}
+<style>
+    .modal-backdrop{z-index:1000 !important;}
+    </style>
+<div class="panel panel-info">
+    <div class="panel-heading">相册管理</div>
+    <div class="panel-body">
+        <form action="./index.php" method="get" class="form-horizontal" role="form">
+            <input type="hidden" name="c" value="site" />
+            <input type="hidden" name="a" value="entry" />
+            <input type="hidden" name="m" value="fm_jiaoyu" />
+            <input type="hidden" name="op" value="private" />
+            <input type="hidden" name="do" value="photos" />
+            <input type="hidden" name="schoolid" value="{$schoolid}" />
+             <div class="form-group">
+                {if $_W['schooltype']}
+                    <label class="col-sm-1 control-label">按课程</label>
+                    <div class="col-sm-2">
+                        <select name="kcid" class="form-control">
+                            <option value="">请选择课程搜索</option>
+                            {loop $kclist $row}
+                            <option value="{$row['id']}" {if $row['id'] == $kcid} selected="selected"{/if}>{$row['name']}</option>
+                            {/loop}
+                        </select>
+                    </div>		
+                    {else}
+                    <label class="col-sm-1 control-label">按班级</label>
+                    <div class="col-sm-2">
+                        <select name="bj_id" class="form-control">
+                            <option value="">请选择班级搜索</option>
+                            {loop $bjlist $row}
+                            <option value="{$row['sid']}" {if $row['sid'] == $bj_id} selected="selected"{/if}>{$row['sname']}</option>
+                            {/loop}
+                        </select>
+                    </div>		
+                {/if}				
+                <div class="col-sm-2 col-lg-2">
+                    <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                </div>
+                <div class="col-sm-2 col-lg-2">
+                    <a class="btn btn-default qx_1602 "onclick="show_order('')" ><i class="fa fa-qrcode">&nbsp;&nbsp;新增相册</i></a>	
+                  </div>  
+            </div>	
+        </form>
+    </div>
+</div>	
+<div class="panel panel-default">
+    <div class="table-responsive panel-body">
+        <div id="queue-setting-index-body">
+            <div class="panel panel-info">
+                <div class="panel-body">
+                    <!--导航-->
+                    <ul class="nav nav-tabs">
+                        <li class="{if ($operation == 'basic' || $operation == 'GetPhotoData')}active{/if}">
+                            <a href="{php echo $this->createWebUrl('photos', array('op' => 'basic', 'schoolid' => $schoolid))}">{$xcname}</a>
+                        </li >
+                        <li class="{if ($operation == 'private')}active{/if}">
+                            <a href="{php echo $this->createWebUrl('photos', array('op' => 'private', 'schoolid' => $schoolid))}">个人相册</a>
+                        </li >
+                    </ul>
+                </div>
+            </div>
+            <div class="viewList">
+                <!-- 个人相册 -->
+                {loop $stuphototype $item}
+                <div class="viewBox">
+                    <div class="nameAndTime">
+                        <span class="name" style="width: 100%;">{$item['sname']}({$item['bjname']})</span>
+                        <span name="publishdate" class="time"></span>
+                    </div>
+                    <div class="content">					
+                        <a class="lightgray" >{$item['sname']}({$item['bjname']})</a>	
+                    </div>
+                    <div class="gallery" style="margin:5px;">
+                            <div class="picBox">
+                                <table name="imgTable" width="100%" height="100%" border="1" bordercolor="white">
+                                    <tr>
+                                        <td>
+                                            <div class="img">
+                                                <img src="{php echo tomedia($item['picurl'])}" alt="">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>				
+                            </div>	
+                        <div class="likeAndDel" style="margin:5px;">
+                            <div class="l">							
+                                <span>照片（{$item['total']}）</span>									
+                            </div>						
+                            <div class="r" style="margin-right:7px">
+                                {if $item['ctype'] != 0 && is_numeric($item['ctype'])}
+                                <button type="button" onclick="del(`{$item['ctype']}`)" class="btn btn-sm btn-info">删除</button>
+                                <button type="button" onclick="show_order(`{$item['ctype']}`)" class="btn btn-sm btn-info">修改</button>
+                                {/if}
+                                {if $_W['schooltype']}
+                                    <a class="btn btn-xs btn-info" href="{php echo $this->createWebUrl('photos', array('op' => 'GetStuList', 'schoolid' => $schoolid,'type'=>1,'ctype'=>$item['ctype'],'kcid'=>$item['kcid']))}">查看详情</a>
+                                {else}
+                                    <a class="btn btn-xs btn-info" href="{php echo $this->createWebUrl('photos', array('op' => 'GetStuList', 'schoolid' => $schoolid,'type'=>1,'ctype'=>$item['ctype'],'bj_id'=>$item['bj_id']))}">查看详情</a>
+                                {/if}
+                                
+                            </div>						
+                        </div>
+                    </div>
+                    
+                </div>	
+                {/loop}
+            </div>
+        </div>	
+    </div>
+</div> 
+{elseif $operation == 'GetStuList'}
+<style>
+.modal-backdrop{z-index:1000 !important;}
+</style>
+<div class="main">
+    <div class="panel panel-info">
+        <div class="panel-heading">相册管理</div>
+        <div class="panel-body">
+            <form action="./index.php" method="get" class="form-horizontal" role="form">
+                <input type="hidden" name="c" value="site" />
+                <input type="hidden" name="a" value="entry" />
+                <input type="hidden" name="m" value="fm_jiaoyu" />
+                <input type="hidden" name="op" value="GetStuList" />
+                <input type="hidden" name="do" value="photos" />
+                <input type="hidden" name="ctype" value="{$_GPC['ctype']}" />
+                <input type="hidden" name="schoolid" value="{$schoolid}" />
+                    <div class="form-group">
+                        {if $_W['schooltype']}
+                        <label class="col-sm-1 control-label">按课程</label>
+                        <div class="col-sm-2">
+                            <select name="kcid" class="form-control">
+                                <option value="">请选择课程搜索</option>
+                                {loop $kclist $row}
+                                <option value="{$row['id']}" {if $row['id'] == $kcid} selected="selected"{/if}>{$row['name']}</option>
+                                {/loop}
+                            </select>
+                        </div>		
+                        {else}
+                        <label class="col-sm-1 control-label">按班级</label>
+                        <div class="col-sm-2">
+                            <select name="bj_id" class="form-control">
+                                <option value="">请选择班级搜索</option>
+                                {loop $bjlist $row}
+                                <option value="{$row['sid']}" {if $row['sid'] == $bj_id} selected="selected"{/if}>{$row['sname']}</option>
+                                {/loop}
+                            </select>
+                        </div>		
+                    {/if}									
+                    <div class="col-sm-2 col-lg-2">
+                        <button class="btn btn-default"><i class="fa fa-search"></i> 搜索</button>
+                    </div> 
+                </div>	
+            </form>
+        </div>
+    </div>	
+    <div class="panel panel-default">
+        <div class="table-responsive panel-body">
+            <div id="queue-setting-index-body">
+
+                <div class="panel panel-info">
+                    <div class="panel-body">
+                        <!--导航-->
+                        <ul class="nav nav-tabs">
+                            <li class="{if ($operation == 'basic' || $operation == 'GetPhotoData')}active{/if}">
+                                <a href="{php echo $this->createWebUrl('photos', array('op' => 'basic', 'schoolid' => $schoolid))}">{$xcname}</a>
+                            </li >
+                            <li class="{if ($operation == 'private' || $operation == 'GetStuList')}active{/if}">
+                                <a href="{php echo $this->createWebUrl('photos', array('op' => 'private', 'schoolid' => $schoolid))}">个人相册</a>
+                            </li >
+                        </ul>
+                    </div>
+                </div>
+                <div class="viewList">
+                    {loop $xclist $item}
+                    <div class="viewBox">
+                        <div class="nameAndTime">
+                            <span class="name">{$item['sname']}</span>
+                            <span name="publishdate" class="time">{php echo(date('Y-m-d H:i:s',$item['createtime']))}</span>
+                        </div>
+                        <div class="content">					
+                                <a class="lightgray" >{$item['sname']}的相册</a>	
+                        </div>
+                        <div class="gallery" style="margin:5px;">
+                                <div class="picBox">
+                                    <table name="imgTable" width="100%" height="100%" border="1" bordercolor="white">
+                                        <tr>
+                                            <td>
+                                                <div class="img">
+                                                    <img src="{php echo tomedia($item['picurl'])}" alt="">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>				
+                                </div>	
+                            <div class="likeAndDel" style="margin:5px;">
+                                <div class="l">							
+                                    <span>照片（{$item['total']}）</span>									
+                                </div>						
+                                <div class="r" style="margin-right:7px">
+                                    <a class="btn btn-xs btn-info" href="{php echo $this->createWebUrl('photos', array('op' => 'GetPhotoData', 'schoolid' => $schoolid,'sid'=>$item['sid'],'type'=>1,'ctype'=>$_GPC['ctype'],'bj_id'=>$item['bj_id'],'kcid'=>$item['kcid']))}">查看详情</a>
+                                </div>						
+                            </div>
+                        </div>
+                        
+                    </div>	
+                    {/loop}
+                    {if $nokcmedia}
+                        {if count($xclist) < $psize}
+                        <div class="viewBox">
+                            <div class="nameAndTime">
+                                <span class="name">老师上传</span>
+                                <span name="publishdate" class="time"></span>
+                            </div>
+                            <div class="content">					
+                                    <a class="lightgray" >老师上传的相册</a>	
+                            </div>
+                            <div class="gallery" style="margin:5px;">
+                                    <div class="picBox">
+                                        <table name="imgTable" width="100%" height="100%" border="1" bordercolor="white">
+                                            <tr>
+                                                <td>
+                                                    <div class="img">
+                                                        <img src="{php echo tomedia($nokcmedia['picurl'])}" alt="">
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>				
+                                    </div>	
+                                <div class="likeAndDel" style="margin:5px;">
+                                    <div class="l">							
+                                        <span>照片（{$nokctotal}）</span>									
+                                    </div>						
+                                    <div class="r" style="margin-right:7px">
+                                        <a class="btn btn-xs btn-info" href="{php echo $this->createWebUrl('photos', array('op' => 'GetPhotoData', 'schoolid' => $schoolid,'sid'=>0,'type'=>0,'ctype'=>0,'bj_id'=>0,'kcid'=>0))}">查看详情</a>
+                                    </div>						
+                                </div>
+                            </div>
+                        </div>	
+                        {/if}
+                    {/if}
+                </div>
+            </div>	
+        </div>
+    </div>
+    {$pager}
+</div>	
+{/if}
+{template 'public/footer'}
+<!-- 上传照片弹窗 -->
+<div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="margin-top:60px;z-index:1010 !important">
+    <form action="" id="uploadP" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <div class="modal-dialog modal-lg" role="document">     
+            <div class="modal-content">         
+                <div class="modal-header" style="color: black;">                    
+                    <h4 class="modal-title" id="ModalTitle">上传照片</h4>   
+				</div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">批量上传图片:</label>
+                        <div class="col-sm-9 col-xs-6">
+                            {php echo tpl_form_field_multi_image('photoarr')}
+                        </div>
+                    </div>  
+                    <div class="form-group">
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">上传视频:</label>
+						<div class="col-sm-9 col-xs-6">
+						{php echo tpl_form_field_video('video')}
+						</div>
+                    </div>   
+                    <div class="form-group">
+                        <label class="col-xs-12 col-sm-2 col-md-2 control-label" style="width: 100px;">视频封面图:</label>
+                        <div class="col-sm-2 col-lg-6">
+                            {php echo tpl_form_field_image('videoimg')}		
+                        </div>
+                    </div>
+					{if $_GPC['ctype'] == 'teaactivity' && !$_W['schooltype']} 
+					<div class="form-group">
+						<label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择集体活动:</label>
+                        <div class="col-sm-6 col-xs-6">
+                            <select style="margin-right:15px;" name="jthdid" id="jthdid" class="form-control">
+                                <option value="0">请选择集体活动</option>
+                                {loop $groupactivity $it}
+                                <option value="{$it['id']}">{$it['title']}</option>
+                                {/loop}
+							</select>
+						</div>
+						<div class="col-sm-4 col-xs-6">
+							<label class="control-label">不选择，则代表不关联集体活动</label>
+						</div>
+					</div>   
+					{/if}  
+                </div>
+                <input type="hidden" name="type" value="{$_GPC['type']}">       
+                <input type="hidden" name="id" value="{$_GPC['id']}">       
+                <input type="hidden" name="bj_id" value="{$_GPC['bj_id']}">       
+                <input type="hidden" name="kcid" value="{$_GPC['kcid']}">       
+                <input type="hidden" name="ctype" value="{$_GPC['ctype']}">       
+                <div class="modal-footer">  
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="submit1" onclick="NewuploadPhotos()">确认上传</button>
+                </div>          
+            </div>  
+        </div>
+    </form>
+</div>
+<!-- 新增相册弹窗 -->
+<div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="z-index:1010 !important">
+    <form action="" method="post" class="form-horizontal form"  enctype="multipart/form-data">
+        <div class="modal-dialog modal-lg" role="document">     
+            <div class="modal-content">         
+                <div class="modal-header" style="color: black;">                    
+                    <h4 class="modal-title" id="ModalTitle">新增相册</h4>   
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" >
+                        <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">相册名称:</label>
+                        <div class="col-sm-2 col-lg-2" style="width: 20%">
+                            <input type="text" class="form-control" name="sname" id="sname"/>
+                        </div>
+                    </div>
+                    {if $_W['schooltype']}
+                    <div class="form-group" >
+                        <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择课程:</label>
+                        <div class="col-sm-2 col-lg-2" style="width: 20%">
+                            <select style="margin-right:15px;" name="kcid" id="kcid" class="form-control">
+                                <option value="0">请选择课程</option>
+                                {loop $kclist $it}
+                                <option value="{$it['id']}">{$it['name']}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                    </div>
+                    {else}
+                    <div class="form-group" >
+                        <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">选择班级:</label>
+                        <div class="col-sm-2 col-lg-2" style="width: 20%">
+                            <select style="margin-right:15px;" name="bj_id" id="bj_id" class="form-control">
+                                <option value="0">请选择班级</option>
+                                {loop $bjlist $it}
+                                <option value="{$it['sid']}">{$it['sname']}</option>
+                                {/loop}
+                            </select>
+                        </div>
+                    </div>
+                    {/if}
+                    
+                    <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">是否允许上传:</label>
+                        <div class="col-sm-9">  
+                            <label class="radio-inline">
+                                <input type="radio" name="is_upload" value="1" checked /> 是
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="is_upload" value="0"/> 否
+                            </label>
+                        </div>    
+                    </div>  
+                    <div class="form-group">
+                    <label class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label" style="width: 100px;">相册类型:</label>
+                        <div class="col-sm-9">  
+                            <label class="radio-inline">
+                                <input type="radio" name="phototype" value="2" checked /> {$xcname}
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="phototype" value="1"/> 个人相册
+                            </label>
+                        </div>          
+                    </div>  
+                    <input type="hidden" id="sid"/>
+                <div class="modal-footer">  
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="tijiao()">提交</button>
+                </div>          
+            </div>  
+        </div>
+    </form>
+</div>
+<script>
+/*显示添加相册提示框*/
+function show_order(id){
+    $('#Modal1').modal('toggle');
+    if(id){
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            data: {id:id},
+            url: "{php echo $this->createWebUrl('photos',array('op'=>'GetPhotoType','schoolid'=>$schoolid))}",
+            success: function (back) {
+                let data = back.data;
+                $("input[name='sname']").val(data.sname)
+                $(`input[name='is_upload'][value='${data.is_upload}']`).prop("checked",true); 
+                $(`input[name='phototype'][value='${data.phototype}']`).prop("checked",true); 
+                $("input[name='phototype']").prop('disabled',true)
+                $("#bj_id").val(data.bjid)
+                $("#bj_id").prop('disabled',true)
+                $("#kcid").val(data.kcid)
+                $("#kcid").prop('disabled',true)
+                $("#sid").val(id)
+            },
+            error : function() {
+                alert("异常！");
+            }
+        });
+    }else{
+		$("input[name='sname']").val('')
+		$(`input[name='is_upload'][value='1']`).prop("checked",true); 
+		$("#kcid").val(0)
+		$("#kcid").prop('disabled',false)
+		$("#bj_id").val(0)
+		$("#bj_id").prop('disabled',false)
+		$("#sid").val(0)
+	}
+    
+};
+/*执行添加相册操作*/
+function tijiao(){
+    let submitData = {
+        'sname' : $("input[name='sname']").val(),
+        'is_upload' : $("input[name='is_upload']:checked").val(),
+        'phototype' : $("input[name='phototype']:checked").val(),
+        'bj_id' : $("#bj_id").val(),
+        'kcid' : $("#kcid").val(),
+        'sid' : $("#sid").val()
+    }
+    if(!$("input[name='sname']").val()){
+        alert("请输入名称"); 
+        return
+    }
+    {if !$_W['schooltype']}
+        if(!$("#bj_id").val() || $("#bj_id").val() === '0'){
+            alert("请选择班级");
+            return  
+        }
+    {else}
+        if(!$("#kcid").val() || $("#kcid").val() === '0'){
+            alert("请选择课程");
+            return  
+        }
+    {/if}
+    
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        data: submitData,
+        url: "{php echo $this->createWebUrl('photos',array('op'=>'AddPhotoType','schoolid'=>$schoolid))}" ,//url
+        success: function (back) {
+            if (back.result == 1) {
+                alert(back.msg);
+            }else{
+                alert("上传失败");
+            };
+            location.reload();
+        },
+        error : function() {
+            alert("异常！");
+        }
+    });
+}
+/*删除分类*/
+function del(id){
+	if(confirm("确认要删除当前相册吗?")){
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			data: {id:id},
+			url: "{php echo $this->createWebUrl('photos',array('op'=>'DeleteType','schoolid'=>$schoolid))}",
+			success: function (back) {
+				alert(back.msg);
+				location.reload()
+			},
+			error : function() {
+				alert("异常！");
+			}
+		});
+	}
+    
+}
+/*删除所有照片*/
+function delAll(bjid,ctype){
+	if(confirm("确认要删除所有相册吗?")){
+		$.ajax({
+			type: "POST",
+			dataType: "json",
+			data: {bjid:bjid,ctype:ctype},
+			url: "{php echo $this->createWebUrl('photos',array('op'=>'delAll','schoolid'=>$schoolid))}",
+			success: function (back) {
+				alert(back.msg);
+				location.reload()
+			},
+			error : function() {
+				alert("异常！");
+			}
+		});
+	}
+}
+/*上传照片弹窗*/
+function ShowAddPic(){
+    $('#Modal2').modal('toggle');
+};
+/*执行照片上传*/
+function NewuploadPhotos(){
+    let video = $("input[name='video']").val();
+    let videoimg = $("input[name='videoimg']").val();
+    if(video){
+        if(!videoimg){
+            alert('请上传视频封面图')
+            return
+        }
+    }
+    $.ajax({
+        type: "POST",//方法类型
+        dataType: "json",//预期服务器返回的数据类型
+        url: "{php echo $this->createWebUrl('photos',array('op'=>'NewuploadPhotos','schoolid'=>$schoolid))}" ,//url
+        data: $('#uploadP').serialize(),
+        success: function (back) {
+            if (back.result == 1) {
+                alert(back.msg);
+            }else{
+                 alert("上传失败");
+            };
+            location.reload();
+        },
+        error : function() {
+            alert("异常！");
+        }
+    });
+}
+</script>

@@ -1,0 +1,71 @@
+	{loop $leave1 $row}
+				<section class="vacationRecord_section" time="{$row['createtime']}">
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">留言内容:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">{$row['beizhu']}</span>
+					</div>
+					{if !empty($row['huifu'])}
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">校长回复:</span>
+						<div class="left_dotsVacation"></div>
+					</div>
+					<div class="vacationItem vacationItemOther">
+						<span class="vacation_title">{$row['huifu']}</span>
+					</div>
+					{/if}
+					
+					
+					<!--第一人-->
+					<div class="teachReplyBox" >
+						<div class="teachReplyToptBox">
+							<div class="teachReplyLeftBox">
+								<img src="{if $row['s_icon']}{php echo tomedia($row['s_icon'])}{else}{php echo tomedia($schol['spic'])}{/if}" class="img-responsive">
+							</div>
+							<div class="teachReplyRightTitle">
+								<span class="teachReplyName">
+									留言人：{$row['sname']}
+								</span>
+							</div>
+						</div>
+						<div class="left_teachReply"></div>
+						<div class="teachReplyLeftLine"></div>
+						<div class="teachReplyLeftCircle"></div>
+					</div>
+					<!--被转发者-->
+				
+
+					<div class="teachReplyBox">
+						<div class="teachReplyBottom">
+							<span class="vacation_time otherTime">留言时间:</span><span class="vacation_time vacation_left otherTime">{php echo date('Y-m-d H:i:s',$row['createtime'])}</span>
+						</div>
+					</div>
+					<!--状态显示-->
+					<div class="statusTip">	
+					<!--初始状态-->
+					{if empty($row['huifu'])}
+						<div class="statusTipTop statusTipTop_wait">待回复</div>
+						<div class="tip_approve_down tip_approve_down__wait"></div>
+					<!--第一人拒绝-->
+					{else}
+						<div class="statusTipTop statusTipTop_finish">已回复</div>
+						<div class="tip_approve_down tip_approve_down__finish"></div>
+					{/if}
+					</div>
+					<!--结束状态显示-->
+					<div class="signin_leftBox"></div>
+		 			<div class="vacationItem vacationItemBtn">
+				 	<!--初始状态-->
+				 		{if empty($row['huifu'])}
+			 			<a href="javascript:;" class="approve qx_01802" style="background-color: #ff9f22;right:45%">
+			 				<div class="btn_approve teacher_leave_but" agree-type="first_accept" onclick="huifu({$row['id']})">回复</div>
+			 				<!--状态二 2-->
+			 			</a>
+			 			
+			 			
+				 		{/if}
+		 			</div>
+				</section>
+			{/loop}	

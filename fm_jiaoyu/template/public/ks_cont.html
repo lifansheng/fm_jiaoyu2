@@ -1,0 +1,200 @@
+{if $type == 'newbox'}
+	<div class="ks_box">
+		<div class="del_this_box" onclick="del_this_box(this)"><i class="fa fa-times-circle"></i></div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label">名称</label>
+			<div class="col-sm-5">
+				<input type="text" class="form-control" name="name[]" value="" placeholder="15字以内" />
+				<div class="help-block">请输入本节课名称</div>
+			</div>
+			<label class="col-sm-1 control-label">排序</label>
+			<div class="col-sm-2">
+				<input type="number" class="form-control" name="ssort[]" value="" placeholder="数字" />
+				<div class="help-block">越大越靠前</div>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label">试看</label>
+			<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+				<div class="input-group">
+					<input name="is_try" class="weui_switchs" onclick="weui_switchs(this)" type="checkbox">
+					<span class="input-group-addon">禁止</span>
+					<input name="is_try_see[]" type="hidden" value="2">
+				</div>
+				<div class="help-block" style="width:190px">设置未购用户是否能观看本节内容</div>
+			</div>
+			{if $kcinfo['allow_menu'] == 1}
+			<label class="col-sm-1 control-label" style="margin-left: 83px;">章节</label>
+			<div class="col-sm-4">
+				<select name="menuid[]" class="form-control allmenu_list">
+					{if $allmenu}
+						{loop $allmenu $row}
+							<option value="{$row['id']}">{$row['name']}</option>
+						{/loop}	
+					{else}
+						<option value="-1">默认章节</option>
+					{/if}
+				</select>
+			</div>
+			{/if}
+		</div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label">老师</label>
+			<div class="col-sm-3">
+				<select name="tid[]" class="form-control">
+					{loop $teachers $row}
+						<option value="{$row['id']}" >{$row['tname']}</option>
+					{/loop}
+				</select>
+			</div>
+			<label class="col-sm-1 control-label">内容</label>
+			<div class="col-sm-3">
+				<select name="content_type[]" onchange="cont(this)" class="form-control">
+					<option value="-1">选择类型</option>
+					<option value="0">富文本</option>
+					<option value="1">直播</option>
+					<option value="2">视频</option>
+					<option value="3">语音</option>
+					<option value="4">纯图</option>
+					<option value="5">文档/文件</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+		
+		</div>			
+	</div>
+{elseif $type == 'preview'}
+	<div class="telephone"></div>
+	<div class="document-title">{$ksinfo['name']}</div>
+	<div class="phone-stage">
+	{if $ksinfo['content_type'] == 0}
+		{php echo htmlspecialchars_decode($ksinfo['content'])}
+	{/if}
+	{if $ksinfo['content_type'] == 1}
+		<video id="video" controls="controls" poster="" x5-playsinline="true" webkit-playsinline="true" playsinline="true">
+			<source src="{php echo tomedia($ksinfo['content'])}" type='video/mp4' />
+		</video>
+	{/if}
+	{if $ksinfo['content_type'] == 2}
+		<video id="video" controls="controls" poster="" x5-playsinline="true" webkit-playsinline="true" playsinline="true">
+			<source src="{php echo tomedia($ksinfo['content'])}" type='video/mp4' />
+		</video>
+	{/if}
+	{if $ksinfo['content_type'] == 3}
+		<video id="video" controls="controls" poster="" x5-playsinline="true" webkit-playsinline="true" playsinline="true">
+			<source src="{php echo tomedia($ksinfo['content'])}" type='video/mp4' />
+		</video>
+	{/if}
+	{if $ksinfo['content_type'] == 4}
+		<img width="100%" src="{php echo tomedia($ksinfo['content'])}"/>
+	{/if}
+	{if $ksinfo['content_type'] == 5}
+		<iframe src="{php echo tomedia($ksinfo['content'])}" frameborder="0" class="create-iframe"></iframe>
+	{/if}
+	</div>
+	<div class="home-btn"></div>
+{else}
+	{if $type == 0}
+	<div class="form-group">
+		<label class="col-sm-1 control-label">上课内容</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" name="conment[]" placeholder="请在其他编辑器里复制html代码到此处即可">{$ksinfo['content']}</textarea>
+			<div class="help-block">此处只支持html代码&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.135editor.com/" target="_bank">创建图文</div>
+		</div>
+	</div>
+	{/if}
+	{if $type == 1}
+	<div class="form-group">
+		<label class="col-sm-1 control-label">互动</label>
+		<div class="col-sm-1" style="padding:0px;margin-left: 25px;">
+			<div class="input-group">
+				<input name="is_allow_reply" class="weui_switchs" {if $ksinfo['is_allow_reply']==1}checked{/if} onclick="weui_switchs_re(this)" type="checkbox">
+				<span class="input-group-addon">禁止</span>
+				<input name="is_allow_reply[]" type="hidden" value="{$ksinfo['is_allow_reply']}">
+			</div>
+			<div class="help-block" style="width:190px">是否允许用户发言评论</div>
+		</div>
+		<div id="yk_reply_box" style="{if $ksinfo['is_allow_reply']==1}display:block{else}display:none{/if}">
+			<label class="col-sm-2 control-label">游客</label>
+			<div class="col-sm-1" style="padding:0px;margin-left: 55px;">
+				<div class="input-group">
+					<input name="is_allow_ykreply" class="weui_switchs" {if $ksinfo['is_allow_ykreply']==1}checked{/if} onclick="weui_switchs_re(this)" type="checkbox">
+					<span class="input-group-addon">禁止</span>
+					<input name="is_allow_ykreply[]" type="hidden" value="{$ksinfo['is_allow_ykreply']}">
+				</div>
+				<div class="help-block" style="width:190px">是否允许游客发言评论</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	function weui_switchs_re(elm){
+		let name = $(elm).attr("name")
+		let thisval = $(elm).prop('checked')?1:2;
+		let word = $(elm).prop('checked')?"允许":"禁止";
+		if(name == 'is_allow_reply'){
+			if(thisval == 1){
+				$('#yk_reply_box').show(100)
+			}
+			if(thisval == 2){
+				$('#yk_reply_box').hide(100)
+			}
+		}
+		$(elm).next().next().val(thisval)
+		$(elm).next().text(word);
+	}
+	</script>
+	<div class="form-group">
+		<label class="col-sm-1 control-label">开播时间</label>
+		<div class="input-group clocknews">
+			<div class="input-group" style="margin-left: 12px;">
+				{if $ksinfo['sk_start']}{php echo tpl_form_field_date('sk_start[]', $ksinfo['sk_start'], true)}{else}{php echo tpl_form_field_date('sk_start[]', date('Y-m-d',TIMESTAMP), true)}{/if}
+			</div>
+			<span class="input-group-addon">至</span>
+			<div class="input-group">
+				{if $ksinfo['sk_end']}{php echo tpl_form_field_date('sk_end[]', $ksinfo['sk_end'], true)}{else}{php echo tpl_form_field_date('sk_end[]', date('Y-m-d',TIMESTAMP), true)}{/if}
+			</div>
+		</div>
+	</div>		
+	<div class="form-group">
+		<label class="col-sm-1 control-label">直播地址</label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control" name="conment[]" value="{php echo tomedia($ksinfo['content'])}" />
+			<div class="help-block">请输入.m3u8直播推流地址</div>
+		</div>
+	</div>	
+	{/if}
+	{if $type == 2}
+	<div class="form-group">
+		<label class="col-sm-1 control-label">视频地址</label>
+		<div class="col-sm-9">
+			{php echo tpl_form_field_video('conment[]', $ksinfo['content']);}
+		</div>
+	</div>	
+	{/if}
+	{if $type == 3}
+	<div class="form-group">
+		<label class="col-sm-1 control-label">语音文件</label>
+		<div class="col-sm-9">
+			{php echo tpl_form_field_audio('conment[]', $ksinfo['content']);}
+		</div>
+	</div>	
+	{/if}
+	{if $type == 4}
+	<div class="form-group">
+		<label class="col-sm-1 control-label">图片文件</label>
+		<div class="col-sm-9">
+			{php echo tpl_form_field_image('conment[]', $ksinfo['content']);}
+		</div>
+	</div>	
+	{/if}
+	{if $type == 5}
+	<div class="form-group">
+		<label class="col-sm-1 control-label">文档文件</label>
+		<div class="col-sm-9">
+			{php echo tpl_form_field_video('conment[]', $ksinfo['content']);}
+			<div class="help-block">仅支持一个ppt、pdf、wrod、execl格式,注意：请在微擎站点设置附件设置视频格式设置加上ppt,pptx,docx,doc,xls,xlsx,pdf<a></a></div>
+		</div>
+	</div>	
+	{/if}	
+{/if}

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>{$school['title']}</title>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/bindingFormFor.css" />
+<link type="text/css" rel="stylesheet" href="{OSSURL}public/mobile/css/greenStyle.css?v=4.60120" />
+{php echo register_jssdks();}
+<script type="text/javascript" src="{MODULE_URL}public/mobile/js/jquery-1.11.3.min.js?v=4.6"></script>
+{php include $this->template('port');}
+<style>
+#birthday{border-bottom:1px solid #c6c6c6;position:relative;display:block;height:30px;line-height:30px;opacity:1;}
+#selMonth{margin-left:-40px;position:relative;z-index:10;opacity:0;}
+.item-button{position: absolute;right: 0px;border-radius: 5px;border: 1px solid #14c682;bottom: 0px;}
+.item-button a{margin: 2px;font-size: 13px;color: #6f6969;}
+</style>
+</head>
+	<body>
+		<div class="all">
+			<div class="header mainColor">
+				<div class="m">
+					<span>填写信息</span>
+				</div>			
+			</div>
+			<div id="titlebar_bg" class="_header"></div>
+			<div class="bangdingForm">
+				<div class="bangdingBox">
+					<div id="parentBox" class="changeBox activeBox">
+						<ul>
+							<li>
+								<span class="l"><i style="color:red">*</i> 学生姓名：</span>
+								<span class="r">
+									<input id="sname" type="text" value="" />
+								</span>
+							</li>	
+												
+							<li>
+								<span class="l"><i style="color:red">*</i> 手机号码：</span>
+								<span class="r">
+									<input id="mobile" type="tel" maxlength="11" value="" />
+								</span>
+							</li>
+							<li>
+								<span class="l">家长姓名：</span>
+								<span class="r">
+									<input id="name" type="text" value="" />
+								</span>
+							</li>
+							<li>
+								<span class="l">孩子生日：</span>
+								<span class="r">
+									<input id="birthday" type="date" />
+								</span>
+							</li>
+							<li>
+								<span class="l">性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：</span>
+								<span class="r">
+									<label>请选择</label>
+									<select id="sex">
+										<option value="">请选择</option>
+										<option value="1">男</option>
+										<option value="2">女</option>
+									</select>
+									<i></i>
+								</span>
+							</li>
+
+							<li>
+								<span class="l">关&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;系：</span>
+								<span class="r">
+									<label>请选择</label>
+										<select id="pard">
+											<option value="0">请选择</option>
+											<option value="2">母亲</option>
+											<option value="3">父亲</option>
+											<option value="4">本人</option>
+											<option value="5">家长</option>
+										</select>
+									<i></i>
+								</span>
+							</li>
+
+							<li>
+								<span class="l">爱&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;好：</span>
+								<span class="r">
+									<input id="hobby" type="text" />
+								</span>
+							</li>
+						</ul>
+						</div>
+						<div class="submitBtn mainColor" onclick="Tijiao();">提交</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div id="common_progress" class="common_progress_bg"><div class="common_progress"><div class="common_loading"></div><br><span>正在载入...</span></div></div>
+	</body>	
+<script type="text/javascript">
+WeixinJSHideAllNonBaseMenuItem();
+/**微信隐藏工具条**/
+function WeixinJSHideAllNonBaseMenuItem(){
+	if (typeof wx != "undefined"){
+		wx.ready(function () {
+			
+			wx.hideAllNonBaseMenuItem();
+		});
+	}
+}
+
+$(document).ready(function() {
+	$("#pard").change(function() {
+		changeGx();
+	});
+});
+function changeGx(){
+	$("#pard").parent().find("label").html($("#pard").find("option:selected").text());
+}
+
+$(document).ready(function() {
+	$("#sex").change(function() {
+		changeSex();
+	});
+});
+function changeSex(){
+	$("#sex").parent().find("label").html($("#sex").find("option:selected").text());
+}
+
+function Tijiao(){
+	var activeBoxID = $(".bangdingBox").find(".activeBox").attr("id");
+	
+	
+	if(activeBoxID == "parentBox"){
+		
+		if($("#sname").val() == null || $("#sname").val() == ""){
+			jTips("学生姓名不能为空");
+			return;
+		}
+		
+		if($("#mobile").val() == null || $("#mobile").val() == ""){
+			jTips("手机号码不能为空！");
+			return;
+		}
+		
+		if(!$("#mobile").val().match(/^(0|86|17951)?(13[0-9]|15[012356789]|16[012356789]|17[0-9]|18[0-9]|19[0-9]|14[57])[0-9]{7,8}$/)){
+			jTips("手机格式不正确！");
+			return;
+		}
+	
+	}
+	jConfirm("确认提交申请？", "确定对话框", function (isConfirm) {
+		
+		if (isConfirm) {
+			ajax_start_loading("提交中...");
+			var submitData = {
+				openid :"{$openid}",
+				schoolid :"{$schoolid}",
+				weid :"{$weid}",
+				shareid :"{$shareid}",
+				sname : $("#sname").val(),
+				name : $("#name").val(),
+				mobile : $("#mobile").val(),
+				birthday : $("#birthday").val(),
+				sex : $("#sex").val(),
+				pard : $("#pard").val(),
+				hobby : $("#hobby").val(),
+			};
+			$.post("{php echo $this->createMobileUrl('indexajax',array('op'=>'addqzkh'))}",submitData,function(data){
+				ajax_stop_loading();
+				if(data.result){
+					jTips(data.msg);
+					window.location.href = "{php echo $this->createMobileUrl('detail', array('schoolid' => $schoolid), true)}";
+				}else{
+					jTips(data.msg);
+				}
+			},'json'); 
+		}
+	});
+}
+</script>
+{php include $this->template('footer');}
+</html>
